@@ -1,0 +1,4 @@
+items.Eternia_Building_Item.name=Building Kit
+items.Eternia_Building_Item.description=Place a building in your plot
+items.Eternia_Building_Item.instance.name={building}
+items.Eternia_Building_Item.instance.description=Place this {building} in your plot

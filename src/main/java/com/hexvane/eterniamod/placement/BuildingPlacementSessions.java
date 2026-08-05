@@ -1,0 +1,30 @@
+package com.hexvane.eterniamod.placement;
+
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public final class BuildingPlacementSessions {
+    private static final ConcurrentHashMap<UUID, BuildingPlacementSession> BY_PLAYER = new ConcurrentHashMap<>();
+
+    private BuildingPlacementSessions() {}
+
+    @Nullable
+    public static BuildingPlacementSession get(@Nonnull UUID playerUuid) {
+        return BY_PLAYER.get(playerUuid);
+    }
+
+    public static void put(@Nonnull UUID playerUuid, @Nonnull BuildingPlacementSession session) {
+        BY_PLAYER.put(playerUuid, session);
+    }
+
+    public static void remove(@Nonnull UUID playerUuid) {
+        BY_PLAYER.remove(playerUuid);
+    }
+
+    public static void forEachActive(@Nonnull BiConsumer<UUID, BuildingPlacementSession> consumer) {
+        BY_PLAYER.forEach(consumer);
+    }
+}

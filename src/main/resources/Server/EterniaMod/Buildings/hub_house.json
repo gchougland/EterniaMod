@@ -1,0 +1,7 @@
+{
+  "id": "hub_house",
+  "displayName": "House",
+  "prefabPath": "House.prefab.json",
+  "plotAnchorOffset": [4, 0, 4],
+  "rotationYaw": "None"
+}

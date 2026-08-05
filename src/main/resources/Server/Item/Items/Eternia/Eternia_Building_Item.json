@@ -1,0 +1,32 @@
+{
+  "TranslationProperties": {
+    "Name": "eterniamod_items.items.Eternia_Building_Item.name",
+    "Description": "eterniamod_items.items.Eternia_Building_Item.description"
+  },
+  "Categories": ["Items.Tools"],
+  "Icon": "Icons/ItemsGenerated/Furniture_Village_Crate.png",
+  "Quality": "Common",
+  "Model": "Blocks/Furniture/Village/Crate.blockymodel",
+  "Texture": "BlockTextures/Furniture_Village_Crate.png",
+  "MaxStack": 16,
+  "Interactions": {
+    "Secondary": {
+      "Interactions": [
+        {
+          "Type": "OpenCustomUI",
+          "Page": { "Id": "EterniaBuildingPlacement" }
+        }
+      ]
+    }
+  },
+  "InteractionConfig": {
+    "UseDistance": {
+      "Adventure": 10,
+      "Creative": 64
+    }
+  },
+  "Tags": {
+    "Type": ["Tool"]
+  },
+  "ItemSoundSetId": "ISS_Blocks_Wood"
+}

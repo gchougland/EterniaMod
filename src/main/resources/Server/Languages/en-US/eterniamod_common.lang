@@ -1,0 +1,11 @@
+eterniamod.common.lookAtBlock=Look at a block in your plot first
+eterniamod.common.needBuildingItem=You need a building item in your inventory
+eterniamod.common.invalidBuildingItem=That building item is not valid
+eterniamod.common.unknownBuilding=That building is not available
+eterniamod.common.notInPlot=You are not standing in a plot
+eterniamod.common.notYourPlot=This is not your plot
+eterniamod.common.plotAlreadyHasBuilding=This plot already has a building
+eterniamod.common.outsidePlot=Move the building fully inside your plot
+eterniamod.common.prefabMissing=That building could not be loaded
+eterniamod.common.placeFailed=Could not place the building
+eterniamod.common.buildingPlaced=Building placed
