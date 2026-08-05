@@ -74,14 +74,15 @@ public final class EterniaBuildingCommand extends AbstractCommandCollection {
             if (targetRef == null) {
                 return;
             }
-            Player targetPlayer = targetRef.getStore().getComponent(targetRef, Player.getComponentType());
+            Store<EntityStore> targetStore = targetRef.getStore();
+            Player targetPlayer = targetStore.getComponent(targetRef, Player.getComponentType());
             if (targetPlayer == null) {
                 return;
             }
             ItemStack base = new ItemStack(EterniaModConstants.BUILDING_ITEM_ID, 1);
             for (int i = 0; i < amount; i++) {
                 ItemStack stack = BuildingItemMetadata.withBuilding(base, buildingId, def.getDisplayName(), target.getLanguage());
-                targetPlayer.giveItem(stack, null, null);
+                targetPlayer.giveItem(stack, targetRef, targetStore);
             }
             playerRef.sendMessage(
                 Message.translation("eterniamod_commands.commands.eternia.building.give.success")

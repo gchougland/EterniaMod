@@ -3,5 +3,6 @@
   "displayName": "House",
   "prefabPath": "House.prefab.json",
   "plotAnchorOffset": [4, 0, 4],
+  "managementBlockLocalPos": [1, 2, 2],
   "rotationYaw": "None"
 }

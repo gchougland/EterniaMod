@@ -4,6 +4,7 @@ import com.hexvane.eterniamod.building.PrefabLocalOffset;
 import com.hexvane.eterniamod.prefab.PrefabResolveUtil;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.math.Axis;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.util.MathUtil;
@@ -32,6 +33,7 @@ import org.joml.Vector3f;
 import org.joml.Vector3i;
 
 public final class BuildingPlacementClientPrefabPreview {
+    private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
     private static final int DEFAULT_BIOME_TINT =
         ColorParseUtil.colorToARGBInt(
             com.hypixel.hytale.builtin.buildertools.prefabeditor.PrefabEditSessionManager.DEFAULT_TINT
@@ -61,7 +63,7 @@ public final class BuildingPlacementClientPrefabPreview {
         int rotationSteps,
         @Nonnull Vector3i prefabOriginWorld,
         @Nonnull Rotation placementYaw,
-        @Nonnull BuildingPlacementSession session
+        @Nonnull PrefabPreviewCacheHolder session
     ) {
         Payload payload = resolvePayload(prefabPathKey, rotationSteps, session);
         if (payload == null) {
@@ -102,7 +104,7 @@ public final class BuildingPlacementClientPrefabPreview {
     @Nonnull
     public static Vector3i flooredClientPreviewOrigin(
         @Nonnull Vector3i prefabBufferOriginWorld,
-        @Nonnull BuildingPlacementSession session,
+        @Nonnull PrefabPreviewCacheHolder session,
         @Nonnull Rotation placementYaw
     ) {
         Payload payload = session.getClientPrefabPreviewPayload();
@@ -117,7 +119,7 @@ public final class BuildingPlacementClientPrefabPreview {
         return new Vector3i(MathUtil.floor(pos.x), MathUtil.floor(pos.y), MathUtil.floor(pos.z));
     }
 
-    public static void clearSessionCache(@Nonnull BuildingPlacementSession session) {
+    public static void clearSessionCache(@Nonnull PrefabPreviewCacheHolder session) {
         session.clearClientPrefabPreviewCache();
     }
 
@@ -125,7 +127,7 @@ public final class BuildingPlacementClientPrefabPreview {
     static Payload resolvePayload(
         @Nonnull String prefabPathKey,
         int rotationSteps,
-        @Nonnull BuildingPlacementSession session
+        @Nonnull PrefabPreviewCacheHolder session
     ) {
         int steps = (rotationSteps % 4 + 4) % 4;
         Payload cached = session.getClientPrefabPreviewPayload();
@@ -136,15 +138,18 @@ public final class BuildingPlacementClientPrefabPreview {
         }
         Path resolved = PrefabResolveUtil.resolvePrefabPath(prefabPathKey);
         if (resolved == null) {
+            LOGGER.atWarning().log("Building placement prefab not found: %s", prefabPathKey);
             return null;
         }
         BlockSelection selection;
         try {
             selection = PrefabStore.get().getPrefab(resolved);
         } catch (Exception e) {
+            LOGGER.atWarning().withCause(e).log("Building placement prefab failed to load: %s", resolved);
             return null;
         }
         if (selection == null) {
+            LOGGER.atWarning().log("Building placement prefab resolved empty: %s", resolved);
             return null;
         }
         BlockSelection rotated = selection.cloneSelection();
@@ -162,6 +167,15 @@ public final class BuildingPlacementClientPrefabPreview {
                 selection.getAnchorZ()
             );
         session.setClientPrefabPreviewCache(prefabPathKey, steps, payload);
+        int blockCount = payload.blocksChange() != null ? payload.blocksChange().length : 0;
+        LOGGER.atInfo().log(
+            "Building placement prefab payload ready: %s blocks=%d anchor=(%d,%d,%d)",
+            prefabPathKey,
+            blockCount,
+            payload.anchorX(),
+            payload.anchorY(),
+            payload.anchorZ()
+        );
         return payload;
     }
 

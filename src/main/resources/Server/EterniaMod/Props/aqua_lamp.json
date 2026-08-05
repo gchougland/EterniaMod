@@ -1,0 +1,7 @@
+{
+  "id": "aqua_lamp",
+  "displayName": "Aqua Lamp",
+  "prefabPath": "Aqua Lamp.prefab.json",
+  "plotAnchorOffset": [0, 0, 0],
+  "rotationYaw": "None"
+}

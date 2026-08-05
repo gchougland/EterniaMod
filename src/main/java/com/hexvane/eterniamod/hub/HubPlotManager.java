@@ -1,8 +1,13 @@
 package com.hexvane.eterniamod.hub;
 
 import com.hexvane.eterniamod.EterniaModPlugin;
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.core.util.TargetUtil;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +19,8 @@ import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.joml.Vector3d;
+import org.joml.Vector3i;
 
 public final class HubPlotManager {
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
@@ -129,6 +136,45 @@ public final class HubPlotManager {
             if (plot.getFootprint().containsBlock(x, y, z)) {
                 return plot;
             }
+        }
+        return null;
+    }
+
+    @Nullable
+    public HubPlotRecord findPlotContainingHorizontal(int x, int z) {
+        for (HubPlotRecord plot : byPlotId.values()) {
+            if (plot.getFootprint().containsHorizontal(x, z)) {
+                return plot;
+            }
+        }
+        return null;
+    }
+
+    /** Resolves a plot from the player's feet, horizontal position, or look target. */
+    @Nullable
+    public HubPlotRecord findPlotAtPlayerOrTarget(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
+        TransformComponent transform = store.getComponent(ref, TransformComponent.getComponentType());
+        if (transform != null) {
+            Vector3d pos = transform.getPosition();
+            int x = (int) Math.floor(pos.x);
+            int y = (int) Math.floor(pos.y - 0.01);
+            int z = (int) Math.floor(pos.z);
+            HubPlotRecord plot = findPlotContainingHorizontal(x, z);
+            if (plot != null) {
+                return plot;
+            }
+            plot = findPlotContaining(x, y, z);
+            if (plot != null) {
+                return plot;
+            }
+        }
+        Vector3i target = TargetUtil.getTargetBlock(ref, 64.0, store);
+        if (target != null) {
+            HubPlotRecord plot = findPlotContainingHorizontal(target.x, target.z);
+            if (plot != null) {
+                return plot;
+            }
+            return findPlotContaining(target.x, target.y, target.z);
         }
         return null;
     }

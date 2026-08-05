@@ -8,7 +8,6 @@ import com.hexvane.eterniamod.hub.HubPlotRecord;
 import com.hexvane.eterniamod.prefab.PrefabResolveUtil;
 import org.joml.Vector3i;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.Rotation;
-import com.hypixel.hytale.server.core.prefab.selection.buffer.PrefabBufferUtil;
 import com.hypixel.hytale.server.core.prefab.selection.buffer.impl.IPrefabBuffer;
 import com.hypixel.hytale.server.core.universe.world.World;
 import java.nio.file.Path;
@@ -40,11 +39,14 @@ public final class BuildingPlacementValidator {
         if (prefabPath == null) {
             return "prefabMissing";
         }
-        IPrefabBuffer buf = PrefabBufferUtil.getCached(prefabPath);
+        IPrefabBuffer buf = PrefabResolveUtil.resolvePrefabBuffer(def.getPrefabPath());
+        if (buf == null) {
+            return "prefabMissing";
+        }
         Vector3i buildingAnchor = def.resolvePrefabAnchorWorld(previewSignAnchor, prefabYaw);
         HubPlotFootprint buildingFp = PlotFootprintUtil.computeFootprint(buildingAnchor, prefabYaw, buf);
         HubPlotFootprint plotFp = plot.getFootprint();
-        if (!plotFp.containsFootprint(buildingFp)) {
+        if (!plotFp.containsFootprintHorizontal(buildingFp)) {
             return "outsidePlot";
         }
         if (!PlotFootprintUtil.hasSolidVoxels(prefabYaw, buf)) {

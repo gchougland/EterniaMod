@@ -1,6 +1,7 @@
 package com.hexvane.eterniamod.placement;
 
 import com.hexvane.eterniamod.debug.DebugLineCylinderUtil;
+import com.hexvane.eterniamod.hub.HubPlotBoundaryWireframe;
 import com.hexvane.eterniamod.hub.HubPlotFootprint;
 import com.hypixel.hytale.math.matrix.Matrix4dUtil;
 import com.hypixel.hytale.protocol.DebugShape;
@@ -34,9 +35,17 @@ public final class BuildingPlacementWireframeOverlay {
         boolean buildingValid
     ) {
         clearFor(player);
-        addBoxEdges(player, plotFootprint, DebugUtils.COLOR_WHITE);
+        addPlotVisualBounds(player, plotFootprint, DebugUtils.COLOR_WHITE);
         Vector3f buildingColor = buildingValid ? DebugUtils.COLOR_WHITE : DebugUtils.COLOR_RED;
         addBoxEdges(player, buildingFootprint, buildingColor);
+    }
+
+    private static void addPlotVisualBounds(
+        @Nonnull PlayerRef player,
+        @Nonnull HubPlotFootprint plotFootprint,
+        @Nonnull Vector3f color
+    ) {
+        HubPlotBoundaryWireframe.sendPlotBoundary(player, plotFootprint, color);
     }
 
     private static void addBoxEdges(@Nonnull PlayerRef player, @Nonnull HubPlotFootprint fp, @Nonnull Vector3f color) {

@@ -76,6 +76,32 @@ public final class EterniaArgTypes {
             }
         };
 
+    public static final SingleArgumentType<String> PROP_ID =
+        new SingleArgumentType<>(
+            "eterniamod_commands.commands.eternia.args.propId.name",
+            "eterniamod_commands.commands.eternia.args.propId.usage",
+            "aqua_lamp"
+        ) {
+            @Override
+            public String parse(@Nonnull String input, @Nonnull ParseResult parseResult) {
+                return input;
+            }
+
+            @Override
+            public void suggest(
+                @Nonnull CommandSender sender,
+                @Nonnull String textAlreadyEntered,
+                int numParametersTyped,
+                @Nonnull SuggestionResult result
+            ) {
+                EterniaModPlugin plugin = EterniaModPlugin.get();
+                if (plugin == null) {
+                    return;
+                }
+                EterniaCommandSuggest.suggestPrefix(result, textAlreadyEntered, plugin.getPropCatalog().ids());
+            }
+        };
+
     public static final SingleArgumentType<String> PLOT_ID =
         new SingleArgumentType<>(
             "eterniamod_commands.commands.eternia.args.plotId.name",

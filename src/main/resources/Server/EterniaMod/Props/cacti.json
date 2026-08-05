@@ -1,0 +1,11 @@
+{
+  "id": "cacti",
+  "displayName": "Cacti",
+  "prefabPath": "Plants/Cacti/Full/Stage_1/Cacti_Full_Stage_1_002.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

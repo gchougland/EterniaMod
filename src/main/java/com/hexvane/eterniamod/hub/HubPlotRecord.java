@@ -1,6 +1,9 @@
 package com.hexvane.eterniamod.hub;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,6 +25,10 @@ public final class HubPlotRecord {
     @SerializedName("building")
     @Nullable
     private HubPlotBuilding building;
+
+    @SerializedName("props")
+    @Nullable
+    private List<HubPlotProp> props;
 
     public HubPlotRecord() {}
 
@@ -76,5 +83,24 @@ public final class HubPlotRecord {
 
     public boolean isOwnedBy(@Nonnull UUID playerUuid) {
         return ownerUuid != null && ownerUuid.equals(playerUuid);
+    }
+
+    @Nonnull
+    public List<HubPlotProp> getProps() {
+        return props != null ? props : Collections.emptyList();
+    }
+
+    public void addProp(@Nonnull HubPlotProp prop) {
+        if (props == null) {
+            props = new ArrayList<>();
+        }
+        props.add(prop);
+    }
+
+    public boolean removeProp(@Nonnull UUID instanceId) {
+        if (props == null) {
+            return false;
+        }
+        return props.removeIf(p -> p.getInstanceId().equals(instanceId));
     }
 }

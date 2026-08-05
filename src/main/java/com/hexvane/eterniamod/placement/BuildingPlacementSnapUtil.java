@@ -38,4 +38,12 @@ public final class BuildingPlacementSnapUtil {
         session.setAnchor(anchor);
         session.clearBirdsEyeSnapshot();
     }
+
+    public static void snapPropSessionToPlayer(@Nonnull PropPlacementSession session, @Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
+        Vector3i anchor = anchorAtPlayerFeet(ref, store);
+        if (anchor == null) {
+            return;
+        }
+        session.setAnchor(anchor);
+    }
 }

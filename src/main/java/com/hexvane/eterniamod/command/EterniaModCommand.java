@@ -9,5 +9,7 @@ public final class EterniaModCommand extends AbstractCommandCollection {
         this.addAliases("e");
         this.addSubCommand(new EterniaPlotsCommand());
         this.addSubCommand(new EterniaBuildingCommand());
+        this.addSubCommand(new EterniaPropCommand());
+        this.addSubCommand(new EterniaPrefabCommand());
     }
 }

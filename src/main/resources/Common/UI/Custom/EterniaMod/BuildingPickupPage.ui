@@ -1,0 +1,47 @@
+$C = "../Common.ui";
+$Sounds = "../Sounds.ui";
+
+Group {
+  LayoutMode: Middle;
+  Anchor: (Top: 0, Left: 0, Right: 0, Bottom: 0);
+  Background: #000000(0.55);
+
+  $C.@DecoratedContainer {
+    Anchor: (Width: 420);
+
+    #Title {
+      Label #PickupTitle {
+        Style: (...$C.@TitleStyle, HorizontalAlignment: Center);
+        Padding: (Horizontal: 12);
+        Text: "";
+      }
+    }
+
+    #Content {
+      LayoutMode: Top;
+      Padding: (Full: 18);
+
+      Label #PickupBody {
+        Anchor: (Bottom: 16);
+        Style: (...$C.@DefaultLabelStyle, Wrap: true);
+        Text: "";
+      }
+
+      Group {
+        LayoutMode: Left;
+
+        $C.@CancelTextButton #CancelButton {
+          Text: "";
+          FlexWeight: 1;
+          Anchor: (Right: 8);
+        }
+
+        $C.@TextButton #ConfirmButton {
+          Text: "";
+          FlexWeight: 1;
+          Anchor: (Left: 8);
+        }
+      }
+    }
+  }
+}

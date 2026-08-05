@@ -1,0 +1,11 @@
+{
+  "id": "potion_shelf",
+  "displayName": "Potion Shelf",
+  "prefabPath": "Potion Shelf.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

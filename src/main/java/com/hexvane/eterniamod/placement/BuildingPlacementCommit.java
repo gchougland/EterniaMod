@@ -8,6 +8,12 @@ import com.hexvane.eterniamod.hub.EterniaWorldRegistries;
 import com.hexvane.eterniamod.hub.HubPlotBuilding;
 import com.hexvane.eterniamod.hub.HubPlotManager;
 import com.hexvane.eterniamod.hub.HubPlotRecord;
+import com.hexvane.eterniamod.hub.HubPlotVisibilityOverlay;
+import com.hexvane.eterniamod.hub.ManagementBlockLinker;
+import com.hexvane.eterniamod.hub.ReplacedBlockCell;
+import com.hexvane.eterniamod.hub.EterniaPlacedInstance;
+import com.hexvane.eterniamod.prefab.BuildingPrefabOps;
+import com.hexvane.eterniamod.prefab.PrefabEntityOps;
 import com.hexvane.eterniamod.prefab.PrefabResolveUtil;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
@@ -17,11 +23,11 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.CombinedItemContainer;
 import com.hypixel.hytale.server.core.prefab.selection.buffer.PrefabBufferUtil;
 import com.hypixel.hytale.server.core.prefab.selection.buffer.impl.IPrefabBuffer;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.hypixel.hytale.server.core.util.PrefabUtil;
 import java.nio.file.Path;
-import java.util.Random;
+import java.util.List;
 import javax.annotation.Nonnull;
 import org.joml.Vector3i;
 
@@ -56,18 +62,35 @@ public final class BuildingPlacementCommit {
             return false;
         }
         IPrefabBuffer buffer = PrefabBufferUtil.getCached(prefabPath);
-        PrefabUtil.paste(buffer, world, buildingAnchor, session.getPrefabYaw(), true, new Random(), store);
+        List<ReplacedBlockCell> replaced =
+            BuildingPrefabOps.captureAndPaste(world, buildingAnchor, session.getPrefabYaw(), buffer);
+        PrefabEntityOps.pasteEntities(
+            prefabPath,
+            world,
+            buildingAnchor,
+            session.getPrefabYaw(),
+            store,
+            EterniaPlacedInstance.Kind.BUILDING,
+            plot.getPlotId(),
+            session.getBuildingId()
+        );
         plot.setBuilding(
             new HubPlotBuilding(
                 session.getBuildingId(),
                 buildingAnchor.x,
                 buildingAnchor.y,
                 buildingAnchor.z,
-                session.getPrefabYaw()
+                session.getPrefabYaw(),
+                replaced
             )
         );
+        ManagementBlockLinker.linkPlot(world, plot.getPlotId(), def, buildingAnchor, session.getPrefabYaw());
         plotManager.updatePlot(plot);
         plotManager.saveIfDirty();
+        PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
+        if (playerRef != null) {
+            HubPlotVisibilityOverlay.refreshIfEnabled(playerRef, world, plugin);
+        }
         return true;
     }
 

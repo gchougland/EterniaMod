@@ -2941,22 +2941,15 @@
       "x": 1,
       "y": 2,
       "z": 2,
-      "name": "Aetherhaven_Management_Block",
+      "name": "Eternia_Management_Block",
+      "rotation": 2,
       "components": {
         "Components": {
-          "AetherhavenManagementBlock": {
-            "PlotId": "",
-            "TownId": ""
-          },
-          "PlacedByInteraction": {
-            "WhoPlacedUuid": {
-              "$binary": "v7RyWIT/TYKnXA2XcxdQtw==",
-              "$type": "04"
-            }
+          "EterniaManagementBlock": {
+            "PlotId": ""
           }
         }
-      },
-      "rotation": 2
+      }
     },
     {
       "x": 1,

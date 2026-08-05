@@ -1,0 +1,162 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Crude_Shelf",
+      "rotation": 3
+    }
+  ],
+  "fluids": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "BlockTypeKey": "Potion_Mana_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.73748779296875,
+            "Y": 1.0,
+            "Z": 0.1313629150390625
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.0072126388549805,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "UBdwZLLTNpCg7Umo9HQKUw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Mana_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "BlockTypeKey": "Potion_Stamina_Greater"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.71136474609375,
+            "Y": 1.0,
+            "Z": 0.4781494140625
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.0914344787597656,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "IiWxwQjHNEyO2RRmC251Vw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.2000000476837158
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Stamina_Greater",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "BlockTypeKey": "Potion_Regen_Health_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.68743896484375,
+            "Y": 1.0,
+            "Z": 0.793212890625
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.3011667728424072,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "RzQsK+xyMy+Ktf3wD/Exvg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Regen_Health_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

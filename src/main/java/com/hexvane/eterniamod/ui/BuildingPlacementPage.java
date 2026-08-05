@@ -7,8 +7,10 @@ import com.hexvane.eterniamod.hub.HubPlotFootprint;
 import com.hexvane.eterniamod.hub.HubPlotManager;
 import com.hexvane.eterniamod.hub.HubPlotRecord;
 import com.hexvane.eterniamod.placement.BuildingPlacementCameraUtil;
+import com.hexvane.eterniamod.placement.BuildingPlacementDebugLog;
 import com.hexvane.eterniamod.placement.BuildingPlacementClientPrefabPreview;
 import com.hexvane.eterniamod.placement.BuildingPlacementCommit;
+import com.hexvane.eterniamod.placement.BuildingPlacementOpenHelper;
 import com.hexvane.eterniamod.placement.BuildingPlacementNudgeUtil;
 import com.hexvane.eterniamod.placement.BuildingPlacementRotationUtil;
 import com.hexvane.eterniamod.placement.BuildingPlacementSession;
@@ -151,6 +153,12 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
         bind(eventBuilder, "#CancelButton", "Cancel");
         eventBuilder.addEventBinding(
             CustomUIEventBindingType.ValueChanged,
+            "#PlotTypeDropdown",
+            EventData.of("@ConstructionId", "#PlotTypeDropdown.Value"),
+            false
+        );
+        eventBuilder.addEventBinding(
+            CustomUIEventBindingType.ValueChanged,
             "#BirdsEyeToggle #CheckBox",
             EventData.of("@BirdsEye", "#BirdsEyeToggle #CheckBox.Value"),
             false
@@ -162,17 +170,32 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
             false
         );
         scheduleRefreshPreview(ref, store);
+        BuildingPlacementDebugLog.pageBuilt(playerRef.getUsername(), 19);
     }
 
     @Override
     public void handleDataEvent(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull PageData data) {
+        BuildingPlacementDebugLog.uiEvent(
+            playerRef.getUsername(),
+            data.action,
+            data.birdsEye,
+            data.birdsEyeDistance,
+            data.constructionId
+        );
         if (data.birdsEye != null) {
             birdsEyeEnabled = data.birdsEye;
             smoothPanGeneration++;
-            session.clearBirdsEyeSnapshot();
-            if (!birdsEyeEnabled) {
+            if (birdsEyeEnabled) {
                 session.resetBirdsEyePan();
+                session.clearBirdsEyeSnapshot();
+            } else {
+                session.clearBirdsEyeSnapshot();
             }
+            birdsEyeDistance =
+                Math.max(
+                    BuildingPlacementCameraUtil.MIN_DISTANCE,
+                    Math.min(BuildingPlacementCameraUtil.MAX_DISTANCE, birdsEyeDistance)
+                );
             scheduleApplyCameraAndRebuild(ref, store);
             return;
         }
@@ -266,7 +289,7 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
                     return;
                 }
                 smoothPanGeneration++;
-                if (pr != null && birdsEyeEnabled) {
+                if (pr != null) {
                     BuildingPlacementCameraUtil.resetToPlayerCamera(pr);
                 }
             }
@@ -301,10 +324,10 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
     private void scheduleApplyCamera(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
         store.getExternalData().getWorld().execute(
             () -> {
-                if (!ref.isValid()) {
+                if (!ref.isValid() || isDismissed()) {
                     return;
                 }
-                applyBirdsEyeCamera(ref, store);
+                applyBirdsEyeCameraPacket(ref, store);
             }
         );
     }
@@ -312,13 +335,13 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
     private void scheduleApplyCameraAndRebuild(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
         store.getExternalData().getWorld().execute(
             () -> {
-                if (!ref.isValid()) {
+                if (!ref.isValid() || isDismissed()) {
                     return;
                 }
                 PlayerRef pr = store.getComponent(ref, PlayerRef.getComponentType());
                 if (pr != null) {
                     if (birdsEyeEnabled) {
-                        applyBirdsEyeCamera(ref, store);
+                        applyBirdsEyeCameraPacket(ref, store);
                     } else {
                         BuildingPlacementCameraUtil.resetToPlayerCamera(pr);
                     }
@@ -328,7 +351,7 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
         );
     }
 
-    private void applyBirdsEyeCamera(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
+    private void applyBirdsEyeCameraPacket(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
         if (!birdsEyeEnabled) {
             return;
         }
@@ -337,13 +360,29 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
         }
         PlayerRef pr = store.getComponent(ref, PlayerRef.getComponentType());
         TransformComponent tc = store.getComponent(ref, TransformComponent.getComponentType());
-        if (pr == null || tc == null) {
+        if (pr == null) {
+            return;
+        }
+        if (tc == null) {
+            BuildingPlacementCameraUtil.resetToPlayerCamera(pr);
             return;
         }
         Vector3d p = tc.getPosition();
-        double fx = session.getBirdsEyeSnapshotX() + session.getBirdsEyePanX();
-        double fy = session.getBirdsEyeSnapshotY();
-        double fz = session.getBirdsEyeSnapshotZ() + session.getBirdsEyePanZ();
+        double fx;
+        double fy;
+        double fz;
+        if (session.hasBirdsEyeSnapshot()) {
+            fx = session.getBirdsEyeSnapshotX();
+            fy = session.getBirdsEyeSnapshotY();
+            fz = session.getBirdsEyeSnapshotZ();
+        } else {
+            Vector3i a = session.getAnchor();
+            fx = a.x + 0.5;
+            fy = a.y + 0.5;
+            fz = a.z + 0.5;
+        }
+        fx += session.getBirdsEyePanX();
+        fz += session.getBirdsEyePanZ();
         BuildingPlacementCameraUtil.applyBirdsEye(pr, birdsEyeDistance, p.x, p.y, p.z, fx, fy, fz);
     }
 
@@ -404,10 +443,14 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
                     return;
                 }
                 PlayerRef pr = store.getComponent(ref, PlayerRef.getComponentType());
-                clearPreview(pr);
                 UUIDComponent uc = store.getComponent(ref, UUIDComponent.getComponentType());
-                if (uc != null) {
-                    BuildingPlacementSessions.remove(uc.getUuid());
+                if (pr != null && uc != null) {
+                    if (birdsEyeEnabled) {
+                        BuildingPlacementCameraUtil.resetToPlayerCamera(pr);
+                    }
+                    BuildingPlacementOpenHelper.cancelActive(pr, uc.getUuid());
+                } else if (pr != null) {
+                    clearPreview(pr);
                 }
                 close();
             }
@@ -422,10 +465,16 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
                 }
                 if (tryPlace(ref, store)) {
                     PlayerRef pr = store.getComponent(ref, PlayerRef.getComponentType());
-                    clearPreview(pr);
                     UUIDComponent uc = store.getComponent(ref, UUIDComponent.getComponentType());
-                    if (uc != null) {
-                        BuildingPlacementSessions.remove(uc.getUuid());
+                    if (pr != null) {
+                        if (birdsEyeEnabled) {
+                            BuildingPlacementCameraUtil.resetToPlayerCamera(pr);
+                        }
+                        if (uc != null) {
+                            BuildingPlacementOpenHelper.cancelActive(pr, uc.getUuid());
+                        } else {
+                            clearPreview(pr);
+                        }
                     }
                     close();
                 } else {
@@ -473,32 +522,45 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
     }
 
     private void refreshPreview(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
+        if (!ref.isValid()) {
+            return;
+        }
         EterniaModPlugin plugin = EterniaModPlugin.get();
-        PlayerRef pr = store.getComponent(ref, PlayerRef.getComponentType());
-        if (plugin == null || pr == null) {
+        PlayerRef pr = playerRef;
+        if (plugin == null) {
             return;
         }
         BuildingDefinition def = plugin.getBuildingCatalog().get(session.getBuildingId());
         if (def == null) {
-            clearPreview(pr);
+            clearClientPrefabPreview(pr);
+            BuildingPlacementWireframeOverlay.clearFor(pr);
+            BuildingPlacementDebugLog.previewResult(pr.getUsername(), session.getBuildingId(), false, "unknown building");
             return;
         }
-        Path prefabPath = PrefabResolveUtil.resolvePrefabPath(def.getPrefabPath());
-        if (prefabPath == null) {
-            clearPreview(pr);
+        IPrefabBuffer buf = PrefabResolveUtil.resolvePrefabBuffer(def.getPrefabPath());
+        if (buf == null) {
+            clearClientPrefabPreview(pr);
+            BuildingPlacementWireframeOverlay.clearFor(pr);
+            BuildingPlacementDebugLog.previewResult(
+                pr.getUsername(),
+                def.getPrefabPath(),
+                false,
+                "prefab buffer unresolved"
+            );
             return;
         }
-        IPrefabBuffer buf = PrefabBufferUtil.getCached(prefabPath);
         UUIDComponent uc = store.getComponent(ref, UUIDComponent.getComponentType());
         if (uc == null) {
-            clearPreview(pr);
+            clearClientPrefabPreview(pr);
+            BuildingPlacementWireframeOverlay.clearFor(pr);
             return;
         }
         World world = store.getExternalData().getWorld();
         HubPlotManager plotManager = EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin);
         HubPlotRecord plot = plotManager.getPlot(session.getPlotId());
         if (plot == null) {
-            clearPreview(pr);
+            clearClientPrefabPreview(pr);
+            BuildingPlacementWireframeOverlay.clearFor(pr);
             return;
         }
         String errKey =
@@ -510,6 +572,12 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
         HubPlotFootprint buildingFp = PlotFootprintUtil.computeFootprint(prefabOrigin, session.getPrefabYaw(), buf);
         syncClientPrefabPreview(pr, def, prefabOrigin);
         BuildingPlacementWireframeOverlay.send(pr, plot.getFootprint(), buildingFp, valid);
+        BuildingPlacementDebugLog.previewResult(
+            pr.getUsername(),
+            def.getPrefabPath(),
+            true,
+            "valid=" + valid + " origin=" + prefabOrigin
+        );
     }
 
     private void syncClientPrefabPreview(
@@ -532,7 +600,13 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
                     session
                 );
             if (!ok) {
-                clearPreview(pr);
+                clearClientPrefabPreview(pr);
+                BuildingPlacementDebugLog.previewResult(
+                    pr.getUsername(),
+                    def.getPrefabPath(),
+                    false,
+                    "sendFull returned false"
+                );
                 return;
             }
             clientPrefabPreviewActive = true;
@@ -562,18 +636,22 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
         lastPreviewOriginFloored = floored;
     }
 
-    private void clearPreview(@Nullable PlayerRef pr) {
+    private void clearClientPrefabPreview(@Nullable PlayerRef pr) {
         if (pr == null) {
             return;
         }
         if (clientPrefabPreviewActive) {
             BuildingPlacementClientPrefabPreview.hide(pr);
         }
-        BuildingPlacementWireframeOverlay.clearFor(pr);
         clientPrefabPreviewActive = false;
         lastPreviewBuildingId = null;
         lastPreviewRotationSteps = -1;
         lastPreviewOriginFloored = null;
+    }
+
+    private void clearPreview(@Nullable PlayerRef pr) {
+        clearClientPrefabPreview(pr);
+        BuildingPlacementWireframeOverlay.clearFor(pr);
         BuildingPlacementClientPrefabPreview.clearSessionCache(session);
     }
 
@@ -598,6 +676,12 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
             BuilderCodec.builder(PageData.class, PageData::new)
                 .append(new KeyedCodec<>("Action", Codec.STRING), (d, a) -> d.action = a, d -> d.action)
                 .add()
+                .append(
+                    new KeyedCodec<>("@ConstructionId", Codec.STRING),
+                    (d, v) -> d.constructionId = v,
+                    d -> d.constructionId
+                )
+                .add()
                 .append(new KeyedCodec<>("@BirdsEye", Codec.BOOLEAN), (d, v) -> d.birdsEye = v, d -> d.birdsEye)
                 .add()
                 .append(
@@ -610,6 +694,9 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
 
         @Nullable
         public String action;
+
+        @Nullable
+        public String constructionId;
 
         @Nullable
         public Boolean birdsEye;

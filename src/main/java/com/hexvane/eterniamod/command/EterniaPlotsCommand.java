@@ -1,11 +1,12 @@
 package com.hexvane.eterniamod.command;
 
-import com.hexvane.eterniamod.EterniaModConstants;
 import com.hexvane.eterniamod.EterniaModPlugin;
 import com.hexvane.eterniamod.hub.EterniaWorldRegistries;
 import com.hexvane.eterniamod.hub.HubPlotFootprint;
 import com.hexvane.eterniamod.hub.HubPlotManager;
 import com.hexvane.eterniamod.hub.HubPlotRecord;
+import com.hexvane.eterniamod.hub.HubPlotVisibilityOverlay;
+import com.hexvane.eterniamod.hub.HubPlotVisibilityState;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.Message;
@@ -35,6 +36,7 @@ public final class EterniaPlotsCommand extends AbstractCommandCollection {
         this.addSubCommand(new UnassignCommand());
         this.addSubCommand(new ListCommand());
         this.addSubCommand(new RemoveCommand());
+        this.addSubCommand(new ShowCommand());
     }
 
     private static final class CreateCommand extends AbstractPlayerCommand {
@@ -61,25 +63,36 @@ public final class EterniaPlotsCommand extends AbstractCommandCollection {
             }
             int width = Math.max(4, Math.min(128, widthArg.get(context)));
             int depth = Math.max(4, Math.min(128, depthArg.get(context)));
-            Vector3i block = TargetUtil.getTargetBlock(ref, 64.0, store);
-            if (block == null) {
-                playerRef.sendMessage(Message.translation("eterniamod_commands.commands.eternia.plots.create.noTarget"));
-                return;
+            int centerX;
+            int centerZ;
+            int minY;
+            TransformComponent transform = store.getComponent(ref, TransformComponent.getComponentType());
+            if (transform != null) {
+                Vector3d pos = transform.getPosition();
+                centerX = (int) Math.floor(pos.x);
+                minY = (int) Math.floor(pos.y - 0.01);
+                centerZ = (int) Math.floor(pos.z);
+            } else {
+                Vector3i block = TargetUtil.getTargetBlock(ref, 64.0, store);
+                if (block == null) {
+                    playerRef.sendMessage(Message.translation("eterniamod_commands.commands.eternia.plots.create.noTarget"));
+                    return;
+                }
+                centerX = block.x;
+                minY = block.y;
+                centerZ = block.z;
             }
-            HubPlotFootprint footprint =
-                new HubPlotFootprint(
-                    block.x,
-                    block.y,
-                    block.z,
-                    block.x + width - 1,
-                    block.y + EterniaModConstants.HUB_PLOT_DEFAULT_HEIGHT,
-                    block.z + depth - 1
-                );
+            int minX = centerX - (width - 1) / 2;
+            int maxX = minX + width - 1;
+            int minZ = centerZ - (depth - 1) / 2;
+            int maxZ = minZ + depth - 1;
+            HubPlotFootprint footprint = HubPlotFootprint.forCreate(minX, maxX, minZ, maxZ, minY);
             UUID plotId = UUID.randomUUID();
             HubPlotRecord plot = new HubPlotRecord(plotId, world.getName(), footprint, null);
             HubPlotManager manager = EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin);
             manager.addPlot(plot);
             manager.saveIfDirty();
+            HubPlotVisibilityOverlay.refreshIfEnabled(playerRef, manager);
             playerRef.sendMessage(
                 Message.translation("eterniamod_commands.commands.eternia.plots.create.success")
                     .param("plotId", plotId.toString())
@@ -245,9 +258,39 @@ public final class EterniaPlotsCommand extends AbstractCommandCollection {
                 return;
             }
             manager.saveIfDirty();
+            HubPlotVisibilityOverlay.refreshIfEnabled(playerRef, manager);
             playerRef.sendMessage(
                 Message.translation("eterniamod_commands.commands.eternia.plots.remove.success").param("plotId", plotId.toString())
             );
+        }
+    }
+
+    private static final class ShowCommand extends AbstractPlayerCommand {
+        ShowCommand() {
+            super("show", "eterniamod_commands.commands.eternia.plots.show.desc");
+        }
+
+        @Override
+        protected void execute(
+            @Nonnull CommandContext context,
+            @Nonnull Store<EntityStore> store,
+            @Nonnull Ref<EntityStore> ref,
+            @Nonnull PlayerRef playerRef,
+            @Nonnull World world
+        ) {
+            EterniaModPlugin plugin = EterniaModPlugin.get();
+            if (plugin == null) {
+                return;
+            }
+            HubPlotManager manager = EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin);
+            boolean enabled = HubPlotVisibilityState.toggle(playerRef.getUuid());
+            if (enabled) {
+                HubPlotVisibilityOverlay.showAll(playerRef, manager);
+                playerRef.sendMessage(Message.translation("eterniamod_commands.commands.eternia.plots.show.enabled"));
+            } else {
+                HubPlotVisibilityOverlay.clearFor(playerRef);
+                playerRef.sendMessage(Message.translation("eterniamod_commands.commands.eternia.plots.show.disabled"));
+            }
         }
     }
 
@@ -271,16 +314,7 @@ public final class EterniaPlotsCommand extends AbstractCommandCollection {
             }
             return plot;
         }
-        TransformComponent transform = store.getComponent(ref, TransformComponent.getComponentType());
-        if (transform == null) {
-            sender.sendMessage(Message.translation("eterniamod_commands.commands.eternia.plots.assign.notInPlot"));
-            return null;
-        }
-        Vector3d pos = transform.getPosition();
-        int x = (int) Math.floor(pos.x);
-        int y = (int) Math.floor(pos.y - 0.01);
-        int z = (int) Math.floor(pos.z);
-        HubPlotRecord plot = manager.findPlotContaining(x, y, z);
+        HubPlotRecord plot = manager.findPlotAtPlayerOrTarget(ref, store);
         if (plot == null) {
             sender.sendMessage(Message.translation("eterniamod_commands.commands.eternia.plots.assign.notInPlot"));
         }

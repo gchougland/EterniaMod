@@ -1,0 +1,35 @@
+{
+  "TranslationProperties": {
+    "Name": "eterniamod_items.items.Eternia_Packaging_Wand.name",
+    "Description": "eterniamod_items.items.Eternia_Packaging_Wand.description"
+  },
+  "Categories": ["Items.Tools"],
+  "Icon": "Icons/ItemsGenerated/Weapon_Wand_Wood.png",
+  "Quality": "Common",
+  "Model": "Items/Weapons/Wand/Wood.blockymodel",
+  "Texture": "Items/Weapons/Wand/Wood_Texture.png",
+  "PlayerAnimationsId": "Wand",
+  "Interactions": {
+    "Primary": {
+      "Interactions": [
+        {
+          "Type": "EterniaPackageProp"
+        }
+      ]
+    }
+  },
+  "InteractionConfig": {
+    "UseDistance": {
+      "Adventure": 10,
+      "Creative": 64
+    }
+  },
+  "IconProperties": {
+    "Scale": 0.6,
+    "Translation": [-13, -16],
+    "Rotation": [45, 90, 0]
+  },
+  "Tags": {
+    "Type": ["Tool"]
+  }
+}

@@ -1,6 +1,8 @@
 package com.hexvane.eterniamod.prefab;
 
 import com.hypixel.hytale.server.core.prefab.PrefabStore;
+import com.hypixel.hytale.server.core.prefab.selection.buffer.PrefabBufferUtil;
+import com.hypixel.hytale.server.core.prefab.selection.buffer.impl.IPrefabBuffer;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,11 +40,63 @@ public final class PrefabResolveUtil {
                 }
             }
         }
-        return tryUnderscoreCasePrefabAliases(ps, k);
+        p = tryUnderscoreCasePrefabAliases(ps, k);
+        if (p != null) {
+            return p;
+        }
+        if (!k.startsWith("Prefabs/") && !k.startsWith("Prefabs\\")) {
+            p = ps.findAssetPrefabPath("Prefabs/" + k);
+            if (p != null) {
+                return p;
+            }
+            if (!k.endsWith(".prefab.json")) {
+                p = ps.findAssetPrefabPath("Prefabs/" + k + ".prefab.json");
+                if (p != null) {
+                    return p;
+                }
+            }
+        }
+        return null;
     }
 
     @Nullable
-    private static Path tryUnderscoreCasePrefabAliases(@Nonnull PrefabStore ps, @Nonnull String key) {
+    public static IPrefabBuffer resolvePrefabBuffer(@Nullable String prefabPathKey) {
+        Path path = resolvePrefabPath(prefabPathKey);
+        if (path == null) {
+            return null;
+        }
+        return PrefabBufferUtil.getCached(path);
+    }
+
+    @Nullable
+    private static Path tryUnderscoreCasePrefabAliases(@Nonnull PrefabStore ps, @Nonnull String k) {
+        String baseName = lastPathSegment(k);
+        if (!baseName.endsWith(".prefab.json")) {
+            return tryCamelToSnakeAliases(ps, k);
+        }
+        String pascal = pascalSnakePrefabFileName(baseName);
+        String lower = lowerSnakePrefabFileName(baseName);
+        for (String altBase : new String[] {pascal, lower}) {
+            if (altBase == null || altBase.equals(baseName)) {
+                continue;
+            }
+            String altKey = replaceLastSegment(k, altBase);
+            Path found = ps.findAssetPrefabPath(altKey);
+            if (found != null) {
+                return found;
+            }
+            if (!altKey.endsWith(".prefab.json")) {
+                found = ps.findAssetPrefabPath(altKey + ".prefab.json");
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return tryCamelToSnakeAliases(ps, k);
+    }
+
+    @Nullable
+    private static Path tryCamelToSnakeAliases(@Nonnull PrefabStore ps, @Nonnull String key) {
         if (key.contains("_")) {
             return null;
         }
@@ -63,5 +117,68 @@ public final class PrefabResolveUtil {
             return ps.findAssetPrefabPath(underscored + ".prefab.json");
         }
         return null;
+    }
+
+    @Nonnull
+    private static String lastPathSegment(@Nonnull String path) {
+        int a = path.lastIndexOf('/');
+        int b = path.lastIndexOf('\\');
+        int i = Math.max(a, b);
+        return i >= 0 ? path.substring(i + 1) : path;
+    }
+
+    @Nonnull
+    private static String replaceLastSegment(@Nonnull String path, @Nonnull String newSegment) {
+        int a = path.lastIndexOf('/');
+        int b = path.lastIndexOf('\\');
+        int i = Math.max(a, b);
+        if (i < 0) {
+            return newSegment;
+        }
+        return path.substring(0, i + 1) + newSegment;
+    }
+
+    @Nullable
+    private static String pascalSnakePrefabFileName(@Nonnull String fileName) {
+        if (!fileName.endsWith(".prefab.json")) {
+            return null;
+        }
+        String base = fileName.substring(0, fileName.length() - ".prefab.json".length());
+        if (base.isEmpty()) {
+            return null;
+        }
+        String[] parts = base.split("_", -1);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < parts.length; i++) {
+            if (i > 0) {
+                sb.append('_');
+            }
+            String part = parts[i];
+            if (part.isEmpty()) {
+                continue;
+            }
+            sb.append(Character.toUpperCase(part.charAt(0)));
+            if (part.length() > 1) {
+                sb.append(part.substring(1).toLowerCase());
+            }
+        }
+        return sb.toString() + ".prefab.json";
+    }
+
+    @Nullable
+    private static String lowerSnakePrefabFileName(@Nonnull String fileName) {
+        if (!fileName.endsWith(".prefab.json")) {
+            return null;
+        }
+        String base = fileName.substring(0, fileName.length() - ".prefab.json".length());
+        String[] parts = base.split("_", -1);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < parts.length; i++) {
+            if (i > 0) {
+                sb.append('_');
+            }
+            sb.append(parts[i].toLowerCase());
+        }
+        return sb.toString() + ".prefab.json";
     }
 }

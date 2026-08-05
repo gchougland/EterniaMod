@@ -3,39 +3,78 @@ package com.hexvane.eterniamod.building;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hypixel.hytale.logger.HytaleLogger;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public final class BuildingCatalog {
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
     private static final String BUILDINGS_RESOURCE_PREFIX = "Server/EterniaMod/Buildings/";
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private final Map<String, BuildingDefinition> byId;
+    @Nonnull
+    private final Path dataDirectory;
 
-    private BuildingCatalog(@Nonnull Map<String, BuildingDefinition> byId) {
+    private BuildingCatalog(@Nonnull Map<String, BuildingDefinition> byId, @Nonnull Path dataDirectory) {
         this.byId = byId;
+        this.dataDirectory = dataDirectory;
     }
 
     @Nonnull
-    public static BuildingCatalog loadFromClasspath(@Nonnull ClassLoader classLoader) {
-        Gson gson = new GsonBuilder().create();
+    public static BuildingCatalog load(@Nonnull ClassLoader classLoader, @Nonnull Path dataDirectory) {
         Map<String, BuildingDefinition> map = new LinkedHashMap<>();
-        loadOne(classLoader, gson, map, "hub_house.json");
+        loadClasspath(classLoader, map);
+        loadDirectory(dataDirectory, map);
         LOGGER.atInfo().log("EterniaMod loaded %s building definition(s)", map.size());
-        return new BuildingCatalog(Collections.unmodifiableMap(map));
+        return new BuildingCatalog(map, dataDirectory);
     }
 
-    private static void loadOne(
+    private static void loadClasspath(
         @Nonnull ClassLoader classLoader,
-        @Nonnull Gson gson,
+        @Nonnull Map<String, BuildingDefinition> map
+    ) {
+        loadOneFromClasspath(classLoader, map, "hub_house.json");
+    }
+
+    private static void loadDirectory(@Nonnull Path directory, @Nonnull Map<String, BuildingDefinition> map) {
+        if (!Files.isDirectory(directory)) {
+            return;
+        }
+        try (Stream<Path> files = Files.list(directory)) {
+            files
+                .filter(p -> p.getFileName().toString().endsWith(".json"))
+                .forEach(
+                    path -> {
+                        try (var reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+                            BuildingDefinition def = GSON.fromJson(reader, BuildingDefinition.class);
+                            if (def != null && def.getId() != null && !def.getId().isBlank()) {
+                                map.put(def.getId(), def);
+                            }
+                        } catch (Exception e) {
+                            LOGGER.atWarning().withCause(e).log("Failed loading building definition %s", path);
+                        }
+                    }
+                );
+        } catch (IOException e) {
+            LOGGER.atWarning().withCause(e).log("Failed listing building definitions in %s", directory);
+        }
+    }
+
+    private static void loadOneFromClasspath(
+        @Nonnull ClassLoader classLoader,
         @Nonnull Map<String, BuildingDefinition> map,
         @Nonnull String fileName
     ) {
@@ -45,7 +84,8 @@ public final class BuildingCatalog {
                 LOGGER.atWarning().log("Missing building definition resource %s", path);
                 return;
             }
-            BuildingDefinition def = gson.fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), BuildingDefinition.class);
+            BuildingDefinition def =
+                GSON.fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), BuildingDefinition.class);
             if (def != null && def.getId() != null && !def.getId().isBlank()) {
                 map.put(def.getId(), def);
             }
@@ -59,8 +99,34 @@ public final class BuildingCatalog {
         return byId.get(id.trim());
     }
 
+    public boolean contains(@Nonnull String id) {
+        return byId.containsKey(id.trim());
+    }
+
+    public void register(@Nonnull BuildingDefinition def) {
+        byId.put(def.getId(), def);
+    }
+
+    public void persist(@Nonnull BuildingDefinition def) throws IOException {
+        Files.createDirectories(dataDirectory);
+        Path file = dataDirectory.resolve(def.getId() + ".json");
+        try (Writer writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
+            GSON.toJson(def, writer);
+        }
+    }
+
+    @Nonnull
+    public Path getDataDirectory() {
+        return dataDirectory;
+    }
+
     @Nonnull
     public List<String> ids() {
         return new ArrayList<>(byId.keySet());
+    }
+
+    @Nonnull
+    public Map<String, BuildingDefinition> asMap() {
+        return Collections.unmodifiableMap(byId);
     }
 }

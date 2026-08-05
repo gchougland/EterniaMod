@@ -1,0 +1,30 @@
+{
+  "TranslationProperties": {
+    "Name": "eterniamod_items.items.Eternia_Prop_Item.name",
+    "Description": "eterniamod_items.items.Eternia_Prop_Item.description"
+  },
+  "Parent": "Furniture_Village_Crate",
+  "Categories": ["Items.Tools"],
+  "Quality": "Common",
+  "Recipe": null,
+  "MaxStack": 16,
+  "Interactions": {
+    "Secondary": {
+      "Interactions": [
+        {
+          "Type": "EterniaOpenPropPlacement",
+          "Page": { "Id": "EterniaPropPlacement" }
+        }
+      ]
+    }
+  },
+  "InteractionConfig": {
+    "UseDistance": {
+      "Adventure": 10,
+      "Creative": 64
+    }
+  },
+  "Tags": {
+    "Type": ["Tool"]
+  }
+}

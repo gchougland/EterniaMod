@@ -6,7 +6,7 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import org.joml.Vector3i;
 
-public final class BuildingPlacementSession {
+public final class BuildingPlacementSession implements PrefabPreviewCacheHolder {
     @Nonnull
     private final World world;
 
@@ -168,6 +168,7 @@ public final class BuildingPlacementSession {
         clientPrefabPreviewPayload = payload;
     }
 
+    @Override
     public void clearClientPrefabPreviewCache() {
         clientPrefabPreviewPathKey = null;
         clientPrefabPreviewRotationSteps = -1;

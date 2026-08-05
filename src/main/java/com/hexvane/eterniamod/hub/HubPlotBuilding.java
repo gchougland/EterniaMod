@@ -2,6 +2,10 @@ package com.hexvane.eterniamod.hub;
 
 import com.google.gson.annotations.SerializedName;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.Rotation;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public final class HubPlotBuilding {
@@ -20,6 +24,10 @@ public final class HubPlotBuilding {
     @SerializedName("rotationYaw")
     private String rotationYaw = "None";
 
+    @SerializedName("replacedBlocks")
+    @Nullable
+    private List<ReplacedBlockCell> replacedBlocks;
+
     public HubPlotBuilding() {}
 
     public HubPlotBuilding(
@@ -27,13 +35,15 @@ public final class HubPlotBuilding {
         int anchorX,
         int anchorY,
         int anchorZ,
-        @Nullable Rotation rotationYaw
+        @Nullable Rotation rotationYaw,
+        @Nullable List<ReplacedBlockCell> replacedBlocks
     ) {
         this.buildingId = buildingId;
         this.anchorX = anchorX;
         this.anchorY = anchorY;
         this.anchorZ = anchorZ;
         this.rotationYaw = rotationYaw != null ? rotationYaw.name() : Rotation.None.name();
+        this.replacedBlocks = replacedBlocks != null ? new ArrayList<>(replacedBlocks) : null;
     }
 
     @Nullable
@@ -62,5 +72,10 @@ public final class HubPlotBuilding {
         } catch (IllegalArgumentException e) {
             return Rotation.None;
         }
+    }
+
+    @Nonnull
+    public List<ReplacedBlockCell> getReplacedBlocks() {
+        return replacedBlocks != null ? replacedBlocks : Collections.emptyList();
     }
 }

@@ -21,6 +21,10 @@ public final class BuildingDefinition {
     @SerializedName("plotAnchorOffset")
     private int[] plotAnchorOffset = new int[] {0, 0, 0};
 
+    @SerializedName("managementBlockLocalPos")
+    @Nullable
+    private int[] managementBlockLocalPos;
+
     @SerializedName("rotationYaw")
     private String rotationYaw = "None";
 
@@ -44,6 +48,11 @@ public final class BuildingDefinition {
         return plotAnchorOffset != null ? plotAnchorOffset : new int[] {0, 0, 0};
     }
 
+    @Nullable
+    public int[] getManagementBlockLocalPos() {
+        return managementBlockLocalPos != null && managementBlockLocalPos.length == 3 ? managementBlockLocalPos : null;
+    }
+
     @Nonnull
     public Rotation getDefaultRotationYaw() {
         if (rotationYaw == null || rotationYaw.isBlank()) {
@@ -54,6 +63,23 @@ public final class BuildingDefinition {
         } catch (IllegalArgumentException e) {
             return Rotation.None;
         }
+    }
+
+    @Nonnull
+    public static BuildingDefinition create(
+        @Nonnull String id,
+        @Nonnull String displayName,
+        @Nonnull String prefabPath,
+        @Nonnull int[] managementBlockLocalPos
+    ) {
+        BuildingDefinition def = new BuildingDefinition();
+        def.id = id;
+        def.displayName = displayName;
+        def.prefabPath = prefabPath;
+        def.plotAnchorOffset = new int[] {0, 0, 0};
+        def.managementBlockLocalPos = managementBlockLocalPos.clone();
+        def.rotationYaw = "None";
+        return def;
     }
 
     @Nonnull
