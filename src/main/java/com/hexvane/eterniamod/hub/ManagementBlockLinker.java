@@ -3,8 +3,8 @@ package com.hexvane.eterniamod.hub;
 import com.hexvane.eterniamod.EterniaModConstants;
 import com.hexvane.eterniamod.building.BuildingDefinition;
 import com.hexvane.eterniamod.building.PrefabLocalOffset;
-import com.hexvane.eterniamod.hub.ReplacedBlockCell;
 import com.hexvane.eterniamod.prefab.WorldBlockSnapshotUtil;
+import com.hexvane.eterniamod.world.ChunkSectionBlockUtil;
 import com.hypixel.hytale.assetstore.map.BlockTypeAssetMap;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
@@ -13,9 +13,13 @@ import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.Rotation;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.RotationTuple;
 import com.hypixel.hytale.server.core.modules.block.BlockEntity;
+import com.hypixel.hytale.server.core.universe.world.SetBlockSettings;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
+import com.hypixel.hytale.server.core.universe.world.chunk.BlockOperations;
+import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockComponentSection;
+import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
+import com.hypixel.hytale.server.core.util.FillerBlockUtil;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nonnull;
@@ -24,8 +28,8 @@ import org.joml.Vector3i;
 
 /** Ensures the management block exists at the building's configured local cell and links it to the plot. */
 public final class ManagementBlockLinker {
-    /** Bit 2 skips automatic block-entity attachment; we attach explicitly after placeBlock. */
-    private static final int PLACE_SETTINGS = 10;
+    /** Skips automatic block-entity attachment; we attach explicitly after setBlock. */
+    private static final int PLACE_SETTINGS = SetBlockSettings.NO_UPDATE_STATE | SetBlockSettings.NO_SEND_PARTICLES;
 
     private ManagementBlockLinker() {}
 
@@ -44,20 +48,19 @@ public final class ManagementBlockLinker {
         int wx = buildingAnchor.x + offset.x;
         int wy = buildingAnchor.y + offset.y;
         int wz = buildingAnchor.z + offset.z;
-        WorldChunk chunk = world.getChunkIfInMemory(ChunkUtil.indexChunkFromBlock(wx, wz));
-        if (chunk == null) {
+        if (ChunkSectionBlockUtil.sectionRefAt(world, wx, wy, wz) == null) {
             return;
         }
         Integer managementY = findBlockY(world, wx, wy, wz, EterniaModConstants.MANAGEMENT_BLOCK_TYPE_ID);
         if (managementY == null) {
             RotationTuple rotation = resolveRotation(world, wx, wy, wz, yaw);
-            ensureBlockPlaced(world, chunk, wx, wy, wz, EterniaModConstants.MANAGEMENT_BLOCK_TYPE_ID, rotation);
+            ensureBlockPlaced(world, wx, wy, wz, EterniaModConstants.MANAGEMENT_BLOCK_TYPE_ID, rotation);
             managementY = findBlockY(world, wx, wy, wz, EterniaModConstants.MANAGEMENT_BLOCK_TYPE_ID);
             if (managementY == null) {
                 return;
             }
         }
-        attachPlotComponent(world, chunk, wx, managementY, wz, plotId);
+        attachPlotComponent(world, wx, managementY, wz, plotId);
     }
 
     /** Removes the linked management block and restores terrain that was there before placement, if known. */
@@ -103,23 +106,24 @@ public final class ManagementBlockLinker {
 
     private static void attachPlotComponent(
         @Nonnull World world,
-        @Nonnull WorldChunk chunk,
         int wx,
         int y,
         int wz,
         @Nonnull UUID plotId
     ) {
-        Ref<ChunkStore> blockRef = chunk.getBlockComponentEntity(wx, y, wz);
+        Ref<ChunkStore> blockRef = ChunkSectionBlockUtil.blockEntityRefAt(world, wx, y, wz);
         if (blockRef == null || !blockRef.isValid()) {
             BlockType blockType = BlockType.getAssetMap().getAsset(EterniaModConstants.MANAGEMENT_BLOCK_TYPE_ID);
-            if (blockType == null || blockType.getBlockEntity() == null || chunk.getBlockComponentChunk() == null) {
+            Ref<ChunkStore> sectionRef = ChunkSectionBlockUtil.sectionRefAt(world, wx, y, wz);
+            BlockComponentSection blockComponents = ChunkSectionBlockUtil.blockComponentSectionAt(world, wx, y, wz);
+            if (blockType == null || blockType.getBlockEntity() == null || sectionRef == null || blockComponents == null) {
                 return;
             }
             int rotationIndex = WorldBlockSnapshotUtil.readRotationIndex(world, wx, y, wz);
             BlockEntity.setBlockEntity(
                 world.getChunkStore().getStore(),
-                chunk.getReference(),
-                chunk.getBlockComponentChunk(),
+                sectionRef,
+                blockComponents,
                 wx,
                 y,
                 wz,
@@ -127,7 +131,7 @@ public final class ManagementBlockLinker {
                 rotationIndex,
                 blockType.getBlockEntity().clone()
             );
-            blockRef = chunk.getBlockComponentEntity(wx, y, wz);
+            blockRef = ChunkSectionBlockUtil.blockEntityRefAt(world, wx, y, wz);
         }
         if (blockRef == null || !blockRef.isValid()) {
             return;
@@ -138,27 +142,67 @@ public final class ManagementBlockLinker {
 
     private static void ensureBlockPlaced(
         @Nonnull World world,
-        @Nonnull WorldChunk chunk,
         int wx,
         int y,
         int wz,
         @Nonnull String blockTypeId,
         @Nonnull RotationTuple rotation
     ) {
-        boolean placed = chunk.placeBlock(wx, y, wz, blockTypeId, rotation, PLACE_SETTINGS, false);
+        BlockTypeAssetMap<String, BlockType> typeMap = BlockType.getAssetMap();
+        int indexKey = typeMap.getIndex(blockTypeId);
+        BlockType blockType = typeMap.getAsset(indexKey);
+        if (blockType == null) {
+            return;
+        }
+        boolean placed = tryPlace(world, wx, y, wz, indexKey, blockType, rotation);
         if (!placed) {
-            world.breakBlock(wx, y, wz, PLACE_SETTINGS);
-            placed = chunk.placeBlock(wx, y, wz, blockTypeId, rotation, PLACE_SETTINGS, false);
+            ChunkSectionBlockUtil.breakBlock(world, wx, y, wz, PLACE_SETTINGS);
+            placed = tryPlace(world, wx, y, wz, indexKey, blockType, rotation);
         }
         if (!placed) {
-            BlockTypeAssetMap<String, BlockType> typeMap = BlockType.getAssetMap();
-            int indexKey = typeMap.getIndex(blockTypeId);
-            BlockType blockType = typeMap.getAsset(indexKey);
-            if (blockType != null) {
-                chunk.setBlock(wx, y, wz, indexKey, blockType, rotation.index(), 0, PLACE_SETTINGS);
-            }
+            ChunkSectionBlockUtil.setBlock(
+                world,
+                wx,
+                y,
+                wz,
+                indexKey,
+                blockType,
+                rotation.index(),
+                FillerBlockUtil.NO_FILLER,
+                PLACE_SETTINGS
+            );
         }
-        chunk.setTicking(wx, y, wz, true);
+        ChunkSectionBlockUtil.setTicking(world, wx, y, wz, true);
+    }
+
+    private static boolean tryPlace(
+        @Nonnull World world,
+        int wx,
+        int y,
+        int wz,
+        int indexKey,
+        @Nonnull BlockType blockType,
+        @Nonnull RotationTuple rotation
+    ) {
+        BlockSection section = ChunkSectionBlockUtil.blockSectionAt(world, wx, y, wz);
+        if (section == null) {
+            return false;
+        }
+        Store<ChunkStore> store = world.getChunkStore().getStore();
+        if (!BlockOperations.testPlaceBlock(store, section, wx, y, wz, blockType, rotation.index())) {
+            return false;
+        }
+        return ChunkSectionBlockUtil.setBlock(
+            world,
+            wx,
+            y,
+            wz,
+            indexKey,
+            blockType,
+            rotation.index(),
+            FillerBlockUtil.NO_FILLER,
+            PLACE_SETTINGS
+        );
     }
 
     @Nonnull
@@ -170,12 +214,9 @@ public final class ManagementBlockLinker {
         @Nonnull Rotation yaw
     ) {
         int bookY = wy - 1;
-        WorldChunk chunk = world.getChunkIfInMemory(ChunkUtil.indexChunkFromBlock(wx, wz));
-        if (chunk != null) {
-            BlockType below = BlockType.getAssetMap().getAsset(chunk.getBlock(wx, bookY, wz));
-            if (below != null && "Furniture_Village_Bookcase".equals(below.getId())) {
-                return RotationTuple.get(WorldBlockSnapshotUtil.readRotationIndex(world, wx, bookY, wz));
-            }
+        BlockType below = ChunkSectionBlockUtil.blockType(world, wx, bookY, wz);
+        if (below != null && "Furniture_Village_Bookcase".equals(below.getId())) {
+            return RotationTuple.get(WorldBlockSnapshotUtil.readRotationIndex(world, wx, bookY, wz));
         }
         return RotationTuple.of(yaw, Rotation.None, Rotation.None);
     }
@@ -193,7 +234,7 @@ public final class ManagementBlockLinker {
             if (y < ChunkUtil.MIN_Y || y > ChunkUtil.HEIGHT_MINUS_1) {
                 continue;
             }
-            BlockType bt = world.getBlockType(wx, y, wz);
+            BlockType bt = ChunkSectionBlockUtil.blockType(world, wx, y, wz);
             if (bt != null && blockTypeId.equals(bt.getId())) {
                 return y;
             }

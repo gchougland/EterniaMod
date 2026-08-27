@@ -1,18 +1,20 @@
 package com.hexvane.eterniamod.prefab;
 
 import com.hexvane.eterniamod.hub.ReplacedBlockCell;
+import com.hexvane.eterniamod.world.ChunkSectionBlockUtil;
 import com.hypixel.hytale.assetstore.map.BlockTypeAssetMap;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.math.util.ChunkUtil;
+import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.Rotation;
-import com.hypixel.hytale.server.core.asset.type.blocktype.config.RotationTuple;
 import com.hypixel.hytale.server.core.modules.block.BlockEntity;
 import com.hypixel.hytale.server.core.prefab.selection.buffer.impl.IPrefabBuffer;
+import com.hypixel.hytale.server.core.universe.world.SetBlockSettings;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.accessor.LocalCachedChunkAccessor;
-import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
+import com.hypixel.hytale.server.core.universe.world.chunk.BlockOperations;
+import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockComponentSection;
+import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.util.FillerBlockUtil;
 import java.util.ArrayList;
@@ -31,9 +33,10 @@ import org.joml.Vector3i;
  * left untouched.
  */
 public final class BuildingPrefabOps {
-    private static final int PLACE_SETTINGS = 0;
-    /** Skips automatic block-entity attachment; attach explicitly after placeBlock. */
-    private static final int INTERACTIVE_PLACE_SETTINGS = 10;
+    private static final int PLACE_SETTINGS = SetBlockSettings.NONE;
+    /** Skips automatic block-entity attachment; attach explicitly after setBlock. */
+    private static final int INTERACTIVE_PLACE_SETTINGS =
+        SetBlockSettings.NO_UPDATE_STATE | SetBlockSettings.NO_SEND_PARTICLES;
 
     private BuildingPrefabOps() {}
 
@@ -46,11 +49,10 @@ public final class BuildingPrefabOps {
     ) {
         BuildingPrefabSequence sequence = BuildingPrefabSequenceBuilder.build(buffer, yaw);
         List<ReplacedBlockCell> replaced = new ArrayList<>();
-        LocalCachedChunkAccessor accessor = createAccessor(world, origin, buffer);
         BlockTypeAssetMap<String, BlockType> blockTypeMap = BlockType.getAssetMap();
         for (BuildingPrefabCell cell : sequence.cells()) {
             if (isFillerCompanion(cell)) {
-                attachFillerHolder(world, origin, cell, accessor, blockTypeMap);
+                attachFillerHolder(world, origin, cell, blockTypeMap);
                 continue;
             }
             int wx = origin.x + cell.x();
@@ -63,7 +65,7 @@ public final class BuildingPrefabOps {
             if (isPureAirCell(cell)) {
                 WorldBlockSnapshotUtil.clearCell(world, wx, wy, wz);
             } else if (isOriginSolid(cell)) {
-                placeOriginSolid(world, wx, wy, wz, cell, accessor, blockTypeMap);
+                placeOriginSolid(world, wx, wy, wz, cell, blockTypeMap);
             }
         }
         return replaced;
@@ -99,8 +101,8 @@ public final class BuildingPrefabOps {
                 continue;
             }
             if (isPureAirCell(cell)) {
-                WorldChunk chunk = requireChunk(world, wx, wz);
-                if (chunk == null || !WorldBlockSnapshotUtil.isEmptyBlock(chunk, wx, wy, wz)) {
+                if (ChunkSectionBlockUtil.sectionRefAt(world, wx, wy, wz) == null
+                    || !WorldBlockSnapshotUtil.isEmptyBlock(world, wx, wy, wz)) {
                     continue;
                 }
                 revertCell(world, wx, wy, wz, savedByPos);
@@ -169,8 +171,7 @@ public final class BuildingPrefabOps {
         @Nonnull BuildingPrefabCell cell,
         @Nonnull BlockTypeAssetMap<String, BlockType> blockTypeMap
     ) {
-        WorldChunk chunk = requireChunk(world, wx, wz);
-        if (chunk == null) {
+        if (ChunkSectionBlockUtil.sectionRefAt(world, wx, wy, wz) == null) {
             return false;
         }
         BlockType expected = blockTypeMap.getAsset(cell.blockId());
@@ -178,8 +179,8 @@ public final class BuildingPrefabOps {
             return false;
         }
         Vector3i primary = WorldBlockSnapshotUtil.resolvePrimaryBlock(world, wx, wy, wz);
-        BlockType current = blockTypeMap.getAsset(chunk.getBlock(primary.x, primary.y, primary.z));
-        return blockTypesMatch(cell.blockId(), expected, current, chunk, primary.x, primary.y, primary.z);
+        BlockType current = ChunkSectionBlockUtil.blockType(world, primary.x, primary.y, primary.z);
+        return blockTypesMatch(world, cell.blockId(), expected, current, primary.x, primary.y, primary.z);
     }
 
     /** Only revert filler segments that still belong to an unchanged prefab multi-block. */
@@ -191,25 +192,25 @@ public final class BuildingPrefabOps {
         @Nonnull BuildingPrefabCell cell,
         @Nonnull BlockTypeAssetMap<String, BlockType> blockTypeMap
     ) {
-        WorldChunk chunk = requireChunk(world, wx, wz);
-        if (chunk == null || chunk.getFiller(wx, wy, wz) == FillerBlockUtil.NO_FILLER) {
+        if (ChunkSectionBlockUtil.sectionRefAt(world, wx, wy, wz) == null
+            || ChunkSectionBlockUtil.filler(world, wx, wy, wz) == FillerBlockUtil.NO_FILLER) {
             return false;
         }
         BlockType expected = blockTypeMap.getAsset(cell.blockId());
-        BlockType current = blockTypeMap.getAsset(chunk.getBlock(wx, wy, wz));
-        if (!blockTypesMatch(cell.blockId(), expected, current, chunk, wx, wy, wz)) {
+        BlockType current = ChunkSectionBlockUtil.blockType(world, wx, wy, wz);
+        if (!blockTypesMatch(world, cell.blockId(), expected, current, wx, wy, wz)) {
             return false;
         }
         Vector3i primary = WorldBlockSnapshotUtil.resolvePrimaryBlock(world, wx, wy, wz);
-        BlockType primaryType = blockTypeMap.getAsset(chunk.getBlock(primary.x, primary.y, primary.z));
-        return blockTypesMatch(cell.blockId(), expected, primaryType, chunk, primary.x, primary.y, primary.z);
+        BlockType primaryType = ChunkSectionBlockUtil.blockType(world, primary.x, primary.y, primary.z);
+        return blockTypesMatch(world, cell.blockId(), expected, primaryType, primary.x, primary.y, primary.z);
     }
 
     private static boolean blockTypesMatch(
+        @Nonnull World world,
         int expectedBlockId,
         @Nullable BlockType expected,
         @Nullable BlockType current,
-        @Nonnull WorldChunk chunk,
         int wx,
         int wy,
         int wz
@@ -217,7 +218,7 @@ public final class BuildingPrefabOps {
         if (expected == null || current == null || current == BlockType.EMPTY) {
             return false;
         }
-        if (expectedBlockId == chunk.getBlock(wx, wy, wz)) {
+        if (expectedBlockId == ChunkSectionBlockUtil.blockId(world, wx, wy, wz)) {
             return true;
         }
         if (expected.getId() != null && expected.getId().equals(current.getId())) {
@@ -243,41 +244,15 @@ public final class BuildingPrefabOps {
         return false;
     }
 
-    @Nullable
-    private static WorldChunk requireChunk(@Nonnull World world, int wx, int wz) {
-        return world.getChunkIfInMemory(ChunkUtil.indexChunkFromBlock(wx, wz));
-    }
-
-    /** Only revert cells that still contain what the prefab wrote (air carve or solid block). */
-    private static boolean stillMatchesPrefabPlacement(
-        @Nonnull World world,
-        int wx,
-        int wy,
-        int wz,
-        @Nonnull BuildingPrefabCell cell,
-        @Nonnull BlockTypeAssetMap<String, BlockType> blockTypeMap
-    ) {
-        if (isPureAirCell(cell)) {
-            WorldChunk chunk = requireChunk(world, wx, wz);
-            return chunk != null && WorldBlockSnapshotUtil.isEmptyBlock(chunk, wx, wy, wz);
-        }
-        return stillMatchesOriginSolid(world, wx, wy, wz, cell, blockTypeMap);
-    }
-
     private static void placeOriginSolid(
         @Nonnull World world,
         int wx,
         int wy,
         int wz,
         @Nonnull BuildingPrefabCell cell,
-        @Nonnull LocalCachedChunkAccessor accessor,
         @Nonnull BlockTypeAssetMap<String, BlockType> blockTypeMap
     ) {
-        WorldChunk chunk = accessor.getNonTickingChunk(ChunkUtil.indexChunkFromBlock(wx, wz));
-        if (chunk == null || !chunk.getReference().isValid()) {
-            chunk = world.getChunkIfInMemory(ChunkUtil.indexChunkFromBlock(wx, wz));
-        }
-        if (chunk == null || !chunk.getReference().isValid()) {
+        if (ChunkSectionBlockUtil.sectionRefAt(world, wx, wy, wz) == null) {
             return;
         }
         BlockType block = blockTypeMap.getAsset(cell.blockId());
@@ -285,10 +260,11 @@ public final class BuildingPrefabOps {
             return;
         }
         if (needsInteractivePlacement(block, cell)) {
-            placeInteractiveSolid(world, chunk, wx, wy, wz, cell, block);
+            placeInteractiveSolid(world, wx, wy, wz, cell, block);
             return;
         }
-        chunk.setBlock(
+        ChunkSectionBlockUtil.setBlock(
+            world,
             wx,
             wy,
             wz,
@@ -299,9 +275,9 @@ public final class BuildingPrefabOps {
             PLACE_SETTINGS
         );
         if (cell.holder() != null) {
-            attachBlockEntity(world, chunk, wx, wy, wz, block, cell.blockRotation(), cell.holder().clone());
+            attachBlockEntity(world, wx, wy, wz, block, cell.blockRotation(), cell.holder().clone());
         } else if (block.getBlockEntity() != null) {
-            attachBlockEntity(world, chunk, wx, wy, wz, block, cell.blockRotation(), block.getBlockEntity().clone());
+            attachBlockEntity(world, wx, wy, wz, block, cell.blockRotation(), block.getBlockEntity().clone());
         }
     }
 
@@ -311,17 +287,34 @@ public final class BuildingPrefabOps {
 
     private static void placeInteractiveSolid(
         @Nonnull World world,
-        @Nonnull WorldChunk chunk,
         int wx,
         int wy,
         int wz,
         @Nonnull BuildingPrefabCell cell,
         @Nonnull BlockType block
     ) {
-        RotationTuple rotation = RotationTuple.get(cell.blockRotation());
-        chunk.setTicking(wx, wy, wz, true);
-        if (!chunk.placeBlock(wx, wy, wz, block.getId(), rotation, INTERACTIVE_PLACE_SETTINGS, false)) {
-            chunk.setBlock(
+        ChunkSectionBlockUtil.setTicking(world, wx, wy, wz, true);
+        boolean placed = false;
+        BlockSection section = ChunkSectionBlockUtil.blockSectionAt(world, wx, wy, wz);
+        if (section != null) {
+            Store<ChunkStore> store = world.getChunkStore().getStore();
+            if (BlockOperations.testPlaceBlock(store, section, wx, wy, wz, block, cell.blockRotation())) {
+                placed = ChunkSectionBlockUtil.setBlock(
+                    world,
+                    wx,
+                    wy,
+                    wz,
+                    cell.blockId(),
+                    block,
+                    cell.blockRotation(),
+                    FillerBlockUtil.NO_FILLER,
+                    INTERACTIVE_PLACE_SETTINGS
+                );
+            }
+        }
+        if (!placed) {
+            ChunkSectionBlockUtil.setBlock(
+                world,
                 wx,
                 wy,
                 wz,
@@ -333,9 +326,9 @@ public final class BuildingPrefabOps {
             );
         }
         if (cell.holder() != null) {
-            attachBlockEntity(world, chunk, wx, wy, wz, block, cell.blockRotation(), cell.holder().clone());
+            attachBlockEntity(world, wx, wy, wz, block, cell.blockRotation(), cell.holder().clone());
         } else if (block.getBlockEntity() != null) {
-            attachBlockEntity(world, chunk, wx, wy, wz, block, cell.blockRotation(), block.getBlockEntity().clone());
+            attachBlockEntity(world, wx, wy, wz, block, cell.blockRotation(), block.getBlockEntity().clone());
         }
     }
 
@@ -343,7 +336,6 @@ public final class BuildingPrefabOps {
         @Nonnull World world,
         @Nonnull Vector3i origin,
         @Nonnull BuildingPrefabCell cell,
-        @Nonnull LocalCachedChunkAccessor accessor,
         @Nonnull BlockTypeAssetMap<String, BlockType> blockTypeMap
     ) {
         if (cell.holder() == null) {
@@ -352,23 +344,18 @@ public final class BuildingPrefabOps {
         int wx = origin.x + cell.x();
         int wy = origin.y + cell.y();
         int wz = origin.z + cell.z();
-        WorldChunk chunk = accessor.getNonTickingChunk(ChunkUtil.indexChunkFromBlock(wx, wz));
-        if (chunk == null || !chunk.getReference().isValid()) {
-            chunk = world.getChunkIfInMemory(ChunkUtil.indexChunkFromBlock(wx, wz));
-        }
-        if (chunk == null || !chunk.getReference().isValid()) {
+        if (ChunkSectionBlockUtil.sectionRefAt(world, wx, wy, wz) == null) {
             return;
         }
         BlockType block = blockTypeMap.getAsset(cell.blockId());
         if (block == null) {
             return;
         }
-        attachBlockEntity(world, chunk, wx, wy, wz, block, cell.blockRotation(), cell.holder().clone());
+        attachBlockEntity(world, wx, wy, wz, block, cell.blockRotation(), cell.holder().clone());
     }
 
-    private static void attachBlockEntity(
+    static void attachBlockEntity(
         @Nonnull World world,
-        @Nonnull WorldChunk chunk,
         int x,
         int y,
         int z,
@@ -376,14 +363,15 @@ public final class BuildingPrefabOps {
         int rotation,
         @Nonnull Holder<ChunkStore> holder
     ) {
-        Ref<ChunkStore> chunkRef = chunk.getReference();
-        if (!chunkRef.isValid() || chunk.getBlockComponentChunk() == null) {
+        Ref<ChunkStore> sectionRef = ChunkSectionBlockUtil.sectionRefAt(world, x, y, z);
+        BlockComponentSection blockComponents = ChunkSectionBlockUtil.blockComponentSectionAt(world, x, y, z);
+        if (sectionRef == null || blockComponents == null) {
             return;
         }
         BlockEntity.setBlockEntity(
             world.getChunkStore().getStore(),
-            chunkRef,
-            chunk.getBlockComponentChunk(),
+            sectionRef,
+            blockComponents,
             x,
             y,
             z,
@@ -391,18 +379,6 @@ public final class BuildingPrefabOps {
             rotation,
             holder
         );
-    }
-
-    @Nonnull
-    private static LocalCachedChunkAccessor createAccessor(
-        @Nonnull World world,
-        @Nonnull Vector3i origin,
-        @Nonnull IPrefabBuffer buffer
-    ) {
-        double xLength = buffer.getMaxX() - buffer.getMinX();
-        double zLength = buffer.getMaxZ() - buffer.getMinZ();
-        int prefabRadius = (int) Math.floor(0.5 * Math.sqrt(xLength * xLength + zLength * zLength));
-        return LocalCachedChunkAccessor.atWorldCoords(world, origin.x(), origin.z(), prefabRadius);
     }
 
     private static long packPos(int x, int y, int z) {

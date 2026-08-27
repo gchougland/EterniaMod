@@ -10,6 +10,7 @@ import com.hexvane.eterniamod.prefab.PrefabResolveUtil;
 import com.hexvane.eterniamod.prop.PropCatalog;
 import com.hexvane.eterniamod.prop.PropDefinition;
 import com.hexvane.eterniamod.prop.PropItemMetadata;
+import com.hexvane.eterniamod.world.ChunkSectionBlockUtil;
 import com.hypixel.hytale.builtin.buildertools.prefabeditor.PrefabEditSessionManager;
 import com.hypixel.hytale.builtin.buildertools.prefablist.AssetPrefabFileProvider;
 import com.hypixel.hytale.codec.Codec;
@@ -17,7 +18,6 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.util.MathUtil;
 import com.hypixel.hytale.protocol.packets.buildertools.BuilderToolPrefabPreview;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
@@ -38,6 +38,7 @@ import com.hypixel.hytale.server.core.ui.builder.EventData;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.chunk.BlockChunk;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -497,14 +498,12 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
         int x = MathUtil.floor(pos.x);
         int y = MathUtil.floor(pos.y);
         int z = MathUtil.floor(pos.z);
-        long chunkIndex = ChunkUtil.indexChunkFromBlock(x, z);
-        var chunk = world.getNonTickingChunk(chunkIndex);
-        if (chunk == null || chunk.getBlockChunk() == null) {
+        BlockChunk blockChunk = ChunkSectionBlockUtil.blockChunkAt(world, x, z);
+        if (blockChunk == null) {
             packet.biomeTint = DEFAULT_BIOME_TINT;
             packet.waterTint = DEFAULT_WATER_TINT;
             return;
         }
-        var blockChunk = chunk.getBlockChunk();
         packet.biomeTint = blockChunk.getTint(x, z);
         int envId = blockChunk.getEnvironment(x, y, z);
         var environment = Environment.getAssetMap().getAsset(envId);

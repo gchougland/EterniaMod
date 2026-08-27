@@ -18,7 +18,6 @@
     "HitboxType": "Block_Vertical_Half",
     "IgnoreSupportWhenPlaced": true,
     "VariantRotation": "NESW",
-    "Flags": { "IsUsable": true },
     "Gathering": { "Breaking": { "GatherType": "Woods" } },
     "BlockParticleSetId": "Wood",
     "ParticleColor": "#684127",

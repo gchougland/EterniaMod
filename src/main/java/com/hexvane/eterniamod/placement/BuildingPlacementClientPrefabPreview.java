@@ -2,11 +2,11 @@ package com.hexvane.eterniamod.placement;
 
 import com.hexvane.eterniamod.building.PrefabLocalOffset;
 import com.hexvane.eterniamod.prefab.PrefabResolveUtil;
+import com.hexvane.eterniamod.world.ChunkSectionBlockUtil;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.math.Axis;
-import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.util.MathUtil;
 import com.hypixel.hytale.protocol.packets.buildertools.ClipboardEntityChange;
 import com.hypixel.hytale.protocol.packets.interface_.BlockChange;
@@ -23,7 +23,6 @@ import com.hypixel.hytale.server.core.prefab.selection.standard.RotateBlockMode;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.BlockChunk;
-import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
@@ -221,10 +220,8 @@ public final class BuildingPlacementClientPrefabPreview {
         int z,
         @Nonnull ShowTriggerVolumePastePrefabPreview packet
     ) {
-        long chunkIndex = ChunkUtil.indexChunkFromBlock(x, z);
-        WorldChunk chunk = world.getNonTickingChunk(chunkIndex);
-        if (chunk != null && chunk.getBlockChunk() != null) {
-            BlockChunk blockChunk = chunk.getBlockChunk();
+        BlockChunk blockChunk = ChunkSectionBlockUtil.blockChunkAt(world, x, z);
+        if (blockChunk != null) {
             packet.biomeTint = blockChunk.getTint(x, z);
             int envId = blockChunk.getEnvironment(x, y, z);
             Environment environment = Environment.getAssetMap().getAsset(envId);

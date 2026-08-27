@@ -1,6 +1,7 @@
 package com.hexvane.eterniamod.placement;
 
 import com.hexvane.eterniamod.EterniaModConstants;
+import com.hexvane.eterniamod.world.ChunkSectionBlockUtil;
 import com.hypixel.hytale.protocol.BlockMaterial;
 import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
@@ -33,7 +34,7 @@ public final class BuildingPlacementAnchorUtil {
     }
 
     private static boolean isReplaceable(@Nonnull World world, int x, int y, int z) {
-        BlockType t = world.getBlockType(x, y, z);
+        BlockType t = ChunkSectionBlockUtil.blockType(world, x, y, z);
         return t == null || t.getMaterial() == BlockMaterial.Empty;
     }
 }
