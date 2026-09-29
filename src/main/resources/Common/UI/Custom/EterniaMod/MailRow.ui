@@ -1,0 +1,2 @@
+$T = "Theme/Citadel.ui";
+Group { Anchor: (Height: 118, Bottom: 10); Background: $T.@HeaderSurface; Padding: (Full: 12); LayoutMode: Top; Label #RowText { Anchor: (Height: 56, Bottom: 8); Style: $T.@DefaultLabelStyle; } $T.@SecondaryTextButton #RowAction { Anchor: (Height: 32); } }

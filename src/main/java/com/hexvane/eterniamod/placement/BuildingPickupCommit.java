@@ -1,6 +1,6 @@
 package com.hexvane.eterniamod.placement;
 
-import com.hexvane.eterniamod.EterniaModConstants;
+import com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions;
 import com.hexvane.eterniamod.EterniaModPlugin;
 import com.hexvane.eterniamod.building.BuildingDefinition;
 import com.hexvane.eterniamod.building.BuildingItemMetadata;
@@ -55,7 +55,7 @@ public final class BuildingPickupCommit {
         World world = store.getExternalData().getWorld();
         HubPlotManager plotManager = EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin);
         HubPlotRecord plot = plotManager.getPlot(plotId);
-        if (plot == null || !plot.hasBuilding() || !plot.isOwnedBy(uc.getUuid())) {
+        if (plot == null || !plot.hasBuilding() || !com.hexvane.eterniamod.housing.HousingAccess.can(plugin,plot,uc.getUuid(),"housing.structure")) {
             return Result.FAILED;
         }
         HubPlotBuilding building = plot.getBuilding();
@@ -66,48 +66,19 @@ public final class BuildingPickupCommit {
         if (def == null) {
             return Result.FAILED;
         }
-        CombinedItemContainer inv = InventoryComponent.getCombined(store, ref, InventoryComponent.EVERYTHING);
-        if (inv == null) {
-            return Result.FAILED;
-        }
-        ItemStack reward =
-            BuildingItemMetadata.withBuilding(
-                new ItemStack(EterniaModConstants.BUILDING_ITEM_ID, 1),
-                building.getBuildingId(),
-                def.getDisplayName(),
-                playerRef != null ? playerRef.getLanguage() : null
-            );
-        if (!inv.canAddItemStack(reward)) {
-            return Result.INVENTORY_FULL;
-        }
-        Path prefabPath = PrefabResolveUtil.resolvePrefabPath(def.getPrefabPath());
-        if (prefabPath == null) {
-            return Result.FAILED;
-        }
-        IPrefabBuffer buffer = PrefabBufferUtil.getCached(prefabPath);
-        Vector3i anchor = new Vector3i(building.getAnchorX(), building.getAnchorY(), building.getAnchorZ());
-        ManagementBlockLinker.removeLinked(
-            world,
-            def,
-            anchor,
-            building.resolveRotationYaw(),
-            building.getReplacedBlocks()
-        );
-        PrefabEntityOps.removeLinkedEntities(world, plot.getPlotId());
-        BuildingPrefabOps.removeAndRestore(
-            world,
-            anchor,
-            building.resolveRotationYaw(),
-            buffer,
-            building.getReplacedBlocks()
-        );
+        UUID operation;
+        try { operation=NativePlacementTransactions.pickup(plugin,world,plot,uc.getUuid(),plot.getPlotId()); }
+        catch(Exception failure){ if(playerRef!=null)playerRef.sendMessage(com.hypixel.hytale.server.core.Message.raw(failure.getMessage()));return Result.FAILED; }
+        try {
         plot.setBuilding(null);
         plotManager.updatePlot(plot);
         plotManager.saveIfDirty();
-        player.giveItem(reward, ref, store);
+        plugin.getServices().housing().updateBuildingPresent(NativePlacementTransactions.owner(plot),plot.getPlotId(),false);
+        NativePlacementTransactions.complete(plugin,operation);
         if (playerRef != null) {
             HubPlotVisibilityOverlay.refreshIfEnabled(playerRef, world, plugin);
         }
         return Result.SUCCESS;
+        } catch(Exception failure){NativePlacementTransactions.lock(plugin,operation);return Result.FAILED;}
     }
 }

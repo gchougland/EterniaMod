@@ -1,0 +1,10 @@
+node_modules/
+.env
+.env.*
+!.env.example
+data/
+web/hytale-assets/Common/
+dev/local.env
+test-output/
+.playwright-browsers/
+

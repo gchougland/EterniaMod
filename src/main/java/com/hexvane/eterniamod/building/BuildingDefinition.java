@@ -27,6 +27,10 @@ public final class BuildingDefinition {
 
     @SerializedName("rotationYaw")
     private String rotationYaw = "None";
+    private int[] spawnLocalPos;
+    private String housingKind = "personal";
+    public String getHousingKind() { return housingKind == null ? "personal" : housingKind; }
+    public int[] getSpawnLocalPos() { return spawnLocalPos != null && spawnLocalPos.length == 3 ? spawnLocalPos.clone() : null; }
 
     @Nonnull
     public String getId() {

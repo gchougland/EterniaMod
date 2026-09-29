@@ -21,6 +21,13 @@ public final class HubPlotRecord {
     @SerializedName("ownerUuid")
     @Nullable
     private UUID ownerUuid;
+    @Nullable private UUID guildOwnerUuid;
+    @Nullable private UUID attachedGuildUuid;
+
+    public UUID getGuildOwnerUuid() { return guildOwnerUuid; }
+    public UUID getAttachedGuildUuid() { return attachedGuildUuid; }
+    public void setGuildOwnerUuid(UUID value) { guildOwnerUuid=value; }
+    public void setAttachedGuildUuid(UUID value) { attachedGuildUuid=value; }
 
     @SerializedName("building")
     @Nullable

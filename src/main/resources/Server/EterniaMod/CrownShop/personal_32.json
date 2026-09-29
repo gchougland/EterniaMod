@@ -1,0 +1,1 @@
+{"id":"eternia:store/personal_32","revision":1,"name":"Larger Homestead","description":"Unlock the 32 × 32 personal plot size. Existing plots can be moved to resize.","category":"Housing","price":600,"benefits":[{"contentId":"eternia:plot/personal_32","kind":"CAPABILITY","quantity":1,"expiresWithSubscription":false}]}

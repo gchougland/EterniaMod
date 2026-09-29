@@ -1,0 +1,13 @@
+$T = "Theme/Citadel.ui";
+Group { Anchor: (Height: 112, Bottom: 8); Background: $T.@SecondarySurface; Padding: (Full: 14); LayoutMode: Left;
+  Group #ItemImage { Anchor: (Width: 100, Height: 100, Right: 14); }
+  Group { FlexWeight: 1; Anchor: (Right: 18); LayoutMode: Top;
+    Label #ItemCategory { Anchor: (Height: 21); Style: $T.@MutedStyle; }
+    Label #ItemName { Anchor: (Height: 28); Style: $T.@SubtitleStyle; }
+    Label #ItemDescription { Anchor: (Height: 40); Style: $T.@MutedStyle; }
+  }
+  Group { Anchor: (Width: 188); LayoutMode: Top;
+    Label #Price { Anchor: (Height: 34); Style: (...$T.@DefaultLabelStyle, HorizontalAlignment: Center, VerticalAlignment: Center); }
+    $T.@TextButton #Review { Anchor: (Width: 188); Text: "View item"; }
+  }
+}

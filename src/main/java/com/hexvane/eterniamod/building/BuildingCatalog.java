@@ -2,131 +2,75 @@ package com.hexvane.eterniamod.building;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.hexvane.eterniamod.catalog.CatalogContentValidator;
+import com.hexvane.eterniamod.catalog.CatalogLoader;
 import com.hypixel.hytale.logger.HytaleLogger;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public final class BuildingCatalog {
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
-    private static final String BUILDINGS_RESOURCE_PREFIX = "Server/EterniaMod/Buildings/";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-
     private final Map<String, BuildingDefinition> byId;
-    @Nonnull
     private final Path dataDirectory;
 
-    private BuildingCatalog(@Nonnull Map<String, BuildingDefinition> byId, @Nonnull Path dataDirectory) {
+    private BuildingCatalog(Map<String, BuildingDefinition> byId, Path dataDirectory) {
         this.byId = byId;
         this.dataDirectory = dataDirectory;
     }
 
     @Nonnull
     public static BuildingCatalog load(@Nonnull ClassLoader classLoader, @Nonnull Path dataDirectory) {
-        Map<String, BuildingDefinition> map = new LinkedHashMap<>();
-        loadClasspath(classLoader, map);
-        loadDirectory(dataDirectory, map);
+        Map<String, BuildingDefinition> map = CatalogLoader.load(
+            classLoader, "Server/EterniaMod/Buildings/", dataDirectory, BuildingDefinition.class, true);
         LOGGER.atInfo().log("EterniaMod loaded %s building definition(s)", map.size());
         return new BuildingCatalog(map, dataDirectory);
     }
 
-    private static void loadClasspath(
-        @Nonnull ClassLoader classLoader,
-        @Nonnull Map<String, BuildingDefinition> map
-    ) {
-        loadOneFromClasspath(classLoader, map, "hub_house.json");
-    }
-
-    private static void loadDirectory(@Nonnull Path directory, @Nonnull Map<String, BuildingDefinition> map) {
-        if (!Files.isDirectory(directory)) {
-            return;
-        }
-        try (Stream<Path> files = Files.list(directory)) {
-            files
-                .filter(p -> p.getFileName().toString().endsWith(".json"))
-                .forEach(
-                    path -> {
-                        try (var reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
-                            BuildingDefinition def = GSON.fromJson(reader, BuildingDefinition.class);
-                            if (def != null && def.getId() != null && !def.getId().isBlank()) {
-                                map.put(def.getId(), def);
-                            }
-                        } catch (Exception e) {
-                            LOGGER.atWarning().withCause(e).log("Failed loading building definition %s", path);
-                        }
-                    }
-                );
-        } catch (IOException e) {
-            LOGGER.atWarning().withCause(e).log("Failed listing building definitions in %s", directory);
-        }
-    }
-
-    private static void loadOneFromClasspath(
-        @Nonnull ClassLoader classLoader,
-        @Nonnull Map<String, BuildingDefinition> map,
-        @Nonnull String fileName
-    ) {
-        String path = BUILDINGS_RESOURCE_PREFIX + fileName;
-        try (InputStream in = classLoader.getResourceAsStream(path)) {
-            if (in == null) {
-                LOGGER.atWarning().log("Missing building definition resource %s", path);
-                return;
-            }
-            BuildingDefinition def =
-                GSON.fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), BuildingDefinition.class);
-            if (def != null && def.getId() != null && !def.getId().isBlank()) {
-                map.put(def.getId(), def);
-            }
-        } catch (Exception e) {
-            LOGGER.atWarning().withCause(e).log("Failed loading building definition %s", fileName);
-        }
-    }
-
     @Nullable
-    public BuildingDefinition get(@Nonnull String id) {
-        return byId.get(id.trim());
-    }
+    public BuildingDefinition get(@Nonnull String id) { return byId.get(id.trim()); }
 
-    public boolean contains(@Nonnull String id) {
-        return byId.containsKey(id.trim());
-    }
+    public boolean contains(@Nonnull String id) { return byId.containsKey(id.trim()); }
 
     public void register(@Nonnull BuildingDefinition def) {
+        validate(def);
         byId.put(def.getId(), def);
     }
 
     public void persist(@Nonnull BuildingDefinition def) throws IOException {
+        validate(def);
         Files.createDirectories(dataDirectory);
         Path file = dataDirectory.resolve(def.getId() + ".json");
-        try (Writer writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
-            GSON.toJson(def, writer);
-        }
+        Path temp = Files.createTempFile(dataDirectory, def.getId() + "-", ".tmp");
+        try {
+            try (Writer writer = Files.newBufferedWriter(temp, StandardCharsets.UTF_8)) { GSON.toJson(def, writer); }
+            try {
+                Files.move(temp, file, java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
+            } catch (java.nio.file.AtomicMoveNotSupportedException ex) {
+                Files.move(temp, file, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
+        } finally { Files.deleteIfExists(temp); }
+    }
+
+    private static void validate(BuildingDefinition def) {
+        CatalogContentValidator.requireValid(GSON.toJsonTree(def).getAsJsonObject(), def.getId(), true);
     }
 
     @Nonnull
-    public Path getDataDirectory() {
-        return dataDirectory;
-    }
+    public Path getDataDirectory() { return dataDirectory; }
 
     @Nonnull
-    public List<String> ids() {
-        return new ArrayList<>(byId.keySet());
-    }
+    public List<String> ids() { return new ArrayList<>(byId.keySet()); }
 
     @Nonnull
-    public Map<String, BuildingDefinition> asMap() {
-        return Collections.unmodifiableMap(byId);
-    }
+    public Map<String, BuildingDefinition> asMap() { return Collections.unmodifiableMap(byId); }
 }

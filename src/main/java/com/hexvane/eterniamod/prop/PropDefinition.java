@@ -24,6 +24,8 @@ public final class PropDefinition {
 
     @SerializedName("rotationYaw")
     private String rotationYaw = "None";
+    private String category = "prop";
+    public String getCategory() { return category == null ? "prop" : category; }
 
     @Nonnull
     public String getId() {

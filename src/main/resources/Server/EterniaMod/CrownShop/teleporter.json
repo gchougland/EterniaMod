@@ -1,0 +1,1 @@
+{"id":"eternia:store/teleporter","revision":1,"name":"Home Waygate","description":"Travel from your own plot to the Hub or an adventure world.","category":"Housing","price":400,"benefits":[{"contentId":"eternia:convenience/teleporter","kind":"CAPABILITY","quantity":1,"expiresWithSubscription":false}]}

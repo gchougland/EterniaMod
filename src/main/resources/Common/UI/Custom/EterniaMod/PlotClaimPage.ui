@@ -1,0 +1,40 @@
+$T = "Theme/Citadel.ui";
+
+Group {
+  Anchor: (Top: 24, Right: 24, Width: 480, Height: 720);
+  Background: #101E22(0.96);
+  Padding: (Full: 22);
+  LayoutMode: Top;
+  Group { LayoutMode: Left; Anchor: (Height: 28, Bottom: 0);
+    Label { Text: "ETERNIA  /  HOUSING"; FlexWeight: 1; Style: (FontSize: 14, TextColor: #D8B66B, RenderBold: true); }
+    $T.@HomeButton #MenuHome { Anchor: (Width: 28, Height: 28); }
+  }
+  Label #Dimensions { Anchor: (Height: 54); Style: (FontSize: 22, TextColor: #F0E8D5, RenderBold: true, Wrap: true); }
+  Label #Coordinates { Anchor: (Height: 30); Style: (FontSize: 14, TextColor: #B5C3B8); }
+  Group { LayoutMode: Left; Anchor: (Height: 44, Bottom: 12);
+    $T.@TextButton #Public { Text: "Personal"; FlexWeight: 1; Anchor: (Right: 8); }
+    $T.@TextButton #Member { Text: "Member"; FlexWeight: 1; Anchor: (Right: 8); }
+    $T.@TextButton #Guild { Text: "Guild"; FlexWeight: 1; }
+  }
+  Group { LayoutMode: Left; Anchor: (Height: 44, Bottom: 12);
+    $T.@TextButton #Size { Text: "Free size"; FlexWeight: 1; Anchor: (Right: 8); }
+    $T.@TextButton #Shape { Text: "Change shape"; FlexWeight: 1; }
+  }
+  Label { Text: "MOVE PREVIEW"; Anchor: (Height: 26); Style: (FontSize: 12, TextColor: #B5C3B8, RenderBold: true); }
+  Group { LayoutMode: Left; Anchor: (Height: 44, Bottom: 8);
+    $T.@TextButton #West { Text: "West"; FlexWeight: 1; Anchor: (Right: 8); }
+    $T.@TextButton #North { Text: "North"; FlexWeight: 1; Anchor: (Right: 8); }
+    $T.@TextButton #South { Text: "South"; FlexWeight: 1; Anchor: (Right: 8); }
+    $T.@TextButton #East { Text: "East"; FlexWeight: 1; }
+  }
+  Group { LayoutMode: Left; Anchor: (Height: 44, Bottom: 16);
+    $T.@TextButton #Center { Text: "At my feet"; FlexWeight: 1; Anchor: (Right: 8); }
+    $T.@TextButton #Camera { Text: "Bird’s-eye view"; FlexWeight: 1; }
+  }
+  Label #Status { Anchor: (Height: 98); Style: (FontSize: 15, TextColor: #F0E8D5, Wrap: true); }
+  $T.@SecondaryTextButton #MyPlots { Text: "My plots / Locate or move"; Anchor: (Height: 44, Bottom: 10); }
+  Group { LayoutMode: Left; Anchor: (Height: 44);
+    $T.@CancelTextButton #Cancel { Text: "Cancel"; FlexWeight: 1; Anchor: (Right: 8); }
+    $T.@TextButton #Confirm { Text: "Review claim"; FlexWeight: 1; }
+  }
+}

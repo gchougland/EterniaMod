@@ -1,0 +1,1 @@
+{"id":"eternia:store/guild_teleporter","revision":1,"name":"Guild Waygate Charter","description":"A voucher redeemable for your guild. Authorized members can use the unlocked waygate.","category":"Guild charters","price":650,"benefits":[{"contentId":"eternia:guild_voucher/teleporter","kind":"QUANTITY","quantity":1,"expiresWithSubscription":false}]}

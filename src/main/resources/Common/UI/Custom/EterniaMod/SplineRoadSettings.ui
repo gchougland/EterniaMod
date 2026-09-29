@@ -1,0 +1,23 @@
+$T = "Theme/Citadel.ui";
+Group {
+  Anchor: (Top: 64, Right: 24, Width: 360, Height: 336);
+  Background: $T.@PanelSurface;
+  Padding: (Full: 20);
+  LayoutMode: Top;
+  Group { LayoutMode: Left; Anchor: (Height: 34, Bottom: 12);
+    Label { Text: "Road width & style"; FlexWeight: 1; Style: (...$T.@SubtitleStyle); }
+    $T.@HomeButton #MenuHome { Anchor: (Width: 34, Height: 34); }
+  }
+  Group { LayoutMode: Left; Anchor: (Height: 44, Bottom: 14);
+    $T.@SecondaryTextButton #Narrower { Text: "-"; Anchor: (Width: 52, Right: 12); }
+    Label #Width { FlexWeight: 1; Style: (FontSize: 18, TextColor: #f0e8d5, HorizontalAlignment: Center, VerticalAlignment: Center); }
+    $T.@SecondaryTextButton #Wider { Text: "+"; Anchor: (Width: 52, Left: 12); }
+  }
+  Group { LayoutMode: Left; Anchor: (Height: 52, Bottom: 16);
+    $T.@SecondaryTextButton #Previous { Text: "<"; Anchor: (Width: 52, Right: 12); }
+    Label #Style { FlexWeight: 1; Style: (FontSize: 16, TextColor: #f0e8d5, HorizontalAlignment: Center, VerticalAlignment: Center, Wrap: true); }
+    $T.@SecondaryTextButton #Next { Text: ">"; Anchor: (Width: 52, Left: 12); }
+  }
+  Label { Text: "Changes update the grounded preview. Your road is saved only after review and confirmation."; Anchor: (Height: 48, Bottom: 10); Style: (...$T.@MutedStyle); }
+  $T.@TextButton #Done { Text: "Back to the road"; Anchor: (Height: 42); }
+}

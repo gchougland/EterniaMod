@@ -1,0 +1,1 @@
+{"id":"eternia:store/potion_shelf","revision":1,"name":"Potion Shelf","description":"A stocked potion shelf for your house. Place it from your housing inventory.","category":"Furnishings","price":120,"benefits":[{"contentId":"eternia:prop/potion_shelf","kind":"QUANTITY","quantity":1,"expiresWithSubscription":false}]}

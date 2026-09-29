@@ -1,7 +1,8 @@
+$T = "Theme/Citadel.ui";
 $C = "../Common.ui";
 $Browser = "../Pages/PrefabBrowser.ui";
 
-$C.@PageOverlay {
+$T.@PageOverlay {
   Anchor: (Top: 130);
   Background: #000000(0.15);
 }
@@ -10,12 +11,14 @@ Group #PrefabGroup {
   Anchor: (Height: 700);
   LayoutMode: Center;
 
-  $C.@Container {
+  $T.@Container {
     Anchor: (Width: 600, Height: 700);
 
     #Title {
+      $T.@HomeButton #MenuHome { Anchor: (Right: 0, Top: 2, Width: 44, Height: 44); }
       Label #BrowserTitle {
-        Style: (...$C.@TitleStyle, HorizontalAlignment: Center);
+        Anchor: (Right: 54);
+        Style: (...$T.@TitleStyle, HorizontalAlignment: Center);
         Padding: (Horizontal: 19);
         Text: "";
       }
@@ -26,7 +29,7 @@ Group #PrefabGroup {
 
       Label #CurrentPath {
         Anchor: (Bottom: 8, Horizontal: 4);
-        Style: (...$C.@DefaultLabelStyle, FontSize: 12, TextColor: #6a7d8f);
+        Style: (...$T.@DefaultLabelStyle, FontSize: 12, TextColor: #b5c3b8);
         Text: "";
       }
 
@@ -36,7 +39,7 @@ Group #PrefabGroup {
 
       Label #StatusText {
         Anchor: (Top: 4, Bottom: 4, Horizontal: 4);
-        Style: (...$C.@DefaultLabelStyle, FontSize: 13, TextColor: #c8d4de, Wrap: true);
+        Style: (...$T.@DefaultLabelStyle, FontSize: 13, TextColor: #b5c3b8, Wrap: true);
         Text: "";
         Visible: false;
       }
@@ -45,14 +48,14 @@ Group #PrefabGroup {
         LayoutMode: Left;
         Anchor: (Top: 8, Height: 36);
 
-        $C.@TextButton #CreatePropButton {
+        $T.@TextButton #CreatePropButton {
           Text: "";
           Anchor: (Right: 8, Height: 36);
           FlexWeight: 1;
           Visible: false;
         }
 
-        $C.@TextButton #CreateBuildingButton {
+        $T.@TextButton #CreateBuildingButton {
           Text: "";
           Anchor: (Height: 36);
           FlexWeight: 1;
@@ -62,13 +65,13 @@ Group #PrefabGroup {
     }
   }
 
-  $C.@Container #PreviewBackdrop {
+  $T.@Container #PreviewBackdrop {
     Anchor: (Left: 10, Top: 0, Width: 600, Height: 700);
     Visible: true;
 
     #Title {
       Label #PreviewTitle {
-        Style: (...$C.@TitleStyle, HorizontalAlignment: Center);
+        Style: (...$T.@TitleStyle, HorizontalAlignment: Center);
         Padding: (Horizontal: 19);
         Text: "";
       }

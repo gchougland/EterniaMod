@@ -1,0 +1,9 @@
+[phases.setup]
+nixPkgs = ["...", "chromium", "nss", "nspr", "freetype", "harfbuzz", "fontconfig"]
+
+[phases.install]
+cmds = ["npm ci"]
+
+[variables]
+NODE_VERSION = "24"
+

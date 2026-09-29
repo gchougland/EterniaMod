@@ -29,6 +29,9 @@ public final class HubPlotManager {
     private final Path saveFile;
     private final Map<UUID, HubPlotRecord> byPlotId = new LinkedHashMap<>();
     private boolean dirty;
+    private long revision;
+
+    public long getRevision() { return revision; }
 
     public HubPlotManager(@Nonnull World world, @Nonnull Path pluginDataDirectory) {
         this.world = world;
@@ -54,6 +57,7 @@ public final class HubPlotManager {
         try {
             HubPlotWorldFile file = HubPlotWorldFile.readOrEmpty(saveFile);
             byPlotId.clear();
+            revision++;
             for (HubPlotRecord plot : file.getPlots()) {
                 if (plot.getPlotId() != null) {
                     byPlotId.put(plot.getPlotId(), plot);
@@ -62,6 +66,7 @@ public final class HubPlotManager {
             LOGGER.atInfo().log("EterniaMod loaded %s hub plots for world %s", byPlotId.size(), world.getName());
         } catch (IOException e) {
             LOGGER.atWarning().withCause(e).log("Failed to load hub plots for world %s", world.getName());
+            throw new java.io.UncheckedIOException("Plot ownership could not be loaded; refusing to treat this world as empty", e);
         }
     }
 
@@ -81,12 +86,15 @@ public final class HubPlotManager {
             dirty = false;
         } catch (IOException e) {
             LOGGER.atWarning().withCause(e).log("Failed to save hub plots for world %s", world.getName());
+            throw new java.io.UncheckedIOException("Plot changes were not durably saved", e);
         }
     }
 
     @Nonnull
     public HubPlotRecord addPlot(@Nonnull HubPlotRecord plot) {
+        if (byPlotId.containsKey(plot.getPlotId())) throw new IllegalStateException("Duplicate plot id");
         byPlotId.put(plot.getPlotId(), plot);
+        revision++;
         dirty = true;
         return plot;
     }
@@ -94,6 +102,7 @@ public final class HubPlotManager {
     public boolean removePlot(@Nonnull UUID plotId) {
         HubPlotRecord removed = byPlotId.remove(plotId);
         if (removed != null) {
+            revision++;
             dirty = true;
             return true;
         }
@@ -102,6 +111,7 @@ public final class HubPlotManager {
 
     public void updatePlot(@Nonnull HubPlotRecord plot) {
         byPlotId.put(plot.getPlotId(), plot);
+        revision++;
         dirty = true;
     }
 

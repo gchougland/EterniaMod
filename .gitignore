@@ -33,9 +33,17 @@ build/
 
 ### Misc ###
 /run/
-/Docs/
+/run-local/
+/run-postgres/
+/.local/
+/[Dd]ocs/*
+!/[Dd]ocs/planning/
+!/[Dd]ocs/implementation/
+!/[Dd]ocs/native-housing-recovery.md
 /.cursor/
 .cursorrules
 /scripts/__pycache__/
 # Local 1Password op:// env for translation script (see translate.secrets.env.example)
 /scripts/translate.secrets.env
+AGENTS.md
+agents.md

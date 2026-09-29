@@ -1,0 +1,77 @@
+{
+  "TranslationProperties": {
+    "Name": "eternia_roads.tool.name",
+    "Description": "eternia_roads.tool.description"
+  },
+  "Icon": "Icons/ItemsGenerated/Tool_Shovel_Iron.png",
+  "Model": "Items/Tools/Shovel/Iron.blockymodel",
+  "Texture": "Items/Tools/Shovel/Iron_Texture.png",
+  "PlayerAnimationsId": "Item",
+  "MaxStack": 1,
+  "Quality": "Uncommon",
+  "Categories": [
+    "Items.Tools"
+  ],
+  "Interactions": {
+    "Primary": {
+      "Interactions": [
+        {
+          "Type": "EterniaSplineRoad",
+          "Action": "Select"
+        }
+      ]
+    },
+    "Secondary": {
+      "Interactions": [
+        {
+          "Type": "EterniaSplineRoad",
+          "Action": "Add"
+        }
+      ]
+    },
+    "Use": {
+      "Interactions": [
+        {
+          "Type": "EterniaSplineRoad",
+          "Action": "Use"
+        }
+      ]
+    },
+    "Ability1": {
+      "Interactions": [
+        {
+          "Type": "EterniaSplineRoad",
+          "Action": "Undo"
+        }
+      ]
+    },
+    "Ability2": {
+      "Interactions": [
+        {
+          "Type": "EterniaSplineRoad",
+          "Action": "Settings"
+        }
+      ]
+    },
+    "Pick": {
+      "Interactions": [
+        {
+          "Type": "EterniaSplineRoad",
+          "Action": "Manage"
+        }
+      ]
+    }
+  },
+  "InteractionConfig": {
+    "UseDistance": {
+      "Adventure": 6,
+      "Creative": 64
+    },
+    "AllEntities": false
+  },
+  "Tags": {
+    "Type": [
+      "Tool"
+    ]
+  }
+}

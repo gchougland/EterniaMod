@@ -30,7 +30,6 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.prefab.PrefabStore;
 import com.hypixel.hytale.server.core.prefab.selection.buffer.impl.IPrefabBuffer;
 import com.hypixel.hytale.server.core.prefab.selection.standard.BlockSelection;
-import com.hypixel.hytale.server.core.ui.Value;
 import com.hypixel.hytale.server.core.ui.browser.FileBrowserConfig;
 import com.hypixel.hytale.server.core.ui.browser.FileBrowserEventData;
 import com.hypixel.hytale.server.core.ui.browser.ServerFileBrowser;
@@ -110,7 +109,7 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
         @Nonnull UIEventBuilder eventBuilder,
         @Nonnull Store<EntityStore> store
     ) {
-        commandBuilder.append("EterniaMod/PrefabBrowserPage.ui");
+        commandBuilder.append("EterniaMod/PrefabBrowserPage.ui");bindHome(eventBuilder);
         applyLocalization(commandBuilder);
         commandBuilder.set("#LoadButton.Visible", false);
         browser.buildSearchInput(commandBuilder, eventBuilder);
@@ -364,8 +363,8 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
         int buttonIndex = 0;
         boolean canGoUp = assetsCurrentDir.getNameCount() >= 1 && !assetsCurrentDir.toString().isEmpty();
         if (canGoUp && browser.getSearchQuery().isEmpty()) {
-            commandBuilder.append("#FileList", "Pages/BasicTextButton.ui");
-            commandBuilder.set("#FileList[0].Text", "../");
+            commandBuilder.append("#FileList", "EterniaMod/PrefabFileButton.ui");
+            commandBuilder.set("#FileList[0].Text", "Parent folder");
             eventBuilder.addEventBinding(
                 CustomUIEventBindingType.Activating,
                 "#FileList[0]",
@@ -376,16 +375,12 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
         for (var entry : entries) {
             String displayText = entry.isDirectory() ? entry.displayName() + "/" : entry.displayName();
             String selector = "#FileList[" + buttonIndex + "]";
-            commandBuilder.append("#FileList", "Pages/BasicTextButton.ui");
-            commandBuilder.set(selector + ".Text", displayText);
+            commandBuilder.append("#FileList", "EterniaMod/PrefabFileButton.ui");
             boolean isFile = !entry.isDirectory();
-            if (isFile) {
-                boolean isActive = entry.name().equals(previewedFileName);
-                commandBuilder.set(
-                    selector + ".Style",
-                    Value.ref("Pages/BasicTextButton.ui", isActive ? "ActiveLabelStyle" : "SelectedLabelStyle")
-                );
-            }
+            boolean isActive=isFile&&entry.name().equals(previewedFileName);
+            String caption=(isActive?"• ":"")+displayText;
+            commandBuilder.set(selector + ".Text", caption);
+            commandBuilder.setObject(selector+".Anchor",UiAnchors.heightWithBottom(Math.max(44,UiPresentation.wrappedHeight(caption,520,24)+20),6));
             String fileEventKey =
                 !browser.getSearchQuery().isEmpty() && isFile
                     ? FileBrowserEventData.KEY_SEARCH_RESULT

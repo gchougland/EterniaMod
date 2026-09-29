@@ -1,0 +1,2 @@
+{"id":"eternia:store/foundations","revision":1,"name":"Foundations Premium","description":"Unlock the paid reward track for Foundations. This pass never expires.","category":"Season passes","price":700,"benefits":[{"contentId":"eternia:season_paid/eternia/foundations","kind":"CAPABILITY","quantity":1,"expiresWithSubscription":false}]}
+

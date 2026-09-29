@@ -1,0 +1,91 @@
+{
+  "Type": "Generic",
+  "StartState": "Idle",
+  "DefaultNPCAttitude": "Neutral",
+  "DefaultPlayerAttitude": "Neutral",
+  "Appearance": "Eternia_Royal_Quartermaster",
+  "MaxHealth": 100,
+  "Invulnerable": true,
+  "KnockbackScale": 0,
+  "ApplySeparation": false,
+  "MotionControllerList": [
+    {
+      "Type": "Walk",
+      "MaxWalkSpeed": 4,
+      "Gravity": 10,
+      "RunThreshold": 0.3,
+      "MaxFallSpeed": 15,
+      "MaxRotationSpeed": 360,
+      "Acceleration": 10
+    }
+  ],
+  "Instructions": [
+    {
+      "Continue": true,
+      "Sensor": {
+        "Type": "Player",
+        "Range": 8
+      },
+      "HeadMotion": {
+        "Type": "Watch"
+      }
+    },
+    {
+      "Sensor": {
+        "Type": "State",
+        "State": "Idle"
+      },
+      "BodyMotion": {
+        "Type": "Nothing"
+      }
+    }
+  ],
+  "InteractionInstruction": {
+    "Instructions": [
+      {
+        "Sensor": {
+          "Type": "Not",
+          "Sensor": {
+            "Type": "CanInteract",
+            "ViewSector": 360
+          }
+        },
+        "Actions": [
+          {
+            "Type": "SetInteractable",
+            "Interactable": false
+          }
+        ]
+      },
+      {
+        "Continue": true,
+        "Sensor": {
+          "Type": "Any"
+        },
+        "Actions": [
+          {
+            "Type": "SetInteractable",
+            "Interactable": true,
+            "Hint": "eternia_services.interact.store",
+            "ShowPrompt": true
+          }
+        ]
+      },
+      {
+        "Sensor": {
+          "Type": "HasInteracted"
+        },
+        "Actions": [
+          {
+            "Type": "OpenEterniaServices",
+            "Section": "STORE"
+          }
+        ]
+      }
+    ]
+  },
+  "NameTranslationKey": "eternia_services.npc.store",
+  "DisplayNames": [
+    "Lyra Starweave [Royal Quartermaster]"
+  ]
+}

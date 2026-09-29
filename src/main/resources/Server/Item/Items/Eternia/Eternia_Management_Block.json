@@ -31,8 +31,8 @@
       "Use": {
         "Interactions": [
           {
-            "Type": "OpenCustomUI",
-            "Page": { "Id": "EterniaBuildingPickup" }
+            "Type": "EterniaHousingTool",
+            "Route": "LEDGER"
           }
         ]
       }
@@ -44,7 +44,6 @@
     "Translation": [6, -17],
     "Rotation": [22.5, 45, 22.5]
   },
-  "ResourceTypes": [{ "Id": "Fuel" }, { "Id": "Charcoal" }],
   "Tags": { "Type": ["Furniture"], "Family": ["Eternia"] },
   "ItemSoundSetId": "ISS_Blocks_Wood"
 }

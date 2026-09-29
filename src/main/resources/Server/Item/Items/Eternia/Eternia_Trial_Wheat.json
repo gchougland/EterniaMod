@@ -1,0 +1,118 @@
+{
+  "Parent": "Plant_Crop_Wheat_Block",
+  "TranslationProperties": {
+    "Name": "eternia_services.trials.wheat"
+  },
+  "BlockType": {
+    "Interactions": {
+      "Use": {
+        "Interactions": [
+          {
+            "Type": "EterniaHarvestCrop"
+          }
+        ]
+      }
+    },
+    "Farming": {
+      "StartingStageSet": "Default",
+      "StageSetAfterHarvest": "Harvested",
+      "ActiveGrowthModifiers": [],
+      "Stages": {
+        "Default": [
+          {
+            "Type": "BlockState",
+            "State": "Stage1",
+            "Duration": {
+              "Min": 20,
+              "Max": 20
+            }
+          },
+          {
+            "Type": "BlockState",
+            "State": "StageFinal",
+            "Duration": {
+              "Min": 86400,
+              "Max": 86400
+            }
+          },
+          {
+            "Type": "EterniaAwaitHarvest"
+          }
+        ],
+        "Harvested": [
+          {
+            "Type": "BlockState",
+            "State": "Stage1",
+            "Duration": {
+              "Min": 20,
+              "Max": 20
+            }
+          },
+          {
+            "Type": "BlockState",
+            "State": "StageFinal",
+            "Duration": {
+              "Min": 86400,
+              "Max": 86400
+            }
+          },
+          {
+            "Type": "EterniaAwaitHarvest"
+          }
+        ]
+      }
+    },
+    "State": {
+      "Definitions": {
+        "Stage1": {
+          "CustomModel": "Blocks/Foliage/Plants/Dense_Small_3Rows.blockymodel",
+          "CustomModelTexture": [
+            {
+              "Texture": "Blocks/Foliage/Plants/Dense_Small_3Rows_Wheat_01.png",
+              "Weight": 1
+            }
+          ],
+          "Effect": [
+            "WindAttached"
+          ],
+          "Gathering": {
+            "Soft": {
+              "IsWeaponBreakable": false,
+              "DropList": "Drops_Plant_Crop_Wheat_Stage1"
+            }
+          },
+          "HitboxType": "Plant_Small",
+          "BlockParticleSetId": "Grass",
+          "BlockSoundSetId": "Plant",
+          "ParticleColor": "#93d72c"
+        },
+        "StageFinal": {
+          "CustomModel": "Blocks/Foliage/Plants/Dense_Tall.blockymodel",
+          "CustomModelTexture": [
+            {
+              "Texture": "Blocks/Foliage/Plants/Dense_Tall_Textures/Wheat.png",
+              "Weight": 1
+            }
+          ],
+          "Effect": [
+            "WindAttached"
+          ],
+          "InteractionHint": "server.interactionHints.harvest",
+          "Gathering": {
+            "Harvest": {
+              "DropList": "Drops_Plant_Crop_Wheat_StageFinal_Harvest"
+            },
+            "Soft": {
+              "IsWeaponBreakable": false,
+              "DropList": "Drops_Plant_Crop_Wheat_StageFinal"
+            }
+          },
+          "BlockParticleSetId": "Grass",
+          "ParticleColor": "#efcc7b",
+          "BlockSoundSetId": "Plant",
+          "HitboxType": "Plant_Tall_Small"
+        }
+      }
+    }
+  }
+}

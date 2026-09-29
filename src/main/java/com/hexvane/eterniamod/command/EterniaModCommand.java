@@ -11,5 +11,16 @@ public final class EterniaModCommand extends AbstractCommandCollection {
         this.addSubCommand(new EterniaBuildingCommand());
         this.addSubCommand(new EterniaPropCommand());
         this.addSubCommand(new EterniaPrefabCommand());
+        this.addSubCommand(new EterniaPlayCommand("menu"));
+        this.addSubCommand(new EterniaPlayCommand("claim"));
+        this.addSubCommand(new EterniaPlayCommand("housing"));
+        this.addSubCommand(new EterniaPlayCommand("quests"));
+        this.addSubCommand(new EterniaPlayCommand("myplots"));
+        this.addSubCommand(new EterniaPlayCommand("shopreturn"));
+        this.addSubCommand(new EterniaPlayCommand("worlds"));
+        this.addSubCommand(new EterniaAdminCommand());
+        this.addSubCommand(new EterniaPartyCommand());
+        this.addSubCommand(new EterniaGuildChatCommand());
+        this.addSubCommand(new EterniaPlaygroundCommand());
     }
 }

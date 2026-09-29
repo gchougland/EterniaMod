@@ -1,0 +1,26 @@
+import {api,el,link,identityBar,notice} from './api.js';
+const view=document.querySelector('#view'),path=location.pathname;
+document.querySelectorAll('nav a').forEach(a=>{if(a.pathname===path)a.setAttribute('aria-current','page');});
+const state=await identityBar();view.replaceChildren();
+function heading(kicker,title,description){view.append(el('div',kicker,'eyebrow'),el('h1',title));if(description)view.append(el('p',description,'muted'));}
+function card(title,text){const c=el('article',undefined,'card');c.append(el('h3',title),el('p',text));return c;}
+if(path==='/'){
+ const hero=el('section',undefined,'hero');hero.append(el('div','Welcome to Eternia','eyebrow'),el('h1','A home beyond the adventure.'),el('p','Build your place in a shared world. Gather your guild, make your home, and carry each adventure forward.'));
+ const actions=el('div',undefined,'actions');actions.append(link('Your account','/account','button primary'),link('Explore season passes','/seasons'));hero.append(actions);view.append(hero);
+ const grid=el('div',undefined,'grid');grid.append(card('Make a place your own','A free housing plot, a home to personalize, and room for the things you discover.'),card('Find your people','Form a guild and create a neighborhood together.'),card('Every season stays','Return to earlier passes and continue where you left off.'));view.append(grid);
+}else if(path==='/store'){
+ heading('The Crown treasury','Your next find awaits.','Buy Crowns here, then spend them at Lyra’s Crown Store in game on furnishings, companions, outfits, titles, and housing upgrades. Crowns are separate from player-trading coins.');
+ const steps=el('div',undefined,'grid');steps.append(card('1 · Choose your Crowns','Checkout securely through Tebex using your Hytale account.'),card('2 · Return to Eternia','Your verified purchase credits your Crown balance. You do not need to claim a code.'),card('3 · Visit Lyra','Browse the Crown Store, review the price, and receive your item immediately.'));view.append(steps);
+ if(state.user)try{const account=await api('/api/account');if(account.crowns) {const balance=card('Your Crown balance',new Intl.NumberFormat().format(account.crowns.available)+' Crowns'+(account.crowns.owed?' · '+account.crowns.owed+' Crowns to restore after a refund':''));balance.classList.add('treasury-balance');view.append(balance);}}catch{}
+ try{const data=await api('/api/store');const grid=el('div',undefined,'grid');for(const offer of data.offers||[]){const c=card(offer.name||offer.id,offer.description||'');if(offer.checkoutUrl){const u=new URL(offer.checkoutUrl);if(u.protocol==='https:'&&(u.hostname==='tebex.io'||u.hostname.endsWith('.tebex.io')))c.append(link('Buy through Tebex',u.href,'button primary'));}grid.append(c);}view.append(grid.children.length?grid:el('div','Crown top-ups will open once Eternia’s Tebex packages are connected. You can already try the in-game store with local playground Crowns.','empty'));}catch(e){view.append(el('div',e.message,'empty'));}
+}else{
+ const titles={account:['Your account','Welcome back.'],owned:['Your collection','The things that make it yours.'],seasons:['Season passes','Your next chapter.']},kind=path.slice(1);heading(...(titles[kind]||titles.account));
+ if(!state.user){view.append(el('div',state.authConfigured?'Sign in with Hytale to view your account.':'Account access will open after Hytale sign-in is configured.','empty'));}
+ else try{const data=await api('/api/account');view.append(el('div',(data.source==='local-fixture'?'Local fixture · ':'')+'Updated '+new Date(data.updatedAt||Date.now()).toLocaleString(),'meta'));
+ const grid=el('div',undefined,'grid');
+ if(kind==='account'){const stats=data.stats||{},labels={playtimeHours:'Hours played',mobsDefeated:'Mobs defeated',resourcesGathered:'Resources gathered'};for(const[k,label]of Object.entries(labels)){const value=stats[k],formatted=value==null?'Not recorded':new Intl.NumberFormat(undefined,{maximumFractionDigits:k==='playtimeHours'?1:0}).format(value);const c=el('article',undefined,'card');c.append(el('div',formatted,'number'),el('p',label));grid.append(c);}if(data.coins?.available!=null)grid.append(card('Coins',new Intl.NumberFormat().format(data.coins.available)));view.append(el('p','Rank: '+(data.account?.rank||'Not available')));}
+ if(kind==='owned')for(const item of data.owned||[])grid.append(card(item.name||item.id,item.kind==='quantity'?(item.quantity??0)+' available to use':item.kind==='capability'?'Access unlocked':item.kind==='unlock'?'Unlocked':(item.quantity??1)+' owned'));
+ if(kind==='seasons')for(const season of data.seasons||[]){const c=card(season.name||season.id,(season.paid?'Free + paid track':'Free track')+' · Permanent');const bar=el('progress');bar.max=season.totalXp||1;bar.value=season.xp||0;bar.setAttribute('aria-label','Season experience');c.append(bar,el('p',(season.xp||0)+' / '+season.totalXp+' XP'));grid.append(c);}
+ if(kind==='account'&&data.crowns)grid.append(card('Crowns',new Intl.NumberFormat().format(data.crowns.available)+(data.crowns.owed?' · '+data.crowns.owed+' to restore after a refund':'')));
+ view.append(grid.children.length?grid:el('div','Nothing to show yet. Your progress appears here after your next adventure.','empty'));
+ }catch(e){view.append(el('div',e.message,'empty'));}}

@@ -1,11 +1,13 @@
 plugins {
     `maven-publish`
-    id("hytale-mod") version "0.+"
+    id("hytale-mod") version "0.8.1"
 }
 
 group = "com.hexvane"
 version = "1.0.0"
 val javaVersion = 25
+val embeddedLibraries by configurations.creating
+configurations.implementation { extendsFrom(embeddedLibraries) }
 
 repositories {
     mavenCentral()
@@ -18,6 +20,7 @@ repositories {
 }
 
 dependencies {
+    add(embeddedLibraries.name, "org.postgresql:postgresql:42.7.13") { isTransitive = false }
     compileOnly(libs.jetbrains.annotations)
     compileOnly(libs.jspecify)
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
@@ -27,6 +30,8 @@ dependencies {
 tasks.named<Jar>("jar") {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from(sourceSets.main.get().output.resourcesDir)
+    from(embeddedLibraries.map { zipTree(it) })
+    exclude("META-INF/*.SF", "META-INF/*.RSA", "META-INF/*.DSA")
 }
 
 tasks.register("verifyReleaseJar") {
@@ -96,6 +101,8 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.test {
     useJUnitPlatform()
+    // Native DTO and codec tests use the installed server API without embedding it in the release jar.
+    classpath += sourceSets.main.get().compileClasspath
 }
 
 tasks.named<ProcessResources>("processResources") {
@@ -151,9 +158,9 @@ idea {
     }
 }
 
-val syncAssets = tasks.register<Copy>("syncAssets") {
+tasks.register<Copy>("syncAssets") {
     group = "hytale"
-    description = "Automatically syncs assets from Build back to Source after server stops."
+    description = "Explicitly import in-game asset edits from build/resources/main into source; may overwrite source edits. Never runs automatically."
 
     from(layout.buildDirectory.dir("resources/main"))
     into("src/main/resources")
@@ -168,22 +175,28 @@ val syncAssets = tasks.register<Copy>("syncAssets") {
 afterEvaluate {
     val runServerTask = tasks.findByName("runServer") ?: tasks.findByName("server")
     if (runServerTask == null) {
-        logger.warn("Could not find 'runServer' or 'server' task (hytale-mod). syncAssets not hooked.")
+        logger.warn("Could not find 'runServer' or 'server' task (hytale-mod); development server aliases unavailable.")
         return@afterEvaluate
     }
     if (runServerTask !is JavaExec) {
-        logger.warn("Task '${runServerTask.name}' is not JavaExec; skipping sync hook and runServerNoSync.")
+        logger.warn("Task '${runServerTask.name}' is not JavaExec; skipping development server aliases.")
         return@afterEvaluate
     }
     val runServer = runServerTask as JavaExec
     runServer.jvmArgs = runServer.jvmArgs.filter { it.isNotBlank() }
-    runServer.finalizedBy(syncAssets)
-    logger.lifecycle("Task '${runServer.name}' finalized by syncAssets (copy build resources back to src on exit).")
+    // Gradle launch tasks are development entry points. Keep the shipped plugin's
+    // production default, and preserve an explicitly configured production environment.
+    if (!runServer.environment.containsKey("ETERNIA_MODE")) {
+        runServer.environment("ETERNIA_MODE", "local")
+    }
+    // Never copy build output over source on shutdown: source may have changed
+    // while this server was running. Import intentional in-game edits explicitly.
+    logger.lifecycle("Task '${runServer.name}' leaves source assets unchanged on exit; syncAssets is manual only.")
 
     tasks.register<JavaExec>("runServerNoSync") {
         group = "hytale"
         description =
-            "Same as runServer but does not run syncAssets afterward — safe when you edit src/main/resources while testing."
+            "Compatibility alias for runServer; both leave source assets unchanged on exit."
         classpath = runServer.classpath
         mainClass = runServer.mainClass
         mainModule = runServer.mainModule
@@ -199,4 +212,65 @@ afterEvaluate {
         enableAssertions = runServer.enableAssertions
     }
     logger.lifecycle("Task 'runServerNoSync' registered (no post-exit asset sync).")
+    val localServer = tasks.register<JavaExec>("runServerLocal") {
+        group = "hytale"
+        description = "Authenticated loopback development server at 127.0.0.1:5523 in run-local, with durable local storage and no asset sync."
+        dependsOn(tasks.classes)
+        classpath = runServer.classpath
+        mainClass = runServer.mainClass
+        mainModule = runServer.mainModule
+        modularity.inferModulePath = runServer.modularity.inferModulePath
+        jvmArgs = runServer.jvmArgs.filter { it.isNotBlank() && !it.startsWith("-XX:AOT") && !it.startsWith("-XX:SharedArchiveFile") }
+        val nativeSmoke = providers.gradleProperty("nativeSmoke").isPresent
+        workingDir = if (nativeSmoke) layout.buildDirectory.dir("native-smoke/${System.currentTimeMillis()}").get().asFile else layout.projectDirectory.dir("run-local").asFile
+        val localArgs = mutableListOf<String>()
+        val replaced = setOf("--bind", "-b", "--auth-mode", "--universe", "--session-token", "--identity-token")
+        var skipValue = false
+        for (arg in runServer.args) {
+            if (skipValue) { skipValue = false; continue }
+            if (arg in replaced) { skipValue = true; continue }
+            if (replaced.any { arg.startsWith("$it=") } || arg == "--allow-op" || arg == "--disable-sentry") continue
+            localArgs.add(arg)
+        }
+        // Offline auth rejects multiplayer clients, even when server OAuth is present.
+        // Only the headless smoke run should use it.
+        val authMode = if (nativeSmoke) "offline" else "authenticated"
+        args = localArgs + listOf("--bind", "127.0.0.1:5523", "--auth-mode", authMode, "--allow-op", "--disable-sentry")
+        systemProperties = runServer.systemProperties
+        environment = runServer.environment
+        environment("ETERNIA_MODE", "local")
+        if (nativeSmoke) environment("ETERNIA_NATIVE_SMOKE", "1")
+        environment("ETERNIA_BRIDGE_ADDRESS", "127.0.0.1")
+        standardInput = System.`in`
+        javaLauncher = runServer.javaLauncher
+        enableAssertions = runServer.enableAssertions
+        doFirst {
+            workingDir.mkdirs()
+            if (!nativeSmoke) logger.lifecycle("Eternia local playtest: connect to 127.0.0.1:5523 (authenticated; ${if (environment["ETERNIA_DATABASE_URL"].toString().startsWith("jdbc:postgresql://")) "PostgreSQL" else "local file"} storage).")
+        }
+    }
+    tasks.register<JavaExec>("runServerPostgres") {
+        group = "hytale"
+        description = "Isolated PostgreSQL playtest at 127.0.0.1:5524; start through scripts/postgres-local.ps1 Game."
+        dependsOn(tasks.classes)
+        val local = localServer.get()
+        classpath = local.classpath
+        mainClass = local.mainClass
+        mainModule = local.mainModule
+        modularity.inferModulePath = local.modularity.inferModulePath
+        jvmArgs = local.jvmArgs
+        args = local.args.map { if (it == "127.0.0.1:5523") "127.0.0.1:5524" else it }
+        systemProperties = local.systemProperties
+        environment = local.environment
+        workingDir = layout.projectDirectory.dir("run-postgres").asFile
+        standardInput = System.`in`
+        javaLauncher = local.javaLauncher
+        enableAssertions = local.enableAssertions
+        doFirst {
+            require(!providers.gradleProperty("nativeSmoke").isPresent) { "PostgreSQL playtests must use authenticated multiplayer; nativeSmoke is a separate file-backed test." }
+            require(environment["ETERNIA_DATABASE_URL"].toString().startsWith("jdbc:postgresql://")) { "Run scripts/postgres-local.ps1 Game to configure the isolated local PostgreSQL database." }
+            workingDir.mkdirs()
+            logger.lifecycle("Eternia PostgreSQL playtest: connect to 127.0.0.1:5524 (run-postgres world; authenticated).")
+        }
+    }
 }

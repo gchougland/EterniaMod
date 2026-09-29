@@ -1,0 +1,1 @@
+{"id":"eternia:store/move","revision":1,"name":"Moving Charter","description":"One additional house move, including your saved furnishings.","category":"Housing","price":150,"benefits":[{"contentId":"eternia:plot_move_credit","kind":"QUANTITY","quantity":1,"expiresWithSubscription":false}]}

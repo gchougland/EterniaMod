@@ -1,0 +1,2 @@
+$T = "Theme/Citadel.ui";
+TextButton { Anchor: (Height: 44, Bottom: 6); Padding: (Horizontal: 12, Vertical: 10); Style: $T.@WrappedSecondaryButtonStyle; }

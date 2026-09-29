@@ -1,0 +1,57 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+$T.@PageOverlay {
+  Anchor: (Full: 0); LayoutMode: Middle;
+  $T.@Container {
+    Anchor: (Width: 1000, Height: 720);
+    #Title { Label #BoardTitle { Anchor: (Right: 56); Style: (...$T.@TitleStyle); Text: "Guild notice board"; } $T.@HomeButton #MenuHome { Anchor: (Right: 0, Top: 2, Width: 44, Height: 44); } }
+    #Content {
+      Anchor: (Top: 48, Bottom: 0); LayoutMode: Top;
+      Label #Status { Anchor: (Height: 44, Bottom: 8); Style: (...$T.@MutedStyle); }
+      Group { LayoutMode: Left; Anchor: (Height: 552);
+        Group { LayoutMode: Top; Anchor: (Width: 245, Right: 18);
+          Group #PostList { LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; Anchor: (Height: 396, Bottom: 8); }
+          Group #PageControls { LayoutMode: Left; Anchor: (Height: 44, Bottom: 8);
+            $T.@SecondaryTextButton #Previous { FlexWeight: 1; Anchor: (Right: 6); }
+            $T.@SecondaryTextButton #Next { FlexWeight: 1; }
+          }
+          $T.@SecondaryTextButton #Refresh { Anchor: (Height: 44, Bottom: 8); }
+          $T.@SecondaryTextButton #Back { Anchor: (Height: 44); }
+        }
+        Group { FlexWeight: 1; LayoutMode: Top;
+          Group #Reader { LayoutMode: Top; Anchor: (Height: 446, Bottom: 10);
+            Label #PostTitle { Anchor: (Height: 58, Bottom: 6); Style: (...$T.@SubtitleStyle); }
+            Label #PostAuthor { Anchor: (Height: 40, Bottom: 10); Style: (...$T.@MutedStyle); }
+            Group { LayoutMode: TopScrolling; Anchor: (Height: 328); ScrollbarStyle: $C.@DefaultScrollbarStyle;
+              Label #ReadBody { Anchor: (Height: 80, Right: 12); Style: (...$T.@DefaultLabelStyle); }
+            }
+          }
+          Group #Editor { LayoutMode: Top; Anchor: (Height: 446, Bottom: 10);
+            Label { Anchor: (Height: 26); Style: (...$T.@MutedStyle); Text: "Title (80 characters)"; }
+            $T.@TextField #DraftTitle { Anchor: (Height: 44, Bottom: 10); MaxLength: 80; }
+            Label { Anchor: (Height: 26); Style: (...$T.@MutedStyle); Text: "Notice (2,000 characters)"; }
+            MultilineTextField #DraftBody {
+              Anchor: (Height: 340); AutoGrow: false; MaxLength: 2000;
+              Background: #101e22; Padding: (Full: 10);
+              Style: (FontSize: 16, TextColor: #f0e8d5);
+              PlaceholderStyle: (FontSize: 16, TextColor: #b5c3b8);
+              ScrollbarStyle: $C.@DefaultScrollbarStyle;
+            }
+          }
+          Group { LayoutMode: Left; Anchor: (Height: 44, Bottom: 8);
+            $T.@TextButton #New { FlexWeight: 1; Anchor: (Right: 6); }
+            $T.@SecondaryTextButton #Edit { FlexWeight: 1; }
+            $T.@TextButton #Save { FlexWeight: 1; Anchor: (Right: 6); }
+            $T.@SecondaryTextButton #CancelEdit { FlexWeight: 1; }
+            $T.@TextButton #Confirm { FlexWeight: 1; Anchor: (Right: 6); }
+            $T.@SecondaryTextButton #Cancel { FlexWeight: 1; }
+          }
+          Group { LayoutMode: Left; Anchor: (Height: 44);
+            $T.@SecondaryTextButton #Pin { FlexWeight: 1; Anchor: (Right: 6); }
+            $T.@SecondaryTextButton #Remove { FlexWeight: 1; }
+          }
+        }
+      }
+    }
+  }
+}

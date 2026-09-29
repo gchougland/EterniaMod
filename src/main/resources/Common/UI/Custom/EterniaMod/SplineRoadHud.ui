@@ -1,0 +1,22 @@
+$T = "Theme/Citadel.ui";
+Group {
+  Anchor: (Top: 64, Right: 24, Width: 360, Height: 364);
+  Background: $T.@PanelSurface;
+  Padding: (Full: 20);
+  LayoutMode: Top;
+  Label #Mode { Text: "ROAD DESIGNER"; Anchor: (Height: 30, Bottom: 10); Style: (FontSize: 18, TextColor: #d8b66b, RenderBold: true); }
+  Label #Summary { Text: "0 nodes · 5 blocks wide"; Anchor: (Height: 48, Bottom: 12); Style: (...$T.@DefaultLabelStyle); }
+  Group { Anchor: (Height: 2, Bottom: 14); Background: #45615d; }
+  Label #Status { Text: "Aim at ground and add the first node."; Anchor: (Height: 96, Bottom: 10); Style: (FontSize: 16, TextColor: #85c5b3, Wrap: true); }
+  Label #Help { Text: "Node edits are only a preview until you confirm."; Anchor: (Height: 80); Style: (...$T.@MutedStyle); }
+}
+Group {
+  Anchor: (Left: 24, Top: 110, Width: 336, Height: 500);
+  Background: $T.@PanelSurface;
+  Padding: (Full: 18);
+  LayoutMode: Top;
+  Label { Anchor: (Height: 30, Bottom: 10); Text: "ROAD CONTROLS"; Style: $T.@SubtitleStyle; }
+  Label { Anchor: (Height: 60, Bottom: 12); Text: "Add at least two nodes. Move them to bend the road, then review and confirm."; Style: $T.@MutedStyle; }
+  Group #ControlRows { LayoutMode: Top; }
+  Label { Anchor: (Height: 48, Top: 14); Text: "Put the shovel away to hide its controls. Changes stay a preview until confirmed."; Style: $T.@MutedStyle; }
+}

@@ -1,0 +1,24 @@
+$T = "Theme/Citadel.ui";
+$T.@PageOverlay { Anchor: (Full: 0); LayoutMode: Middle;
+Group { Anchor: (Width: 1120, Height: 760); Background: $T.@InsetSurface; Padding: (Full: 16); LayoutMode: Top;
+Group { Anchor: (Height: 48, Bottom: 12); LayoutMode: Left;
+Group { Anchor: (Width: 180, Height: 40, Right: 18); Background: "Theme/Surfaces/EterniaWordmark.png"; }
+Label #ServicesTitle { FlexWeight: 1; Style: $T.@TitleStyle; Text: "ETERNIA"; }
+$T.@SecondaryTextButton #Return { Anchor: (Width: 96, Right: 10); Text: "Back"; Visible: false; }
+$T.@SecondaryTextButton #Close { Anchor: (Width: 96, Right: 10); Text: "Close"; }
+$T.@HomeButton #MenuHome {}
+}
+Group { FlexWeight: 1; LayoutMode: Left;
+Group { Anchor: (Width: 184, Right: 16); LayoutMode: Top; Background: $T.@PanelSurface; Padding: (Full: 10);
+Label { Anchor: (Height: 26, Bottom: 6); Style: $T.@MutedStyle; Text: "YOUR ETERNIA"; }
+Group #Navigation { FlexWeight: 1; LayoutMode: TopScrolling; }
+Label #Pagination { Anchor: (Height: 24, Bottom: 6); Style: (...$T.@MutedStyle, HorizontalAlignment: Center); }
+Group #PageControls { Anchor: (Height: 44); LayoutMode: Left;
+$T.@SecondaryTextButton #Previous { FlexWeight: 1; Anchor: (Right: 6); Text: "Prev"; }
+$T.@SecondaryTextButton #Next { FlexWeight: 1; Text: "Next"; }
+}
+}
+Group #ServicesBody { FlexWeight: 1; LayoutMode: Top; Background: $T.@PanelSurface; Padding: (Full: 16); }
+}
+}
+}

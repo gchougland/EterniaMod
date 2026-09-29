@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "discoveries": [
+    {
+      "id": "first-light-cache",
+      "world": "adventure",
+      "x": 32,
+      "y": 80,
+      "z": 16,
+      "markerBlockId": "Eternia_Discovery_Cache",
+      "reward": {
+        "contentId": "eternia:prop/aqua_lamp",
+        "kind": "QUANTITY",
+        "quantity": 1
+      }
+    }
+  ]
+}

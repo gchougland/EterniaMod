@@ -1,0 +1,31 @@
+{
+  "name": "eternia-website",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "dev:fixtures": "node --env-file=dev/local.env server/index.js",
+    "test": "node --test",
+    "db:migrate": "node scripts/migrate.js",
+    "sync:theme": "node scripts/sync-theme.js",
+    "sync:hytale-assets": "node scripts/sync-hytale-viewer-assets.mjs",
+    "renderer:install": "playwright install chromium"
+  },
+  "dependencies": {
+    "express": "4.22.2",
+    "express-session": "1.19.0",
+    "connect-pg-simple": "10.0.0",
+    "pg": "8.16.3",
+    "jose": "6.1.0",
+    "playwright": "1.62.1",
+    "three": "0.172.0",
+    "dotenv": "16.6.1"
+  },
+  "devDependencies": {}
+}
+

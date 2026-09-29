@@ -1,6 +1,6 @@
 package com.hexvane.eterniamod.placement;
 
-import com.hexvane.eterniamod.EterniaModConstants;
+import com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions;
 import com.hexvane.eterniamod.EterniaModPlugin;
 import com.hexvane.eterniamod.building.BuildingDefinition;
 import com.hexvane.eterniamod.building.BuildingItemMetadata;
@@ -53,7 +53,9 @@ public final class BuildingPlacementCommit {
         Player player = store.getComponent(ref, Player.getComponentType());
         CombinedItemContainer inv =
             player != null ? InventoryComponent.getCombined(store, ref, InventoryComponent.EVERYTHING) : null;
-        if (inv == null || !consumeBuildingItem(inv, session.getBuildingId())) {
+        PlayerRef actor = store.getComponent(ref, PlayerRef.getComponentType());
+        if (inv == null || actor == null || session.getWorld() != world
+            || BuildingPlacementValidator.validate(world, plotManager, plot, actor.getUuid(), session.getAnchor(), session.getPrefabYaw(), def, plugin) != null) {
             return false;
         }
         Vector3i buildingAnchor = def.resolvePrefabAnchorWorld(session.getAnchor(), session.getPrefabYaw());
@@ -62,18 +64,11 @@ public final class BuildingPlacementCommit {
             return false;
         }
         IPrefabBuffer buffer = PrefabBufferUtil.getCached(prefabPath);
-        List<ReplacedBlockCell> replaced =
-            BuildingPrefabOps.captureAndPaste(world, buildingAnchor, session.getPrefabYaw(), buffer);
-        PrefabEntityOps.pasteEntities(
-            prefabPath,
-            world,
-            buildingAnchor,
-            session.getPrefabYaw(),
-            store,
-            EterniaPlacedInstance.Kind.BUILDING,
-            plot.getPlotId(),
-            session.getBuildingId()
-        );
+        if (buffer == null) return false;
+        NativePlacementTransactions.Placed placed;
+        try { placed=NativePlacementTransactions.place(plugin,world,plot,actor.getUuid(),session.getBuildingId(),buildingAnchor,session.getPrefabYaw(),buffer,true); }
+        catch (Exception failure) { actor.sendMessage(com.hypixel.hytale.server.core.Message.raw(failure.getMessage())); return false; }
+        try {
         plot.setBuilding(
             new HubPlotBuilding(
                 session.getBuildingId(),
@@ -81,36 +76,19 @@ public final class BuildingPlacementCommit {
                 buildingAnchor.y,
                 buildingAnchor.z,
                 session.getPrefabYaw(),
-                replaced
+                List.of()
             )
         );
-        ManagementBlockLinker.linkPlot(world, plot.getPlotId(), def, buildingAnchor, session.getPrefabYaw());
+        // Management interactions resolve the authoritative plot; no unjournalled helper blocks are inserted.
         plotManager.updatePlot(plot);
         plotManager.saveIfDirty();
+        plugin.getServices().housing().updateBuildingPresent(placed.contentOwner(),plot.getPlotId(),true);
+        NativePlacementTransactions.complete(plugin,placed.operation());
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
         if (playerRef != null) {
             HubPlotVisibilityOverlay.refreshIfEnabled(playerRef, world, plugin);
         }
         return true;
-    }
-
-    private static boolean consumeBuildingItem(@Nonnull CombinedItemContainer inv, @Nonnull String buildingId) {
-        for (short slot = 0; slot < inv.getCapacity(); slot++) {
-            ItemStack stack = inv.getItemStack(slot);
-            if (ItemStack.isEmpty(stack)) {
-                continue;
-            }
-            if (!EterniaModConstants.BUILDING_ITEM_ID.equals(stack.getItemId())) {
-                continue;
-            }
-            if (!BuildingItemMetadata.matchesBuilding(stack, buildingId)) {
-                continue;
-            }
-            if (stack.getQuantity() <= 1) {
-                return inv.removeItemStack(stack).succeeded();
-            }
-            return inv.removeItemStackFromSlot(slot, stack, 1).succeeded();
-        }
-        return false;
+        } catch (Exception failure) { NativePlacementTransactions.lock(plugin,placed.operation()); actor.sendMessage(com.hypixel.hytale.server.core.Message.raw("Placement metadata needs recovery; its snapshot is retained.")); return false; }
     }
 }

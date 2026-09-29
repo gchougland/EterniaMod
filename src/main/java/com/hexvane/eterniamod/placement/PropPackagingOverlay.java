@@ -57,8 +57,9 @@ public final class PropPackagingOverlay {
         }
         World world = store.getExternalData().getWorld();
         HubPlotManager plotManager = EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin);
-        HubPlotRecord plot = plotManager.findPlotAtPlayerOrTarget(ref, store);
-        if (plot == null || !plot.isOwnedBy(uc.getUuid())) {
+        HubPlotRecord plot = PropBoundsUtil.findAimedPlot(plotManager.listPlots(), ref, store, plugin, 64.0);
+        if (plot == null) plot = plotManager.findPlotAtPlayerOrTarget(ref, store);
+        if (plot == null || !com.hexvane.eterniamod.housing.HousingAccess.can(plugin,plot,uc.getUuid(),com.hexvane.eterniamod.housing.HousingCustody.PACK)) {
             clearFor(playerRef);
             return;
         }
@@ -66,6 +67,8 @@ public final class PropPackagingOverlay {
         HubPlotProp highlighted = highlightMatch != null ? highlightMatch.prop() : null;
         clearFor(playerRef);
         for (HubPlotProp prop : plot.getProps()) {
+            var instance=plugin.getServices().provenance().find(prop.getInstanceId()).orElse(null);
+            if(instance==null||!com.hexvane.eterniamod.housing.HousingCustody.can(plugin,plot,uc.getUuid(),instance.owner(),com.hexvane.eterniamod.housing.HousingCustody.PACK))continue;
             PropDefinition def = plugin.getPropCatalog().get(prop.getPropId());
             if (def == null) {
                 continue;

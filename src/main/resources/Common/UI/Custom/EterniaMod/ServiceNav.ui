@@ -1,0 +1,2 @@
+$T = "Theme/Citadel.ui";
+$T.@SecondaryTextButton #NavButton { Anchor: (Height: 44, Bottom: 6); Padding: (Horizontal: 8); }

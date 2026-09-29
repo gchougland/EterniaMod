@@ -4,5 +4,6 @@
   "prefabPath": "House.prefab.json",
   "plotAnchorOffset": [4, 0, 4],
   "managementBlockLocalPos": [1, 2, 2],
+  "spawnLocalPos": [0, 1, 0],
   "rotationYaw": "None"
 }

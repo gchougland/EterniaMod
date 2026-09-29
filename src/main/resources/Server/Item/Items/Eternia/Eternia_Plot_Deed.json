@@ -1,0 +1,9 @@
+{
+  "TranslationProperties": { "Name": "eternia_customization.deed.name", "Description": "eternia_customization.deed.description" },
+  "Icon": "Icons/ItemsGenerated/Deco_Scroll.png",
+  "Model": "Items/Consumables/Scrolls/Scroll.blockymodel",
+  "Texture": "Items/Consumables/Scrolls/Scroll_Texture.png",
+  "Categories": ["Items.Tools"], "Quality": "Common", "MaxStack": 1, "PlayerAnimationsId": "Block",
+  "Interactions": { "Primary": { "Interactions": [{ "Type": "EterniaHousingTool", "Route": "CLAIM" }] }, "Secondary": { "Interactions": [{ "Type": "EterniaHousingTool", "Route": "CLAIM" }] } },
+  "Tags": { "Type": ["Tool"], "Family": ["Eternia"] }
+}

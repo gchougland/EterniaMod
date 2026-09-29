@@ -1,0 +1,26 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+Group { FlexWeight: 1; LayoutMode: Top;
+Label #SectionTitle { Anchor: (Height: 58, Bottom: 6); Style: (...$T.@TitleStyle, Wrap: true); }
+Label #Description { Anchor: (Height: 50, Bottom: 8); Style: $T.@DefaultLabelStyle; }
+Group #Tabs { Anchor: (Height: 48, Bottom: 8); LayoutMode: Left; }
+Group { FlexWeight: 1; LayoutMode: Left;
+Group #Rows { Anchor: (Width: 318, Right: 16); LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+Group { FlexWeight: 1; LayoutMode: Top; Background: $T.@InsetSurface; Padding: (Full: 16);
+Group #Reader { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; Label #Document { Anchor: (Height: 300, Right: 12); Style: (...$T.@DefaultLabelStyle, FontSize: 17); } }
+Group #Fields { FlexWeight: 1; LayoutMode: Top;
+Group #FieldOneGroup { Anchor: (Height: 76, Bottom: 10); LayoutMode: Top; Label #FieldOneLabel { Anchor: (Height: 28); Style: $T.@MutedStyle; } $T.@TextField #FieldOne { Anchor: (Height: 44); } }
+Group #FieldTwoGroup { Anchor: (Height: 76, Bottom: 10); LayoutMode: Top; Label #FieldTwoLabel { Anchor: (Height: 28); Style: $T.@MutedStyle; } $T.@TextField #FieldTwo { Anchor: (Height: 44); } }
+Group #FieldThreeGroup { FlexWeight: 1; LayoutMode: Top; Label #FieldThreeLabel { Anchor: (Height: 28); Style: $T.@MutedStyle; }
+MultilineTextField #FieldThree { FlexWeight: 1; AutoGrow: false; MaxLength: 2000; Background: $T.@HeaderSurface; Padding: (Full: 12); Style: (FontSize: 16, TextColor: $T.@Text); PlaceholderStyle: (FontSize: 16, TextColor: $T.@Muted); ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+}
+}
+}
+}
+Label #Status { Anchor: (Height: 34, Top: 8, Bottom: 8); Style: $T.@MutedStyle; }
+Group #Actions { LayoutMode: Left; Anchor: (Height: 48);
+$T.@TextButton #Primary { FlexWeight: 1; Anchor: (Height: 48, Right: 10); }
+$T.@SecondaryTextButton #Secondary { FlexWeight: 1; Anchor: (Height: 48, Right: 10); }
+$T.@SecondaryTextButton #Tertiary { FlexWeight: 1; Anchor: (Height: 48); }
+}
+}

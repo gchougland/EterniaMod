@@ -82,7 +82,8 @@ public final class PropPlacementOpenHelper {
             playerRef.sendMessage(Message.translation("eterniamod_common.eterniamod.common.notInPlot"));
             return null;
         }
-        if (!plot.isOwnedBy(playerUuid)) {
+        var custody=com.hexvane.eterniamod.housing.HousingAccess.owner(plot);
+        if (!com.hexvane.eterniamod.housing.HousingCustody.can(plugin,plot,playerUuid,custody,com.hexvane.eterniamod.housing.HousingCustody.PLACE)) {
             playerRef.sendMessage(Message.translation("eterniamod_common.eterniamod.common.notYourPlot"));
             return null;
         }
@@ -98,7 +99,7 @@ public final class PropPlacementOpenHelper {
             return null;
         }
         BuildingPlacementClientPrefabPreview.hide(playerRef);
-        PropPlacementSession session = new PropPlacementSession(world, plot.getPlotId(), anchor, 0, propId);
+        PropPlacementSession session = new PropPlacementSession(world, plot.getPlotId(), anchor, 0, propId,custody);
         PropPlacementSessions.put(playerUuid, session);
         return new PropPlacementPage(playerRef, session);
     }

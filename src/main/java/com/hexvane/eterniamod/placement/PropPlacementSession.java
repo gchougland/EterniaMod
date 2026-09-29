@@ -1,5 +1,6 @@
 package com.hexvane.eterniamod.placement;
 
+import com.hexvane.eterniamod.domain.Owner;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.Rotation;
 import com.hypixel.hytale.server.core.universe.world.World;
 import java.util.UUID;
@@ -21,6 +22,8 @@ public final class PropPlacementSession implements PrefabPreviewCacheHolder {
 
     @Nonnull
     private String propId;
+    /** Server-selected source; never decoded from a token, UI event or browser field. */
+    @Nullable private final Owner custodyOwner;
 
     @Nullable
     private String clientPrefabPreviewPathKey;
@@ -36,11 +39,16 @@ public final class PropPlacementSession implements PrefabPreviewCacheHolder {
         int rotationSteps,
         @Nonnull String propId
     ) {
+        this(world,plotId,anchor,rotationSteps,propId,null);
+    }
+
+    public PropPlacementSession(@Nonnull World world,@Nonnull UUID plotId,@Nonnull Vector3i anchor,int rotationSteps,@Nonnull String propId,@Nullable Owner custodyOwner) {
         this.world = world;
         this.plotId = plotId;
         this.anchor = new Vector3i(anchor);
         this.rotationSteps = rotationSteps;
         this.propId = propId;
+        this.custodyOwner = custodyOwner;
     }
 
     @Nonnull
@@ -88,6 +96,7 @@ public final class PropPlacementSession implements PrefabPreviewCacheHolder {
     public String getPropId() {
         return propId;
     }
+    @Nullable public Owner getCustodyOwner(){return custodyOwner;}
 
     public void nudge(int dx, int dy, int dz) {
         anchor = anchor.add(dx, dy, dz);

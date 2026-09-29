@@ -1,0 +1,405 @@
+{
+  "schemaVersion": 1,
+  "id": "eternia.citadel",
+  "name": "Citadel",
+  "status": "implemented-citadel-theme",
+  "updated": "2026-09-13",
+  "description": "Shared geometric medieval theme with fine brass/sage rims and restrained gradients. CSS tokens and native Citadel.ui share the palette.",
+  "colors": {
+    "canvas": "#101E22",
+    "panel": "#192D31",
+    "raised": "#233C3E",
+    "border": "#45615D",
+    "text": "#F0E8D5",
+    "muted": "#B5C3B8",
+    "primary": "#D8B66B",
+    "onPrimary": "#142528",
+    "primaryHover": "#E8CA87",
+    "accent": "#85C5B3",
+    "success": "#91C98B",
+    "danger": "#E69085",
+    "warning": "#E0BC73"
+  },
+  "semantic": {
+    "surfaceDefault": "canvas",
+    "surfacePanel": "panel",
+    "surfaceRaised": "raised",
+    "borderDecorative": "border",
+    "borderInteractive": "accent",
+    "textDefault": "text",
+    "textSecondary": "muted",
+    "actionPrimary": "primary",
+    "actionPrimaryHover": "primaryHover",
+    "textOnAction": "onPrimary",
+    "focusRing": "accent",
+    "selectionMarker": "primary",
+    "stateSuccess": "success",
+    "stateDanger": "danger",
+    "stateWarning": "warning"
+  },
+  "spacing": {
+    "unit": "design-unit",
+    "values": [
+      4,
+      8,
+      12,
+      16,
+      24,
+      32,
+      48
+    ],
+    "componentGap": 12,
+    "controlGap": 8,
+    "panelPadding": 24,
+    "panelPaddingCompact": 16,
+    "sectionGap": 32,
+    "iconLabelGap": 8
+  },
+  "typography": {
+    "web": {
+      "displayFamily": "Cinzel, Georgia, serif",
+      "bodyFamily": "'Source Sans 3', system-ui, sans-serif",
+      "baseSizePx": 16,
+      "bodyLineHeight": 1.5,
+      "displayLineHeight": 1.15
+    },
+    "hytale": {
+      "fontPolicy": "Native Default body and Secondary headings; Cinzel static wordmark image. Arbitrary custom client font registration was not verified on 0.6.5.",
+      "scalePolicy": "Native sizes below are candidate UI units to verify at supported client scales."
+    },
+    "roles": {
+      "display": {
+        "webPx": 44,
+        "nativeUiUnits": 28,
+        "weight": 400
+      },
+      "heading": {
+        "webPx": 28,
+        "nativeUiUnits": 24,
+        "weight": 400
+      },
+      "section": {
+        "webPx": 22,
+        "nativeUiUnits": 20,
+        "weight": 600
+      },
+      "body": {
+        "webPx": 16,
+        "nativeUiUnits": 16,
+        "weight": 400
+      },
+      "label": {
+        "webPx": 14,
+        "nativeUiUnits": 16,
+        "weight": 600
+      },
+      "caption": {
+        "webPx": 14,
+        "nativeUiUnits": 14,
+        "weight": 400
+      }
+    }
+  },
+  "geometry": {
+    "panelChamfer": 8,
+    "controlChamfer": 4,
+    "outlineWidth": 1,
+    "focusWidth": 2,
+    "focusOffset": 3,
+    "iconViewBox": 24,
+    "iconStroke": 1.75,
+    "iconSizes": [
+      16,
+      20,
+      24,
+      32
+    ],
+    "motifs": [
+      "pointed-arch",
+      "chamfer",
+      "diamond-separator",
+      "banner-notch",
+      "geometric-heraldry"
+    ],
+    "surfaceTreatment": "opaque-flat-fills",
+    "forbidden": [
+      "photographic-ui",
+      "paper-grain",
+      "parchment-texture",
+      "wood-texture",
+      "stone-texture",
+      "metal-texture",
+      "noise",
+      "gradients",
+      "bevels",
+      "baked-text",
+      "ornate-filigree"
+    ]
+  },
+  "controls": {
+    "minTargetSize": 44,
+    "buttonHeight": 44,
+    "compactControlHeight": 36,
+    "compactControlMinHitArea": 44,
+    "horizontalPadding": 16,
+    "primary": {
+      "default": {
+        "fill": "primary",
+        "text": "onPrimary"
+      },
+      "hover": {
+        "fill": "primaryHover",
+        "text": "onPrimary"
+      },
+      "pressed": {
+        "fill": "primary",
+        "text": "onPrimary",
+        "insetLine": "onPrimary"
+      },
+      "focus": {
+        "outerRing": "accent",
+        "separator": "canvas",
+        "width": 2,
+        "offset": 3
+      },
+      "disabled": {
+        "fill": "panel",
+        "text": "muted",
+        "border": "border",
+        "explicitUnavailableReason": true
+      }
+    },
+    "secondary": {
+      "default": {
+        "fill": "panel",
+        "text": "text",
+        "border": "accent"
+      },
+      "hover": {
+        "fill": "raised",
+        "text": "text",
+        "border": "primary"
+      },
+      "pressed": {
+        "fill": "canvas",
+        "text": "text",
+        "border": "primary"
+      }
+    },
+    "destructive": {
+      "default": {
+        "fill": "panel",
+        "text": "danger",
+        "border": "danger"
+      },
+      "hover": {
+        "fill": "danger",
+        "text": "onPrimary",
+        "border": "danger"
+      }
+    },
+    "input": {
+      "fill": "canvas",
+      "text": "text",
+      "placeholder": "muted",
+      "border": "accent",
+      "errorBorder": "danger",
+      "errorRequiresText": true
+    },
+    "selection": {
+      "fill": "raised",
+      "text": "text",
+      "marker": "primary",
+      "requiresCheckOrLabel": true
+    },
+    "loading": {
+      "retainLabel": true,
+      "preventDuplicateAction": true
+    }
+  },
+  "layout": {
+    "webMaxContentWidthPx": 1200,
+    "webReadingWidthCh": 65,
+    "webNarrowBreakpointPx": 720,
+    "nativeDefaultPlacementPanelWidth": 480,
+    "nativePolicy": "Fit and scroll within supported viewports; preserve useful world view; validate real .ui layout and font metrics.",
+    "modalPolicy": "One clear title, short explanation, body, persistent action row; focus enters and returns to trigger."
+  },
+  "motion": {
+    "durationMs": 120,
+    "reducedMotionMs": 0,
+    "style": "brief-state-transitions-only",
+    "forbidden": [
+      "parallax",
+      "ambient-particles",
+      "pulsing-gold",
+      "animated-textures"
+    ]
+  },
+  "assets": {
+    "webUiSource": "code-native SVG and CSS geometry",
+    "hytaleUiSource": "verified native primitives or lossless PNG exports from the same clean vector source",
+    "nativeSvgSupport": "not-assumed",
+    "text": "live text, never baked into raster assets",
+    "itemArt": "actual isolated game item/model renders or simple authored flat illustrations; no UI screenshots or photographed product framing",
+    "uiExport": {
+      "sizes": [
+        24,
+        48,
+        96
+      ],
+      "format": "PNG",
+      "background": "transparent",
+      "lossless": true
+    }
+  },
+  "accessibility": {
+    "normalTextMinContrast": 4.5,
+    "largeTextMinContrast": 3,
+    "essentialNonTextMinContrast": 3,
+    "decorativeBorderNotForEssentialControls": true,
+    "neverColorOnly": true,
+    "focusOnPrimaryNeedsCanvasSeparation": true,
+    "contrastMethod": "WCAG sRGB relative luminance; opaque fills, ratios rounded to 2 decimal places for display only",
+    "contrastChecks": [
+      {
+        "foreground": "text",
+        "background": "canvas",
+        "ratio": 13.98
+      },
+      {
+        "foreground": "text",
+        "background": "panel",
+        "ratio": 11.78
+      },
+      {
+        "foreground": "text",
+        "background": "raised",
+        "ratio": 9.63
+      },
+      {
+        "foreground": "muted",
+        "background": "panel",
+        "ratio": 7.85
+      },
+      {
+        "foreground": "muted",
+        "background": "raised",
+        "ratio": 6.41
+      },
+      {
+        "foreground": "onPrimary",
+        "background": "primary",
+        "ratio": 8.17
+      },
+      {
+        "foreground": "onPrimary",
+        "background": "primaryHover",
+        "ratio": 9.98
+      },
+      {
+        "foreground": "accent",
+        "background": "panel",
+        "ratio": 7.28
+      },
+      {
+        "foreground": "accent",
+        "background": "raised",
+        "ratio": 5.95
+      },
+      {
+        "foreground": "success",
+        "background": "raised",
+        "ratio": 6.12
+      },
+      {
+        "foreground": "danger",
+        "background": "raised",
+        "ratio": 4.86
+      },
+      {
+        "foreground": "warning",
+        "background": "raised",
+        "ratio": 6.5
+      },
+      {
+        "foreground": "border",
+        "background": "panel",
+        "ratio": 2.14
+      },
+      {
+        "foreground": "border",
+        "background": "raised",
+        "ratio": 1.75
+      },
+      {
+        "foreground": "border",
+        "background": "canvas",
+        "ratio": 2.54
+      },
+      {
+        "foreground": "primary",
+        "background": "raised",
+        "ratio": 6.06
+      },
+      {
+        "foreground": "onPrimary",
+        "background": "danger",
+        "ratio": 6.56
+      },
+      {
+        "foreground": "accent",
+        "background": "canvas",
+        "ratio": 8.64
+      }
+    ]
+  },
+  "mapping": {
+    "status": "implemented-css-tokens-and-native-nine-slice",
+    "cssPrefix": "--et-",
+    "nativeStyleFile": "Common/UI/Custom/EterniaMod/Theme/Citadel.ui",
+    "nativePolicy": "Translate semantic roles into supported .ui properties; validate with the pinned game runtime. This JSON cannot be appended as .ui.",
+    "exampleMappings": [
+      {
+        "token": "colors.canvas",
+        "css": "--et-canvas",
+        "hytale": "shared opaque page/panel Background value"
+      },
+      {
+        "token": "colors.text",
+        "css": "--et-text",
+        "hytale": "shared label TextColor"
+      },
+      {
+        "token": "colors.primary",
+        "css": "--et-primary",
+        "hytale": "shared TextButtonStyle default background"
+      },
+      {
+        "token": "typography.roles.body",
+        "css": "body font-size/line-height",
+        "hytale": "shared label FontSize; native line wrapping tested"
+      }
+    ]
+  },
+  "review": {
+    "mode": "local-first",
+    "runtimeChanged": false,
+    "documents": [
+      "theme.md",
+      "local-development.md",
+      "README.md"
+    ],
+    "scenarios": [
+      "housing",
+      "guild-permissions",
+      "store",
+      "season-pass",
+      "mail",
+      "mobile-website",
+      "native-placement",
+      "keyboard-and-focus",
+      "disabled-and-error-states"
+    ]
+  }
+}

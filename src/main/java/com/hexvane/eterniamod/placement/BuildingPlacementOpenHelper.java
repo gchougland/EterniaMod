@@ -103,6 +103,7 @@ public final class BuildingPlacementOpenHelper {
         BuildingPlacementClientPrefabPreview.hide(playerRef);
         BuildingPlacementSession session =
             new BuildingPlacementSession(world, plot.getPlotId(), anchor, 0, buildingId);
+        BuildingPlacementValidator.findValidPosition(world,plot,playerUuid,session,def,plugin);
         BuildingPlacementSessions.put(playerUuid, session);
         BuildingPlacementDebugLog.openAttempt(playerRef.getUsername(), buildingId, true);
         return new BuildingPlacementPage(playerRef, session);

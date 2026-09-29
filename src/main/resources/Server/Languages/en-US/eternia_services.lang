@@ -1,0 +1,14 @@
+npc.greeter = Prowl [Eternia Guide]
+npc.housing = Bramble Hearthleaf [Housing Steward]
+npc.guild = Torren Ironbough [Guild Marshal]
+npc.shop = Nima Quicktail [Market Broker]
+npc.store = Lyra Starweave [Royal Quartermaster]
+npc.minigame = Pip Coppercap [Games Master]
+interact = Speak
+interact.greeter = Speak with Prowl
+interact.housing = Speak with Bramble Hearthleaf
+interact.guild = Speak with Torren Ironbough
+interact.shop = Speak with Nima Quicktail
+interact.store = Speak with Lyra Starweave
+interact.minigame = Speak with Pip Coppercap
+trials.wheat=Trial Wheat

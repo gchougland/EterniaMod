@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "prop",
+  "id": "eternia:prop/preview_stone",
+  "revision": 1,
+  "displayName": "Preview Stone",
+  "description": "Local renderer demonstration.",
+  "ownerScopes": [
+    "PLAYER"
+  ],
+  "structureBounds": {
+    "min": [
+      0,
+      0,
+      0
+    ],
+    "size": [
+      2,
+      2,
+      2
+    ]
+  }
+}
+

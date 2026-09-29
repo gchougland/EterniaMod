@@ -1,0 +1,29 @@
+{
+  "Model": "NPC/Elemental/Spirit_Root/Models/Model.blockymodel",
+  "Texture": "NPC/Elemental/Spirit_Root/Models/Texture.png",
+  "EyeHeight": 0.5,
+  "HitBox": {
+    "Min": {
+      "X": -0.4,
+      "Y": 0,
+      "Z": -0.4
+    },
+    "Max": {
+      "X": 0.4,
+      "Y": 0.8,
+      "Z": 0.4
+    }
+  },
+  "AnimationSets": {
+    "Idle": {
+      "Animations": [
+        {
+          "Animation": "NPC/Elemental/Spirit_Root/Animations/Default/Idle.blockyanim"
+        }
+      ]
+    }
+  },
+  "Icon": "Icons/ModelsGenerated/Spirit_Root.png",
+  "MinScale": 1,
+  "MaxScale": 1
+}

@@ -1,0 +1,26 @@
+{
+  "version": 8,
+  "blocks": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "name": "Rock_Stone"
+    }
+  ],
+  "entities": [],
+  "fluids": []
+}
+

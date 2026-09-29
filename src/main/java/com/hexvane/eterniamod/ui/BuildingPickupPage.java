@@ -38,7 +38,7 @@ public final class BuildingPickupPage extends EterniaInteractiveCustomUIPage<Bui
         @Nonnull UIEventBuilder eventBuilder,
         @Nonnull Store<EntityStore> store
     ) {
-        commandBuilder.append("EterniaMod/BuildingPickupPage.ui");
+        commandBuilder.append("EterniaMod/BuildingPickupPage.ui");bindHome(eventBuilder);
         commandBuilder.set("#PickupTitle.TextSpans", Message.translation(MSG_UI + ".title"));
         commandBuilder.set("#PickupBody.TextSpans", Message.translation(MSG_UI + ".body"));
         commandBuilder.set("#ConfirmButton.TextSpans", Message.translation(MSG_UI + ".confirm"));
@@ -53,7 +53,7 @@ public final class BuildingPickupPage extends EterniaInteractiveCustomUIPage<Bui
             return;
         }
         if ("Cancel".equalsIgnoreCase(data.action)) {
-            close();
+            returnOrClose(ref,store);
             return;
         }
         if (!"Confirm".equalsIgnoreCase(data.action)) {

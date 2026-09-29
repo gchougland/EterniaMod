@@ -1,0 +1,2 @@
+{"id":"eternia:store/rootling","revision":1,"name":"Rootling Companion","description":"A little woodland companion. Equip it in your Collection.","category":"Companions","price":450,"benefits":[{"contentId":"eternia:pet/rootling","kind":"QUANTITY","quantity":1,"expiresWithSubscription":false}]}
+

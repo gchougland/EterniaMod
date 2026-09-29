@@ -1,6 +1,6 @@
 package com.hexvane.eterniamod.placement;
 
-import com.hexvane.eterniamod.EterniaModConstants;
+import com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions;
 import com.hexvane.eterniamod.EterniaModPlugin;
 import com.hexvane.eterniamod.hub.EterniaWorldRegistries;
 import com.hexvane.eterniamod.hub.HubPlotManager;
@@ -49,7 +49,9 @@ public final class PropPlacementCommit {
         Player player = store.getComponent(ref, Player.getComponentType());
         CombinedItemContainer inv =
             player != null ? InventoryComponent.getCombined(store, ref, InventoryComponent.EVERYTHING) : null;
-        if (inv == null || !consumePropItem(store, ref, inv, session.getPropId())) {
+        var actor = store.getComponent(ref, com.hypixel.hytale.server.core.universe.PlayerRef.getComponentType());
+        if (inv == null || actor == null || session.getWorld() != world
+            || PropPlacementValidator.validate(world, plot, actor.getUuid(), session.getAnchor(), session.getPrefabYaw(), def) != null) {
             return false;
         }
         Vector3i propAnchor = def.resolvePrefabAnchorWorld(session.getAnchor(), session.getPrefabYaw());
@@ -58,18 +60,16 @@ public final class PropPlacementCommit {
             return false;
         }
         IPrefabBuffer buffer = PrefabBufferUtil.getCached(prefabPath);
-        UUID instanceId = UUID.randomUUID();
-        PropPrefabOps.pasteSolidsOnly(world, propAnchor, session.getPrefabYaw(), buffer);
-        PrefabEntityOps.pasteEntities(
-            prefabPath,
-            world,
-            propAnchor,
-            session.getPrefabYaw(),
-            store,
-            EterniaPlacedInstance.Kind.PROP,
-            instanceId,
-            session.getPropId()
-        );
+        if (buffer == null) return false;
+        NativePlacementTransactions.Placed placed;
+        try {
+            var source=session.getCustodyOwner()!=null?session.getCustodyOwner():NativePlacementTransactions.owner(plot);
+            com.hexvane.eterniamod.housing.HousingCustody.require(plugin,plot,actor.getUuid(),source,com.hexvane.eterniamod.housing.HousingCustody.PLACE);
+            placed=NativePlacementTransactions.place(plugin,world,plot,actor.getUuid(),session.getPropId(),propAnchor,session.getPrefabYaw(),buffer,false,source);
+        }
+        catch (Exception failure) { plugin.getLogger().atWarning().withCause(failure).log("Prop placement did not complete"); actor.sendMessage(com.hypixel.hytale.server.core.Message.raw(failure.getMessage())); return false; }
+        try {
+        UUID instanceId=placed.instanceId();
         plot.addProp(
             new HubPlotProp(
                 instanceId,
@@ -82,56 +82,8 @@ public final class PropPlacementCommit {
         );
         plotManager.updatePlot(plot);
         plotManager.saveIfDirty();
+        NativePlacementTransactions.complete(plugin,placed.operation());
         return true;
-    }
-
-    private static boolean consumePropItem(
-        @Nonnull Store<EntityStore> store,
-        @Nonnull Ref<EntityStore> ref,
-        @Nonnull CombinedItemContainer inv,
-        @Nonnull String propId
-    ) {
-        ItemStack held = InventoryComponent.getItemInHand(store, ref);
-        if (
-            !ItemStack.isEmpty(held)
-                && EterniaModConstants.PROP_ITEM_ID.equals(held.getItemId())
-                && PropItemMetadata.matchesProp(held, propId)
-                && consumeOneFromHand(store, ref, held)
-        ) {
-            return true;
-        }
-        for (short slot = 0; slot < inv.getCapacity(); slot++) {
-            ItemStack stack = inv.getItemStack(slot);
-            if (ItemStack.isEmpty(stack)) {
-                continue;
-            }
-            if (!EterniaModConstants.PROP_ITEM_ID.equals(stack.getItemId())) {
-                continue;
-            }
-            if (!PropItemMetadata.matchesProp(stack, propId)) {
-                continue;
-            }
-            if (stack.getQuantity() <= 1) {
-                return inv.removeItemStack(stack).succeeded();
-            }
-            return inv.removeItemStackFromSlot(slot, stack, 1).succeeded();
-        }
-        return false;
-    }
-
-    private static boolean consumeOneFromHand(
-        @Nonnull Store<EntityStore> store,
-        @Nonnull Ref<EntityStore> ref,
-        @Nonnull ItemStack held
-    ) {
-        InventoryComponent.Hotbar hotbar = store.getComponent(ref, InventoryComponent.Hotbar.getComponentType());
-        if (hotbar == null) {
-            return false;
-        }
-        short slot = hotbar.getActiveSlot();
-        if (held.getQuantity() <= 1) {
-            return hotbar.getInventory().removeItemStackFromSlot(slot).succeeded();
-        }
-        return hotbar.getInventory().removeItemStackFromSlot(slot, held, 1).succeeded();
+        } catch (Exception failure) { plugin.getLogger().atWarning().withCause(failure).log("Prop placement metadata did not complete"); NativePlacementTransactions.lock(plugin,placed.operation()); actor.sendMessage(com.hypixel.hytale.server.core.Message.raw("Placement metadata needs recovery; its snapshot is retained.")); return false; }
     }
 }

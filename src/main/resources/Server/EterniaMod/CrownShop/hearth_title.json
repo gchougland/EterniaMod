@@ -1,0 +1,1 @@
+{"id":"eternia:store/hearth_title","revision":1,"name":"of the Hearth","description":"A suffix title that pairs with your favorite prefix.","category":"Titles","price":100,"benefits":[{"contentId":"eternia:title/of_the_hearth","kind":"UNLOCK","quantity":1,"expiresWithSubscription":false}]}

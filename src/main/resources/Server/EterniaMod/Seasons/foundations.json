@@ -1,0 +1,18 @@
+{
+  "id":"eternia:foundations","name":"Foundations",
+  "thresholds":[2000,4000,6000,8000,10000,12000,14000,16000,18000,20000,22000,24000,26000,28000,30000,32000,34000,36000,38000,40000,42000,44000,46000,48000,50000,52000,54000,56000,58000,60000],
+  "rewards":[
+    {"track":"FREE","level":1,"index":0,"contentId":"eternia:prop/aqua_lamp","kind":"QUANTITY","quantity":1},
+    {"track":"FREE","level":5,"index":0,"contentId":"eternia:title/wayfarer","kind":"UNLOCK","quantity":1},
+    {"track":"FREE","level":15,"index":0,"contentId":"eternia:prop/potion_shelf","kind":"QUANTITY","quantity":1},
+    {"track":"FREE","level":30,"index":0,"contentId":"eternia:plot_move_credit","kind":"QUANTITY","quantity":1},
+    {"track":"PAID","level":1,"index":0,"contentId":"eternia:prop/cacti","kind":"QUANTITY","quantity":1},
+    {"track":"PAID","level":10,"index":0,"contentId":"eternia:title/of_the_hearth","kind":"UNLOCK","quantity":1},
+    {"track":"PAID","level":30,"index":0,"contentId":"eternia:plot_move_credit","kind":"QUANTITY","quantity":1}
+  ],
+  "quests":[
+    {"id":"eternia:quest/hunt","activity":"KILL","kind":"COUNT","targets":[],"required":50,"bonusXp":8000},
+    {"id":"eternia:quest/miner","activity":"MINE","kind":"DISTINCT","targets":[],"required":12,"bonusXp":8000},
+    {"id":"eternia:quest/harvest","activity":"HARVEST","kind":"COUNT","targets":[],"required":100,"bonusXp":8000}
+  ]
+}

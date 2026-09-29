@@ -49,6 +49,9 @@ public final class PropPackagingWandTickSystem extends EntityTickingSystem<Entit
             return;
         }
         UUID playerUuid = playerRef.getUuid();
+        // Debug shapes share one client surface. A held wand must never clear a placement page's grid.
+        var player=store.getComponent(ref,Player.getComponentType());
+        if(player!=null&&player.getPageManager().getCustomPage()!=null){tickCounters.remove(playerUuid);return;}
         ItemStack held = InventoryComponent.getItemInHand(store, ref);
         if (ItemStack.isEmpty(held) || !EterniaModConstants.PACKAGING_WAND_ID.equals(held.getItemId())) {
             if (tickCounters.remove(playerUuid) != null) {

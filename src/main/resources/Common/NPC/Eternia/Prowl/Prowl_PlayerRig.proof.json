@@ -1,0 +1,81 @@
+{
+  "sourceSha256": "d1b5c87d92358f2c8ff5ab6ffd491f5d09b2f8af867378df6d8e76e669fab104",
+  "textureSha256": "9f7693da43708e7491572d62cf232de2057f8745e4b7b58cd30a8997d47e59c6",
+  "shapeCount": 40,
+  "maximumWorldVertexError": 1.4210854715202004e-14,
+  "shapeParents": {
+    "3": "Pelvis",
+    "4": "Belly",
+    "5": "Belly",
+    "7": "Chest",
+    "9": "R-Arm",
+    "10": "R-Arm",
+    "11": "R-Forearm",
+    "13": "R-Hand",
+    "16": "L-Arm",
+    "17": "L-Arm",
+    "18": "L-Forearm",
+    "20": "L-Hand",
+    "23": "Neck",
+    "24": "Head",
+    "25": "Head",
+    "26": "Head",
+    "27": "Head",
+    "29": "Head",
+    "30": "Head",
+    "31": "Head",
+    "32": "Head",
+    "33": "R-Eyebrow-Attachment",
+    "34": "L-Eyebrow-Attachment",
+    "35": "Mouth-Attachment",
+    "36": "L-Eye-Attachment",
+    "37": "R-Eye-Attachment",
+    "38": "R-Eyelid",
+    "39": "L-Eyelid",
+    "40": "R-Eyelid-Bot",
+    "41": "L-Eyelid-Bot",
+    "42": "L-Thigh",
+    "43": "L-Calf",
+    "44": "L-Foot",
+    "45": "L-Foot",
+    "46": "L-Foot",
+    "47": "R-Thigh",
+    "48": "R-Calf",
+    "49": "R-Foot",
+    "50": "R-Foot",
+    "51": "R-Foot"
+  },
+  "quaternionConvention": "unit normalized; composition parent * child",
+  "childFrameConvention": "parent shape center, including rotated offset even for shapeless nodes",
+  "hierarchySource": "Common/Characters/Player.blockymodel",
+  "pivotPolicy": "native player orientations and parent hierarchy, Prowl anatomical joint positions",
+  "bindBounds": [
+    [
+      -24.874720536609708,
+      -0.9365202096487599,
+      -14.711200000000002
+    ],
+    [
+      26.22014426863005,
+      122.0,
+      14.418232279425045
+    ]
+  ],
+  "posePreview": {
+    "Idle": {
+      "sampleCount": 13,
+      "minimumHeight": 123.219818,
+      "maximumHeight": 123.748817,
+      "maximumAuthoredLegAdjustment": 0.013762,
+      "legSegmentTransformErrorLimit": 1e-08
+    },
+    "Walk": {
+      "sampleCount": 13,
+      "minimumHeight": 120.499013,
+      "maximumHeight": 127.73441,
+      "maximumAuthoredLegAdjustment": 0.0,
+      "legSegmentTransformErrorLimit": 1e-08
+    },
+    "eyeLookDisplacement": 1.0
+  }
+}

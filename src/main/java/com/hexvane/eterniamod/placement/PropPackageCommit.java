@@ -1,6 +1,7 @@
 package com.hexvane.eterniamod.placement;
 
 import com.hexvane.eterniamod.EterniaModConstants;
+import com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions;
 import com.hexvane.eterniamod.EterniaModPlugin;
 import com.hexvane.eterniamod.hub.EterniaWorldRegistries;
 import com.hexvane.eterniamod.hub.HubPlotManager;
@@ -54,13 +55,24 @@ public final class PropPackageCommit {
         }
         World world = store.getExternalData().getWorld();
         HubPlotManager plotManager = EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin);
-        HubPlotRecord plot = plotManager.findPlotAtPlayerOrTarget(ref, store);
+        HubPlotRecord plot = PropBoundsUtil.findAimedPlot(plotManager.listPlots(), ref, store, plugin, 64.0);
+        if (plot == null) plot = plotManager.findPlotAtPlayerOrTarget(ref, store);
         if (plot == null) {
             playerRef.sendMessage(Message.translation("eterniamod_common.eterniamod.common.notInPlot"));
             return false;
         }
         UUID playerUuid = uc.getUuid();
-        if (!plot.isOwnedBy(playerUuid)) {
+        if (com.hexvane.eterniamod.housing.HousingAccess.locked(plugin,plot)) {
+            try {
+                if(com.hexvane.eterniamod.housing.relocation.FailedPropRecovery.recover(plugin,world,plot,playerUuid)>0) {
+                    playerRef.sendMessage(Message.raw("The interrupted decoration has been returned to your build inventory. Your plot is unlocked; you can place it again or package another decoration."));
+                    return true;
+                }
+                playerRef.sendMessage(Message.raw("This plot has an unfinished housing operation. Your ownership is unchanged. Open My plots to inspect its recovery state."));
+            }catch(Exception failure){playerRef.sendMessage(Message.raw(failure.getMessage()));}
+            return false;
+        }
+        if (!com.hexvane.eterniamod.housing.HousingAccess.can(plugin,plot,playerUuid,com.hexvane.eterniamod.housing.HousingCustody.PACK)) {
             playerRef.sendMessage(Message.translation("eterniamod_common.eterniamod.common.notYourPlot"));
             return false;
         }
@@ -73,35 +85,17 @@ public final class PropPackageCommit {
         if (def == null) {
             return false;
         }
-        Path prefabPath = PrefabResolveUtil.resolvePrefabPath(def.getPrefabPath());
-        if (prefabPath == null) {
-            return false;
-        }
-        IPrefabBuffer buffer = PrefabBufferUtil.getCached(prefabPath);
-        Vector3i origin =
-            new Vector3i(match.prop().getAnchorX(), match.prop().getAnchorY(), match.prop().getAnchorZ());
-        if (!PropPrefabOps.isIntact(world, origin, match.prop().resolveRotationYaw(), buffer)) {
-            playerRef.sendMessage(Message.translation("eterniamod_common.eterniamod.common.propChanged"));
-            return false;
-        }
-        ItemStack reward =
-            PropItemMetadata.withProp(
-                new ItemStack(EterniaModConstants.PROP_ITEM_ID, 1),
-                def.getId(),
-                def.getDisplayName(),
-                playerRef.getLanguage()
-            );
-        if (!inv.canAddItemStack(reward)) {
-            playerRef.sendMessage(Message.translation("eterniamod_common.eterniamod.common.inventoryFull"));
-            return false;
-        }
-        PropPrefabOps.removeSolidsOnly(world, origin, match.prop().resolveRotationYaw(), buffer);
-        PrefabEntityOps.removeLinkedEntities(world, match.prop().getInstanceId());
+        UUID operation;
+        try {operation=NativePlacementTransactions.pickup(plugin,world,plot,playerUuid,match.prop().getInstanceId());}
+        catch(Exception failure){playerRef.sendMessage(Message.raw(failure.getMessage()));return false;}
+        try {
         plot.removeProp(match.prop().getInstanceId());
         plotManager.updatePlot(plot);
         plotManager.saveIfDirty();
-        player.giveItem(reward, ref, store);
-        playerRef.sendMessage(Message.translation("eterniamod_common.eterniamod.common.propPackaged"));
+        NativePlacementTransactions.complete(plugin,operation);
+        var custody=plugin.getServices().provenance().find(match.prop().getInstanceId()).orElseThrow().owner();
+        playerRef.sendMessage(custody.kind()==com.hexvane.eterniamod.domain.Owner.Kind.GUILD?Message.raw("Decoration returned to the guild build inventory."):Message.translation("eterniamod_common.eterniamod.common.propPackaged"));
         return true;
+        }catch(Exception failure){NativePlacementTransactions.lock(plugin,operation);return false;}
     }
 }

@@ -1,0 +1,23 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+Group { FlexWeight: 1; LayoutMode: Top;
+Label #SectionTitle { Anchor: (Height: 34, Bottom: 6); Style: $T.@TitleStyle; }
+Label #Description { Anchor: (Height: 50, Bottom: 8); Style: $T.@DefaultLabelStyle; }
+Group #Tabs { Anchor: (Height: 48, Bottom: 8); LayoutMode: Left; }
+Group #OfferSummary { Anchor: (Height: 132, Bottom: 12); LayoutMode: Left;
+Group { FlexWeight: 1; Anchor: (Right: 12); Background: $T.@InsetSurface; Padding: (Full: 14); LayoutMode: Top; Label { Anchor: (Height: 26); Style: $T.@SubtitleStyle; Text: "YOUR OFFER"; } Label #YourOffer { FlexWeight: 1; Style: $T.@DefaultLabelStyle; } }
+Group { FlexWeight: 1; Anchor: (Right: 12); Background: $T.@InsetSurface; Padding: (Full: 14); LayoutMode: Top; Label { Anchor: (Height: 26); Style: $T.@SubtitleStyle; Text: "THEIR OFFER"; } Label #TheirOffer { FlexWeight: 1; Style: $T.@DefaultLabelStyle; } }
+}
+Group #Fields { Anchor: (Height: 156, Bottom: 10); LayoutMode: Top;
+Group #FieldOneGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldOneLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldOne { FlexWeight: 1; } }
+Group #FieldTwoGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldTwoLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldTwo { FlexWeight: 1; } }
+Group #FieldThreeGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldThreeLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldThree { FlexWeight: 1; } }
+}
+Group #Rows { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+Label #Status { Anchor: (Height: 34, Top: 8, Bottom: 8); Style: $T.@MutedStyle; }
+Group #Actions { LayoutMode: Left; Anchor: (Height: 48);
+$T.@TextButton #Primary { FlexWeight: 1; Anchor: (Height: 48, Right: 10); }
+$T.@SecondaryTextButton #Secondary { FlexWeight: 1; Anchor: (Height: 48, Right: 10); }
+$T.@SecondaryTextButton #Tertiary { FlexWeight: 1; Anchor: (Height: 48); }
+}
+}

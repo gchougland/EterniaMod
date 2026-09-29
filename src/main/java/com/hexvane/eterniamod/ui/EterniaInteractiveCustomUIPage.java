@@ -22,12 +22,39 @@ import javax.annotation.Nullable;
  */
 public abstract class EterniaInteractiveCustomUIPage<T> extends InteractiveCustomUIPage<T> {
     private volatile boolean dismissed;
+    private final String homeEvent = java.util.UUID.randomUUID().toString();
+
+    protected final void bindHome(UIEventBuilder events) {
+        events.addEventBinding(com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType.Activating,
+            "#MenuHome", new com.hypixel.hytale.server.core.ui.builder.EventData().append("EterniaHome", homeEvent), false);
+    }
+
+    @Override
+    public void handleDataEvent(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, String rawData) {
+        var data = org.bson.BsonDocument.parse(rawData);
+        if (!data.containsKey("EterniaHome")) { super.handleDataEvent(ref, store, rawData); return; }
+        if (!data.get("EterniaHome").equals(new org.bson.BsonString(homeEvent))) return;
+        store.getExternalData().getWorld().execute(() -> {
+            if (dismissed || !ref.isValid()) return;
+            var player = store.getComponent(ref, Player.getComponentType());
+            var plugin = com.hexvane.eterniamod.EterniaModPlugin.get();
+            if (player == null || plugin == null || player.getPageManager().getCustomPage() != this) return;
+            // Normal page dismissal preserves placement drafts and releases preview/camera ownership.
+            com.hexvane.eterniamod.socialui.SocialUiBootstrap.open(ref, store, playerRef,
+                plugin.getServices(), plugin.getMenuActions(), com.hexvane.eterniamod.socialui.EterniaServicesPage.Section.GREETER);
+        });
+    }
 
     public EterniaInteractiveCustomUIPage(
         @Nonnull PlayerRef playerRef, @Nonnull CustomPageLifetime lifetime, @Nonnull BuilderCodec<T> eventDataCodec
     ) {
         super(playerRef, lifetime, eventDataCodec);
     }
+
+    private java.util.function.BiConsumer<Ref<EntityStore>,Store<EntityStore>> returnAction;
+    public EterniaInteractiveCustomUIPage<T> withReturnFrom(CustomUIPage parent){returnAction=ChoicePage.returnAction(parent);return this;}
+    protected boolean hasReturnPage(){return returnAction!=null;}
+    protected void returnOrClose(Ref<EntityStore> ref,Store<EntityStore> store){if(returnAction!=null)returnAction.accept(ref,store);else close();}
 
     protected boolean isDismissed() {
         return dismissed;

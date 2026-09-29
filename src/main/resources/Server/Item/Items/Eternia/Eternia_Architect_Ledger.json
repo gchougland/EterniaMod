@@ -1,0 +1,9 @@
+{
+  "TranslationProperties": { "Name": "eternia_customization.ledger.name", "Description": "eternia_customization.ledger.description" },
+  "Icon": "Icons/ItemsGenerated/Weapon_Spellbook_Grimoire_Brown.png",
+  "Model": "Items/Weapons/Spellbook/Grimoire.blockymodel",
+  "Texture": "Items/Weapons/Spellbook/Grimoire_Brown_Texture.png",
+  "Categories": ["Items.Tools"], "Quality": "Common", "MaxStack": 1, "PlayerAnimationsId": "Block",
+  "Interactions": { "Primary": { "Interactions": [{ "Type": "EterniaHousingTool", "Route": "LEDGER" }] }, "Secondary": { "Interactions": [{ "Type": "EterniaHousingTool", "Route": "LEDGER" }] } },
+  "Tags": { "Type": ["Tool"], "Family": ["Eternia"] }
+}

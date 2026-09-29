@@ -1,0 +1,2 @@
+$T = "Theme/Citadel.ui";
+$T.@SecondaryTextButton #Tab { FlexWeight: 1; Anchor: (Height: 44, Right: 8); }

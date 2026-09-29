@@ -1,0 +1,11 @@
+{
+  "Spawners": [
+    {
+      "SpawnerId": "Eternia_Plot_Border_Motes_Faint_Spawner"
+    }
+  ],
+  "LifeSpan": 3.7,
+  "CullDistance": 8,
+  "BoundingRadius": 1,
+  "IsImportant": false
+}

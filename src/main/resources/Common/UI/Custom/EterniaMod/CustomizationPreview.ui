@@ -1,0 +1,16 @@
+$T = "Theme/Citadel.ui";
+Group {
+  Anchor: (Top: 30, Right: 30, Width: 480, Height: 260);
+  Background: $T.@PanelSurface;
+  Padding: (Full: 24);
+  LayoutMode: Top;
+  Group { LayoutMode: Left; Anchor: (Height: 36, Bottom: 12);
+    Label { Text: "Review customization"; Style: (...$T.@TitleStyle); FlexWeight: 1; }
+    $T.@HomeButton #MenuHome { Anchor: (Width: 36, Height: 36); }
+  }
+  Label #Description { Style: (...$T.@DefaultLabelStyle); Anchor: (Height: 120, Bottom: 12); }
+  Group { LayoutMode: Left; Anchor: (Height: 44);
+    $T.@CancelTextButton #Cancel { Text: "Cancel"; FlexWeight: 1; Anchor: (Right: 8); }
+    $T.@TextButton #Confirm { Text: "Apply"; FlexWeight: 1; }
+  }
+}

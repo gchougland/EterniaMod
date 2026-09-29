@@ -1,0 +1,123 @@
+{
+  "Parent": "Player",
+  "Model": "NPC/Eternia/Prowl/Prowl_PlayerRig.blockymodel",
+  "Texture": "NPC/Eternia/Prowl/prowl_hytale.png",
+  "DefaultAttachments": [],
+  "Icon": "Icons/Models/Eternia/Prowl.png",
+  "IconProperties": {
+    "Scale": 0.5,
+    "Rotation": [
+      0,
+      21,
+      0
+    ],
+    "Translation": [
+      0,
+      -106
+    ]
+  },
+  "RandomAttachmentSets": {},
+  "MinScale": 1,
+  "MaxScale": 1,
+  "Camera": {
+    "Pitch": {
+      "TargetNodes": [
+        "Head"
+      ],
+      "AngleRange": {
+        "Min": -35,
+        "Max": 30
+      }
+    },
+    "Yaw": {
+      "TargetNodes": [
+        "Head"
+      ],
+      "AngleRange": {
+        "Min": -50,
+        "Max": 50
+      }
+    }
+  },
+  "AnimationSets": {
+    "IdlePassive": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Prowl/Animations/Look_Around.blockyanim",
+          "BlendingDuration": 0.4
+        },
+        {
+          "Animation": "Characters/Animations/Flavor/Look_Around2.blockyanim",
+          "BlendingDuration": 0.4
+        },
+        {
+          "Animation": "Characters/Animations/Flavor/Look_Down.blockyanim",
+          "Weight": 1,
+          "BlendingDuration": 0.4
+        },
+        {
+          "Animation": "NPC/Eternia/Prowl/Animations/Look_Up.blockyanim",
+          "BlendingDuration": 0.4
+        },
+        {
+          "Animation": "NPC/Eternia/Prowl/Animations/Look_Left.blockyanim",
+          "BlendingDuration": 0.4
+        },
+        {
+          "Animation": "NPC/Eternia/Prowl/Animations/Look_Right.blockyanim",
+          "BlendingDuration": 0.4
+        },
+        {
+          "Animation": "NPC/Eternia/Prowl/Animations/Blink.blockyanim"
+        },
+        {
+          "Animation": "NPC/Eternia/Prowl/Animations/Blink_Double.blockyanim"
+        },
+        {
+          "Animation": "Characters/Animations/Flavor/Eye.blockyanim",
+          "Weight": 2
+        },
+        {
+          "Animation": "NPC/Eternia/Prowl/Animations/Eye_Blink.blockyanim",
+          "Weight": 2
+        },
+        {
+          "Animation": "Characters/Animations/Flavor/Eye2.blockyanim",
+          "Weight": 2
+        },
+        {
+          "Animation": "NPC/Eternia/Prowl/Animations/Eye2_Blink.blockyanim",
+          "Weight": 2
+        },
+        {
+          "Animation": "Characters/Animations/Flavor/Eye3.blockyanim",
+          "Weight": 2
+        },
+        {
+          "Animation": "NPC/Eternia/Prowl/Animations/Eye3_Blink.blockyanim",
+          "Weight": 2
+        },
+        {
+          "Animation": "NPC/Eternia/Prowl/Animations/Eye3_Blink2.blockyanim",
+          "Weight": 2
+        },
+        {
+          "Animation": "Characters/Animations/Flavor/Eye_Look_Left.blockyanim"
+        },
+        {
+          "Animation": "Characters/Animations/Flavor/Eye_Look_Right.blockyanim"
+        },
+        {
+          "Animation": "NPC/Eternia/Prowl/Animations/Eye_Look_Left_Blink.blockyanim"
+        },
+        {
+          "Animation": "NPC/Eternia/Prowl/Animations/Eye_Look_Right_Blink.blockyanim"
+        }
+      ],
+      "NextAnimationDelay": {
+        "Max": 1,
+        "Min": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"id":"eternia:store/traveler","revision":1,"name":"Citadel Traveler","description":"A complete outfit in Eternia’s colors. Equip it in your Collection.","category":"Wardrobe","price":350,"benefits":[{"contentId":"eternia:outfit/citadel_traveler","kind":"UNLOCK","quantity":1,"expiresWithSubscription":false}]}

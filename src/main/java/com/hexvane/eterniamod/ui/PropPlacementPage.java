@@ -94,11 +94,12 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
         @Nonnull UIEventBuilder eventBuilder,
         @Nonnull Store<EntityStore> store
     ) {
-        commandBuilder.append("EterniaMod/PropPlacementPage.ui");
+        commandBuilder.append("EterniaMod/PropPlacementPage.ui");bindHome(eventBuilder);
         applyLocalization(commandBuilder);
         EterniaModPlugin plugin = EterniaModPlugin.get();
         PropDefinition def = plugin != null ? plugin.getPropCatalog().get(session.getPropId()) : null;
         String name = def != null && def.getDisplayName() != null ? def.getDisplayName() : session.getPropId();
+        if(session.getCustodyOwner()!=null&&session.getCustodyOwner().kind()==com.hexvane.eterniamod.domain.Owner.Kind.GUILD)name+=" · Guild inventory";
         Vector3i sign = session.getAnchor();
         Vector3i prefabO =
             def != null
@@ -257,7 +258,7 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
                 } else if (pr != null) {
                     clearPreview(pr);
                 }
-                close();
+                returnOrClose(ref,store);
             }
         );
     }
@@ -298,6 +299,8 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
         if (plot == null) {
             return "notInPlot";
         }
+        var custody=session.getCustodyOwner()!=null?session.getCustodyOwner():com.hexvane.eterniamod.housing.HousingAccess.owner(plot);
+        if(!com.hexvane.eterniamod.housing.HousingCustody.can(plugin,plot,uc.getUuid(),custody,com.hexvane.eterniamod.housing.HousingCustody.PLACE))return "notYourPlot";
         PropDefinition def = plugin.getPropCatalog().get(session.getPropId());
         if (def == null) {
             return "unknownProp";

@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
 public final class BuildingPlacementCameraUtil {
     public static final float DEFAULT_DISTANCE = 20f;
     public static final float MIN_DISTANCE = 12f;
-    public static final float MAX_DISTANCE = 48f;
+    public static final float MAX_DISTANCE = 180f;
     public static final float DISTANCE_STEP = 4f;
     /** Total world-space pan (blocks) applied over {@link #SMOOTH_PAN_STEPS} when using pan buttons. */
     public static final double PAN_STEP = 3.0;

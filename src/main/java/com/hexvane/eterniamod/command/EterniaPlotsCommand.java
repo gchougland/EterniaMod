@@ -31,11 +31,8 @@ public final class EterniaPlotsCommand extends AbstractCommandCollection {
     public EterniaPlotsCommand() {
         super("plots", "eterniamod_commands.commands.eternia.plots.desc");
         this.setPermissionGroups("hytale:WorldEditor");
-        this.addSubCommand(new CreateCommand());
-        this.addSubCommand(new AssignCommand());
-        this.addSubCommand(new UnassignCommand());
+        // Legacy projection-only mutation commands cannot bypass the durable property-slot authority.
         this.addSubCommand(new ListCommand());
-        this.addSubCommand(new RemoveCommand());
         this.addSubCommand(new ShowCommand());
     }
 

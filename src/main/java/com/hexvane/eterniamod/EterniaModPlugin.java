@@ -29,6 +29,35 @@ public final class EterniaModPlugin extends JavaPlugin {
     private static EterniaModPlugin instance;
     private BuildingCatalog buildingCatalog;
     private PropCatalog propCatalog;
+    private com.hexvane.eterniamod.housing.HousingInfrastructure infrastructure;
+    private com.hexvane.eterniamod.boundary.BoundaryFogSystem boundaryFog;
+    private com.hexvane.eterniamod.runtime.EterniaRuntime runtime;
+    private com.hexvane.eterniamod.housing.NativeClaimCoordinator claims;
+    private com.hexvane.eterniamod.runtime.NativeTravelService travel;
+    private com.hexvane.eterniamod.runtime.PlayerLifecycle lifecycle;
+    private com.hexvane.eterniamod.runtime.NativeMenuActions menuActions;
+    private com.hexvane.eterniamod.socialui.SocialUiBootstrap.Registration socialUi;
+    private com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator relocation;
+    private com.hexvane.eterniamod.housing.relocation.GuildDepartureWorker departures;
+    private com.hexvane.eterniamod.inventory.NativeItemEscrow itemEscrow;
+    private com.hexvane.eterniamod.collections.CollectionRuntime collectionRuntime;
+    private com.hexvane.eterniamod.runtime.GameplayAdapters gameplayAdapters;
+    private com.hexvane.eterniamod.housing.VoluntaryPlotMover plotMover;
+    private com.hexvane.eterniamod.customization.CustomizationService customization;
+    private com.hexvane.eterniamod.discovery.DiscoveryBootstrap discoveries;
+    private AutoCloseable managedHubServices;
+
+    public com.hexvane.eterniamod.housing.HousingInfrastructure getInfrastructure() { return infrastructure; }
+    public com.hexvane.eterniamod.domain.EterniaServices getServices() { return runtime.services(); }
+    public com.hexvane.eterniamod.runtime.RuntimeConfig getRuntimeConfig() { return runtime.config(); }
+    public com.hexvane.eterniamod.runtime.EterniaRuntime getRuntime() { return runtime; }
+    public com.hexvane.eterniamod.housing.NativeClaimCoordinator getClaims() { return claims; }
+    public com.hexvane.eterniamod.runtime.NativeTravelService getTravel() { return travel; }
+    public com.hexvane.eterniamod.runtime.NativeMenuActions getMenuActions() { return menuActions; }
+    public com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator getRelocation() { return relocation; }
+    public com.hexvane.eterniamod.inventory.NativeItemEscrow getItemEscrow() { return itemEscrow; }
+    public com.hexvane.eterniamod.collections.CollectionRuntime getCollectionRuntime() { return collectionRuntime; }
+    public com.hexvane.eterniamod.housing.VoluntaryPlotMover getPlotMover() { return plotMover; }
 
     public EterniaModPlugin(@Nonnull JavaPluginInit init) {
         super(init);
@@ -53,13 +82,67 @@ public final class EterniaModPlugin extends JavaPlugin {
     protected void setup() {
         instance = this;
         Path dataDirectory = getDataDirectory();
+        runtime = new com.hexvane.eterniamod.runtime.EterniaRuntime(dataDirectory,
+            com.hexvane.eterniamod.runtime.RuntimeConfig.from(System.getenv()));
+        infrastructure = new com.hexvane.eterniamod.housing.HousingInfrastructure(dataDirectory.resolve("housing-infrastructure.json"));
+        try { infrastructure.load(); } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
+        claims = new com.hexvane.eterniamod.housing.NativeClaimCoordinator(this);
+        travel = new com.hexvane.eterniamod.runtime.NativeTravelService(this);
+        relocation = new com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator(this);
+        plotMover = new com.hexvane.eterniamod.housing.VoluntaryPlotMover(this);
+        com.hexvane.eterniamod.inventory.InventoryReceipts.register(getEntityStoreRegistry());
+        itemEscrow = new com.hexvane.eterniamod.inventory.NativeItemEscrow(this);
         buildingCatalog = BuildingCatalog.load(getClass().getClassLoader(), dataDirectory.resolve("Buildings"));
         propCatalog = PropCatalog.load(getClass().getClassLoader(), dataDirectory.resolve("Props"));
         registerModCommonAssetDelivery();
         getCommandRegistry().registerCommand(new EterniaModCommand());
         BuildingPlacementBootstrap.register(this);
         PropPlacementBootstrap.register(this);
+        boundaryFog = com.hexvane.eterniamod.boundary.BoundaryBootstrap.register(this,
+            (world,x,z) -> infrastructure.protectedColumn(world.getName(),x,z));
+        com.hexvane.eterniamod.housing.HousingProtection.register(this);
+        lifecycle = new com.hexvane.eterniamod.runtime.PlayerLifecycle(this);
+        menuActions = new com.hexvane.eterniamod.runtime.NativeMenuActions(this);
+        socialUi = com.hexvane.eterniamod.socialui.SocialUiBootstrap.register(this,getServices(),menuActions);
+        collectionRuntime = com.hexvane.eterniamod.collections.CollectionBootstrap.register(this,getServices());
+        gameplayAdapters = new com.hexvane.eterniamod.runtime.GameplayAdapters(this,System.getenv());
+        customization = com.hexvane.eterniamod.customization.CustomizationBootstrap.register(this);
+        try { com.hexvane.eterniamod.guildroads.GuildRoads.startup(this); }
+        catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
+        try { com.hexvane.eterniamod.setup.paving.RoadPaving.startup(this); }
+        catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
+        try { com.hexvane.eterniamod.pathtool.SplineRoadTool.startup(this); }
+        catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
+        try { managedHubServices = com.hexvane.eterniamod.setup.ManagedHubServices.register(this); }
+        catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
+        try { discoveries = new com.hexvane.eterniamod.discovery.DiscoveryBootstrap(this,getServices(),infrastructure,dataDirectory.resolve("discoveries.json")); }
+        catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
+        com.hexvane.eterniamod.runtime.NativeSmoke.register(this);
+        departures = new com.hexvane.eterniamod.housing.relocation.GuildDepartureWorker(this,
+            error -> getLogger().atWarning().withCause(error).log("Guild property return needs recovery"));
+        departures.start();
+        try { runtime.startBridge(gameplayAdapters.webhookHandler()); } catch (java.io.IOException e) { runtime.close(); throw new java.io.UncheckedIOException(e); }
         getLogger().atInfo().log("EterniaMod v%s loaded.", getManifest().getVersion().toString());
+    }
+
+    @Override
+    protected void shutdown() {
+        if (boundaryFog != null) boundaryFog.close();
+        if (socialUi != null) socialUi.close();
+        if (departures != null) departures.close();
+        if (plotMover != null) plotMover.close();
+        com.hexvane.eterniamod.guildroads.GuildRoads.close();
+        com.hexvane.eterniamod.setup.paving.RoadPaving.close();
+        com.hexvane.eterniamod.pathtool.SplineRoadTool.close();
+        if (managedHubServices != null) try { managedHubServices.close(); }
+        catch (Exception e) { getLogger().atWarning().withCause(e).log("Managed Hub services could not close cleanly"); }
+        if (customization != null) customization.close();
+        if (discoveries != null) discoveries.close();
+        if (collectionRuntime != null) collectionRuntime.close();
+        if (gameplayAdapters != null) gameplayAdapters.close();
+        if (lifecycle != null) lifecycle.close();
+        if (runtime != null) runtime.close();
+        instance = null;
     }
 
     @Override
@@ -85,6 +168,11 @@ public final class EterniaModPlugin extends JavaPlugin {
             }
         }
         Path housePrefab = PrefabResolveUtil.resolvePrefabPath("House.prefab.json");
+        var catalogErrors=com.hexvane.eterniamod.catalog.CatalogAssetValidator.validateResolvedPrefabs(buildingCatalog,propCatalog);
+        if(!catalogErrors.isEmpty())throw new IllegalStateException("Invalid Eternia catalog assets: "+String.join("; ",catalogErrors));
+        com.hexvane.eterniamod.customization.HousingWorldPolicy.refreshAll().whenComplete((unused,failure)->{
+            if(failure!=null)getLogger().atSevere().withCause(failure).log("Housing world policy could not be applied to an already loaded world");
+        });
         if (housePrefab == null) {
             getLogger().atWarning().log("House.prefab.json was not resolved — building placement preview will not work");
         } else {

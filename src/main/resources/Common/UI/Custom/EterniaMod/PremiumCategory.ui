@@ -1,0 +1,4 @@
+$T = "Theme/Citadel.ui";
+Group { Anchor: (Height: 52); LayoutMode: Top;
+  $T.@SecondaryTextButton #Category { Anchor: (Width: 184); Style: $T.@WrappedSecondaryButtonStyle; }
+}

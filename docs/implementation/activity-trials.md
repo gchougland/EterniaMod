@@ -1,0 +1,16 @@
+# Local activity trials
+
+The playground creates `eternia_trials` as an Adventure world. Its durable playground marker records the native world UUID, and activity registration requires that identity, the Adventure role, local runtime mode, and the builder's current setup permission. The adapter rechecks the saved identity and re-registers its fixed fixture targets after a restart. It does not edit the normal activity configuration or enable XP in other worlds.
+
+Use the playground's activity controls and Adventure game mode:
+
+1. Mine the sample columns around **(20–40, 1–2, 20–27)**. Twelve native mineral/stone types each have four blocks. An Adamantite pickaxe can test the varied ore tiers. Mining awards 150 base pass XP only after a successful native break; a position awards once, and player placement permanently prevents mining XP there. Revisiting the playground does not refill mined samples.
+2. Harvest wheat around **(46–48, 1, 20–22)** with the normal Use action. The local wheat asset inherits native wheat geometry and drops, adds `EterniaHarvestCrop` and the reusable retained-mature farming stage, and regrows in approximately 20 game seconds. Each successful native crop generation awards 100 base pass XP. The nine plants start fully grown; they retain farming generations across saves. Initial setup preflights the soil and refuses altered ground instead of overwriting a builder's blocks on retry.
+3. In the trials world, choose **Training battle** to spawn a native `Skeleton_Fighter` near **(60, 1, 30)**. Defeat the current skeleton before spawning another. A successful player kill in Adventure mode awards 250 base pass XP. Environmental deaths and Creative activity do not award XP.
+4. Find the **discovery bookshelf at (52, 1, 20)** and use it in Adventure mode. It grants one Aqua Lamp housing token through the normal discovery adapter, then opens a collection confirmation. Creating or visiting the playground grants nothing from the cache. Repeat interactions report it as already collected; another player can collect their own token. Copied bookshelves outside the saved location do not grant rewards.
+
+These actions feed the normal persisted activity outbox and season quest logic. They do not issue synthetic quest completions. Quest bonuses, XP budgets and reward claims follow the same rules as normal gameplay. The trial crop's faster growth is confined to its separate asset; normal Hytale crops retain their original timing.
+
+The discovery has separate saved authority in `local-playground-discoveries.json`, written atomically with a checksum and bound to the playground's native world UUID. Retain it with the main playground marker and world data. Its definition is reloaded after restart; the player's collection receipt lives in the normal domain store. Local discovery definitions are not enabled in production runtime mode.
+
+For manual checks, observe pass XP before and after one mine, one harvest and one kill; repeat a planted-block break and confirm it produces no mining XP. Restart with a grown or growing crop and confirm harvesting continues with a new native generation. Check the season quest progress and claim its rewards through the normal pass menu.

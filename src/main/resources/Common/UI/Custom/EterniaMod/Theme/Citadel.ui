@@ -1,0 +1,101 @@
+$Sounds = "../../Sounds.ui";
+$C = "../../Common.ui";
+
+@Canvas = #101e22;
+@Panel = #192d31;
+@Raised = #233c3e;
+@Text = #f0e8d5;
+@Muted = #b5c3b8;
+@Primary = #d8b66b;
+@Accent = #85c5b3;
+@Danger = #e69085;
+@TitleHeight = 48;
+@PrimarySurface = PatchStyle(TexturePath: "Surfaces/Primary.png", Border: 12);
+@PrimaryHoverSurface = PatchStyle(TexturePath: "Surfaces/PrimaryHover.png", Border: 12);
+@PrimaryPressedSurface = PatchStyle(TexturePath: "Surfaces/PrimaryPressed.png", Border: 12);
+@SecondarySurface = PatchStyle(TexturePath: "Surfaces/Secondary.png", Border: 12);
+@SecondaryHoverSurface = PatchStyle(TexturePath: "Surfaces/SecondaryHover.png", Border: 12);
+@SecondaryPressedSurface = PatchStyle(TexturePath: "Surfaces/SecondaryPressed.png", Border: 12);
+@DisabledSurface = PatchStyle(TexturePath: "Surfaces/Disabled.png", Border: 12);
+@PanelSurface = PatchStyle(TexturePath: "Surfaces/Panel.png", Border: 12);
+@InsetSurface = PatchStyle(TexturePath: "Surfaces/Inset.png", Border: 12);
+@HeaderSurface = PatchStyle(TexturePath: "Surfaces/Header.png", Border: 12);
+
+@TitleStyle = LabelStyle(FontName: "Secondary", FontSize: 24, TextColor: @Text, RenderBold: true, VerticalAlignment: Center);
+@DefaultLabelStyle = LabelStyle(FontSize: 16, TextColor: @Text, Wrap: true);
+@SubtitleStyle = LabelStyle(FontName: "Secondary", FontSize: 18, TextColor: @Primary, RenderBold: true, Wrap: true);
+@MutedStyle = LabelStyle(FontSize: 14, TextColor: @Muted, Wrap: true);
+
+@PrimaryButtonStyle = TextButtonStyle(
+  Default: (Background: @PrimarySurface, LabelStyle: (FontSize: 16, TextColor: #142528, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center)),
+  Hovered: (Background: @PrimaryHoverSurface, LabelStyle: (FontSize: 16, TextColor: #142528, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center)),
+  Pressed: (Background: @PrimaryPressedSurface, LabelStyle: (FontSize: 16, TextColor: #142528, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center)),
+  Disabled: (Background: @DisabledSurface, LabelStyle: (FontSize: 16, TextColor: #b5c3b8, HorizontalAlignment: Center, VerticalAlignment: Center)),
+  Sounds: $Sounds.@ButtonsLight
+);
+@SecondaryButtonStyle = TextButtonStyle(
+  Default: (Background: @SecondarySurface, LabelStyle: (FontSize: 16, TextColor: #f0e8d5, HorizontalAlignment: Center, VerticalAlignment: Center)),
+  Hovered: (Background: @SecondaryHoverSurface, LabelStyle: (FontSize: 16, TextColor: #f0e8d5, HorizontalAlignment: Center, VerticalAlignment: Center)),
+  Pressed: (Background: @SecondaryPressedSurface, LabelStyle: (FontSize: 16, TextColor: #85c5b3, HorizontalAlignment: Center, VerticalAlignment: Center)),
+  Disabled: (Background: @DisabledSurface, LabelStyle: (FontSize: 16, TextColor: #b5c3b8, HorizontalAlignment: Center, VerticalAlignment: Center)),
+  Sounds: $Sounds.@ButtonsLight
+);
+@WrappedSecondaryButtonStyle = TextButtonStyle(
+  Default: (Background: @SecondarySurface, LabelStyle: (FontSize: 16, TextColor: #f0e8d5, Wrap: true, HorizontalAlignment: Start, VerticalAlignment: Center)),
+  Hovered: (Background: @SecondaryHoverSurface, LabelStyle: (FontSize: 16, TextColor: #f0e8d5, Wrap: true, HorizontalAlignment: Start, VerticalAlignment: Center)),
+  Pressed: (Background: @SecondaryPressedSurface, LabelStyle: (FontSize: 16, TextColor: #85c5b3, Wrap: true, HorizontalAlignment: Start, VerticalAlignment: Center)),
+  Disabled: (Background: @DisabledSurface, LabelStyle: (FontSize: 16, TextColor: #b5c3b8, Wrap: true, HorizontalAlignment: Start, VerticalAlignment: Center)),
+  Sounds: $Sounds.@ButtonsLight
+);
+@TextButton = TextButton { Anchor: (Height: 44); Padding: (Horizontal: 12); Style: @PrimaryButtonStyle; Text: ""; };
+@SecondaryTextButton = TextButton { Anchor: (Height: 44); Padding: (Horizontal: 12); Style: @SecondaryButtonStyle; Text: ""; };
+@CancelTextButton = TextButton { Anchor: (Height: 44); Padding: (Horizontal: 12); Style: @SecondaryButtonStyle; Text: ""; };
+@TextField = TextField {
+  Anchor: (Height: 44);
+  Background: @InsetSurface;
+  Padding: (Horizontal: 12);
+  Style: (FontSize: 16, TextColor: @Text);
+  PlaceholderStyle: (FontSize: 16, TextColor: @Muted);
+};
+@Container = Group {
+  Group #Title { Anchor: (Top: 0, Height: @TitleHeight); Background: @HeaderSurface; Padding: (Horizontal: 16); }
+  Group #Content { Anchor: (Top: @TitleHeight); LayoutMode: Top; Padding: (Full: 16); Background: @PanelSurface; }
+};
+@PageOverlay = Group { Background: #101e22(0.45); };
+@CheckBox = CheckBox {
+  Anchor: (Width: 28, Height: 28);
+  Background: #85c5b3;
+  Padding: (Full: 3);
+  Style: CheckBoxStyle(
+    Unchecked: (DefaultBackground: (Color: #101e22), HoveredBackground: (Color: #233c3e), PressedBackground: (Color: #45615d), DisabledBackground: (Color: #192d31)),
+    Checked: (DefaultBackground: (Color: #d8b66b), HoveredBackground: (Color: #e8ca87), PressedBackground: (Color: #85c5b3), DisabledBackground: (Color: #b5c3b8))
+  );
+};
+@FloatSlider = FloatSlider {
+  Anchor: (Height: 5);
+  Style: SliderStyle(Background: (Color: #45615d), Handle: (Color: #85c5b3), HandleWidth: 16, HandleHeight: 20);
+};
+@DefaultTextTooltipStyle = TextTooltipStyle(Background: (Color: #101e22), MaxWidth: 400, LabelStyle: (Wrap: true, FontSize: 16, TextColor: #f0e8d5), Padding: 16);
+@HomeButtonStyle = TextButtonStyle(
+  Default: (Background: (TexturePath: "Surfaces/Home.png"), LabelStyle: (FontSize: 1, TextColor: #f0e8d5)),
+  Hovered: (Background: (TexturePath: "Surfaces/HomeHover.png"), LabelStyle: (FontSize: 1, TextColor: #f0e8d5)),
+  Pressed: (Background: (TexturePath: "Surfaces/HomePressed.png"), LabelStyle: (FontSize: 1, TextColor: #f0e8d5)),
+  Sounds: $Sounds.@ButtonsLight
+);
+@HomeButton = TextButton {
+  Anchor: (Width: 44, Height: 44);
+  Text: "";
+  Style: @HomeButtonStyle;
+  TooltipText: "Main menu";
+  TextTooltipStyle: @DefaultTextTooltipStyle;
+};
+@DropdownBox = DropdownBox {
+  Anchor: (Width: 330, Height: 44);
+  Style: DropdownBoxStyle(
+    ...$C.@DefaultDropdownBoxStyle,
+    DefaultBackground: (Color: #101e22), HoveredBackground: (Color: #233c3e), PressedBackground: (Color: #45615d),
+    PanelBackground: (Color: #192d31), HoveredEntryBackground: (Color: #233c3e), PressedEntryBackground: (Color: #45615d),
+    LabelStyle: (FontSize: 16, TextColor: #f0e8d5), EntryLabelStyle: (FontSize: 16, TextColor: #f0e8d5),
+    SelectedEntryLabelStyle: (FontSize: 16, TextColor: #d8b66b), FocusOutlineColor: #85c5b3
+  );
+};

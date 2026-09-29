@@ -25,6 +25,26 @@ import org.joml.Vector3i;
 public final class PropBoundsUtil {
     private PropBoundsUtil() {}
 
+    /** The aimed object selects its plot, even when the player stands across a property line. */
+    @Nullable
+    public static HubPlotRecord findAimedPlot(java.util.List<HubPlotRecord> plots,Ref<EntityStore> ref,Store<EntityStore> store,EterniaModPlugin plugin,double maxDistance) {
+        var look=TargetUtil.getLook(ref,store);var start=look.getPosition();var end=new Vector3d(start).fma(maxDistance,look.getDirection());
+        HubPlotRecord closest=null;double distance=Double.MAX_VALUE;
+        for(var plot:plots) {
+            var fp=plot.getFootprint();
+            // Cull whole properties before resolving any prefab assets for the HUD's repeated query.
+            double plotEntry=rayEntryDistance(start,end,new Box(fp.getMinX()-.5,-4096,fp.getMinZ()-.5,fp.getMaxX()+1.5,4096,fp.getMaxZ()+1.5));
+            if(plotEntry<0||plotEntry>distance)continue;
+            for(var prop:plot.getProps()) {
+            var def=plugin.getPropCatalog().get(prop.getPropId());if(def==null)continue;
+            var path=PrefabResolveUtil.resolvePrefabPath(def.getPrefabPath());if(path==null)continue;
+            double entry=rayEntryDistance(start,end,toPaddedBox(new Vector3i(prop.getAnchorX(),prop.getAnchorY(),prop.getAnchorZ()),prop.resolveRotationYaw(),PrefabBufferUtil.getCached(path)));
+            if(entry>=0&&entry<distance){closest=plot;distance=entry;}
+            }
+        }
+        return closest;
+    }
+
     @Nonnull
     public static Box toPaddedBox(@Nonnull HubPlotFootprint footprint) {
         double pad = EterniaModConstants.PROP_BOUNDS_PADDING;

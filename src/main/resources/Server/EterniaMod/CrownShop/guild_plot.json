@@ -1,0 +1,1 @@
+{"id":"eternia:store/guild_plot","revision":1,"name":"Grand Estate Charter","description":"A charter for your guild’s 64 × 64 estate size, including its rectangular variant. Redeem through guild upgrades.","category":"Guild charters","price":1000,"benefits":[{"contentId":"eternia:guild_voucher/large_plot","kind":"QUANTITY","quantity":1,"expiresWithSubscription":false}]}

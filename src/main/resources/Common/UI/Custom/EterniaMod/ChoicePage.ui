@@ -1,0 +1,20 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+$T.@PageOverlay { Anchor: (Full: 0); LayoutMode: Middle;
+Group { Anchor: (Width: 920, Height: 720); Padding: (Full: 24); Background: $T.@PanelSurface; LayoutMode: Top;
+Group { Anchor: (Height: 44, Bottom: 8); LayoutMode: Left;
+Label #Title { FlexWeight: 1; Style: $T.@TitleStyle; }
+$T.@HomeButton #MenuHome {}
+}
+Label #Description { Anchor: (Height: 76, Bottom: 12); Style: $T.@DefaultLabelStyle; }
+Group #Rows { FlexWeight: 1; Anchor: (Bottom: 12); LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+Group { LayoutMode: Left; Anchor: (Height: 48);
+$T.@SecondaryTextButton #Back { Anchor: (Width: 110, Right: 10); Text: "Back"; Visible: false; }
+$T.@SecondaryTextButton #Previous { Anchor: (Width: 130, Right: 10); Text: "Previous"; }
+Label #Pagination { FlexWeight: 1; Style: (...$T.@MutedStyle, HorizontalAlignment: Center, VerticalAlignment: Center); }
+$T.@SecondaryTextButton #Next { Anchor: (Width: 130, Right: 10); Text: "Next"; }
+Group #SinglePageSpacer { FlexWeight: 1; }
+$T.@TextButton #Close { Anchor: (Width: 130); Text: "Close"; }
+}
+}
+}

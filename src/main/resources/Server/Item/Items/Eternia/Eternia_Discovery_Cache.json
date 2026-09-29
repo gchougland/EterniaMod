@@ -1,0 +1,31 @@
+{
+  "TranslationProperties": {
+    "Name": "eterniamod_discovery.items.Eternia_Discovery_Cache.name",
+    "Description": "eterniamod_discovery.items.Eternia_Discovery_Cache.description"
+  },
+  "Icon": "Icons/ItemsGenerated/Furniture_Village_Bookcase.png",
+  "Categories": ["Furniture.Shelves"],
+  "Set": "Eternia",
+  "Recipe": null,
+  "MaxStack": 1,
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "Opacity": "Transparent",
+    "CustomModel": "Blocks/Decorative_Sets/Village/Shelf_Book.blockymodel",
+    "CustomModelTexture": [{"Weight": 1, "Texture": "Blocks/Decorative_Sets/Village/Shelf_Book_default.png"}],
+    "HitboxType": "Block_Vertical_Half",
+    "IgnoreSupportWhenPlaced": true,
+    "VariantRotation": "NESW",
+    "Gathering": {"Breaking": {"GatherType": "Woods"}},
+    "BlockParticleSetId": "Wood",
+    "ParticleColor": "#684127",
+    "BlockSoundSetId": "Wood",
+    "InteractionHint": "eterniamod_discovery.interact",
+    "Interactions": {"Use": {"Interactions": [{"Type": "EterniaDiscovery"}]}}
+  },
+  "PlayerAnimationsId": "Block",
+  "IconProperties": {"Scale": 0.6, "Translation": [6, -17], "Rotation": [22.5, 45, 22.5]},
+  "Tags": {"Type": ["Furniture"], "Family": ["Eternia"]},
+  "ItemSoundSetId": "ISS_Blocks_Wood"
+}

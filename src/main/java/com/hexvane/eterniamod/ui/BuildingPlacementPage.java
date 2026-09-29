@@ -101,7 +101,7 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
         @Nonnull UIEventBuilder eventBuilder,
         @Nonnull Store<EntityStore> store
     ) {
-        commandBuilder.append("EterniaMod/BuildingPlacementPage.ui");
+        commandBuilder.append("EterniaMod/BuildingPlacementPage.ui");bindHome(eventBuilder);
         applyLocalization(commandBuilder);
         EterniaModPlugin plugin = EterniaModPlugin.get();
         BuildingDefinition def =
@@ -113,17 +113,11 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
                 ? def.resolvePrefabAnchorWorld(sign, session.getPrefabYaw())
                 : new Vector3i(sign.x, sign.y, sign.z);
         commandBuilder.set("#Summary.TextSpans", Message.translation(MSG_UI + ".summary").param("building", name));
-        commandBuilder.set(
-            "#Details.TextSpans",
-            Message.translation(MSG_UI + ".detailsBlock")
-                .param("sx", sign.x)
-                .param("sy", sign.y)
-                .param("sz", sign.z)
-                .param("ox", prefabO.x)
-                .param("oy", prefabO.y)
-                .param("oz", prefabO.z)
-                .param("step", session.getRotationSteps())
-        );
+        var manager=plugin==null?null:EterniaWorldRegistries.getOrCreateHubPlotManager(store.getExternalData().getWorld(),plugin);
+        var plot=manager==null?null:manager.getPlot(session.getPlotId());
+        String problem=plot==null||def==null?"unavailable":BuildingPlacementValidator.validate(store.getExternalData().getWorld(),manager,plot,playerRef.getUuid(),sign,session.getPrefabYaw(),def,plugin);
+        commandBuilder.set("#Details.TextSpans",problem==null?Message.raw("Ready to place. You can adjust the position or rotate the house before confirming."):Message.translation("eterniamod_common.eterniamod.common."+problem));
+        bind(eventBuilder,"#FindValidPosition","FindValidPosition");
         commandBuilder.set("#PlotTypeDropdown.Visible", false);
         commandBuilder.set("#PlotTypeLabel.Visible", false);
         commandBuilder.set("#MoveConfirmGroup.Visible", false);
@@ -259,6 +253,11 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
             case "Place" -> {
                 schedulePlace(ref, store);
                 return;
+            }
+            case "FindValidPosition" -> {
+                var plugin=EterniaModPlugin.get();var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(store.getExternalData().getWorld(),plugin).getPlot(session.getPlotId());var def=plugin.getBuildingCatalog().get(session.getBuildingId());
+                if(plot!=null&&def!=null&&!BuildingPlacementValidator.findValidPosition(store.getExternalData().getWorld(),plot,playerRef.getUuid(),session,def,plugin))playerRef.sendMessage(Message.raw("No valid position for this orientation. Try rotating the house; it needs five clear blocks from plot borders and road edges."));
+                scheduleApplyCameraAndRebuild(ref,store);return;
             }
             case "SnapToLocation" -> {
                 BuildingPlacementSnapUtil.snapSessionToPlayer(session, ref, store);
@@ -452,7 +451,7 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
                 } else if (pr != null) {
                     clearPreview(pr);
                 }
-                close();
+                returnOrClose(ref,store);
             }
         );
     }
