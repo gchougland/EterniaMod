@@ -4,7 +4,7 @@ const q=new URLSearchParams(location.search);window.renderReady=false;window.ren
 try{
  const icon=q.get('mode')==='icon';
  const viewer=new PrefabViewer(document.querySelector('#viewer'),{interactive:false,fullscreenButton:false,hideGrid:icon,transparentBackground:icon});
- await viewer.loadPrefabUrl('/internal/prefab/'+encodeURIComponent(q.get('key')));
+ await viewer.loadPrefabUrl('/internal/prefab/'+encodeURIComponent(q.get('key')),{frontFacing:q.get('front')||'North'});
  if(viewer.undrawn?.length)throw new Error('Incomplete native render: '+viewer.undrawn.map(x=>x.reason+' (x'+x.count+')').join(', '));
  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
  viewer.renderer.render(viewer.scene,viewer.camera);window.renderReady=true;

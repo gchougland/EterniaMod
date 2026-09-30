@@ -57,6 +57,9 @@ public final class CustomizationService implements AutoCloseable {
         return new Preview(operation,actor,property,world.getName(),content,"housing.palette","PALETTE",palette.name()+": "+mask.size()+" authored masonry blocks",instance,before,after,instanceAfter,Map.copyOf(data),Instant.now().plusSeconds(90));
     }
     public Preview path(World world,UUID property,UUID actor,CustomizationCatalog.PathStyle style,int startX,int startY,int startZ)throws IOException {
+        return path(world,property,actor,style,startX,startY,startZ,1);
+    }
+    public Preview path(World world,UUID property,UUID actor,CustomizationCatalog.PathStyle style,int startX,int startY,int startZ,int width)throws IOException {
         String content="eternia:path/"+style.id();var plot=require(world,property,actor,content,"housing.road.manage");simpleBlock(style.blockId());
         if(!plot.hasBuilding())throw new IllegalStateException("Place your house before building its path");
         var instances=plugin.getServices().provenance().instances(property);if(instances.stream().anyMatch(i->i.state().equals("PLACED")&&"PATH".equals(i.nativeData().get("kind"))))throw new IllegalStateException("Remove the current path before changing its route");
@@ -64,10 +67,9 @@ public final class CustomizationService implements AutoCloseable {
         var occupied=new ArrayList<NativeSnapshotStore.Bounds>();
         for(var placed:instances)if(placed.state().equals("PLACED"))occupied.add(snapshots().load(pointer(placed.nativeData(),"after")).bounds());
         int ground=surface(world,startX,startZ,startY);if(ground==Integer.MIN_VALUE)throw new IllegalStateException("Stand on level natural ground outside your door");
-        var route=PathPlanner.route(rect(plot),new PathPlanner.Cell(startX,startZ),plugin.getInfrastructure().structureRoads(world.getName()),cell->{
-            if(plugin.getInfrastructure().protectedColumn(world.getName(),cell.x(),cell.z())||occupied.stream().anyMatch(bounds->bounds.contains(cell.x(),bounds.minY(),cell.z())))return false;
-            return surface(world,cell.x(),cell.z(),ground+1)==ground;
-        });
+        var obstacles=occupied.stream().map(b->new PlotRect(b.minX(),b.minZ(),b.maxX()-b.minX(),b.maxZ()-b.minZ())).toList();
+        var route=PathPlanner.plan(rect(plot),new PathPlanner.Cell(startX,startZ),plugin.getInfrastructure().structureRoads(world.getName()),width,cell->
+            !plugin.getInfrastructure().protectedColumn(world.getName(),cell.x(),cell.z())&&surface(world,cell.x(),cell.z(),ground+1)==ground,obstacles).blocks();
         int minX=route.stream().mapToInt(PathPlanner.Cell::x).min().orElseThrow(),maxX=route.stream().mapToInt(PathPlanner.Cell::x).max().orElseThrow()+1;
         int minZ=route.stream().mapToInt(PathPlanner.Cell::z).min().orElseThrow(),maxZ=route.stream().mapToInt(PathPlanner.Cell::z).max().orElseThrow()+1;
         var bounds=new NativeSnapshotStore.Bounds(minX,ground,minZ,maxX,ground+1,maxZ);var files=snapshots();var capture=files.capture(world,bounds,Set.of(),false,false);
@@ -77,8 +79,8 @@ public final class CustomizationService implements AutoCloseable {
         for(var value:afterDocument.getArray("blocks")){var cell=value.asDocument();if(cell.containsKey("components")||cell.getInt32("filler",new BsonInt32(0)).getValue()!=0)throw new IllegalStateException("A path cannot replace a multiblock or functional block");cell.put("name",new BsonString(style.blockId()));}
         UUID operation=UUID.randomUUID();var before=files.save(operation+"-before.json",bounds,beforeDocument);var after=files.save(operation+"-after.json",bounds,afterDocument);
         var packed=plugin.getServices().provenance().ownedInstances(HousingAccess.owner(plot)).stream().filter(i->i.state().equals("PACKED")&&i.contentId().equals(content)&&"PATH".equals(i.nativeData().get("kind"))).findFirst().orElse(null);
-        Map<String,String> descriptor=Map.of("before",before.file().reference(),"beforeHash",before.file().sha256(),"after",after.file().reference(),"afterHash",after.file().sha256(),"kind","PATH","catalog",style.id(),"yaw","None","placedAt",Long.toString(System.currentTimeMillis()));
-        return new Preview(operation,actor,property,world.getName(),content,"housing.road.manage","PATH",style.name()+": "+route.size()+" ground blocks; ends on your side of the road",packed,before,after,after,descriptor,Instant.now().plusSeconds(90));
+        Map<String,String> descriptor=Map.of("before",before.file().reference(),"beforeHash",before.file().sha256(),"after",after.file().reference(),"afterHash",after.file().sha256(),"kind","PATH","catalog",style.id(),"width",Integer.toString(width),"yaw","None","placedAt",Long.toString(System.currentTimeMillis()));
+        return new Preview(operation,actor,property,world.getName(),content,"housing.road.manage","PATH",style.name()+" · "+width+" block"+(width==1?"":"s")+" wide · "+route.size()+" paving blocks. Leaves room beside your home and decorations.",packed,before,after,after,descriptor,Instant.now().plusSeconds(90));
     }
     public Preview removePath(World world,UUID property,UUID actor)throws IOException {
         var item=plugin.getServices().provenance().instances(property).stream().filter(i->i.state().equals("PLACED")&&"PATH".equals(i.nativeData().get("kind"))).findFirst().orElseThrow(()->new IllegalStateException("There is no placed path"));
@@ -107,7 +109,7 @@ public final class CustomizationService implements AutoCloseable {
             if(placed.stream().anyMatch(i->"PATH".equals(i.nativeData().get("kind"))))throw new IllegalStateException("A path was placed after this preview");
             for(var existing:placed) {
                 var bounds=files.load(pointer(existing.nativeData(),"after")).bounds();
-                for(var value:preview.after.document().getArray("blocks")){var cell=value.asDocument();int x=preview.after.bounds().minX()+cell.getInt32("x").getValue(),z=preview.after.bounds().minZ()+cell.getInt32("z").getValue();if(bounds.contains(x,bounds.minY(),z))throw new IllegalStateException("A catalog object overlaps the previewed path");}
+                for(var value:preview.after.document().getArray("blocks")){var cell=value.asDocument();int x=preview.after.bounds().minX()+cell.getInt32("x").getValue(),z=preview.after.bounds().minZ()+cell.getInt32("z").getValue();if(x>=bounds.minX()-1&&x<bounds.maxX()+1&&z>=bounds.minZ()-1&&z<bounds.maxZ()+1)throw new IllegalStateException("A house or decoration is too close to this path. Create a new preview.");}
             }
         }
         var currentRoads=plugin.getInfrastructure().structureRoads(world.getName());

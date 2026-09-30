@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 880" role="img" aria-labelledby="title desc"><title id="title">The valley of Eternia</title><desc id="desc">An illustrated medieval village with a glowing gateway, mountain peaks, winding roads, and a guild hall under the stars.</desc><defs>
+<linearGradient id="sky" x2="0" y2="1"><stop stop-color="#10252d"/><stop offset="1" stop-color="#53716a"/></linearGradient>
+<linearGradient id="hill" x2="0" y2="1"><stop stop-color="#376359"/><stop offset="1" stop-color="#152f30"/></linearGradient>
+<linearGradient id="gate" x2="0" y2="1"><stop stop-color="#a7e8c7"/><stop offset="1" stop-color="#427e75"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#86cfb1" stop-opacity=".34"/><stop offset="1" stop-color="#86cfb1" stop-opacity="0"/></radialGradient>
+<symbol id="pine" viewBox="0 0 70 150"><path d="M32 95h6v55h-6Z" fill="#162d2b"/><path d="m35 0 24 62H47l22 40H52l18 27H0l18-27H2l21-40H11Z" fill="#234a42"/><path d="m35 0 0 129H0l18-27H2l21-40H11Z" fill="#2d594c"/></symbol>
+<symbol id="home" viewBox="0 0 180 170"><path d="m15 80 80-45 70 40v65l-80 28-70-37Z" fill="#adad86"/><path d="m85 94 80-19v65l-80 28Z" fill="#738b78"/><path d="m0 76 80-65 100 55-95 35Z" fill="#285158"/><path d="m0 76 80-65 5 90Z" fill="#397078"/><path d="m15 80 70 21v67l-70-37M85 101l80-26M48 92v49M122 91v64" fill="none" stroke="#364a40" stroke-width="6"/><path d="m28 102 13 4v17l-13-4m72-9 13-4v17l-13 4m40-15 13-4v17l-13 4" fill="#ecd28e"/><path d="m58 129 18 6v28l-18-7Z" fill="#293f38"/><path d="M128 43V19l14-5 13 7v37" fill="#809183"/></symbol>
+<symbol id="hall" viewBox="0 0 340 330"><path d="m45 154 140-61 127 71v111l-139 45-128-67Z" fill="#97a58a"/><path d="m173 204 139-40v111l-139 45Z" fill="#617c70"/><path d="m27 154 133-106 168 111-155 50Z" fill="#254955"/><path d="m27 154 133-106 13 161Z" fill="#41757a"/><path d="m64 172 40 13v98l-40-22Z" fill="#546e63"/><path d="m119 248 27 10v43l-27-14Z" fill="#334e44"/><path d="m202 218 20-6v28l-20 6Z m47-14 20-6v28l-20 6Z" fill="#ddc786"/><path d="M55 153V67l40-22 41 30v108" fill="#a0af93"/><path d="M95 45v123l41 15V75" fill="#708d7c"/><path d="m39 69 53-66 59 80-56-22Z" fill="#39717a"/><path d="m92 3 59 80-56-22Z" fill="#264851"/><path d="M68 105v25l10 3v-25Z M108 105v28l10 6v-28Z" fill="#dfc986"/><!-- A short, wide swallowtail banner clearly separates cloth from its rooftop pole. --><path d="M233 62v75" stroke="#344942" stroke-width="4"/><circle cx="233" cy="59" r="4" fill="#d8b66b"/><path d="m235 68 49 5-12 10 12 13-49-5Z" fill="#d8b66b"/><path d="m249 73 5 8-5 7-5-8Z" fill="#345951"/></symbol></defs>
+<path fill="url(#sky)" d="M0 0h1400v880H0Z"/>
+<g fill="#d9ce9b" opacity=".65"><circle cx="785" cy="76" r="2"/><circle cx="1210" cy="146" r="2"/><circle cx="940" cy="48" r="1.5"/><circle cx="1100" cy="83" r="1.5"/><circle cx="660" cy="173" r="2"/><circle cx="1310" cy="49" r="2"/><path d="m1024 161 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/></g>
+<circle cx="1140" cy="139" r="52" fill="#cbd5b0"/><circle cx="1120" cy="122" r="50" fill="#1f3941"/>
+<path d="m0 367 166-169 94 74 170-155 199 244 129-140 117 102 182-150 243 195v512H0Z" fill="#355451"/>
+<path d="m299 237 131-120 110 135-98-48-32 37-29-20-42 25Zm648 29 110-93 105 99-69-37-26 25-32-28Z" fill="#8fa599" opacity=".65"/>
+<path d="M0 468 187 356l191 69 179-74 223 100 256-129 364 127v431H0Z" fill="#41665a"/>
+<path d="M0 568Q239 440 490 521T965 463t435 84v333H0Z" fill="url(#hill)"/>
+<path d="M966 454q-157 59-62 116t-83 111-274 199h285q93-120 189-169t-11-127-4-112Z" fill="#638a81"/>
+<path d="M0 830q285-224 480-206t137-99 174-75" fill="none" stroke="#82907a" stroke-width="42"/>
+<path d="M0 830q285-224 480-206t137-99 174-75" fill="none" stroke="#b4b294" stroke-width="28"/>
+<path d="m490 624 143 37m-33-120 200 53" fill="none" stroke="#b4b294" stroke-width="16"/>
+<use href="#hall" x="827" y="274" width="290" height="290"/>
+<use href="#home" x="490" y="420" width="158" height="150"/><use href="#home" x="659" y="523" width="162" height="153"/><use href="#home" x="365" y="550" width="157" height="149"/>
+<use href="#home" x="1116" y="447" width="129" height="125"/><use href="#home" x="995" y="612" width="182" height="172"/>
+<ellipse cx="792" cy="446" rx="138" ry="144" fill="url(#glow)"/>
+<path d="M747 478V389q0-47 45-65 45 18 45 65v89l-19 5v-94q0-30-26-43-26 13-26 43v94Z" fill="#aec3a4"/>
+<path d="M772 476v-85q0-23 20-34 20 11 20 34v85Z" fill="url(#gate)"/>
+<path d="m792 385 9 18-9 19-9-19Z" fill="#d9f5cb"/><path d="m737 485 57 14 56-15-16-9-41 9-42-10Z" fill="#819984"/>
+<g><use href="#pine" x="1190" y="600" width="90" height="193.5"/><use href="#pine" x="1250" y="548" width="72" height="154.79999999999998"/><use href="#pine" x="1310" y="626" width="94" height="202.1"/><use href="#pine" x="273" y="489" width="85" height="182.75"/><use href="#pine" x="196" y="544" width="105" height="225.75"/><use href="#pine" x="308" y="673" width="100" height="215.0"/><use href="#pine" x="1150" y="703" width="108" height="232.2"/><use href="#pine" x="48" y="500" width="110" height="236.5"/><use href="#pine" x="0" y="623" width="140" height="301.0"/><use href="#pine" x="863" y="704" width="80" height="172.0"/><use href="#pine" x="1280" y="773" width="125" height="268.75"/><use href="#pine" x="1095" y="354" width="55" height="118.25"/><use href="#pine" x="1240" y="345" width="62" height="133.29999999999998"/><use href="#pine" x="668" y="397" width="50" height="107.5"/></g><path d="M0 830q240-18 387 50H0Zm1083 50q155-82 317-54v54Z" fill="#112a2b"/></svg>

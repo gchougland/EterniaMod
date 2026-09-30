@@ -32,7 +32,7 @@ export function createRenderQueue(cfg,repo,catalog){
    browser=browser?.isConnected()?browser:await chromium.launch({executablePath:await executable(),headless:true,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
    context=await browser.newContext({viewport:job.mode==='icon'?{width:512,height:512}:{width:1280,height:800},deviceScaleFactor:1,extraHTTPHeaders:{'X-Eternia-Render':token}});
    await context.route('**/*',route=>{const u=new URL(route.request().url());const allowed=u.origin===origin&&(u.pathname.startsWith('/internal/render')||u.pathname==='/internal/prefab/'+job.contentKey||u.pathname.startsWith('/prefab-viewer/')||u.pathname.startsWith('/hytale-assets/')||u.pathname.startsWith('/vendor/three/'));return allowed?route.continue():route.abort();});
-   const page=await context.newPage();await page.goto(origin+'/internal/render?key='+job.contentKey+'&mode='+job.mode,{waitUntil:'domcontentloaded',timeout:45000});
+   const page=await context.newPage();await page.goto(origin+'/internal/render?key='+job.contentKey+'&mode='+job.mode+'&front='+encodeURIComponent(record.definition.frontFacing||'North'),{waitUntil:'domcontentloaded',timeout:45000});
    await page.waitForFunction(()=>window.renderReady||window.renderError,null,{timeout:45000});
    const error=await page.evaluate(()=>window.renderError);if(error)throw new Error(error);
    const tmp=path.join(outputDir,job.id+'.tmp.png');await page.screenshot({path:tmp,omitBackground:job.mode==='icon'});await fs.rename(tmp,path.join(outputDir,job.id+'.png'));

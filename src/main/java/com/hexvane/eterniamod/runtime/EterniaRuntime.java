@@ -62,6 +62,7 @@ public final class EterniaRuntime implements AutoCloseable {
         if(services.guilds().find(guild).isEmpty())throw new IllegalArgumentException("Guild does not exist");
         Owner owner=Owner.guild(guild);
         grant(owner,"eternia:house/guild_hall",OwnershipService.Kind.UNLOCK);
+        grant(owner,"eternia:house/founders_hall",OwnershipService.Kind.UNLOCK);
         grant(owner,"eternia:path/cobblestone",OwnershipService.Kind.UNLOCK);
         grant(owner,HousingService.MOVE_CREDIT,OwnershipService.Kind.QUANTITY);
         grant(owner,"eternia:service/mailbox",OwnershipService.Kind.UNLOCK);

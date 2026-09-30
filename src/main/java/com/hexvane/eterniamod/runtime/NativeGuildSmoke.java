@@ -51,7 +51,7 @@ final class NativeGuildSmoke {
         var guildPlot = manager.getPlot(guildProperty);
         check(guildPlot != null && guild.id().equals(guildPlot.getGuildOwnerUuid()),
             "Guild claim must persist its guild owner");
-        var hall = placeHouse(plugin, world, guildPlot, leader, "guild_hall", new Vector3i(72, 1, 32));
+        var hall = placeHouse(plugin, world, guildPlot, leader, "founders_hall", new Vector3i(72, 1, 32));
         check(services.housing().find(guildOwner).orElseThrow().state() == HousingService.State.ACTIVE,
             "Guild root must be active before it anchors a member claim");
         stage = stage(plugin, "48x48 guild root and native Founders' Hall committed", stage);

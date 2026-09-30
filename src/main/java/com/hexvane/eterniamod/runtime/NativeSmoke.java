@@ -107,6 +107,12 @@ public final class NativeSmoke {
         boolean duplicateRejected=false;try{customization.confirm(world,path);}catch(IllegalStateException expected){duplicateRejected=true;}
         if(!duplicateRejected)throw new IllegalStateException("Reusing a path preview created a second path");
         customization.confirm(world,customization.removePath(world,property,actor));
+        for(int width:new int[]{2,3}){
+            var wider=customization.path(world,property,actor,customization.catalog().paths().getFirst(),10,1,20,width);customization.confirm(world,wider);
+            var paved=plugin.getServices().provenance().instances(property).stream().filter(i->i.state().equals("PLACED")&&"PATH".equals(i.nativeData().get("kind"))).findFirst().orElseThrow();
+            if(!Integer.toString(width).equals(paved.nativeData().get("width")))throw new IllegalStateException("Paving lost selected width");
+            customization.confirm(world,customization.removePath(world,property,actor));
+        }
         customization.confirm(world,customization.path(world,property,actor,customization.catalog().paths().getFirst(),10,1,20));
         if(plugin.getServices().provenance().instances(property).stream().filter(i->"PATH".equals(i.nativeData().get("kind"))).count()!=1)throw new IllegalStateException("Path removal and replacement duplicated provenance");
         plugin.getLogger().atInfo().log("ETERNIA_NATIVE_SMOKE_STAGE: palette and path confirmed, removed and reused under native placement restriction");

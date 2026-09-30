@@ -6,13 +6,13 @@ Label #Description { Anchor: (Height: 50, Bottom: 8); Style: $T.@DefaultLabelSty
 Group #Tabs { Anchor: (Height: 48, Bottom: 8); LayoutMode: Left; }
 Group #SeasonProgress { Anchor: (Height: 56, Bottom: 12); LayoutMode: Top;
 Label #ProgressLabel { Anchor: (Height: 28, Bottom: 8); Style: $T.@SubtitleStyle; }
-Group { Anchor: (Height: 8); LayoutMode: Left; Background: $T.@InsetSurface; Group #ProgressFill { FlexWeight: 1; Background: $T.@Accent; } Group #ProgressRest { FlexWeight: 1; } }
+Group { Anchor: (Height: 10); Padding: (Full: 1); LayoutMode: Left; Background: #45615d; Group #ProgressFill { FlexWeight: 1; Background: $T.@Accent; } Group #ProgressRest { FlexWeight: 1; Background: #101e22; } }
 }
 Group #Rows { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
 Group #Fields { Anchor: (Height: 156, Bottom: 10); LayoutMode: Top;
-Group #FieldOneGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldOneLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldOne { FlexWeight: 1; } }
-Group #FieldTwoGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldTwoLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldTwo { FlexWeight: 1; } }
-Group #FieldThreeGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldThreeLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldThree { FlexWeight: 1; } }
+Group #FieldOneGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldOneLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldOne { FlexWeight: 1; Background: #101e22; } }
+Group #FieldTwoGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldTwoLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldTwo { FlexWeight: 1; Background: #101e22; } }
+Group #FieldThreeGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldThreeLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldThree { FlexWeight: 1; Background: #101e22; } }
 }
 Label #Status { Anchor: (Height: 34, Top: 8, Bottom: 8); Style: $T.@MutedStyle; }
 Group #Actions { LayoutMode: Left; Anchor: (Height: 48);

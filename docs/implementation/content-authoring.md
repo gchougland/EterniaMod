@@ -71,3 +71,9 @@ For local testing, use the logged `/e admin grant` command from the [setup guide
 Citadel uses deep green panels, warm ivory text, brass actions, sage focus, thin borders, and geometric corner details. UI chrome contains no detailed textures. The actual in-game prefab models retain their native appearance in the viewer. Web headings use Georgia; native pages use Hytale's supported font.
 
 The shared colors live in [theme tokens](../planning/theme-tokens.json). Run `npm run sync:theme` in `website/` after changing them, and update [Citadel.ui](../../src/main/resources/Common/UI/Custom/EterniaMod/Theme/Citadel.ui) to match. Add new native menus using the existing button/input/row styles instead of drawing a separate theme. Keep red/green validation understandable through accompanying text.
+
+### Eternia Guild Hall
+
+`Buildings/founders_hall.json` and `Prefabs/FoundersHall.prefab.json` contain the adapted Stormwind hall. Its coordinates are centered for Eternia plots, its entrance is defined for arrivals, and its management block uses `Eternia_Management_Block`. Native decorative doors and the sign retain their geometry; fresh instance UUIDs and custody links are assigned by the normal placement adapter. The prefab contains no Aetherhaven block IDs, POI components, seeded inventory, or custom smoke emitters. Unsupported loose weapon/model displays were omitted. Catalog icon and screenshot images were rendered through the website's native prefab viewer.
+
+Keep this distinct from the old `guild_hall`: changing the dimensions of an existing catalog ID would invalidate packed snapshots. Ship future incompatible house replacements under a new ID, retain the old definition/prefab for restoration, and add an explicit migration if existing placed examples need updating.

@@ -67,3 +67,22 @@ Railway files select Nixpacks, a single Node service, `PORT`, and `/api/v1/healt
 `web/prefab-viewer/` and the asset-catalog sync algorithm adapt the user's Aetherhaven implementation. They preserve native block/model/rotation support without importing community submissions, user data, credentials, branding or layouts. Three.js is served from the pinned local npm package, so rendering needs no public CDN. The shared Citadel colors are generated from `docs/planning/theme-tokens.json`.
 
 The website now self-hosts Google Fonts **Cinzel** and **Source Sans 3**, with their OFL files in `web/fonts`. Run `node scripts/theme-preview.js` for an isolated desktop/mobile style preview using the actual CSS and native patch images. See [Citadel styling](../docs/implementation/citadel-styling.md) for the game font limitation and regeneration instructions.
+
+## Welcome page artwork
+
+The public landing page uses the shared Citadel colors and locally hosted Cinzel / Source Sans 3 fonts. It introduces homes, guild neighborhoods, and permanent season passes, and labels the server as in development. It does not advertise an unconfigured game address or bypass Hytale login.
+
+- `web/js/landing.js`: page sections and copy.
+- `web/media/eternia-valley.svg`: original editable vector landscape. Houses, trees, and the hall are reusable SVG symbols. This is an illustration, not an in game screenshot.
+- `web/icons/eternia.svg`: gateway emblem and favicon used by public and admin pages.
+- `web/media/guild-build/`: 48 transparent WebP frames of the actual native guild hall assembling from foundation to roof, with its entrance toward the camera. The sequence totals about 1.9 MB. It loads only near its section, with four requests at a time. Reduced motion, data saving, and loading failures use the completed hall image.
+- `web/js/guild-build.js`: scroll progress, reversible assembly, and completed view control. The public page does not need WebGL or download Hytale viewer assets.
+- `web/styles.css`: responsive landing styles under the Eternia valley comment. Existing account and checkout layouts retain their own styles.
+
+To refresh only the guild hall's native game artwork, run `node scripts/render-bundled-catalog.js --force --id=founders_hall` against a local fixture website with viewer assets installed. Set `TEST_BASE_URL` if it uses a different local port. The renderer uses the definition's `frontFacing` value, matching the admin viewer. Eternia Guild Hall is authored facing South; its in game default rotation faces the sample village.
+
+Run `node scripts/bake-guild-build.js` against the same local fixture site to regenerate the website construction animation. This logs in to the local authoring fixture, loads the actual prefab through the native viewer, and captures block groups settling in height order. Frame 47 is also the still preview. This script does not publish content or require Hytale OAuth.
+
+Run `node scripts/landing-smoke.js` with `TEST_BASE_URL` set to the running local site to check desktop, tablet, and phone layouts, image loading, navigation, and browser errors. Screenshots go to ignored `test-output/`. Run `node scripts/guild-build-smoke.js` for forward/reverse scrolling, the completed view control, reduced motion, and header emblem checks. The existing `browser-smoke.js` still checks the account pages and administrator prefab rendering.
+
+Railway serves this artwork with the existing website deployment. No new service, secret, font provider, or OAuth claim is needed. These local edits reach the public site only after deploying the updated website code.

@@ -50,8 +50,33 @@ public final class LocalPlayground {
         choices.add(new ChoicePage.Choice("Review a test guild with four offline example members","Guild workshop",(r,s)->guildWorkshop(plugin,r,s,player)));
         choices.add(new ChoicePage.Choice("Open world setup to get the Road Designer and place Hub services","Builder tools",(r,s)->InfrastructureSetup.open(plugin,r,s,player)));
         choices.add(new ChoicePage.Choice("Open deliveries to collect native items from your mail and purchases","Item deliveries",(r,s)->com.hexvane.eterniamod.inventory.ui.CommerceDeskPage.open(plugin,r,s,player,com.hexvane.eterniamod.inventory.ui.CommerceDeskPage.Mode.DELIVERIES)));
+        choices.add(new ChoicePage.Choice("Replace the unchanged original example hall with the new Eternia hall. Leave its plot empty of players first.","Refresh guild hall",(r,s)->ChoicePage.open(r,s,player,"Refresh example guild hall","This updates only the Lantern Company example hall. Changed buildings and added decorations must be handled first. The original hall is packed away.",List.of(new ChoicePage.Choice("Update the original example guild hall","Refresh hall",(rr,ss)->refreshGuildHall(plugin,player))))));
         choices.add(new ChoicePage.Choice("A walkthrough for every test station","Testing guide",(r,s)->guide(r,s,player)));
         ChoicePage.open(ref,store,player,"Eternia playground","A persistent local testing village. Create it once, then keep your changes between sessions. Your current home and guild are retained.",choices);
+    }
+    private static void refreshGuildHall(EterniaModPlugin plugin,PlayerRef player){
+        require(plugin,player.getUuid());ensure(plugin,player.getUuid()).thenRunAsync(()->{
+            try {World world=Universe.get().getWorld(VILLAGE);load(world,-2,4,-2,5);on(world,()->{
+                boolean changed=refreshExampleHall(plugin,world,player.getUuid());
+                player.sendMessage(Message.raw(changed?"The example guild hall is ready. Visit the Lantern Company plot to explore it.":"This example hall is already updated or has been replaced. It was kept as it is."));
+            }).join();}catch(Exception e){throw new CompletionException(e);}
+        }).whenComplete((v,error)->{if(error!=null)failed(plugin,player,error);});
+    }
+    private static boolean refreshExampleHall(EterniaModPlugin plugin,World world,UUID actor)throws java.io.IOException {
+        require(plugin,actor);if(!managedWorld(plugin,VILLAGE))throw new IllegalStateException("This is not the example village.");
+        var guild=plugin.getServices().guilds().membership(GUILD_LEADER).orElseThrow();var owner=Owner.guild(guild.guildId());
+        var slot=plugin.getServices().housing().find(owner).orElseThrow();var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);var plot=Objects.requireNonNull(manager.getPlot(slot.propertyId()));
+        if(plot.hasBuilding()&&!plot.getBuilding().getBuildingId().equals("guild_hall")){return false;}
+        if(!NativeHousingChecks.rect(plot.getFootprint()).equals(new PlotRect(8,52,48,48))||plot.hasBuilding()&&(plot.getBuilding().getAnchorX()!=32||plot.getBuilding().getAnchorY()!=1||plot.getBuilding().getAnchorZ()!=76))throw new IllegalStateException("This example hall has moved. Keep it or replace it using the normal housing tools.");
+        for(var visitor:world.getPlayerRefs()){var ref=visitor.getReference();if(ref==null||!ref.isValid())continue;var transform=world.getEntityStore().getStore().getComponent(ref,com.hypixel.hytale.server.core.modules.entity.component.TransformComponent.getComponentType());if(transform!=null&&plot.getFootprint().containsHorizontal((int)Math.floor(transform.getPosition().x),(int)Math.floor(transform.getPosition().z)))throw new IllegalStateException("Everyone must leave the example guild plot before it can be refreshed.");}
+        if(plugin.getServices().provenance().instances(plot.getPlotId()).stream().anyMatch(i->i.state().equals("PLACED")&&!"HOUSE".equals(i.nativeData().get("kind"))))throw new IllegalStateException("Pack the decorations on the example guild plot before refreshing its hall.");
+        if(plot.hasBuilding()){
+            UUID operation=NativePlacementTransactions.pickup(plugin,world,plot,plot.getPlotId());
+            plot.setBuilding(null);manager.updatePlot(plot);manager.saveIfDirty();plugin.getServices().housing().updateBuildingPresent(owner,plot.getPlotId(),false);NativePlacementTransactions.complete(plugin,operation);
+        }
+        plugin.getRuntime().welcomeGuild(guild.guildId());
+        house(plugin,world,GUILD_LEADER,owner,new PlotRect(8,52,48,48),"founders_hall",HousingRules.Scope.GUILD_ROOT);
+        return true;
     }
     private static void guide(Ref<EntityStore> r,Store<EntityStore>s,PlayerRef p){ChoicePage.open(r,s,p,"Your testing route","Use Adventure mode for activity XP. The village is a housing world: use the housing and road tools to build.",List.of(
         new ChoicePage.Choice("1. Talk to all six NPCs; check names, professions and your interaction key","Village",(rr,ss)->visit(EterniaModPlugin.get(),p)),
@@ -103,6 +128,14 @@ public final class LocalPlayground {
                 var plot=manager.getPlot(plugin.getServices().housing().find(Owner.player(SELLER)).orElseThrow().propertyId());int x=plot.getBuilding().getAnchorX(),z=plot.getBuilding().getAnchorZ();boolean safe=false;
                 for(int dx=-2;dx<=2;dx++)for(int dz=-2;dz<=2;dz++)if(ChunkSectionBlockUtil.blockId(village,x+dx,1,z+dz)!=0&&ChunkSectionBlockUtil.blockId(village,x+dx,2,z+dz)==0&&ChunkSectionBlockUtil.blockId(village,x+dx,3,z+dz)==0)safe=true;
                 if(!safe)throw new IllegalStateException("The example shop has no clear arrival near its configured entrance");
+                var guild=plugin.getServices().guilds().membership(GUILD_LEADER).orElseThrow();var owner=Owner.guild(guild.guildId());
+                var guildSlot=plugin.getServices().housing().find(owner).orElseThrow();var hall=manager.getPlot(guildSlot.propertyId());
+                UUID packed=NativePlacementTransactions.pickup(plugin,village,hall,hall.getPlotId());hall.setBuilding(null);manager.updatePlot(hall);manager.saveIfDirty();plugin.getServices().housing().updateBuildingPresent(owner,hall.getPlotId(),false);NativePlacementTransactions.complete(plugin,packed);
+                house(plugin,village,GUILD_LEADER,owner,new PlotRect(8,52,48,48),"guild_hall",HousingRules.Scope.GUILD_ROOT);
+                if(!refreshExampleHall(plugin,village,actor)||!hall.getBuilding().getBuildingId().equals("founders_hall"))throw new IllegalStateException("Example hall refresh failed");
+                if(refreshExampleHall(plugin,village,actor))throw new IllegalStateException("Example hall refresh was not idempotent");
+                if(plugin.getServices().provenance().ownedInstances(owner).stream().noneMatch(i->i.state().equals("PACKED")&&i.contentId().equals("eternia:house/guild_hall")))throw new IllegalStateException("Original example hall was not preserved");
+
             }).join();
             PlaygroundActivities.nativeSmoke(plugin,Universe.get().getWorld(TRIALS),actor).join();
             plugin.getLogger().atInfo().log("ETERNIA_NATIVE_PLAYGROUND_PASS: persistent village, actual spline road, six distinct NPCs, managed portal, furnished seller and guild house, finite native-item listings, mineral and harvest stations; repeat setup retains state");
@@ -154,15 +187,15 @@ public final class LocalPlayground {
         for(String item:List.of("Ingredient_Bar_Iron","Food_Bread")){String receipt="local-playground:shop-v1:"+item;var stock=issue(plugin,SELLER,item,20,receipt);plugin.getServices().market().list(SELLER,stock.id(),item.equals("Food_Bread")?5:15,receipt+":listing");}
         plugin.getRuntime().welcome(GUILD_LEADER,"Rowan Ashford");var services=plugin.getServices();var guild=services.guilds().membership(GUILD_LEADER).map(m->services.guilds().find(m.guildId()).orElseThrow()).orElseGet(()->services.guilds().create(GUILD_LEADER,"The Lantern Company","local-playground:showcase-guild"));
         for(int i=1;i<=4;i++){UUID member=UUID.nameUUIDFromBytes(("eternia.local.guild.member."+i).getBytes(StandardCharsets.UTF_8));plugin.getRuntime().welcome(member,"Lantern Keeper "+i);if(services.guilds().membership(member).isEmpty())services.guilds().acceptInvite(member,services.guilds().invite(GUILD_LEADER,member));}
-        house(plugin,w,GUILD_LEADER,Owner.guild(guild.id()),new PlotRect(8,52,48,48),"guild_hall",HousingRules.Scope.GUILD_ROOT);
+        house(plugin,w,GUILD_LEADER,Owner.guild(guild.id()),new PlotRect(8,52,48,48),"founders_hall",HousingRules.Scope.GUILD_ROOT);
     }
     private static HubPlotRecord house(EterniaModPlugin plugin,World w,UUID actor,Owner owner,PlotRect rect,String building,HousingRules.Scope scope)throws java.io.IOException{
         var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(w,plugin);var slot=plugin.getServices().housing().find(owner).orElse(null);
         UUID property=slot==null?plugin.getClaims().claim(w,actor,rect,0,scope,false,UUID.randomUUID()):slot.propertyId();var plot=Objects.requireNonNull(manager.getPlot(property),"Example plot is unavailable; restore its saved world before retrying");
         if(!plot.hasBuilding()){
-            var prefab=PrefabResolveUtil.resolvePrefabBuffer(plugin.getBuildingCatalog().get(building).getPrefabPath());int x=rect.x()+rect.width()/2,z=rect.z()+rect.depth()/2;
-            var placement=NativePlacementTransactions.place(plugin,w,plot,actor,building,new Vector3i(x,1,z),Rotation.None,prefab,true);
-            plot.setBuilding(new HubPlotBuilding(building,x,1,z,Rotation.None,List.of()));manager.updatePlot(plot);manager.saveIfDirty();plugin.getServices().housing().updateBuildingPresent(owner,property,true);NativePlacementTransactions.complete(plugin,placement.operation());
+            var definition=plugin.getBuildingCatalog().get(building);var yaw=definition.getDefaultRotationYaw();var prefab=PrefabResolveUtil.resolvePrefabBuffer(definition.getPrefabPath());int x=rect.x()+rect.width()/2,z=rect.z()+rect.depth()/2;
+            var placement=NativePlacementTransactions.place(plugin,w,plot,actor,building,new Vector3i(x,1,z),yaw,prefab,true);
+            plot.setBuilding(new HubPlotBuilding(building,x,1,z,yaw,List.of()));manager.updatePlot(plot);manager.saveIfDirty();plugin.getServices().housing().updateBuildingPresent(owner,property,true);NativePlacementTransactions.complete(plugin,placement.operation());
         }return plot;
     }
     private static void placeShelf(EterniaModPlugin plugin,World w,HubPlotRecord plot,UUID actor)throws java.io.IOException{if(plugin.getServices().provenance().instances(plot.getPlotId()).stream().anyMatch(i->i.contentId().equals("eternia:prop/potion_shelf")&&i.state().equals("PLACED")))return;

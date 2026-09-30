@@ -3,5 +3,5 @@ Group { Anchor: (Height: 126, Bottom: 12); Background: $T.@HeaderSurface; Paddin
 Group { Anchor: (Height: 28); LayoutMode: Left; Label #RowText { FlexWeight: 1; Style: $T.@SubtitleStyle; } Label #QuestReward { Anchor: (Width: 150); Style: (...$T.@SubtitleStyle, HorizontalAlignment: End); } }
 Label #QuestGoal { Anchor: (Height: 30); Style: $T.@DefaultLabelStyle; }
 Label #QuestCount { Anchor: (Height: 24, Bottom: 8); Style: $T.@MutedStyle; }
-Group { Anchor: (Height: 8); LayoutMode: Left; Background: $T.@InsetSurface; Group #QuestFill { FlexWeight: 1; Background: $T.@Accent; } Group #QuestRest { FlexWeight: 1; } }
+Group { Anchor: (Height: 10); Padding: (Full: 1); LayoutMode: Left; Background: #45615d; Group #QuestFill { FlexWeight: 1; Background: $T.@Accent; } Group #QuestRest { FlexWeight: 1; Background: #101e22; } }
 }

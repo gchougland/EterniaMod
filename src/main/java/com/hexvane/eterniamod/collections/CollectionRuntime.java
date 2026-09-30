@@ -111,7 +111,9 @@ public final class CollectionRuntime implements AutoCloseable {
                 PlayerRef player=players.get(plan.pet.owner().id());if(player==null||!followers.add(player.getUuid()))continue;
                 var ref=player.getReference();if(store.getComponent(ref,DeathComponent.getComponentType())!=null)continue;
                 var transform=store.getComponent(ref,TransformComponent.getComponentType());if(transform==null)continue;
-                target=new Vector3d(transform.getPosition()).add(1.4,.85,1.4);
+                var last=visible.get(plan.pet.id());var lastTransform=last!=null&&last.ref.isValid()?store.getComponent(last.ref,TransformComponent.getComponentType()):null;
+                var position=transform.getPosition();var point=lastTransform==null?PetMotion.behind(position.x,position.z,transform.getRotation().yaw()):PetMotion.follow(lastTransform.getPosition().x,lastTransform.getPosition().z,position.x,position.z,transform.getRotation().yaw());
+                target=new Vector3d(point.x(),position.y+.85,point.z());
             }else {
                 var location=plan.property.location;if(!location.worldId().equals(world.getName()))continue;
                 if(residents.merge(plan.property.id,1,Integer::sum)>12)continue;
@@ -186,7 +188,8 @@ public final class CollectionRuntime implements AutoCloseable {
                 if(store.getComponent(owner.getReference(),DeathComponent.getComponentType())!=null)continue;
                 var position=store.getComponent(owner.getReference(),TransformComponent.getComponentType());if(position==null)continue;
                 lookAt=new Vector3d(position.getPosition()).add(0,1.4,0);
-                target.set(position.getPosition()).add(1.4,.85,1.4);
+                var p=position.getPosition();var point=PetMotion.follow(transform.getPosition().x,transform.getPosition().z,p.x,p.z,position.getRotation().yaw());
+                target.set(point.x(),p.y+.85,point.z());
             }
             if(lookAt!=null) {
                 var direction=lookAt.sub(transform.getPosition());

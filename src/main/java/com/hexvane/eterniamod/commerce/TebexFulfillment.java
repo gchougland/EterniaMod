@@ -40,7 +40,7 @@ public final class TebexFulfillment {
     public int reconcile(){return services.commerceIngress().reconcile(100);}
     private void handle(HttpExchange exchange)throws IOException{
         try{
-            if(!exchange.getRequestMethod().equals("POST")){respond(exchange,405,"{}");return;}
+            if(!exchange.getRequestMethod().equals("POST")){exchange.getResponseHeaders().set("Allow","POST");respond(exchange,405,"{}");return;}
             byte[] body=exchange.getRequestBody().readNBytes(MAX_BODY+1);
             if(body.length>MAX_BODY){respond(exchange,413,"{}");return;}
             if(!verifySignature(body,exchange.getRequestHeaders().getFirst("X-Signature"),secret)){respond(exchange,401,"{}");return;}
@@ -102,7 +102,14 @@ public final class TebexFulfillment {
     }
     private static String required(JsonObject object,String name){String value=optional(object,name);if(value.isBlank()||value.length()>200)throw new IllegalArgumentException("Invalid "+name);return value;}
     private static String optional(JsonObject object,String name){var value=object.get(name);return value==null||value.isJsonNull()?"":value.getAsString();}
-    private static void respond(HttpExchange exchange,int status,String json)throws IOException{byte[] bytes=json.getBytes(StandardCharsets.UTF_8);exchange.getResponseHeaders().set("Content-Type","application/json");exchange.getResponseHeaders().set("Cache-Control","no-store");exchange.sendResponseHeaders(status,bytes.length);exchange.getResponseBody().write(bytes);}
+    private static void respond(HttpExchange exchange,int status,String json)throws IOException{
+        byte[] bytes=json.getBytes(StandardCharsets.UTF_8);exchange.getResponseHeaders().set("Content-Type","application/json");exchange.getResponseHeaders().set("Cache-Control","no-store");
+        if(exchange.getRequestMethod().equals("HEAD")){
+            exchange.getResponseHeaders().set("Content-Length",Integer.toString(bytes.length));
+            exchange.sendResponseHeaders(status,-1);return;
+        }
+        exchange.sendResponseHeaders(status,bytes.length);exchange.getResponseBody().write(bytes);
+    }
     private final class DeliveryCommand extends CommandBase{
         private final RequiredArg<String> transaction=withRequiredArg("transaction","Tebex transaction",ArgTypes.STRING);
         private final RequiredArg<String> packageId=withRequiredArg("package","Tebex package",ArgTypes.STRING);

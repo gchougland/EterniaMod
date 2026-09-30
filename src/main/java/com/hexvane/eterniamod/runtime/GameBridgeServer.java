@@ -41,7 +41,9 @@ public final class GameBridgeServer implements AutoCloseable {
         try {
             String auth=exchange.getRequestHeaders().getFirst("Authorization");
             if(auth==null||auth.length()>1024||!MessageDigest.isEqual(token,auth.getBytes(StandardCharsets.UTF_8))){reply(exchange,401,Map.of("error","Unauthorized"));return;}
-            if(!exchange.getRequestMethod().equals("GET")){reply(exchange,405,Map.of("error","Method not allowed"));return;}
+            if(!exchange.getRequestMethod().equals("GET")&&!exchange.getRequestMethod().equals("HEAD")){
+                exchange.getResponseHeaders().set("Allow","GET, HEAD");reply(exchange,405,Map.of("error","Method not allowed"));return;
+            }
             String path=exchange.getRequestURI().getPath();
             if(path.equals("/v1/health")){reply(exchange,200,Map.of("status","ready"));return;}
             if(path.equals("/v1/store/offers")){reply(exchange,200,Map.of("source","game","offers",offers));return;}
@@ -84,7 +86,12 @@ public final class GameBridgeServer implements AutoCloseable {
     private void reply(HttpExchange e,int status,Object value)throws IOException {
         byte[] body=json.toJson(value).getBytes(StandardCharsets.UTF_8);
         e.getResponseHeaders().set("Content-Type","application/json; charset=utf-8");e.getResponseHeaders().set("Cache-Control","no-store");
-        e.getResponseHeaders().set("X-Content-Type-Options","nosniff");e.sendResponseHeaders(status,body.length);e.getResponseBody().write(body);
+        e.getResponseHeaders().set("X-Content-Type-Options","nosniff");
+        if(e.getRequestMethod().equals("HEAD")){
+            e.getResponseHeaders().set("Content-Length",Integer.toString(body.length));
+            e.sendResponseHeaders(status,-1);return;
+        }
+        e.sendResponseHeaders(status,body.length);e.getResponseBody().write(body);
     }
     private static String contentLabel(String id) {
         return switch(id){

@@ -9,7 +9,7 @@ $T.@SecondaryTextButton #Close { Anchor: (Width: 96, Right: 10); Text: "Close"; 
 $T.@HomeButton #MenuHome {}
 }
 Group { FlexWeight: 1; LayoutMode: Left;
-Group { Anchor: (Width: 184, Right: 16); LayoutMode: Top; Background: $T.@PanelSurface; Padding: (Full: 10);
+Group { Anchor: (Width: 218, Right: 16); LayoutMode: Top; Background: $T.@PanelSurface; Padding: (Full: 10);
 Label { Anchor: (Height: 26, Bottom: 6); Style: $T.@MutedStyle; Text: "YOUR ETERNIA"; }
 Group #Navigation { FlexWeight: 1; LayoutMode: TopScrolling; }
 Label #Pagination { Anchor: (Height: 24, Bottom: 6); Style: (...$T.@MutedStyle, HorizontalAlignment: Center); }

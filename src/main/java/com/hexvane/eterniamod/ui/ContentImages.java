@@ -17,4 +17,10 @@ public final class ContentImages {
     }
     private static boolean exists(String path){return ContentImages.class.getClassLoader().getResource("Common/UI/Custom/"+path)!=null;}
     public static void show(UICommandBuilder c,String selector,String id,boolean screenshot){c.set(selector+".Visible",id!=null&&!id.isBlank());if(id!=null&&!id.isBlank())c.setObject(selector+".Background",new PatchStyle(Value.of(path(id,screenshot))));}
+    /** Prefer the game's actual item icon for stacks, and authored catalog images for collection content. */
+    public static void row(UICommandBuilder c,String selector,String id){
+        boolean item=id!=null&&!id.isBlank()&&!id.startsWith("eternia:")&&com.hypixel.hytale.server.core.asset.type.item.config.Item.getAssetMap().getAsset(id)!=null;
+        show(c,selector+" #RowImage",item?"":id,false);c.set(selector+" #RowItem.Visible",item);
+        if(item)c.set(selector+" #RowItem.ItemId",id);
+    }
 }

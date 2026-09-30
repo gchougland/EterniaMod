@@ -11,12 +11,13 @@ for(const [directory,kind]of [['Buildings','house'],['Props','prop']]){
  const folder=path.join(root,'src/main/resources/Server/EterniaMod',directory);
  for(const file of (await fs.readFile(path.join(folder,'catalog.index'),'utf8')).split(/\r?\n/).filter(v=>v.trim()&&!v.startsWith('#'))){
   const native=JSON.parse(await fs.readFile(path.join(folder,file),'utf8')),out=path.join(root,'src/main/resources/Common/UI/Custom/EterniaMod/Catalog',kind,native.id);
+  if(process.argv.some(a=>a.startsWith('--id='))&&!process.argv.includes('--id='+native.id))continue;
   if(!process.argv.includes('--force')&&await fs.access(path.join(out,'screenshot.png')).then(()=>true,()=>false))continue;
   const id='eternia:'+kind+'/'+native.id,revision=Math.max(0,...existing.filter(r=>r.definition.id===id).map(r=>r.definition.revision))+1;
   const local=path.join(root,'src/main/resources/Server/Prefabs',native.prefabPath);
   const source=await fs.access(local).then(()=>local,()=>path.join(root,'../HytaleSourceCode/hytale-shared-source/HytaleAssets/Server/Prefabs',native.prefabPath));
   const prefab=JSON.parse(await fs.readFile(source,'utf8'));
-  const record=await(await api('/api/admin/content',{definition:{schemaVersion:1,kind,id,revision,displayName:native.displayName,native},prefab})).json();
+  const record=await(await api('/api/admin/content',{definition:{schemaVersion:1,kind,id,revision,displayName:native.displayName,frontFacing:native.id==='founders_hall'?'South':'North',native},prefab})).json();
   for(const mode of ['icon','screenshot'])jobs.push({...await(await api('/api/admin/renders',{contentKey:record.key,mode})).json(),out,mode});
  }
 }

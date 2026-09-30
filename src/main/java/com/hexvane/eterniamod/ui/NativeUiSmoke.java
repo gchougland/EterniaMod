@@ -17,6 +17,9 @@ public final class NativeUiSmoke {
             String selector="#ControlRows["+i+"] #KeyLabel.TextSpans";
             require(Arrays.stream(roadCommands.getCommands()).anyMatch(c->selector.equals(c.selector)&&c.data!=null&&c.data.length()>10),"Missing custom road HUD key label: "+i);
         }
+        var icons=new UICommandBuilder();ContentImages.row(icons,"#Rows[0]","Food_Bread");
+        require(value(Arrays.asList(icons.getCommands()),"#Rows[0] #RowItem.Visible").getBoolean("0").getValue(),"Native shop items need their item icon");
+        require(value(Arrays.asList(icons.getCommands()),"#Rows[0] #RowItem.ItemId").getString("0").getValue().equals("Food_Bread"),"Item icon must use the actual listing asset");
         var choices=new ArrayList<ChoicePage.Choice>();
         for(int i=0;i<9;i++)choices.add(new ChoicePage.Choice("A furnished house and the decorations around it",i==0?"Transfer leadership":"Preview",(r,s)->{}));
         // This page's build is deliberately independent of entity reads; no player is attached or mutated.

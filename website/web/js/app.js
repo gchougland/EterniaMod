@@ -1,3 +1,4 @@
+import {landing} from './landing.js';
 import {api,el,link,identityBar,notice} from './api.js';
 import {treasury} from './treasury.js';
 const view=document.querySelector('#view'),path=location.pathname;
@@ -6,9 +7,7 @@ const state=await identityBar();view.replaceChildren();
 function heading(kicker,title,description){view.append(el('div',kicker,'eyebrow'),el('h1',title));if(description)view.append(el('p',description,'muted'));}
 function card(title,text){const c=el('article',undefined,'card');c.append(el('h3',title),el('p',text));return c;}
 if(path==='/'){
- const hero=el('section',undefined,'hero');hero.append(el('div','Welcome to Eternia','eyebrow'),el('h1','A home beyond the adventure.'),el('p','Build your place in a shared world. Gather your guild, make your home, and carry each adventure forward.'));
- const actions=el('div',undefined,'actions');actions.append(link('Your account','/account','button primary'),link('Explore season passes','/seasons'));hero.append(actions);view.append(hero);
- const grid=el('div',undefined,'grid');grid.append(card('Make a place your own','A free housing plot, a home to personalize, and room for the things you discover.'),card('Find your people','Form a guild and create a neighborhood together.'),card('Every season stays','Return to earlier passes and continue where you left off.'));view.append(grid);
+ landing(view);
 }else if(path==='/store'){
  await treasury(view,state);
 }else{

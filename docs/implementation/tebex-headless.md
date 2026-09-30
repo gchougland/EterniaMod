@@ -35,7 +35,17 @@ Use one website replica for now. Session state persists in PostgreSQL, while che
 
 ## 2. Connect the website to Sparked Host
 
-The PostgreSQL connection does not provide the website's game API connection. Ask Sparked Host for an **additional TCP port** for Eternia's HTTP bridge and an **HTTPS reverse proxy** to that port. Do not reuse Hytale's game port. The public endpoint must use HTTPS; do not expose bearer credentials over public HTTP.
+The PostgreSQL connection does not provide the website's game API connection. Eternia needs an **additional TCP port** for its HTTP bridge and an **HTTPS reverse proxy** to that port.
+
+First try Sparked's Apollo panel:
+
+1. Select your Hytale server and open **Configuration → Network** (sometimes shown simply as **Network**).
+2. Click **Create allocation**. Copy the new port number into `ETERNIA_BRIDGE_PORT`. Leave the existing primary game port unchanged.
+3. Sparked's reverse proxy guide shows an **anchor icon** beside an allocated port. Use the new port's icon to configure a domain or a supplied subdomain. Confirm that the resulting endpoint supports HTTPS before setting `GAME_BRIDGE_URL`.
+
+Sparked documents these controls for its Apollo panel using Minecraft examples. If your Hytale service has no allocation button, has reached its allocation limit, or does not offer an HTTPS proxy, contact support: “I need one additional TCP allocation for an HTTP API inside my Hytale server container, plus an HTTPS reverse proxy to that port. Can you enable these for my service?”
+
+See [Sparked's additional port instructions](https://help.sparkedhost.com/en/article/how-to-forward-ports-for-a-minecraft-server-1wwng49/) and [reverse proxy instructions](https://help.sparkedhost.com/en/article/how-to-create-a-reverse-proxy-126blpo/). Do not reuse Hytale's game port. The public endpoint must use HTTPS; do not expose bearer credentials over public HTTP.
 
 On Sparked Host, set these environment variables or the matching entries in `mods/Hexvane_EterniaMod/eternia-server.properties`:
 

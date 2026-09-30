@@ -4,6 +4,10 @@
 
 ### Added
 
+- Prowl offers a free housing toolkit with a deed, ledger, and packaging wand.
+- Eternia Guild Hall is available for guilds and in the example village.
+- Illustrated website welcome page with a guild hall that builds as you scroll and a new Eternia icon.
+
 - Crown treasury on the website with current package prices, account balances, and secure Tebex checkout.
 - **Hub plots** — Admins can mark plot areas and assign them to players, including assigning the plot you are standing in. Use `/eternia plots show` to toggle plot outlines.
 - **Building placement** — Use a building item in your plot to place and move a preview before building.

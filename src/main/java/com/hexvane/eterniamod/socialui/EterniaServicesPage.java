@@ -72,7 +72,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         int nav = 0;
         for (Section entry : Section.values()) {
             if (entry == Section.WORLDS) continue;
-            appendNav(commands, events, nav++, (entry == section ? "• " : "") + entry.title, entry==Section.STORE?"external:STORE_OPEN":"nav:" + entry.name(), !busy);
+            appendNav(commands, events, nav++, entry.title, entry==Section.STORE?"external:STORE_OPEN":"nav:" + entry.name(), !busy, entry == section);
         }
         commands.set("#PageControls.Visible",pending == null && view.rows.size() > PAGE_SIZE);com.hexvane.eterniamod.ui.MenuPagination.show(commands, pending == null ? view.rows.size() : 0, PAGE_SIZE);commands.set("#Previous.Disabled", busy || pending!=null || page == 0);commands.set("#Next.Disabled",busy || pending!=null || (page+1)*PAGE_SIZE>=view.rows.size());
         commands.set("#Pagination.Text", "Page " + (page+1) + " / " + Math.max(1,(view.rows.size()+PAGE_SIZE-1)/PAGE_SIZE));
@@ -81,7 +81,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         for(int i=0;i<tabs.size();i++){var tab=tabs.get(i);commands.append("#Tabs","EterniaMod/ServiceTab.ui");commands.set("#Tabs["+i+"].Text",tab.label);commands.set("#Tabs["+i+"].Disabled",busy);bind(events,"#Tabs["+i+"]",tab.route);}
         commands.set("#SectionTitle.TextSpans", Message.raw(pending == null ? view.title : "Confirm action"));
         commands.set("#Description.TextSpans", Message.raw(pending == null ? view.description : pending.explanation));
-        commands.setObject("#Description.Anchor",UiAnchors.heightWithBottom(Math.max(50,UiPresentation.wrappedHeight(pending==null?view.description:pending.explanation,820,24)),8));
+        commands.setObject("#Description.Anchor",UiAnchors.heightWithBottom(Math.max(50,UiPresentation.wrappedHeight(pending==null?view.description:pending.explanation,786,24)),8));
         commands.set("#Status.TextSpans", Message.raw(busy ? "Working…" : status));
         List<Row> rows = pending == null ? view.rows : List.of();
         int start = Math.min(page * PAGE_SIZE, rows.size());
@@ -92,12 +92,12 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 for(int index=0;index<2;index++){Row cell=row.cells.get(index);String track=index==0?"Free":"Paid";commands.set(selector+" #"+track+"Name.Text",cell.text);commands.set(selector+" #"+track+"Action.Text",cell.label);commands.set(selector+" #"+track+"Action.Visible",!cell.label.isEmpty());commands.set(selector+" #"+track+"Action.Disabled",busy||cell.route.isEmpty());if(!cell.route.isEmpty())bind(events,selector+" #"+track+"Action",cell.route);}continue;}
             if(row.total>0) {commands.append("#Rows","EterniaMod/QuestRow.ui");commands.set(selector+" #RowText.Text",row.text);commands.set(selector+" #QuestGoal.Text",row.goal);commands.set(selector+" #QuestReward.Text","+"+row.xp+" XP");commands.set(selector+" #QuestCount.Text",Math.min(row.count,row.total)+" / "+row.total+(row.count>=row.total?" · Complete":""));bar(commands,selector+" #QuestFill",selector+" #QuestRest",row.count,row.total);continue;}
             commands.append("#Rows", section==Section.MAIL?"EterniaMod/MailRow.ui":"EterniaMod/ServiceRow.ui");
-            if(section!=Section.MAIL)com.hexvane.eterniamod.ui.ContentImages.show(commands,selector+" #RowImage",row.contentId,false);
+            if(section!=Section.MAIL)com.hexvane.eterniamod.ui.ContentImages.row(commands,selector,row.contentId);
             commands.set(selector + " #RowText.TextSpans", Message.raw(row.text));
             commands.set(selector + " #RowAction.TextSpans", Message.raw(row.label));
             commands.set(selector + " #RowAction.Visible", !row.label.isEmpty());
             commands.set(selector + " #RowAction.Disabled", busy || row.route.isEmpty());
-            if(section!=Section.MAIL){int width=UiPresentation.buttonWidth(row.label);int body=layout().equals("ServicesOverview")?634:layout().equals("ServicesRoster")&&Arrays.stream(view.fields).anyMatch(label->!label.isEmpty())?588:856;commands.setObject(selector+" #RowAction.Anchor",UiAnchors.serviceAction(width));commands.setObject(selector+".Anchor",UiAnchors.heightWithBottom(Math.max(76,UiPresentation.wrappedHeight(row.text,body-40-(row.contentId.isEmpty()?0:78)-(row.label.isEmpty()?0:width),23)+24),8));}
+            if(section!=Section.MAIL){int width=UiPresentation.buttonWidth(row.label);int body=layout().equals("ServicesOverview")?600:layout().equals("ServicesRoster")&&Arrays.stream(view.fields).anyMatch(label->!label.isEmpty())?554:822;commands.setObject(selector+" #RowAction.Anchor",UiAnchors.serviceAction(width));commands.setObject(selector+".Anchor",UiAnchors.heightWithBottom(Math.max(76,UiPresentation.wrappedHeight(row.text,body-40-(row.contentId.isEmpty()?0:78)-(row.label.isEmpty()?0:width),23)+24),8));}
             else{int textHeight=Math.max(56,UiPresentation.wrappedHeight(row.text,294,23));commands.setObject(selector+" #RowText.Anchor",UiAnchors.heightWithBottom(textHeight,8));commands.setObject(selector+".Anchor",UiAnchors.heightWithBottom(textHeight+64,10));}
             if (!row.route.isEmpty()) bind(events, selector + " #RowAction", row.route);
         }
@@ -138,12 +138,13 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         default->List.of();};}
     private static void bar(UICommandBuilder commands,String fill,String rest,long value,long total){int amount=total<=0?0:(int)Math.max(0,Math.min(1000,(double)value/total*1000));commands.set(fill+".Visible",amount>0);commands.set(rest+".Visible",amount<1000);commands.set(fill+".FlexWeight",Math.max(1,amount));commands.set(rest+".FlexWeight",Math.max(1,1000-amount));}
 
-    private void appendNav(UICommandBuilder commands, UIEventBuilder events, int index, String text, String route, boolean enabled) {
+    private void appendNav(UICommandBuilder commands, UIEventBuilder events, int index, String text, String route, boolean enabled, boolean selected) {
         commands.append("#Navigation", "EterniaMod/ServiceNav.ui");
         String selector = "#Navigation[" + index + "]";
-        commands.set(selector + ".TextSpans", Message.raw(text));
-        commands.set(selector + ".Disabled", !enabled);
-        bind(events, selector, route);
+        commands.set(selector + " #Selected.Visible", selected);
+        commands.set(selector + " #NavButton.TextSpans", Message.raw(text));
+        commands.set(selector + " #NavButton.Disabled", !enabled);
+        bind(events, selector + " #NavButton", route);
     }
 
     private void bind(UIEventBuilder events, String selector, String route) {
@@ -183,6 +184,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             if (!result.opened()) { status = result.message(); generation++; rebuild(); }
             return;
         }
+        if(route.equals("intro_toolkit")){status=com.hexvane.eterniamod.customization.CustomizationTools.reissue(ref,store,playerRef,true);generation++;rebuild();return;}
         if (route.equals("refresh")) { refresh(ref, store, ""); return; }
         if (route.equals("mail_send")) {
             var result=registration.actions.composeMail(one,two,three,ref,store,playerRef);
@@ -319,12 +321,12 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         return switch (request.section) {
             case GREETER -> new View("Welcome to Eternia", "I'm Prowl. Build a home, find your people, and explore at your own pace.", List.of(
                 Row.info("Your first 24 × 24 plot, starter house, mailbox and one plot move are free."),
-                Row.info("Choose a housing plot near a public road and an established house or hub portal."),
+                Row.info("Choose a housing plot near a connected public road, an established home, or a hub portal."),
                 Row.info("Walk near a plot edge to see its low, glowing boundary. Claim previews show placement reasons."),
                 Row.info("Guilds share a house and can grow a neighborhood of member plots."),
                 Row.info("Select a season pass and earn progress through normal play. Old seasons never expire."),
                 Row.info("The hub's merchants connect you to mail, player shops, collections and optional store items.")),
-                noFields(), buttons("Claim a plot", "external:HOUSING_CLAIM", "Quest journal", "nav:QUESTS", "", ""), null);
+                noFields(), buttons("Get starter toolkit", "intro_toolkit", "Claim a plot", "external:HOUSING_CLAIM", "Quest journal", "nav:QUESTS"), null);
             case HOUSING -> {
                 var overview = services.overview(actor);
                 List<Row> rows = new ArrayList<>();
@@ -338,7 +340,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             case GUILD -> guildView(input);
             case MAIL -> mailView(input);
             case SHOP -> {
-                List<Row> rows = services.market().search(input.one).stream().map(listing -> new Row(UiPresentation.itemName(listing.itemId()) + " · " + listing.unitPrice() + " coins each\n" + listing.stock() + " in stock · " + name(listing.seller()), "Visit shop", "shop_visit:" + listing.id())).toList();
+                List<Row> rows = services.market().search(input.one).stream().map(listing -> new Row(UiPresentation.itemName(listing.itemId()) + " · " + listing.unitPrice() + " coins each\n" + listing.stock() + " in stock · " + name(listing.seller()), "Visit shop", "shop_visit:" + listing.id()).image(listing.itemId())).toList();
                 yield new View("Player shops", "Browse real listings, then visit the seller's house to buy. Sellers can be offline.", rows.isEmpty() ? List.of(Row.info("No active listings match this search.")) : rows,
                     new String[] {"Find an item", "", ""}, buttons("Search", "refresh", "Manage my shop", "external:SHOP_MANAGE", "Item desk", "external:ITEM_DESK"), null);
             }
