@@ -11,4 +11,12 @@ public final class MenuPagination {
         commands.set("#Next.Visible", paged);
         commands.set("#Pagination.Visible", paged);
     }
+    /** Collapse the complete sidebar footer so navigation can use all remaining height. */
+    public static void sidebar(UICommandBuilder commands, int entries, int pageSize) {
+        show(commands, entries, pageSize);
+        boolean paged = entries > pageSize;
+        commands.set("#PageControls.Visible", paged);
+        commands.setObject("#PageControls.Anchor", UiAnchors.height(paged ? 44 : 0));
+        commands.setObject("#Pagination.Anchor", UiAnchors.heightWithBottom(paged ? 24 : 0, paged ? 6 : 0));
+    }
 }

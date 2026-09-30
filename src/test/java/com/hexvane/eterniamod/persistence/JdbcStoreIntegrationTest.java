@@ -82,6 +82,23 @@ class JdbcStoreIntegrationTest {
         assertEquals(9,restarted.economy().balance(recipient).available());
     }
 
+    @Test void simultaneousQuestCompletionsPayOnceAcrossConnections() throws Exception {
+        var first=new EterniaServices(new JdbcStore(source));var second=new EterniaServices(new JdbcStore(source));
+        UUID actor=UUID.randomUUID();String pass="eternia:pg_quest/"+actor;
+        first.accounts().recordAuthenticatedLogin(actor,"QuestDb"+actor.toString().substring(0,8));
+        first.seasons().register(new SeasonService.Definition(pass,"Database quest",List.of(100L),List.of(),List.of(new SeasonService.Quest("eternia:quest/pg",SeasonService.ActivityKind.KILL,SeasonService.ObjectiveKind.COUNT,Set.of(),1,50,125L))));
+        first.seasons().select(actor,pass);
+        try(var pool=Executors.newVirtualThreadPerTaskExecutor()){
+            var tasks=new ArrayList<Future<?>>();
+            for(int i=0;i<8;i++){var service=i%2==0?first:second;tasks.add(pool.submit(()->service.seasons().recordActivity(new SeasonService.Activity(UUID.randomUUID(),actor,SeasonService.ActivityKind.KILL,"Skeleton",1,5,UUID.randomUUID().toString(),true))));}
+            for(var task:tasks)task.get(30,TimeUnit.SECONDS);
+        }
+        var restarted=new EterniaServices(new JdbcStore(source));
+        assertTrue(restarted.seasons().quests(actor,pass).getFirst().completed());
+        assertEquals(125,restarted.economy().balance(Owner.player(actor)).available());
+        assertEquals(90,restarted.seasons().progress(actor).stream().filter(p->p.id().equals(pass)).findFirst().orElseThrow().xp());
+    }
+
     @Test void staleRevisionRollsBackEarlierWritesAndTransactionCannotEscape() {
         var store=new JdbcStore(source);String key=UUID.randomUUID().toString();
         var original=store.transaction(tx->tx.save("test_revision",key,0,Map.of("value","original")));

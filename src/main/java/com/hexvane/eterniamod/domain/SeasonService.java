@@ -13,8 +13,9 @@ public final class SeasonService extends DomainSupport {
     public record Reward(Track track,int level,int index,String contentId,OwnershipService.Kind kind,long quantity) {
         public Reward{Objects.requireNonNull(track);require(level>0&&index>=0,INVALID_INPUT,"Invalid reward tier");content(contentId);Objects.requireNonNull(kind);positive(quantity);}
     }
-    public record Quest(String id,ActivityKind activity,ObjectiveKind kind,Set<String> targets,long required,long bonusXp) {
-        public Quest{content(id);Objects.requireNonNull(activity);Objects.requireNonNull(kind);targets=Set.copyOf(targets);positive(required);require(bonusXp>=0,INVALID_INPUT,"Negative quest XP");}
+    public record Quest(String id,ActivityKind activity,ObjectiveKind kind,Set<String> targets,long required,long bonusXp,Long coins) {
+        public Quest(String id,ActivityKind activity,ObjectiveKind kind,Set<String> targets,long required,long bonusXp){this(id,activity,kind,targets,required,bonusXp,null);}
+        public Quest{coins=coins==null?100L:coins;require(coins>=0,INVALID_INPUT,"Negative quest Coins");content(id);Objects.requireNonNull(activity);Objects.requireNonNull(kind);targets=Set.copyOf(targets);positive(required);require(bonusXp>=0,INVALID_INPUT,"Negative quest XP");}
     }
     public record Definition(String id,String name,List<Long> thresholds,List<Reward> rewards,List<Quest> quests) {
         public Definition{content(id);text(name,"season name",100);thresholds=List.copyOf(thresholds);rewards=List.copyOf(rewards);quests=List.copyOf(quests);
@@ -30,13 +31,22 @@ public final class SeasonService extends DomainSupport {
     }
     public record Progress(String id,String name,long xp,long totalXp,int level,boolean paid,boolean active) {}
     public record QuestProgress(Quest quest,long count,boolean completed) {}
+    public record QuestNotice(String id,UUID actor,ActivityKind activity,long xp,long coins,boolean completion) {}
     private final OwnershipService ownership;
-    SeasonService(TransactionalStore s,Clock c,Supplier<UUID> i,OwnershipService ownership){super(s,c,i);this.ownership=ownership;}
+    private final EconomyService economy;
+    SeasonService(TransactionalStore s,Clock c,Supplier<UUID> i,OwnershipService ownership,EconomyService economy){super(s,c,i);this.ownership=ownership;this.economy=economy;}
     public static String paidEntitlementId(String seasonId){content(seasonId);return "eternia:season_paid/"+seasonId.replace(':','/');}
     /** Definitions are immutable once registered, preserving archived pass requirements and rewards. */
     public void register(Definition definition){
         store.transaction(tx->{Map<String,String> encoded=encode(definition);var previous=tx.find("season_definition",definition.id);
-            if(previous.isPresent())require(previous.get().fields().equals(encoded),CONFLICT,"Released season definitions are immutable");
+            if(previous.isPresent()) {
+                // Older definitions have no coin field. Normalize only that missing field;
+                // thresholds, objectives, XP and all established reward amounts stay immutable.
+                var normalized=new TreeMap<>(previous.get().fields());
+                for(int n=0;n<previous.get().number("questCount");n++)normalized.putIfAbsent("q"+n+".coins","100");
+                require(normalized.equals(encoded),CONFLICT,"Released season definitions are immutable");
+                if(!previous.get().fields().equals(encoded))tx.save("season_definition",definition.id,previous.get().revision(),encoded);
+            }
             else tx.save("season_definition",definition.id,0,encoded);return null;});
     }
     public List<Definition> definitions(){return store.transaction(tx->tx.scan("season_definition").stream().map(SeasonService::definition).toList());}
@@ -64,7 +74,7 @@ public final class SeasonService extends DomainSupport {
                 if(quest.kind==ObjectiveKind.DISTINCT){String targetKey="seen."+key(event.targetId);if(!state.containsKey(targetKey)){count=Math.addExact(count,1);state.put(targetKey,event.targetId);}}
                 else count=Math.addExact(count,event.quantity);
                 count=Math.min(count,quest.required);state.put("count",Long.toString(count));
-                if(count>=quest.required){state.put("complete","true");xp=Math.addExact(xp,quest.bonusXp);}
+                if(count>=quest.required){state.put("complete","true");xp=Math.addExact(xp,quest.bonusXp);awardQuestCoins(tx,event.actor,seasonId,quest);queueQuestNotice(tx,event.actor,seasonId,quest,true);}
                 tx.save("season_objective",id,existing.map(TransactionalStore.Row::revision).orElse(0L),state);
             }
             save(tx,progress,"xp",xp);return true;});
@@ -77,7 +87,26 @@ public final class SeasonService extends DomainSupport {
             }return List.copyOf(result);});
     }
     public List<QuestProgress> quests(UUID actor,String seasonId){
-        return store.transaction(tx->{var season=definition(row(tx,"season_definition",seasonId));return season.quests.stream().map(q->{var state=tx.find("season_objective",key(actor.toString(),seasonId,q.id));return new QuestProgress(q,state.map(r->r.number("count")).orElse(0L),state.map(r->Boolean.parseBoolean(r.value("complete"))).orElse(false));}).toList();});
+        return store.transaction(tx->{var season=definition(row(tx,"season_definition",seasonId));return season.quests.stream().map(q->{var state=tx.find("season_objective",key(actor.toString(),seasonId,q.id));boolean completed=state.map(r->Boolean.parseBoolean(r.value("complete"))).orElse(false);if(completed&&awardQuestCoins(tx,actor,seasonId,q))queueQuestNotice(tx,actor,seasonId,q,false);return new QuestProgress(q,state.map(r->r.number("count")).orElse(0L),completed);}).toList();});
+    }
+    private boolean awardQuestCoins(TransactionalStore.Transaction tx,UUID actor,String seasonId,Quest quest) {
+        return quest.coins>0&&economy.creditIn(tx,Owner.player(actor),quest.coins,"season-quest:"+key(actor.toString(),seasonId,quest.id));
+    }
+    private void queueQuestNotice(TransactionalStore.Transaction tx,UUID actor,String seasonId,Quest quest,boolean completion) {
+        String id=key(actor.toString(),seasonId,quest.id);
+        if(tx.find("quest_notice",id).isEmpty())tx.save("quest_notice",id,0,fields("actor",actor,"activity",quest.activity,"xp",completion?quest.bonusXp:0,"coins",quest.coins,"completion",completion,"createdAt",clock.instant(),"state","PENDING"));
+    }
+    /** One queued toast per online player in each batch. Offline players cannot starve the queue. */
+    public List<QuestNotice> pendingQuestNotices(Set<UUID> online,int limit) {
+        require(limit>0&&limit<=100,INVALID_INPUT,"Invalid quest notification batch");var actors=Set.copyOf(online);if(actors.isEmpty())return List.of();
+        return store.transaction(tx->{var result=new ArrayList<QuestNotice>();var selected=new HashSet<UUID>();
+            for(var row:tx.scan("quest_notice").stream().filter(r->r.value("state").equals("PENDING")).sorted(Comparator.comparing(r->r.value("createdAt"))).toList()) {
+                UUID actor=UUID.fromString(row.value("actor"));if(!actors.contains(actor)||!selected.add(actor))continue;
+                result.add(new QuestNotice(row.key(),actor,ActivityKind.valueOf(row.value("activity")),row.number("xp"),row.number("coins"),Boolean.parseBoolean(row.value("completion"))));if(result.size()==limit)break;
+            }return List.copyOf(result);});
+    }
+    public void acknowledgeQuestNotice(UUID actor,String id) {
+        store.transaction(tx->{var notice=row(tx,"quest_notice",id);require(notice.value("actor").equals(actor.toString()),FORBIDDEN,"Quest notification belongs to another player");if(notice.value("state").equals("PENDING"))save(tx,notice,"state","SENT");return null;});
     }
     public OwnershipService.Grant claimReward(UUID actor,String seasonId,Track track,int level,int index){
         return store.transaction(tx->{Definition season=definition(row(tx,"season_definition",seasonId));
@@ -97,11 +126,11 @@ public final class SeasonService extends DomainSupport {
     private static Map<String,String> encode(Definition d){
         var data=fields("name",d.name,"thresholds",String.join(",",d.thresholds.stream().map(Object::toString).toList()),"rewardCount",d.rewards.size(),"questCount",d.quests.size());
         for(int i=0;i<d.rewards.size();i++){var r=d.rewards.get(i);data.putAll(fields("r"+i+".track",r.track,"r"+i+".level",r.level,"r"+i+".index",r.index,"r"+i+".content",r.contentId,"r"+i+".kind",r.kind,"r"+i+".quantity",r.quantity));}
-        for(int i=0;i<d.quests.size();i++){var q=d.quests.get(i);data.putAll(fields("q"+i+".id",q.id,"q"+i+".activity",q.activity,"q"+i+".kind",q.kind,"q"+i+".targets",String.join("\n",new TreeSet<>(q.targets)),"q"+i+".required",q.required,"q"+i+".bonus",q.bonusXp));}return data;
+        for(int i=0;i<d.quests.size();i++){var q=d.quests.get(i);data.putAll(fields("q"+i+".id",q.id,"q"+i+".activity",q.activity,"q"+i+".kind",q.kind,"q"+i+".targets",String.join("\n",new TreeSet<>(q.targets)),"q"+i+".required",q.required,"q"+i+".bonus",q.bonusXp,"q"+i+".coins",q.coins));}return data;
     }
     private static Definition definition(TransactionalStore.Row r){
         var rewards=new ArrayList<Reward>();for(int i=0;i<r.number("rewardCount");i++)rewards.add(new Reward(Track.valueOf(r.value("r"+i+".track")),Integer.parseInt(r.value("r"+i+".level")),Integer.parseInt(r.value("r"+i+".index")),r.value("r"+i+".content"),OwnershipService.Kind.valueOf(r.value("r"+i+".kind")),r.number("r"+i+".quantity")));
-        var quests=new ArrayList<Quest>();for(int i=0;i<r.number("questCount");i++)quests.add(new Quest(r.value("q"+i+".id"),ActivityKind.valueOf(r.value("q"+i+".activity")),ObjectiveKind.valueOf(r.value("q"+i+".kind")),r.value("q"+i+".targets").isEmpty()?Set.of():Set.of(r.value("q"+i+".targets").split("\n")),r.number("q"+i+".required"),r.number("q"+i+".bonus")));
+        var quests=new ArrayList<Quest>();for(int i=0;i<r.number("questCount");i++)quests.add(new Quest(r.value("q"+i+".id"),ActivityKind.valueOf(r.value("q"+i+".activity")),ObjectiveKind.valueOf(r.value("q"+i+".kind")),r.value("q"+i+".targets").isEmpty()?Set.of():Set.of(r.value("q"+i+".targets").split("\n")),r.number("q"+i+".required"),r.number("q"+i+".bonus"),r.fields().containsKey("q"+i+".coins")?r.number("q"+i+".coins"):100L));
         return new Definition(r.key(),r.value("name"),Arrays.stream(r.value("thresholds").split(",")).map(Long::parseLong).toList(),rewards,quests);
     }
 }

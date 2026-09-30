@@ -34,7 +34,7 @@ public final class EterniaServices {
         guilds=new GuildService(store,clock,ids);housing=new HousingService(store,clock,ids,ownership,journal);
         escrow=new EscrowService(store,clock,ids);mail=new MailService(store,clock,ids,escrow);
         market=new MarketService(store,clock,ids,economy,escrow);trades=new TradeService(store,clock,ids,economy,escrow);
-        seasons=new SeasonService(store,clock,ids,ownership);
+        seasons=new SeasonService(store,clock,ids,ownership,economy);
         provenance=new ProvenanceService(store,clock,ids);premium=new PremiumService(store,clock,ids,ownership);commerce=new CommerceService(store,clock,ids,ownership,premium);
         collection=new CollectionService(store,clock,ids,ownership);
         commerceIngress=new CommerceIngressService(store,clock,ids,commerce);

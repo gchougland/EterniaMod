@@ -23,6 +23,30 @@ import javax.annotation.Nullable;
 public abstract class EterniaInteractiveCustomUIPage<T> extends InteractiveCustomUIPage<T> {
     private volatile boolean dismissed;
     private final String homeEvent = java.util.UUID.randomUUID().toString();
+    private long walletRequest;
+    private Long walletCoins,walletCrowns;
+
+    /** Load balances away from the world tick, and reject replies from an older page build. */
+    protected final void showWallet(UICommandBuilder commands,Ref<EntityStore> ref,Store<EntityStore> store) {
+        commands.append("#CurrencyWallet","EterniaMod/Wallet.ui");
+        CurrencyUi.wallet(commands,walletCoins,walletCrowns);
+        var plugin=com.hexvane.eterniamod.EterniaModPlugin.get();
+        if(playerRef==null||ref==null||store==null||plugin==null)return;
+        long request=++walletRequest;var services=plugin.getServices();var actor=playerRef.getUuid();var world=store.getExternalData().getWorld();
+        java.util.concurrent.CompletableFuture.supplyAsync(()->new long[]{services.economy().balance(com.hexvane.eterniamod.domain.Owner.player(actor)).available(),services.premium().balance(actor).available()})
+            .whenComplete((balance,error)->{
+                if(dismissed)return;
+                try {world.execute(()->{
+                    if(dismissed||request!=walletRequest||!ref.isValid())return;
+                    var player=store.getComponent(ref,Player.getComponentType());
+                    if(player==null||player.getPageManager().getCustomPage()!=this)return;
+                    var update=new UICommandBuilder();
+                    if(error==null){walletCoins=balance[0];walletCrowns=balance[1];CurrencyUi.wallet(update,walletCoins,walletCrowns);}
+                    else {update.set("#WalletCoins.Text","Coins: unavailable");update.set("#WalletCrowns.Text","Crowns: unavailable");}
+                    sendUpdate(update,null,false);
+                });}catch(RuntimeException ignored){/* World is closing. */}
+            });
+    }
 
     protected final void bindHome(UIEventBuilder events) {
         events.addEventBinding(com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType.Activating,

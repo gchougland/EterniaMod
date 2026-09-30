@@ -4,6 +4,11 @@
 
 ### Added
 
+- Menu balances and price icons make Coins and Crowns easy to tell apart.
+- Season quests award Coins for shopping with other players and announce rewards with a toast.
+
+- Distinct category icons and item previews in the Crown Store, Collection, and season rewards.
+
 - Prowl offers a free housing toolkit with a deed, ledger, and packaging wand.
 - Eternia Guild Hall is available for guilds and in the example village.
 - Illustrated website welcome page with a guild hall that builds as you scroll and a new Eternia icon.

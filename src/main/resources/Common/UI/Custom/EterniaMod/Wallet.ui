@@ -1,0 +1,11 @@
+$T = "Theme/Citadel.ui";
+Group { Anchor: (Width: 208, Height: 44, Right: 12); LayoutMode: Top;
+  Group { Anchor: (Height: 22); LayoutMode: Left;
+    Group { Anchor: (Width: 22, Height: 22, Right: 6); Background: "Icons/coins.png"; }
+    Label #WalletCoins { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 15, VerticalAlignment: Center); Text: "Coins: loading"; }
+  }
+  Group { Anchor: (Height: 22); LayoutMode: Left;
+    Group { Anchor: (Width: 22, Height: 22, Right: 6); Background: "Icons/crown.png"; }
+    Label #WalletCrowns { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 15, VerticalAlignment: Center); Text: "Crowns: loading"; }
+  }
+}

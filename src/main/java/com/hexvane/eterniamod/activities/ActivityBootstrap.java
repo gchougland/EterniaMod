@@ -34,15 +34,21 @@ public final class ActivityBootstrap implements AutoCloseable {
     private final EterniaServices services;
     private final EterniaModPlugin plugin;
     private final Settings settings;
+    private final QuestToasts questToasts;
     private final ConcurrentMap<UUID,Settings> localTrials=new ConcurrentHashMap<>();
     private final ScheduledExecutorService worker=Executors.newSingleThreadScheduledExecutor(r->{var t=new Thread(r,"eternia-activity-outbox");t.setDaemon(true);return t;});
     private volatile boolean closed;
     public ActivityBootstrap(EterniaModPlugin plugin,EterniaServices services,Settings settings){
         this.plugin=plugin;this.services=Objects.requireNonNull(services);this.settings=Objects.requireNonNull(settings);active=this;
+        questToasts=new QuestToasts(services.seasons());
         var registry=plugin.getEntityStoreRegistry();registry.registerSystem(new Placement());registry.registerSystem(new Mining());registry.registerSystem(new Kills());
         plugin.getCodecRegistry(Interaction.CODEC).register("EterniaHarvestCrop",EterniaHarvestCrop.class,EterniaHarvestCrop.CODEC);
         plugin.getCodecRegistry(com.hypixel.hytale.server.core.asset.type.blocktype.config.farming.FarmingStageData.CODEC).register("EterniaAwaitHarvest",EterniaAwaitHarvestStage.class,EterniaAwaitHarvestStage.CODEC);
-        worker.scheduleWithFixedDelay(()->{try{services.activitySources().drain(100);}catch(RuntimeException e){LOG.warning("Activity outbox remains pending: "+e.getClass().getSimpleName());}},1,1,TimeUnit.SECONDS);
+        worker.scheduleWithFixedDelay(()->{
+            if(closed)return;
+            try{services.activitySources().drain(100);}catch(RuntimeException e){LOG.warning("Activity outbox remains pending: "+e.getClass().getSimpleName());}
+            try{questToasts.deliver();}catch(RuntimeException e){LOG.warning("Quest notification remains pending: "+e.getClass().getSimpleName());}
+        },1,1,TimeUnit.SECONDS);
     }
     static ActivityBootstrap active(){return active;}
     /** Local fixture registration is tied to the saved playground world UUID, never an arbitrary name. */

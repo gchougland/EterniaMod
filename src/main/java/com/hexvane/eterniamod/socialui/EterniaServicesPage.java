@@ -5,6 +5,8 @@ import com.hexvane.eterniamod.collections.CollectionBootstrap;
 import com.hexvane.eterniamod.ui.EterniaInteractiveCustomUIPage;
 import com.hexvane.eterniamod.ui.UiPresentation;
 import com.hexvane.eterniamod.ui.UiAnchors;
+import com.hexvane.eterniamod.ui.ContentImages;
+import com.hexvane.eterniamod.ui.CurrencyUi;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -65,7 +67,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
 
     @Override public void build(@Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder commands,
         @Nonnull UIEventBuilder events, @Nonnull Store<EntityStore> store) {
-        commands.append("EterniaMod/ServicesPage.ui");bindHome(events);commands.set("#Return.Visible",hasReturnPage());
+        commands.append("EterniaMod/ServicesPage.ui");bindHome(events);showWallet(commands,ref,store);commands.set("#Return.Visible",hasReturnPage());
         commands.append("#ServicesBody", "EterniaMod/" + layout() + ".ui");
         commands.set("#ServicesTitle.TextSpans", Message.raw(playerRef.getUsername()));
         allowedActions.clear();bind(events,"#Return","return_parent");
@@ -74,7 +76,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             if (entry == Section.WORLDS) continue;
             appendNav(commands, events, nav++, entry.title, entry==Section.STORE?"external:STORE_OPEN":"nav:" + entry.name(), !busy, entry == section);
         }
-        commands.set("#PageControls.Visible",pending == null && view.rows.size() > PAGE_SIZE);com.hexvane.eterniamod.ui.MenuPagination.show(commands, pending == null ? view.rows.size() : 0, PAGE_SIZE);commands.set("#Previous.Disabled", busy || pending!=null || page == 0);commands.set("#Next.Disabled",busy || pending!=null || (page+1)*PAGE_SIZE>=view.rows.size());
+        com.hexvane.eterniamod.ui.MenuPagination.sidebar(commands, pending == null ? view.rows.size() : 0, PAGE_SIZE);commands.set("#Previous.Disabled", busy || pending!=null || page == 0);commands.set("#Next.Disabled",busy || pending!=null || (page+1)*PAGE_SIZE>=view.rows.size());
         commands.set("#Pagination.Text", "Page " + (page+1) + " / " + Math.max(1,(view.rows.size()+PAGE_SIZE-1)/PAGE_SIZE));
         bind(events,"#Previous","previous");bind(events,"#Next","next");bind(events,"#Close","close");
         var tabs=tabs();commands.set("#Tabs.Visible",pending==null&&!tabs.isEmpty());
@@ -89,15 +91,15 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             Row row = rows.get(i);
             String selector = "#Rows[" + (i - start) + "]";
             if(!row.cells.isEmpty()) {commands.append("#Rows","EterniaMod/RewardLevel.ui");commands.set(selector+" #Level.Text",row.text);
-                for(int index=0;index<2;index++){Row cell=row.cells.get(index);String track=index==0?"Free":"Paid";commands.set(selector+" #"+track+"Name.Text",cell.text);commands.set(selector+" #"+track+"Action.Text",cell.label);commands.set(selector+" #"+track+"Action.Visible",!cell.label.isEmpty());commands.set(selector+" #"+track+"Action.Disabled",busy||cell.route.isEmpty());if(!cell.route.isEmpty())bind(events,selector+" #"+track+"Action",cell.route);}continue;}
-            if(row.total>0) {commands.append("#Rows","EterniaMod/QuestRow.ui");commands.set(selector+" #RowText.Text",row.text);commands.set(selector+" #QuestGoal.Text",row.goal);commands.set(selector+" #QuestReward.Text","+"+row.xp+" XP");commands.set(selector+" #QuestCount.Text",Math.min(row.count,row.total)+" / "+row.total+(row.count>=row.total?" · Complete":""));bar(commands,selector+" #QuestFill",selector+" #QuestRest",row.count,row.total);continue;}
+                for(int index=0;index<2;index++){Row cell=row.cells.get(index);String track=index==0?"Free":"Paid";ContentImages.row(commands,selector+" #"+track+"Reward",cell.contentId);commands.set(selector+" #"+track+"Name.Text",cell.text);commands.set(selector+" #"+track+"Action.Text",cell.label);commands.set(selector+" #"+track+"Action.Visible",!cell.label.isEmpty());commands.set(selector+" #"+track+"Action.Disabled",busy||cell.route.isEmpty());if(!cell.route.isEmpty())bind(events,selector+" #"+track+"Action",cell.route);}continue;}
+            if(row.total>0) {commands.append("#Rows","EterniaMod/QuestRow.ui");commands.set(selector+" #RowText.Text",row.text);commands.set(selector+" #QuestGoal.Text",row.goal);commands.set(selector+" #QuestReward.Text","+"+CurrencyUi.amount(row.xp)+" XP");commands.set(selector+" #QuestCoins.Text",CurrencyUi.amount(row.coins)+" Coins"+(row.count>=row.total?" received":" on completion"));commands.set(selector+" #QuestCount.Text",Math.min(row.count,row.total)+" / "+row.total+(row.count>=row.total?" · Complete":""));bar(commands,selector+" #QuestFill",selector+" #QuestRest",row.count,row.total);continue;}
             commands.append("#Rows", section==Section.MAIL?"EterniaMod/MailRow.ui":"EterniaMod/ServiceRow.ui");
-            if(section!=Section.MAIL)com.hexvane.eterniamod.ui.ContentImages.row(commands,selector,row.contentId);
+            if(section!=Section.MAIL){ContentImages.row(commands,selector,row.contentId);CurrencyUi.price(commands,selector,row.coins," each");}
             commands.set(selector + " #RowText.TextSpans", Message.raw(row.text));
             commands.set(selector + " #RowAction.TextSpans", Message.raw(row.label));
             commands.set(selector + " #RowAction.Visible", !row.label.isEmpty());
             commands.set(selector + " #RowAction.Disabled", busy || row.route.isEmpty());
-            if(section!=Section.MAIL){int width=UiPresentation.buttonWidth(row.label);int body=layout().equals("ServicesOverview")?600:layout().equals("ServicesRoster")&&Arrays.stream(view.fields).anyMatch(label->!label.isEmpty())?554:822;commands.setObject(selector+" #RowAction.Anchor",UiAnchors.serviceAction(width));commands.setObject(selector+".Anchor",UiAnchors.heightWithBottom(Math.max(76,UiPresentation.wrappedHeight(row.text,body-40-(row.contentId.isEmpty()?0:78)-(row.label.isEmpty()?0:width),23)+24),8));}
+            if(section!=Section.MAIL){int width=UiPresentation.buttonWidth(row.label);int body=layout().equals("ServicesOverview")?600:layout().equals("ServicesRoster")&&Arrays.stream(view.fields).anyMatch(label->!label.isEmpty())?554:822;commands.setObject(selector+" #RowAction.Anchor",UiAnchors.serviceAction(width));commands.setObject(selector+".Anchor",UiAnchors.heightWithBottom(Math.max(76,UiPresentation.wrappedHeight(row.text,body-40-(row.coins>=0?176:0)-(row.contentId.isEmpty()?0:78)-(row.label.isEmpty()?0:width),23)+24),8));}
             else{int textHeight=Math.max(56,UiPresentation.wrappedHeight(row.text,294,23));commands.setObject(selector+" #RowText.Anchor",UiAnchors.heightWithBottom(textHeight,8));commands.setObject(selector+".Anchor",UiAnchors.heightWithBottom(textHeight+64,10));}
             if (!row.route.isEmpty()) bind(events, selector + " #RowAction", row.route);
         }
@@ -340,7 +342,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             case GUILD -> guildView(input);
             case MAIL -> mailView(input);
             case SHOP -> {
-                List<Row> rows = services.market().search(input.one).stream().map(listing -> new Row(UiPresentation.itemName(listing.itemId()) + " · " + listing.unitPrice() + " coins each\n" + listing.stock() + " in stock · " + name(listing.seller()), "Visit shop", "shop_visit:" + listing.id()).image(listing.itemId())).toList();
+                List<Row> rows = services.market().search(input.one).stream().map(listing -> new Row(UiPresentation.itemName(listing.itemId()) + "\n" + listing.stock() + " in stock · " + name(listing.seller()), "Visit shop", "shop_visit:" + listing.id()).image(listing.itemId()).price(listing.unitPrice())).toList();
                 yield new View("Player shops", "Browse real listings, then visit the seller's house to buy. Sellers can be offline.", rows.isEmpty() ? List.of(Row.info("No active listings match this search.")) : rows,
                     new String[] {"Find an item", "", ""}, buttons("Search", "refresh", "Manage my shop", "external:SHOP_MANAGE", "Item desk", "external:ITEM_DESK"), null);
             }
@@ -501,7 +503,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if(active.isEmpty())return new View("Quest journal","Choose an active season pass to begin earning quest XP.",List.of(),noFields(),buttons("Choose pass","nav:SEASON","","","",""),null);
         var pass=active.get();
         var rows=services.seasons().quests(actor,pass.id()).stream().map(Row::quest).toList();
-        return new View("Quest journal",pass.name()+" · Progress is recorded while you play. Completed goals award XP automatically.",rows.isEmpty()?List.of(Row.info("No quests have been published for this pass.")):rows,noFields(),buttons("Refresh","refresh","Season passes","nav:SEASON","",""),null);
+        return new View("Quest journal",pass.name()+" · Progress is recorded while you play. Completed goals award XP and Coins automatically.",rows.isEmpty()?List.of(Row.info("No quests have been published for this pass.")):rows,noFields(),buttons("Refresh","refresh","Season passes","nav:SEASON","",""),null);
     }
 
     private View seasonView(Input input) {
@@ -514,7 +516,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         var current = progress.stream().filter(p -> p.id().equals(input.focus)).findFirst().orElseThrow(() -> new IllegalArgumentException("Season is not available."));
         if (input.mode.equals("quests")) {
             var quests = services.seasons().quests(actor, input.focus).stream().map(Row::quest).toList();
-            return new View(current.name() + " · Quests", "Complete these goals while you explore. Quest XP is added to this pass automatically.", quests.isEmpty() ? List.of(Row.info("No quests have been added to this pass yet.")) : quests,
+            return new View(current.name() + " · Quests", "Complete these goals while you explore. Quest XP and Coins are awarded automatically.", quests.isEmpty() ? List.of(Row.info("No quests have been added to this pass yet.")) : quests,
                 noFields(), buttons(current.active()?"Active pass":"Activate pass",current.active()?"":"season_activate","Rewards","season_rewards","",""),null).progress(current);
         }
         var definition = services.seasons().definitions().stream().filter(d -> d.id().equals(input.focus)).findFirst().orElseThrow();
@@ -525,7 +527,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             boolean claimed = services.seasons().isClaimed(actor, input.focus, reward.track(), reward.level(), reward.index());
             boolean ready = !claimed && current.level() >= reward.level() && (reward.track() == SeasonService.Track.FREE || current.paid());
             String name=names.getOrDefault(reward.contentId(),UiPresentation.contentName(reward.contentId()));
-            var row=new Row(name+(reward.quantity()>1?" × "+reward.quantity():""),claimed?"Claimed":ready?"Claim":reward.track()==SeasonService.Track.PAID&&!current.paid()?"Paid pass required":"Reach level "+reward.level(),ready?"reward:"+reward.track()+":"+reward.level()+":"+reward.index():"");
+            var row=new Row(name+(reward.quantity()>1?" × "+reward.quantity():""),claimed?"Claimed":ready?"Claim":reward.track()==SeasonService.Track.PAID&&!current.paid()?"Paid pass required":"Reach level "+reward.level(),ready?"reward:"+reward.track()+":"+reward.level()+":"+reward.index():"").image(reward.contentId());
             tiers.computeIfAbsent(reward.level(),ignored->new TreeMap<>()).computeIfAbsent(reward.index(),ignored->new EnumMap<>(SeasonService.Track.class)).put(reward.track(),row);
         }
         tiers.forEach((level,indices)->indices.forEach((index,tracks)->rows.add(Row.rewards("Level "+level+(indices.size()>1?" · Reward "+(index+1):""),tracks.getOrDefault(SeasonService.Track.FREE,Row.info("No free reward here")),tracks.getOrDefault(SeasonService.Track.PAID,Row.info("No paid reward here"))))));
@@ -537,12 +539,13 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private static String[] noFields() { return new String[] {"", "", ""}; }
     private static Button[] buttons(String a, String ar, String b, String br, String c, String cr) { return new Button[] {new Button(a, ar), new Button(b, br), new Button(c, cr)}; }
     private record Button(String label, String route) { static final Button NONE = new Button("", ""); }
-    private record Row(String text,String label,String route,List<Row> cells,String goal,long count,long total,long xp,String contentId) {
-        Row(String text,String label,String route){this(text,label,route,List.of(),"",0,0,0,"");}
-        Row image(String id){return new Row(text,label,route,cells,goal,count,total,xp,id);}
+    private record Row(String text,String label,String route,List<Row> cells,String goal,long count,long total,long xp,String contentId,long coins) {
+        Row(String text,String label,String route){this(text,label,route,List.of(),"",0,0,0,"",-1);}
+        Row image(String id){return new Row(text,label,route,cells,goal,count,total,xp,id,coins);}
+        Row price(long amount){return new Row(text,label,route,cells,goal,count,total,xp,contentId,amount);}
         static Row info(String text){return new Row(text,"","");}
-        static Row quest(SeasonService.QuestProgress progress){var quest=progress.quest();return new Row(UiPresentation.questTitle(quest),"","",List.of(),UiPresentation.questGoal(quest),progress.count(),quest.required(),quest.bonusXp(),"");}
-        static Row rewards(String level,Row free,Row paid){return new Row(level,"","",List.of(free,paid),"",0,0,0,"");}
+        static Row quest(SeasonService.QuestProgress progress){var quest=progress.quest();return new Row(UiPresentation.questTitle(quest),"","",List.of(),UiPresentation.questGoal(quest),progress.count(),quest.required(),quest.bonusXp(),"",quest.coins());}
+        static Row rewards(String level,Row free,Row paid){return new Row(level,"","",List.of(free,paid),"",0,0,0,"",-1);}
     }
     private record Input(String one, String two, String three, String mode, String focus, Set<String> capabilities) {}
     private record Request(Section section, Input input) {}

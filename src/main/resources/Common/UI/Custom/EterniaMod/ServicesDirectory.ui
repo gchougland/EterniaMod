@@ -5,7 +5,7 @@ Label #SectionTitle { Anchor: (Height: 34, Bottom: 6); Style: $T.@TitleStyle; }
 Label #Description { Anchor: (Height: 50, Bottom: 8); Style: $T.@DefaultLabelStyle; }
 Group #Tabs { Anchor: (Height: 48, Bottom: 8); LayoutMode: Left; }
 Group #Fields { Anchor: (Height: 156, Bottom: 10); LayoutMode: Top;
-Group #FieldOneGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldOneLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldOne { FlexWeight: 1; } }
+Group #FieldOneGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldOneLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } Group #FieldOneCoin { Visible: false; Anchor: (Width: 28, Height: 28, Right: 8, Top: 8); Background: "Icons/coins.png"; } $T.@TextField #FieldOne { FlexWeight: 1; } }
 Group #FieldTwoGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldTwoLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldTwo { FlexWeight: 1; } }
 Group #FieldThreeGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldThreeLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldThree { FlexWeight: 1; } }
 }

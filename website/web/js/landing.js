@@ -8,7 +8,7 @@ export function landing(view){
    <h1 id="welcome-title">Go far.<br>Come <em>home.</em></h1>
    <p>For the explorers who stay a little longer.<br>The builders who make a place their own.<br>And the friends who turn a world into home.</p>
    <div class="actions"><a class="button primary" href="#discover">Discover Eternia <span aria-hidden="true">↓</span></a><a class="realm-link" href="/account">Your adventurer profile <span aria-hidden="true">↗</span></a></div>
-   <div class="realm-note">An MMO inspired Hytale server <span aria-hidden="true">✦</span> Currently in development</div>
+   <div class="realm-note">A Hytale community to call home <span aria-hidden="true">✦</span> Currently in development</div>
   </div>
   <div class="art-caption">THE ETERNIA VALLEY <span>Illustration of our world</span></div>
  </section>

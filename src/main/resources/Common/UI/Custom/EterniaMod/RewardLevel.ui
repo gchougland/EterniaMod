@@ -1,8 +1,24 @@
 $T = "Theme/Citadel.ui";
-Group { Anchor: (Height: 154, Bottom: 12); LayoutMode: Top;
-Label #Level { Anchor: (Height: 26, Bottom: 8); Style: $T.@SubtitleStyle; }
-Group { FlexWeight: 1; LayoutMode: Left;
-Group { FlexWeight: 1; Anchor: (Right: 12); Background: $T.@HeaderSurface; Padding: (Full: 12); LayoutMode: Top; Label { Anchor: (Height: 22); Style: (...$T.@MutedStyle, TextColor: $T.@Accent); Text: "FREE TRACK"; } Label #FreeName { Anchor: (Height: 34, Bottom: 6); Style: $T.@DefaultLabelStyle; } $T.@SecondaryTextButton #FreeAction { Anchor: (Height: 34); } }
-Group { FlexWeight: 1; Anchor: (Right: 12); Background: $T.@HeaderSurface; Padding: (Full: 12); LayoutMode: Top; Label { Anchor: (Height: 22); Style: (...$T.@MutedStyle, TextColor: $T.@Primary); Text: "PAID TRACK"; } Label #PaidName { Anchor: (Height: 34, Bottom: 6); Style: $T.@DefaultLabelStyle; } $T.@SecondaryTextButton #PaidAction { Anchor: (Height: 34); } }
-}
+Group { Anchor: (Height: 192, Bottom: 12); LayoutMode: Top;
+  Label #Level { Anchor: (Height: 26, Bottom: 8); Style: $T.@SubtitleStyle; }
+  Group { FlexWeight: 1; LayoutMode: Left;
+    Group { FlexWeight: 1; Anchor: (Right: 12); Background: $T.@SecondarySurface; Padding: (Full: 12); LayoutMode: Top;
+      Label { Anchor: (Height: 22, Bottom: 4); Style: (...$T.@MutedStyle, TextColor: $T.@Accent); Text: "FREE TRACK"; }
+      Group #FreeReward { Anchor: (Height: 64, Bottom: 8); LayoutMode: Left;
+        Group #RowImage { Visible: false; Anchor: (Width: 64, Height: 64, Right: 12); }
+        ItemIcon #RowItem { Visible: false; Anchor: (Width: 64, Height: 64, Right: 12); }
+        Label #FreeName { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); }
+      }
+      $T.@SecondaryTextButton #FreeAction { Anchor: (Height: 34); }
+    }
+    Group { FlexWeight: 1; Anchor: (Right: 12); Background: $T.@SecondarySurface; Padding: (Full: 12); LayoutMode: Top;
+      Label { Anchor: (Height: 22, Bottom: 4); Style: (...$T.@MutedStyle, TextColor: $T.@Primary); Text: "PAID TRACK"; }
+      Group #PaidReward { Anchor: (Height: 64, Bottom: 8); LayoutMode: Left;
+        Group #RowImage { Visible: false; Anchor: (Width: 64, Height: 64, Right: 12); }
+        ItemIcon #RowItem { Visible: false; Anchor: (Width: 64, Height: 64, Right: 12); }
+        Label #PaidName { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); }
+      }
+      $T.@SecondaryTextButton #PaidAction { Anchor: (Height: 34); }
+    }
+  }
 }

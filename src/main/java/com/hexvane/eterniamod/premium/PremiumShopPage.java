@@ -39,8 +39,8 @@ public final class PremiumShopPage extends EterniaInteractiveCustomUIPage<Premiu
         if(component!=null)component.getPageManager().openCustomPage(ref,store,new PremiumShopPage(plugin,player));
     }
     @Override public void build(Ref<EntityStore> ref,UICommandBuilder c,UIEventBuilder e,Store<EntityStore> store){
-        c.append("EterniaMod/PremiumShopPage.ui");bindHome(e);routes.clear();var balance=snapshot.balance();
-        c.set("#Balance.Text",String.format(Locale.US,"%,d Crowns",balance.available()));
+        c.append("EterniaMod/PremiumShopPage.ui");bindHome(e);showWallet(c,ref,store);routes.clear();var balance=snapshot.balance();
+
         c.set("#Notice.Text",busy?"Working…":balance.owed()>0?"A refunded Crown purchase left "+balance.owed()+" Crowns to restore before further purchases.":notice);
         var cats=new ArrayList<String>();cats.add("All");snapshot.items().stream().map(PremiumService.Item::category).filter(name->!name.equals("All")).distinct().sorted().forEach(cats::add);categories=List.copyOf(cats);
         for(int n=0;n<categories.size();n++){
@@ -56,16 +56,18 @@ public final class PremiumShopPage extends EterniaInteractiveCustomUIPage<Premiu
                 com.hexvane.eterniamod.ui.ContentImages.show(c,s+" #ItemImage",item.benefits().getFirst().contentId(),false);
                 c.set(s+" #ItemName.Text",item.name());c.set(s+" #ItemDescription.Text",item.description());c.set(s+" #ItemCategory.Text",item.category());
                 int titleHeight=Math.max(28,UiPresentation.wrappedHeight(item.name(),360,25)),descriptionHeight=Math.max(40,UiPresentation.wrappedHeight(item.description(),360,21));
-                c.setObject(s+" #ItemName.Anchor",UiAnchors.height(titleHeight));c.setObject(s+" #ItemDescription.Anchor",UiAnchors.height(descriptionHeight));c.setObject(s+".Anchor",UiAnchors.heightWithBottom(Math.max(128,28+21+titleHeight+descriptionHeight),8));
+                c.setObject(s+" #ItemName.Anchor",UiAnchors.height(titleHeight));c.setObject(s+" #ItemDescription.Anchor",UiAnchors.height(descriptionHeight));c.setObject(s+".Anchor",UiAnchors.heightWithBottom(Math.max(136,28+21+titleHeight+descriptionHeight),8));
                 c.set(s+" #Price.Text",String.format(Locale.US,"%,d Crowns",item.price()));boolean owned=snapshot.owned().contains(item.id());
-                c.set(s+" #Review.Text",owned?"Owned":"View item");c.set(s+" #Review.Disabled",busy||owned);bind(e,s+" #Review","Select:"+n);
+                c.set(s+" #Review.Text",owned?"View owned item":"View item");c.set(s+" #Review.Disabled",busy);bind(e,s+" #Review","Select:"+n);
             }
             c.set("#PageControls.Visible",visible.size() > 4);com.hexvane.eterniamod.ui.MenuPagination.show(c, visible.size(), 4);c.set("#Pagination.Text",(page+1)+" / "+Math.max(1,(visible.size()+3)/4));c.set("#Previous.Disabled",busy||page==0);c.set("#Next.Disabled",busy||(page+1)*4>=visible.size());
         }else{
             com.hexvane.eterniamod.ui.ContentImages.show(c,"#SelectedImage",selected.benefits().getFirst().contentId(),true);
+            var imageAnchor=UiAnchors.size(com.hexvane.eterniamod.ui.ContentImages.path(selected.benefits().getFirst().contentId(),true).endsWith("screenshot.png")?384:240,240);imageAnchor.setBottom(com.hypixel.hytale.server.core.ui.Value.of(16));c.setObject("#SelectedImage.Anchor",imageAnchor);
             c.set("#SelectedName.Text",selected.name());c.set("#SelectedDescription.Text",selected.description());
             c.setObject("#SelectedDescription.Anchor",UiAnchors.height(Math.max(100,UiPresentation.wrappedHeight(selected.description(),770,24))));c.setObject("#SelectedName.Anchor",UiAnchors.height(Math.max(58,UiPresentation.wrappedHeight(selected.name(),550,30))));
-            c.set("#SelectedPrice.Text",String.format(Locale.US,"Price: %,d Crowns\nYour balance: %,d Crowns\nAfter purchase: %,d Crowns",selected.price(),balance.available(),Math.max(0,balance.available()-selected.price())));
+            c.set("#SelectedPrice.Text",snapshot.owned().contains(selected.id())?String.format(Locale.US,"Already yours.\nYour balance: %,d Crowns",balance.available()):String.format(Locale.US,"Price: %,d Crowns\nYour balance: %,d Crowns\nAfter purchase: %,d Crowns",selected.price(),balance.available(),Math.max(0,balance.available()-selected.price())));
+            c.set("#Purchase.Text",snapshot.owned().contains(selected.id())?"Owned":"Confirm purchase");
             c.set("#Purchase.Disabled",busy||balance.available()<selected.price()||snapshot.owned().contains(selected.id()));
         }
         for(String action:List.of("Close","GetCrowns","Refresh","Previous","Next","Back","Purchase"))bind(e,"#"+action,action);
@@ -88,7 +90,7 @@ public final class PremiumShopPage extends EterniaInteractiveCustomUIPage<Premiu
             }else if(action.startsWith("Category:")){
                 int index=Integer.parseInt(action.substring(9));if(index>=0&&index<categories.size()){category=categories.get(index);selected=null;requestId=null;page=0;}
             }else if(action.startsWith("Select:")&&selected==null){
-                int index=Integer.parseInt(action.substring(7));if(index>=page*4&&index<Math.min(visible.size(),page*4+4)&&!snapshot.owned().contains(visible.get(index).id())){selected=visible.get(index);requestId=UUID.randomUUID().toString();}
+                int index=Integer.parseInt(action.substring(7));if(index>=page*4&&index<Math.min(visible.size(),page*4+4)){selected=visible.get(index);requestId=snapshot.owned().contains(selected.id())?null:UUID.randomUUID().toString();}
             }else if(action.equals("Back")){selected=null;requestId=null;}
             else if(action.equals("Next")&&selected==null&&(page+1)*4<visible.size())page++;
             else if(action.equals("Previous")&&selected==null)page=Math.max(0,page-1);

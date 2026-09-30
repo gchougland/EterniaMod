@@ -3,5 +3,9 @@ Group #Row { Anchor: (Height: 76, Bottom: 8); Background: $T.@HeaderSurface; Pad
 Group #RowImage { Visible: false; Anchor: (Width: 64, Height: 64, Top: 6, Right: 14); }
 ItemIcon #RowItem { Visible: false; Anchor: (Width: 64, Height: 64, Top: 6, Right: 14); }
 Label #RowText { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); }
+Group #RowPrice { Visible: false; Anchor: (Width: 168, Height: 64, Left: 8, Top: 6); LayoutMode: Left;
+Group { Anchor: (Width: 28, Height: 28, Top: 16, Right: 6); Background: "Icons/coins.png"; }
+Label #CoinPrice { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 14, VerticalAlignment: Center); }
+}
 $T.@SecondaryTextButton #RowAction { Anchor: (Width: 188, Height: 44, Left: 12, Top: 16); }
 }

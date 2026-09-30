@@ -11,6 +11,12 @@ import org.bson.BsonDocument;
 public final class NativeUiSmoke {
     private NativeUiSmoke(){}
     public static void validate() {
+        var wallet=new UICommandBuilder();wallet.append("EterniaMod/Wallet.ui");CurrencyUi.wallet(wallet,1234L,500L);
+        require(value(Arrays.asList(wallet.getCommands()),"#WalletCoins.Text").getString("0").getValue().equals("1,234 Coins"),"Show the earned Coin balance");
+        require(value(Arrays.asList(wallet.getCommands()),"#WalletCrowns.Text").getString("0").getValue().equals("500 Crowns"),"Show the separate Crown balance");
+        var price=new UICommandBuilder();price.append("EterniaMod/ServiceRow.ui");CurrencyUi.price(price,"#Row",25," each");
+        require(value(Arrays.asList(price.getCommands()),"#Row #RowPrice.Visible").getBoolean("0").getValue(),"Show the currency icon beside shop prices");
+        require(value(Arrays.asList(price.getCommands()),"#Row #CoinPrice.Text").getString("0").getValue().equals("25 Coins each"),"Shop price must name its currency and unit");
         var roadCommands=new UICommandBuilder();
         com.hexvane.eterniamod.pathtool.SplineRoadHud.controls(roadCommands,null,false);
         for(int i=0;i<6;i++){
@@ -20,6 +26,13 @@ public final class NativeUiSmoke {
         var icons=new UICommandBuilder();ContentImages.row(icons,"#Rows[0]","Food_Bread");
         require(value(Arrays.asList(icons.getCommands()),"#Rows[0] #RowItem.Visible").getBoolean("0").getValue(),"Native shop items need their item icon");
         require(value(Arrays.asList(icons.getCommands()),"#Rows[0] #RowItem.ItemId").getString("0").getValue().equals("Food_Bread"),"Item icon must use the actual listing asset");
+        var rewards=new UICommandBuilder();rewards.append("EterniaMod/RewardLevel.ui");
+        ContentImages.row(rewards,"#FreeReward","eternia:prop/aqua_lamp");
+        ContentImages.row(rewards,"#PaidReward","eternia:plot_move_credit");
+        for(String track:List.of("Free","Paid")) {
+            require(value(Arrays.asList(rewards.getCommands()),"#"+track+"Reward #RowImage.Visible").getBoolean("0").getValue(),"Season rewards need artwork on both tracks");
+            require(!value(Arrays.asList(rewards.getCommands()),"#"+track+"Reward #RowItem.Visible").getBoolean("0").getValue(),"Collection rewards must not be treated as physical item stacks");
+        }
         var choices=new ArrayList<ChoicePage.Choice>();
         for(int i=0;i<9;i++)choices.add(new ChoicePage.Choice("A furnished house and the decorations around it",i==0?"Transfer leadership":"Preview",(r,s)->{}));
         // This page's build is deliberately independent of entity reads; no player is attached or mutated.

@@ -11,8 +11,8 @@
     {"track":"PAID","level":30,"index":0,"contentId":"eternia:plot_move_credit","kind":"QUANTITY","quantity":1}
   ],
   "quests":[
-    {"id":"eternia:quest/hunt","activity":"KILL","kind":"COUNT","targets":[],"required":50,"bonusXp":8000},
-    {"id":"eternia:quest/miner","activity":"MINE","kind":"DISTINCT","targets":[],"required":12,"bonusXp":8000},
-    {"id":"eternia:quest/harvest","activity":"HARVEST","kind":"COUNT","targets":[],"required":100,"bonusXp":8000}
+    {"id":"eternia:quest/hunt","activity":"KILL","kind":"COUNT","targets":[],"required":50,"bonusXp":8000,"coins":100},
+    {"id":"eternia:quest/miner","activity":"MINE","kind":"DISTINCT","targets":[],"required":12,"bonusXp":8000,"coins":100},
+    {"id":"eternia:quest/harvest","activity":"HARVEST","kind":"COUNT","targets":[],"required":100,"bonusXp":8000,"coins":100}
   ]
 }

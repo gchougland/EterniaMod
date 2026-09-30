@@ -128,7 +128,7 @@ class CitadelPresentationTest {
     @Test void crownStoreKeepsLongCatalogsAndConfirmationDetailsScrollable() throws Exception {
         String page=Files.readString(UI.resolve("PremiumShopPage.ui"));
         for(String id:List.of("Cards","Categories","PurchaseDetails"))assertTrue(Pattern.compile("Group #"+id+"\\s*\\{[^}]*LayoutMode: TopScrolling",Pattern.DOTALL).matcher(page).find(),id+" must scroll");
-        for(String id:List.of("Balance","Notice","Catalog","ConfirmView","SelectedName","SelectedDescription","SelectedPrice","Back","Purchase","GetCrowns","Close"))assertTrue(page.contains("#"+id+" "),id);
+        for(String id:List.of("CurrencyWallet","Notice","Catalog","ConfirmView","SelectedName","SelectedDescription","SelectedPrice","Back","Purchase","GetCrowns","Close"))assertTrue(page.contains("#"+id+" "),id);
         String card=Files.readString(UI.resolve("PremiumCard.ui"));
         for(String id:List.of("ItemCategory","ItemName","ItemDescription","Price","Review"))assertTrue(card.contains("#"+id+" "),id);
         assertTrue(220>=UiPresentation.textWidth("Confirm purchase")+32);

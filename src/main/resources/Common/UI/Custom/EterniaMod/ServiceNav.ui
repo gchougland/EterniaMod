@@ -1,5 +1,5 @@
 $T = "Theme/Citadel.ui";
-Group { Anchor: (Height: 48, Bottom: 5); LayoutMode: Left;
-Group #Selected { Visible: false; Anchor: (Width: 3, Right: 5); Background: $T.@Primary; }
-$T.@SecondaryTextButton #NavButton { FlexWeight: 1; Anchor: (Height: 48); Padding: (Horizontal: 8); }
+Group { FlexWeight: 1; Anchor: (Width: 198, Bottom: 5);
+TextButton #NavButton { Anchor: (Full: 0); Padding: (Horizontal: 12); Style: $T.@SecondaryButtonStyle; Text: ""; }
+Group #Selected { Visible: false; Anchor: (Left: 7, Top: 10, Bottom: 10, Width: 3); Background: $T.@Primary; }
 }

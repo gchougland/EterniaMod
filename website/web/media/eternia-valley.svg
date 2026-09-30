@@ -13,10 +13,26 @@
 <path d="m299 237 131-120 110 135-98-48-32 37-29-20-42 25Zm648 29 110-93 105 99-69-37-26 25-32-28Z" fill="#8fa599" opacity=".65"/>
 <path d="M0 468 187 356l191 69 179-74 223 100 256-129 364 127v431H0Z" fill="#41665a"/>
 <path d="M0 568Q239 440 490 521T965 463t435 84v333H0Z" fill="url(#hill)"/>
-<path d="M966 454q-157 59-62 116t-83 111-274 199h285q93-120 189-169t-11-127-4-112Z" fill="#638a81"/>
-<path d="M0 830q285-224 480-206t137-99 174-75" fill="none" stroke="#82907a" stroke-width="42"/>
-<path d="M0 830q285-224 480-206t137-99 174-75" fill="none" stroke="#b4b294" stroke-width="28"/>
-<path d="m490 624 143 37m-33-120 200 53" fill="none" stroke="#b4b294" stroke-width="16"/>
+<!-- River banks remain separate from the village roads. -->
+<path d="M1120 450 C1143 525 1131 555 985 652 S864 768 815 880 H681 C735 775 818 709 901 640 C1000 611 1094 557 1100 500 L1080 450Z" fill="#638a81"/>
+<path d="M1117 492 Q1130 564 1011 620 M937 674 Q841 761 789 849" fill="none" stroke="#98b5a1" stroke-opacity=".35" stroke-width="3"/>
+<!-- Continuous main road ends at the gateway steps, clear of all house footprints. -->
+<path id="village-road" d="M-20 842 C135 792 255 766 401 727 S578 652 628 593 S706 510 792 490" fill="none" stroke="#82907a" stroke-width="42"/>
+<path d="M-20 842 C135 792 255 766 401 727 S578 652 628 593 S706 510 792 490" fill="none" stroke="#b4b294" stroke-width="28"/>
+<!-- Connected routes to the five front door thresholds and the guild hall. -->
+<g fill="none" stroke="#b4b294" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+ <path d="M436 716 Q419 708 423 689"/>
+ <path d="M626 593 Q581 607 549 558"/>
+ <path d="M706 704 Q725 698 719 669"/>
+ <path d="M696 526 Q810 576 880 558 Q925 550 940 526"/>
+ <path d="M574 654 C610 700 655 708 706 704 S839 717 907 638 L1044 641 Q1148 651 1164 563"/>
+ <path d="M1044 641 Q981 670 984 732 L984 776 Q1009 808 1063 775"/>
+</g>
+<!-- A timber bridge carries the cross-village lane over both river banks. -->
+<path d="m907 620 112 6-2 30-112-6Z" fill="#baa77d" stroke="#736e55" stroke-width="3"/>
+<path d="m921 624-1 25m16-24-1 25m16-24-1 25m16-24-1 25m16-24-1 25m16-24-1 25" stroke="#807558" stroke-width="2"/>
+<path d="m905 619 114 6m-115 26 114 6" stroke="#d3bf8c" stroke-width="5"/>
+<path d="m906 619v-12m37 14v-12m38 14v-12m37 14v-12m-114 42v-12m37 14v-12m38 14v-12m37 14v-12" stroke="#8d8061" stroke-width="4"/>
 <use href="#hall" x="827" y="274" width="290" height="290"/>
 <use href="#home" x="490" y="420" width="158" height="150"/><use href="#home" x="659" y="523" width="162" height="153"/><use href="#home" x="365" y="550" width="157" height="149"/>
 <use href="#home" x="1116" y="447" width="129" height="125"/><use href="#home" x="995" y="612" width="182" height="172"/>
@@ -24,4 +40,4 @@
 <path d="M747 478V389q0-47 45-65 45 18 45 65v89l-19 5v-94q0-30-26-43-26 13-26 43v94Z" fill="#aec3a4"/>
 <path d="M772 476v-85q0-23 20-34 20 11 20 34v85Z" fill="url(#gate)"/>
 <path d="m792 385 9 18-9 19-9-19Z" fill="#d9f5cb"/><path d="m737 485 57 14 56-15-16-9-41 9-42-10Z" fill="#819984"/>
-<g><use href="#pine" x="1190" y="600" width="90" height="193.5"/><use href="#pine" x="1250" y="548" width="72" height="154.79999999999998"/><use href="#pine" x="1310" y="626" width="94" height="202.1"/><use href="#pine" x="273" y="489" width="85" height="182.75"/><use href="#pine" x="196" y="544" width="105" height="225.75"/><use href="#pine" x="308" y="673" width="100" height="215.0"/><use href="#pine" x="1150" y="703" width="108" height="232.2"/><use href="#pine" x="48" y="500" width="110" height="236.5"/><use href="#pine" x="0" y="623" width="140" height="301.0"/><use href="#pine" x="863" y="704" width="80" height="172.0"/><use href="#pine" x="1280" y="773" width="125" height="268.75"/><use href="#pine" x="1095" y="354" width="55" height="118.25"/><use href="#pine" x="1240" y="345" width="62" height="133.29999999999998"/><use href="#pine" x="668" y="397" width="50" height="107.5"/></g><path d="M0 830q240-18 387 50H0Zm1083 50q155-82 317-54v54Z" fill="#112a2b"/></svg>
+<g><use href="#pine" x="1190" y="600" width="90" height="193.5"/><use href="#pine" x="1250" y="548" width="72" height="154.79999999999998"/><use href="#pine" x="1310" y="626" width="94" height="202.1"/><use href="#pine" x="273" y="489" width="85" height="182.75"/><use href="#pine" x="196" y="500" width="105" height="225.75"/><use href="#pine" x="308" y="673" width="100" height="215.0"/><use href="#pine" x="1150" y="703" width="108" height="232.2"/><use href="#pine" x="48" y="500" width="110" height="236.5"/><use href="#pine" x="0" y="623" width="140" height="301.0"/><use href="#pine" x="863" y="704" width="80" height="172.0"/><use href="#pine" x="1280" y="773" width="125" height="268.75"/><use href="#pine" x="1095" y="354" width="55" height="118.25"/><use href="#pine" x="1240" y="345" width="62" height="133.29999999999998"/><use href="#pine" x="668" y="397" width="50" height="107.5"/></g><path d="M0 830q240-18 387 50H0Zm1083 50q155-82 317-54v54Z" fill="#112a2b"/></svg>

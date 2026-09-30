@@ -9,7 +9,7 @@ Group {
         Label { Anchor: (Height: 32); Text: "The Crown Store"; Style: $T.@TitleStyle; }
         Label { Anchor: (Height: 26); Text: "A little more you."; Style: $T.@MutedStyle; }
       }
-      Label #Balance { Anchor: (Width: 200); Style: (...$T.@SubtitleStyle, HorizontalAlignment: Center, VerticalAlignment: Center); }
+      Group #CurrencyWallet { Anchor: (Width: 220, Height: 44); LayoutMode: Left; }
       $T.@SecondaryTextButton #Refresh { Anchor: (Width: 112, Right: 12); Text: "Refresh"; }
       $T.@TextButton #GetCrowns { Anchor: (Width: 180, Right: 12); Text: "Get Crowns"; }
       $T.@HomeButton #MenuHome {}
@@ -33,7 +33,7 @@ Group {
           Label #SelectedName { Anchor: (Height: 58); Style: (...$T.@TitleStyle, Wrap: true); }
           Group #SelectedImage { Anchor: (Width: 384, Height: 240, Bottom: 16); }
           Label #SelectedDescription { Anchor: (Height: 100); Style: $T.@DefaultLabelStyle; }
-          Label #SelectedPrice { Anchor: (Height: 126); Style: (...$T.@DefaultLabelStyle, FontSize: 20); }
+          Group { Anchor: (Height: 126); LayoutMode: Left; Group { Anchor: (Width: 30, Height: 30, Right: 10); Background: "Icons/crown.png"; } Label #SelectedPrice { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 20); } }
           Label { Anchor: (Height: 70); Text: "Your item is delivered immediately. Crowns are separate from the coins used in player shops."; Style: $T.@MutedStyle; }
           }
           Group { Anchor: (Height: 48); LayoutMode: Left;

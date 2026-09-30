@@ -7,13 +7,31 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 public final class ContentImages {
     private ContentImages() {}
     public static String path(String content,boolean screenshot) {
-        if(content==null||!content.matches("eternia:[a-z_]+/[a-z0-9_-]+"))return "EterniaMod/Icons/collection.png";
-        String relative=content.substring(8).replace("addition/","prop/");
+        if(content==null||!content.matches("eternia:[a-z0-9_-]+(?:/[a-z0-9_-]+)*"))return "EterniaMod/Icons/collection.png";
+        String relative=content.substring(8);
+        if(relative.startsWith("addition/"))relative="prop/"+relative.substring(9);
         String base="EterniaMod/Catalog/"+relative+"/";
         if(screenshot&&exists(base+"screenshot.png"))return base+"screenshot.png";
         if(exists(base+"icon.png"))return base+"icon.png";
-        String kind=relative.substring(0,relative.indexOf('/'));
-        return "EterniaMod/Icons/"+switch(kind){case "house","prop","plot","palette","path","move"->"housing";case "season"->"season";case "convenience"->"worlds";default->"collection";}+".png";
+        String kind=content.substring(8).split("/",2)[0];
+        return "EterniaMod/Icons/"+switch(kind){
+            case "house" -> "housing";
+            case "prop" -> "furnishing";
+            case "addition" -> "addition";
+            case "plot" -> "plot";
+            case "palette" -> "palette";
+            case "path" -> "path";
+            case "move","plot_move_credit" -> "move";
+            case "season","season_paid" -> "season";
+            case "wearable","outfit" -> "wardrobe";
+            case "guild_voucher" -> "charter";
+            case "title" -> "title";
+            case "pet" -> "pet";
+            case "convenience" -> "worlds";
+            case "currency","crowns" -> "crown";
+            case "coins" -> "coins";
+            default -> "collection";
+        }+".png";
     }
     private static boolean exists(String path){return ContentImages.class.getClassLoader().getResource("Common/UI/Custom/"+path)!=null;}
     public static void show(UICommandBuilder c,String selector,String id,boolean screenshot){c.set(selector+".Visible",id!=null&&!id.isBlank());if(id!=null&&!id.isBlank())c.setObject(selector+".Background",new PatchStyle(Value.of(path(id,screenshot))));}

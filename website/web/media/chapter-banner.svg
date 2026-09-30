@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 260" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="cloth" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#2f4b43"/>
+      <stop offset="1" stop-color="#122b2c"/>
+    </linearGradient>
+  </defs>
+  <path d="M.5 .5H229.5V220.5L115 259.5 .5 220.5Z" fill="url(#cloth)" stroke="#d8b66b" stroke-opacity=".3" vector-effect="non-scaling-stroke"/>
+  <path d="M10.5 10.5H219.5V213.3L115 249 10.5 213.3Z" fill="none" stroke="#d8b66b" stroke-opacity=".22" vector-effect="non-scaling-stroke"/>
+</svg>

@@ -4,6 +4,7 @@ Group { Anchor: (Width: 1120, Height: 760); Background: $T.@InsetSurface; Paddin
 Group { Anchor: (Height: 48, Bottom: 12); LayoutMode: Left;
 Group { Anchor: (Width: 180, Height: 40, Right: 18); Background: "Theme/Surfaces/EterniaWordmark.png"; }
 Label #ServicesTitle { FlexWeight: 1; Style: $T.@TitleStyle; Text: "ETERNIA"; }
+Group #CurrencyWallet { Anchor: (Width: 220, Height: 44); LayoutMode: Left; }
 $T.@SecondaryTextButton #Return { Anchor: (Width: 96, Right: 10); Text: "Back"; Visible: false; }
 $T.@SecondaryTextButton #Close { Anchor: (Width: 96, Right: 10); Text: "Close"; }
 $T.@HomeButton #MenuHome {}
@@ -11,7 +12,7 @@ $T.@HomeButton #MenuHome {}
 Group { FlexWeight: 1; LayoutMode: Left;
 Group { Anchor: (Width: 218, Right: 16); LayoutMode: Top; Background: $T.@PanelSurface; Padding: (Full: 10);
 Label { Anchor: (Height: 26, Bottom: 6); Style: $T.@MutedStyle; Text: "YOUR ETERNIA"; }
-Group #Navigation { FlexWeight: 1; LayoutMode: TopScrolling; }
+Group #Navigation { FlexWeight: 1; LayoutMode: Top; }
 Label #Pagination { Anchor: (Height: 24, Bottom: 6); Style: (...$T.@MutedStyle, HorizontalAlignment: Center); }
 Group #PageControls { Anchor: (Height: 44); LayoutMode: Left;
 $T.@SecondaryTextButton #Previous { FlexWeight: 1; Anchor: (Right: 6); Text: "Prev"; }
