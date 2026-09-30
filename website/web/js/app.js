@@ -1,4 +1,5 @@
 import {api,el,link,identityBar,notice} from './api.js';
+import {treasury} from './treasury.js';
 const view=document.querySelector('#view'),path=location.pathname;
 document.querySelectorAll('nav a').forEach(a=>{if(a.pathname===path)a.setAttribute('aria-current','page');});
 const state=await identityBar();view.replaceChildren();
@@ -9,10 +10,7 @@ if(path==='/'){
  const actions=el('div',undefined,'actions');actions.append(link('Your account','/account','button primary'),link('Explore season passes','/seasons'));hero.append(actions);view.append(hero);
  const grid=el('div',undefined,'grid');grid.append(card('Make a place your own','A free housing plot, a home to personalize, and room for the things you discover.'),card('Find your people','Form a guild and create a neighborhood together.'),card('Every season stays','Return to earlier passes and continue where you left off.'));view.append(grid);
 }else if(path==='/store'){
- heading('The Crown treasury','Your next find awaits.','Buy Crowns here, then spend them at Lyra’s Crown Store in game on furnishings, companions, outfits, titles, and housing upgrades. Crowns are separate from player-trading coins.');
- const steps=el('div',undefined,'grid');steps.append(card('1 · Choose your Crowns','Checkout securely through Tebex using your Hytale account.'),card('2 · Return to Eternia','Your verified purchase credits your Crown balance. You do not need to claim a code.'),card('3 · Visit Lyra','Browse the Crown Store, review the price, and receive your item immediately.'));view.append(steps);
- if(state.user)try{const account=await api('/api/account');if(account.crowns) {const balance=card('Your Crown balance',new Intl.NumberFormat().format(account.crowns.available)+' Crowns'+(account.crowns.owed?' · '+account.crowns.owed+' Crowns to restore after a refund':''));balance.classList.add('treasury-balance');view.append(balance);}}catch{}
- try{const data=await api('/api/store');const grid=el('div',undefined,'grid');for(const offer of data.offers||[]){const c=card(offer.name||offer.id,offer.description||'');if(offer.checkoutUrl){const u=new URL(offer.checkoutUrl);if(u.protocol==='https:'&&(u.hostname==='tebex.io'||u.hostname.endsWith('.tebex.io')))c.append(link('Buy through Tebex',u.href,'button primary'));}grid.append(c);}view.append(grid.children.length?grid:el('div','Crown top-ups will open once Eternia’s Tebex packages are connected. You can already try the in-game store with local playground Crowns.','empty'));}catch(e){view.append(el('div',e.message,'empty'));}
+ await treasury(view,state);
 }else{
  const titles={account:['Your account','Welcome back.'],owned:['Your collection','The things that make it yours.'],seasons:['Season passes','Your next chapter.']},kind=path.slice(1);heading(...(titles[kind]||titles.account));
  if(!state.user){view.append(el('div',state.authConfigured?'Sign in with Hytale to view your account.':'Account access will open after Hytale sign-in is configured.','empty'));}

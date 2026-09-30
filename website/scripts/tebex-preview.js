@@ -1,0 +1,50 @@
+// Isolated browser acceptance with intercepted provider checkout. Never creates a real basket or payment.
+import {chromium} from 'playwright';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {config,root} from '../server/config.js';
+import {createRepository} from '../server/repository.js';
+import {createApp} from '../server/app.js';
+const temp=await fs.mkdtemp(path.join(os.tmpdir(),'eternia-treasury-preview-'));
+const cfg=config({LOCAL_FIXTURES:'true',DATA_DIR:temp}),repo=await createRepository(cfg),{app,queue}=createApp(cfg,repo);
+const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+let browser;
+try{
+ browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe'});
+ const page=await browser.newPage({viewport:{width:1440,height:1050}}),errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ const offers=cfg.tebexPackages.map((p,i)=>({...p,price:[5,10,20,50][i],currency:'USD'}));
+ const account={uuid:'11111111-1111-4111-8111-111111111111',name:'Local Explorer',admin:true};
+ await page.route('**/api/me',r=>r.fulfill({json:{user:account,csrf:'preview',fixtures:false,authConfigured:true}}));
+ await page.route('**/api/account',r=>r.fulfill({json:{crowns:{available:1100,owed:0}}}));
+ await page.route('**/api/store',r=>r.fulfill({json:{offers,checkoutEnabled:true,configured:true}}));
+ await page.route('**/api/store/checkout',r=>{assert.deepEqual(r.request().postDataJSON(),{packageId:'7704919'});return r.fulfill({json:{status:'ready',ident:'preview-not-real',packageId:'7704919',price:5,currency:'USD',checkoutUrl:'https://pay.tebex.io/preview-not-real'}});});
+ await page.route('**/api/store/checkout/reset',r=>r.fulfill({json:{ok:true}}));
+ await page.route('https://js.tebex.io/v/1.js',r=>r.fulfill({contentType:'application/javascript',body:'window.Tebex={checkout:{init(c){window.checkoutConfig=c},on(){},launch(){window.checkoutLaunched=true}}}'}));
+ const out=path.join(root,'test-output');await fs.mkdir(out,{recursive:true});
+ const origin='http://127.0.0.1:'+server.address().port;
+ await page.goto(origin+'/store');await page.getByRole('heading',{name:'Royal Treasury'}).waitFor();
+ await page.screenshot({path:path.join(out,'tebex-desktop.png'),fullPage:true});
+ await page.getByRole('button',{name:'Choose package',exact:true}).first().click();
+ await page.getByRole('button',{name:'Continue to secure payment'}).click();
+ assert.equal(await page.evaluate(()=>window.checkoutLaunched),true);assert.equal(await page.evaluate(()=>window.checkoutConfig.ident),'preview-not-real');
+ await page.screenshot({path:path.join(out,'tebex-checkout.png'),fullPage:true});
+ await page.getByRole('button',{name:'Choose another package'}).click();await page.locator('.checkout-review').waitFor({state:'hidden'});
+ await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.join(out,'tebex-mobile.png'),fullPage:true});
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Mobile layout must not overflow');
+ await page.route('https://js.tebex.io/v/1.js',r=>r.abort());await page.reload();
+ await page.getByRole('button',{name:'Choose package',exact:true}).first().click();await page.getByText('Checkout could not load',{exact:true}).waitFor();
+ assert.equal(await page.getByRole('link',{name:'Open secure checkout in a new tab'}).getAttribute('href'),'https://pay.tebex.io/preview-not-real');
+ await page.route('**/api/store',r=>r.fulfill({json:{offers,checkoutEnabled:false,configured:true}}));await page.reload();await page.getByRole('heading',{name:'Royal Treasury'}).waitFor();
+ assert.equal(await page.getByRole('button',{name:'Choose package',exact:true}).first().isDisabled(),true);
+ await page.route('**/api/admin/commerce',r=>r.fulfill({json:{configured:true,checkoutEnabled:false,bridgeReady:false,signInReady:true,packages:offers}}));
+ await page.route(origin+'/admin/commerce',r=>r.fulfill({contentType:'text/html',path:path.join(root,'web/admin/commerce.html')}));
+ await page.route(origin+'/admin/commerce.js',r=>r.fulfill({contentType:'application/javascript',path:path.join(root,'web/admin/commerce.js')}));
+ await page.goto(origin+'/admin/commerce');await page.getByText('Package ID: 7704919').waitFor();
+ assert.deepEqual(errors,[]);
+ console.log('Treasury browser checks passed: desktop, mobile, review, Tebex.js launch, reset, SDK failure fallback, closed store, and admin package IDs. No real provider requests or payments.');
+}finally{
+ if(browser)await browser.close();await queue.close();await new Promise(r=>server.close(r));await repo.close();await fs.rm(temp,{recursive:true});
+}

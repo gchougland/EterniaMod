@@ -13,6 +13,7 @@
     "test": "node --test",
     "db:migrate": "node scripts/migrate.js",
     "sync:theme": "node scripts/sync-theme.js",
+    "tebex:export": "node scripts/export-tebex-setup.js",
     "sync:hytale-assets": "node scripts/sync-hytale-viewer-assets.mjs",
     "renderer:install": "playwright install chromium"
   },
@@ -28,4 +29,3 @@
   },
   "devDependencies": {}
 }
-

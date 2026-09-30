@@ -2,7 +2,7 @@ package com.hexvane.eterniamod.runtime;
 
 import java.util.Map;
 
-/** Environment-only secrets; the development mode must be selected explicitly. */
+/** Validated server settings; the development mode must be selected explicitly. */
 public record RuntimeConfig(boolean local, String databaseUrl, String databaseUser, String databasePassword,
                             String bridgeAddress, int bridgePort, String bridgeToken, String websiteUrl) {
     public static RuntimeConfig from(Map<String,String> env) {
@@ -11,7 +11,7 @@ public record RuntimeConfig(boolean local, String databaseUrl, String databaseUs
         boolean local=mode.equals("local");
         String database=env.getOrDefault("ETERNIA_DATABASE_URL","");
         if(!database.isBlank()&&!database.startsWith("jdbc:postgresql://")) throw new IllegalArgumentException("ETERNIA_DATABASE_URL must be jdbc:postgresql://host/database");
-        if (!local&&!database.startsWith("jdbc:postgresql://")) throw new IllegalArgumentException("Production requires ETERNIA_DATABASE_URL=jdbc:postgresql://host/database; use ETERNIA_MODE=local for isolated local testing");
+        if (!local&&!database.startsWith("jdbc:postgresql://")) throw new IllegalArgumentException("Production requires ETERNIA_DATABASE_URL=jdbc:postgresql://host/database. Set it in eternia-server.properties inside the mod data folder or in the server environment. ETERNIA_MODE=local is only for isolated local testing.");
         String token=env.getOrDefault("ETERNIA_BRIDGE_TOKEN","");
         if (!token.isEmpty()&&token.length()<32) throw new IllegalArgumentException("ETERNIA_BRIDGE_TOKEN must contain at least 32 characters");
         String address=env.getOrDefault("ETERNIA_BRIDGE_ADDRESS","127.0.0.1");

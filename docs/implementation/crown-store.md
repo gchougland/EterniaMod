@@ -18,7 +18,7 @@ Use the existing signed Tebex callback plus console receipt integration in [comm
 {"contentId":"eternia:currency/crowns","kind":"QUANTITY","quantity":500,"expiresWithSubscription":false}
 ```
 
-The surrounding product's `packageId` must be your actual Tebex package ID and its immutable revision must match `tebex-packages.json`. Add the real HTTPS Tebex checkout URL to `store-offers.json`. The website treasury displays these offers and the signed-in account's current Crown balance from the private game bridge. It never accepts a client-supplied credit amount or grants currency on a checkout redirect. Configure and verify your own package, recipient UUID, callback and console delivery before opening paid top-ups.
+The surrounding product's `packageId` must be your actual Tebex package ID and its immutable revision must match `tebex-packages.json`. The website now uses [Tebex Headless and Tebex.js](tebex-headless.md) for its catalog and checkout. It displays live provider prices and the signed-in account's Crown balance, and checks active game reward mappings before creating a basket. Static `store-offers.json` checkout URLs are not required for Crown packages. It never accepts a client-supplied credit amount or grants currency on a checkout redirect. Configure and verify your own package, recipient UUID, callback and console delivery before opening paid top-ups.
 
 Crowns can only be credited to players, cannot expire with a subscription, and are never deposited in mail, player shops or peer trades. Supporter subscriptions can still grant their existing separate time-limited benefits.
 

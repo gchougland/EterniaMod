@@ -82,8 +82,12 @@ public final class EterniaModPlugin extends JavaPlugin {
     protected void setup() {
         instance = this;
         Path dataDirectory = getDataDirectory();
+        var serverEnvironment = com.hexvane.eterniamod.runtime.ServerSettings.load(dataDirectory, System.getenv());
+        getLogger().atInfo().log("Eternia settings: %s; database connection from %s",
+            dataDirectory.resolve(com.hexvane.eterniamod.runtime.ServerSettings.FILE_NAME).toAbsolutePath(),
+            com.hexvane.eterniamod.runtime.ServerSettings.source("ETERNIA_DATABASE_URL", System.getenv(), serverEnvironment));
         runtime = new com.hexvane.eterniamod.runtime.EterniaRuntime(dataDirectory,
-            com.hexvane.eterniamod.runtime.RuntimeConfig.from(System.getenv()));
+            com.hexvane.eterniamod.runtime.RuntimeConfig.from(serverEnvironment));
         infrastructure = new com.hexvane.eterniamod.housing.HousingInfrastructure(dataDirectory.resolve("housing-infrastructure.json"));
         try { infrastructure.load(); } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
         claims = new com.hexvane.eterniamod.housing.NativeClaimCoordinator(this);
@@ -105,7 +109,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         menuActions = new com.hexvane.eterniamod.runtime.NativeMenuActions(this);
         socialUi = com.hexvane.eterniamod.socialui.SocialUiBootstrap.register(this,getServices(),menuActions);
         collectionRuntime = com.hexvane.eterniamod.collections.CollectionBootstrap.register(this,getServices());
-        gameplayAdapters = new com.hexvane.eterniamod.runtime.GameplayAdapters(this,System.getenv());
+        gameplayAdapters = new com.hexvane.eterniamod.runtime.GameplayAdapters(this,serverEnvironment);
         customization = com.hexvane.eterniamod.customization.CustomizationBootstrap.register(this);
         try { com.hexvane.eterniamod.guildroads.GuildRoads.startup(this); }
         catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
@@ -121,7 +125,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         departures = new com.hexvane.eterniamod.housing.relocation.GuildDepartureWorker(this,
             error -> getLogger().atWarning().withCause(error).log("Guild property return needs recovery"));
         departures.start();
-        try { runtime.startBridge(gameplayAdapters.webhookHandler()); } catch (java.io.IOException e) { runtime.close(); throw new java.io.UncheckedIOException(e); }
+        try { runtime.startBridge(gameplayAdapters.webhookHandler(),gameplayAdapters.tebexPackages()); } catch (java.io.IOException e) { runtime.close(); throw new java.io.UncheckedIOException(e); }
         getLogger().atInfo().log("EterniaMod v%s loaded.", getManifest().getVersion().toString());
     }
 

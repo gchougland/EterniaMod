@@ -13,12 +13,13 @@ app.get('/favicon.ico',(_req,res)=>res.status(204).end());
 app.use('/prefab-viewer',express.static(path.join(web,'web/prefab-viewer')));
 app.use('/vendor/three',express.static(path.join(web,'node_modules/three')));
 app.get('/hytale-assets/Common/NPC/Review/Before.blockymodel',(_req,res)=>res.sendFile(path.join(repo,'build/prowl-before.blockymodel')));
+app.get('/hytale-assets/Common/NPC/Review/Approved.blockymodel',(_req,res)=>res.sendFile(path.join(repo,'src/test/resources/prowl/approved-player-rig.blockymodel')));
 app.use('/hytale-assets/Common',express.static(path.join(repo,'src/main/resources/Common')));
 const hasBefore=await fs.access(path.join(repo,'build/prowl-before.blockymodel')).then(()=>true,()=>false);
-const samples=[['Original Prowl','NPC/Eternia/Prowl/prowl_hytale.blockymodel'],...(hasBefore?[['Previous rig','NPC/Review/Before.blockymodel']]:[]),['Corrected rig','NPC/Eternia/Prowl/Prowl_PlayerRig.blockymodel']];
+const samples=[['Approved Prowl','NPC/Review/Approved.blockymodel'],...(hasBefore?[['Previous rig','NPC/Review/Before.blockymodel']]:[]),['Current rig','NPC/Eternia/Prowl/Prowl_PlayerRig.blockymodel']];
 app.get('/',(_req,res)=>res.type('html').send(`<!doctype html><meta charset="utf-8"><title>Prowl rig comparison</title>
 <style>body{margin:0;background:#101e22;color:#f0e8d5;font:18px system-ui}h1{font-size:26px;margin:24px}p{margin:0 24px 20px;color:#b5c3b8}main{display:flex;gap:16px;margin:0 24px}section{flex:1;text-align:center;background:#192d31}h2{font-size:18px;font-weight:500;color:#d8b66b}canvas{display:block;width:100%}</style>
-<h1>Prowl · original proportions restored</h1><p>Same camera, texture and scale. Bind-pose render using Eternia’s prefab viewer; this is not an in-game screenshot.</p><main></main>
+<h1>Prowl · approved appearance</h1><p>Same camera, texture and scale. Bind pose render using Eternia’s prefab viewer.</p><main></main>
 <script type="importmap">{"imports":{"three":"/vendor/three/build/three.module.js"}}</script><script type="module">
 import * as THREE from 'three';import {loadBlockyModel} from '/prefab-viewer/BlockyModelLoader.js';
 const bounds=[];const samples=${JSON.stringify(samples)};
@@ -40,5 +41,5 @@ try{
  assert.deepEqual(errors,[]);const result=await page.evaluate(()=>window.prowlComparison);const original=result.bounds[0],corrected=result.bounds.at(-1);
  for(const edge of ['min','max'])for(let axis=0;axis<3;axis++)assert.ok(Math.abs(original[edge][axis]-corrected[edge][axis])<1e-6,`Changed rendered ${edge} axis ${axis}`);
  const out=path.join(web,'test-output');await fs.mkdir(out,{recursive:true});await page.screenshot({path:path.join(out,'prowl-rig-comparison.png'),fullPage:true});await fs.writeFile(path.join(out,'prowl-rig-comparison.json'),JSON.stringify(result,null,2));
- console.log('Prowl viewer render passed: original and corrected bounds agree. Saved test-output/prowl-rig-comparison.png.');
+ console.log('Prowl viewer render passed: approved and current bounds agree. Saved test-output/prowl-rig-comparison.png.');
 }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}

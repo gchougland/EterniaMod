@@ -1,7 +1,8 @@
 """Reparent Prowl's untouched shapes onto Hytale's player bone hierarchy.
 
 Run with Python 3: scripts/rig-prowl.py [--check] [--assets path/to/Assets.zip].
-Only the separate Eternia rig and its atlas-safe passive clips are generated.
+Exports the historical generated rig to build/prowl-generated for comparison.
+The active, manually edited rig is never overwritten.
 """
 import argparse
 import copy
@@ -245,9 +246,10 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--check',action='store_true');parser.add_argument('--assets',type=Path,default=Path(os.environ.get('APPDATA',''))/'Hytale/install/release/package/game/latest/Assets.zip');args=parser.parse_args()
     with zipfile.ZipFile(args.assets) as archive: files=generate(archive)
     for path,value in files.items():
+        path=ROOT/'build/prowl-generated'/path.relative_to(ROOT/'src/main/resources')
         data=json.dumps(value,indent=2,ensure_ascii=False)+'\n'
         if args.check: assert path.read_text(encoding='utf-8')==data,'Generated asset is stale: '+str(path)
         else: path.parent.mkdir(parents=True,exist_ok=True);path.write_text(data,encoding='utf-8')
-    print('Prowl rig: all original shapes and UVs preserved; bind-world vertex error < 1e-9; '+str(len(files))+' generated files verified.')
+    print('Historical Prowl rig in build/prowl-generated: all original shapes and UVs preserved; bind-world vertex error < 1e-9; '+str(len(files))+' generated files verified. Active artwork unchanged.')
 
 if __name__=='__main__': main()

@@ -72,6 +72,11 @@ tasks.register("verifyReleaseJar") {
                 )
             }
         }
+        for (required in listOf("org/postgresql/Driver.class", "org/postgresql/core/v3/ConnectionFactoryImpl.class")) {
+            if (!listing.lineSequence().any { it.trim() == required }) {
+                error("Release jar ${jarFile.name} is missing its PostgreSQL driver: $required")
+            }
+        }
         val sizeMb = jarFile.length() / (1024.0 * 1024.0)
         logger.lifecycle("verifyReleaseJar: ${jarFile.name} OK (${"%.1f".format(sizeMb)} MB, no HytaleServer)")
     }

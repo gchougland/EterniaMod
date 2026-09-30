@@ -53,6 +53,7 @@ public final class GameplayAdapters implements AutoCloseable {
         }
     }
     public HttpHandler webhookHandler() { return tebex == null ? null : tebex.webhookHandler(); }
+    public Map<String,Integer> tebexPackages() { return tebex == null ? Map.of() : tebex.packageRevisions(); }
     static Map<SeasonService.ActivityKind,Map<String,Long>> parseCoinRewards(JsonObject object) {
         var result=new EnumMap<SeasonService.ActivityKind,Map<String,Long>>(SeasonService.ActivityKind.class);
         for(var kind:object.entrySet()) {

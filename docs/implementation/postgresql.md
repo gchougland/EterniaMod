@@ -61,9 +61,37 @@ Use `pgsql/bin/pg_restore.exe --list <dump>` to inspect a backup. Restore only i
 
 ## Deployment and migration
 
+### Game hosts with missing environment variables
+
+Eternia also reads `eternia-server.properties` in its plugin data directory, normally `mods/Hexvane_EterniaMod/`. The updated jar creates an empty template on its first startup, even when the missing database URL prevents the plugin from loading. The console prints the exact path and whether the database URL came from the environment, the settings file, or was not set. It never prints the connection value or password.
+
+Stop the server, replace the old Eternia jar with the new jar, start once to create the template, then stop again and edit it through the host's file manager:
+
+```properties
+ETERNIA_MODE=production
+ETERNIA_DATABASE_URL=jdbc:postgresql://PUBLIC_DATABASE_HOST:PUBLIC_PORT/DATABASE_NAME
+ETERNIA_DATABASE_USER=DATABASE_USERNAME
+ETERNIA_DATABASE_PASSWORD=DATABASE_PASSWORD
+ETERNIA_WEBSITE_URL=https://eternia-hytale.com
+```
+
+Use the game's actual PostgreSQL connection details, then save and start. The placeholders above are not working credentials. When connecting to Railway from another host, take the public host, port and database from `DATABASE_PUBLIC_URL`, omit the embedded `user:password@` portion, and change the scheme to `jdbc:postgresql://`. Put the username and password in their separate settings. Retain any connection options. Configure TLS for the public connection as described in the deployment guidance below.
+
+Do not add quotes around values. This is standard Java properties syntax: a literal backslash must be written as `\\`. Nonblank process environment values take precedence over file values; blank environment entries do not hide file values. Blank settings use the existing defaults. The file is never regenerated over an existing file. It also accepts `ETERNIA_BRIDGE_ADDRESS`, `ETERNIA_BRIDGE_PORT`, `ETERNIA_BRIDGE_TOKEN`, and `ETERNIA_TEBEX_WEBHOOK_SECRET` when configuring the website and payment connection. It cannot enable native smoke tests or other environment-only developer controls.
+
+Keep this file private: it contains credentials. New files use owner-only permissions on POSIX hosts and the existing directory permissions on Windows. The filename is ignored by Git and no filled configuration is included in the release jar. Do not upload it with content packs or share it in screenshots. A missing or invalid production configuration still stops startup rather than silently selecting local storage.
+
+### PostgreSQL driver inside the plugin
+
+The release jar bundles PostgreSQL's JDBC driver. `DriverDataSource` connects through that driver directly, because `DriverManager` discovery may run before Hytale loads plugins and then cannot see the plugin's driver. A `No suitable driver found` error with a valid PostgreSQL URL is therefore a mod loading issue, not evidence of an incorrect database password. Update the jar rather than changing credentials to address this error.
+
+`PluginDatabaseDriverTest` reproduces the old failure with an isolated plugin class loader and a server context that cannot discover its driver. Both connection overloads now pass against the isolated PostgreSQL test database. The rebuilt release jar was also loaded from `mods/` by the installed Hytale server in a fresh directory, with production mode and the isolated PostgreSQL test database: plugin setup and asset validation passed, then the server shut down normally. Release verification checks that the driver classes are bundled. This verifies local packaging and connectivity, not the remote provider's network or credentials.
+
+### Launch checklist
+
 1. Finish local database, multi-player and recovery acceptance. Keep this setup independent of real Tebex fulfillment.
 2. Choose the game host and database region together. The game database should be close to the Hytale server, with private networking or verified TLS. The website can use Railway with its own database account and persistent assets/render storage. A shared PostgreSQL instance can host separate game and website databases, provided access remains isolated.
-3. Provision production databases, credentials, backup retention and a tested restore procedure. Use provider environment settings for secrets, not game chat or repository files. Register the new OAuth application when the callback URL is ready and wire the authenticated bridge.
+3. Provision production databases, credentials, backup retention and a tested restore procedure. Use provider environment settings or the private server settings file for secrets, not game chat or repository files. Register the new OAuth application when the callback URL is ready and wire the authenticated bridge.
 4. Move existing file-backed state only through an explicit migration with a maintenance window, backups, counts/revision checks and a rollback plan. No file-to-PostgreSQL authority migration is currently implemented. A fresh production launch can initialize a fresh database; transferring an existing populated server requires that migration work first.
 5. Verify real login, trades/mail, furnished moves, guild departures, payment replay/refunds and restart recovery on the target hosting arrangement before opening it to players.
 

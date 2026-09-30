@@ -36,16 +36,26 @@ class HubNpcIdentityTest {
         assertNull(result.put(node.get("id").getAsString(),new Node(node,parent,absolute)),"duplicate node id");
         if(node.has("children"))for(var child:node.getAsJsonArray("children"))visit(child.getAsJsonObject(),node.get("name").getAsString(),absolute,result);
     }
-    @Test void playerRigPreservesEveryProwlShapeUvAndWorldVertex()throws Exception{
-        var folder=RES.resolve("Common/NPC/Eternia/Prowl");var original=nodes(read(folder.resolve("prowl_hytale.blockymodel")));var rig=nodes(read(folder.resolve("Prowl_PlayerRig.blockymodel")));int shapes=0;
-        for(var entry:original.entrySet()){
-            var before=entry.getValue();var shape=before.value.getAsJsonObject("shape");if(shape.get("type").getAsString().equals("none"))continue;shapes++;
-            var after=rig.get(entry.getKey());assertNotNull(after);assertEquals(shape,after.value.getAsJsonObject("shape"),"geometry/UV altered");
-            // Independent JOML matrix proof covers every vertex, even hidden original shapes.
-            double[] a=new double[16],b=new double[16];before.world.get(a);after.world.get(b);assertArrayEquals(a,b,1e-9,entry.getKey());
+    private static Map<String,Node> byName(Map<String,Node> nodes){
+        var result=new LinkedHashMap<String,Node>();
+        for(var node:nodes.values())assertNull(result.put(node.value.get("name").getAsString(),node),"ambiguous animated name");
+        return result;
+    }
+    @Test void playerRigPreservesApprovedAppearanceAndAnimationHierarchy()throws Exception{
+        // Approved 2026-09-29: retain the edited belly/hair and editor-rounded transforms.
+        // Numeric IDs are editor bookkeeping; names are animation targets.
+        var approved=byName(nodes(read(Path.of("src/test/resources/prowl/approved-player-rig.blockymodel"))));
+        var byName=byName(nodes(read(RES.resolve("Common/NPC/Eternia/Prowl/Prowl_PlayerRig.blockymodel"))));
+        assertEquals(approved.keySet(),byName.keySet(),"missing or renamed animation/mesh node");
+        for(var entry:approved.entrySet()){
+            var before=entry.getValue();var after=byName.get(entry.getKey());
+            assertEquals(before.parent,after.parent,"animation hierarchy: "+entry.getKey());
+            assertEquals(before.value.get("shape"),after.value.get("shape"),"geometry/UV/visibility: "+entry.getKey());
+            // Independent JOML transforms cover all vertices and shapeless animation pivots.
+            double[] a=new double[16],b=new double[16];before.world.get(a);after.world.get(b);
+            assertArrayEquals(a,b,1e-9,entry.getKey());
         }
-        assertEquals(40,shapes);assertEquals(shapes,rig.values().stream().filter(n->!n.value.getAsJsonObject("shape").get("type").getAsString().equals("none")).count());
-        var byName=new HashMap<String,Node>();for(var node:rig.values())assertNull(byName.put(node.value.get("name").getAsString(),node),"ambiguous animated name");
+        assertEquals(40,byName.values().stream().filter(n->!n.value.getAsJsonObject("shape").get("type").getAsString().equals("none")).count());
         assertEquals("Chest",byName.get("Head").parent);assertEquals("Head",byName.get("Neck").parent);
         for(String side:List.of("L-","R-")){
             assertEquals("Head",byName.get(side+"Eye-Attachment").parent);assertEquals(side+"Eye-Attachment",byName.get(side+"Eye").parent);
@@ -58,8 +68,8 @@ class HubNpcIdentityTest {
         assertEquals(50,byName.get("Pelvis").world.m31(),1e-9);
         assertEquals(88.5,byName.get("Head").world.m31(),1e-9);
         assertEquals(48.5,byName.get("L-Thigh").world.m31(),1e-9);
-        assertEquals(28.489136468853122,byName.get("L-Calf").world.m31(),1e-9);
-        assertEquals(7.5574017921117385,byName.get("L-Foot").world.m31(),1e-9);
+        assertEquals(28.48914,byName.get("L-Calf").world.m31(),1e-9);
+        assertEquals(7.55741,byName.get("L-Foot").world.m31(),1e-9);
     }
 
     @Test void shapelessParentsKeepOffsetsInChildFrame(){

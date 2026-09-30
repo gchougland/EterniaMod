@@ -13,10 +13,15 @@ test('HTTP boundaries: identity headers rejected, CSRF required, admin private, 
  assert.equal((await request('/internal/render')).status,403);
  assert.equal((await request('/api/admin/exports/native',{method:'POST',body:'{}'})).status,403);
  assert.equal((await request('/api/dev/login',{method:'POST'})).status,403);
+ assert.equal((await request('/api/store/checkout',{method:'POST',body:'{"packageId":"7704919"}'})).status,403);
+ assert.equal((await request('/api/store/checkout/reset',{method:'POST',body:'{}'})).status,403);
+ assert.equal((await request('/admin/commerce')).status,403);
  csrf=(await (await request('/api/me')).json()).csrf;
  assert.equal((await request('/api/dev/login',{method:'POST'})).status,200);
  csrf=(await (await request('/api/me')).json()).csrf;
  const account=await (await request('/api/account')).json();assert.equal(account.source,'local-fixture');
+ assert.equal((await request('/api/store/checkout',{method:'POST',body:'{"packageId":"7704919"}'})).status,503);
+ assert.equal((await request('/admin/commerce')).status,200);
  const record=await (await request('/api/admin/content',{method:'POST',body:JSON.stringify(payload())})).json();assert.ok(record.key);
  assert.equal((await request('/api/admin/content',{method:'POST',body:JSON.stringify(payload())})).status,409);
  assert.equal((await request('/api/admin/exports/native',{method:'POST',headers:{'X-CSRF-Token':''},body:JSON.stringify({contentKeys:[record.key]})})).status,403);

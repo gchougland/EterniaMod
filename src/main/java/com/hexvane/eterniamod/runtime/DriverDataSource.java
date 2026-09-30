@@ -8,6 +8,9 @@ import java.util.logging.Logger;
 
 /** Small bounded-time JDBC adapter; the domain store owns transaction lifetimes. */
 final class DriverDataSource implements DataSource {
+    // DriverManager discovery may run before Hytale's plugin loader exists.
+    // Connect through our bundled driver without relying on the server's JDBC registry.
+    private final Driver driver=new org.postgresql.Driver();
     private final String url; private final Properties properties=new Properties();
     DriverDataSource(RuntimeConfig config) {
         url=config.databaseUrl();
@@ -15,8 +18,13 @@ final class DriverDataSource implements DataSource {
         properties.setProperty("connectTimeout","5"); properties.setProperty("socketTimeout","15");
         properties.setProperty("ApplicationName","Eternia");
     }
-    public Connection getConnection() throws SQLException { return DriverManager.getConnection(url,properties); }
-    public Connection getConnection(String user,String password) throws SQLException { Properties p=new Properties();p.putAll(properties);p.setProperty("user",user);p.setProperty("password",password);return DriverManager.getConnection(url,p); }
+    private Connection connect(Properties credentials) throws SQLException {
+        var connection=driver.connect(url,credentials);
+        if(connection==null)throw new SQLException("Eternia requires a PostgreSQL JDBC connection URL", "08001");
+        return connection;
+    }
+    public Connection getConnection() throws SQLException { return connect(properties); }
+    public Connection getConnection(String user,String password) throws SQLException { Properties p=new Properties();p.putAll(properties);p.setProperty("user",user);p.setProperty("password",password);return connect(p); }
     public PrintWriter getLogWriter() { return null; }
     public void setLogWriter(PrintWriter out) { throw new UnsupportedOperationException(); }
     public void setLoginTimeout(int seconds) { properties.setProperty("connectTimeout",String.valueOf(seconds)); }

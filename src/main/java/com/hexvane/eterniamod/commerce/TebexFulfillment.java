@@ -36,6 +36,7 @@ public final class TebexFulfillment {
     }
     public void registerConsole(EterniaModPlugin plugin){plugin.getCommandRegistry().registerCommand(new DeliveryCommand());}
     public HttpHandler webhookHandler(){return this::handle;}
+    public Map<String,Integer> packageRevisions(){return mappings;}
     public int reconcile(){return services.commerceIngress().reconcile(100);}
     private void handle(HttpExchange exchange)throws IOException{
         try{

@@ -36,6 +36,7 @@ build/
 /run-local/
 /run-postgres/
 /.local/
+eternia-server.properties
 /[Dd]ocs/*
 !/[Dd]ocs/planning/
 !/[Dd]ocs/implementation/

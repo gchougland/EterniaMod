@@ -67,7 +67,7 @@ The fog border is enabled by default, fades with viewer distance, and stays with
 
 The [discovery cache guide](discoveries.md) implements in-world housing tokens: place an authored cache, register its exact adventure-world position in `discoveries.json`, and choose a catalog reward. Each player can collect a stable cache ID once, including across restarts and world regeneration. Copying its physical block elsewhere grants nothing.
 
-Product files live under data `Products/`. Use actual Tebex package IDs and immutable revisions, then map them in `tebex-packages.json`, for example `{"1234567":1}` after replacing the number with your package. Store presentation lives in `store-offers.json`: an array of `{id,revision,name,description,checkoutUrl}` matching registered products and HTTPS Tebex checkout pages. An empty file displays an honest unopened store.
+Product files live under data `Products/`. Use actual Tebex package IDs and immutable revisions, then map them in `tebex-packages.json`, for example `{"1234567":1}` after replacing the number with your package. Store presentation lives in `store-offers.json`: an array of `{id,revision,name,description,checkoutUrl}` matching registered products and HTTPS Tebex checkout pages. These legacy presentation offers are separate from the [Headless Crown treasury](tebex-headless.md), which reads live Tebex prices and verifies active Crown fulfillment mappings. Use that guide for the four configured Crown packs and the Railway/Sparked setup.
 
 Environment settings:
 

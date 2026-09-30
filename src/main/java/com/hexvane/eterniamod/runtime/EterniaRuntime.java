@@ -27,9 +27,13 @@ public final class EterniaRuntime implements AutoCloseable {
         }
     }
     public void startBridge(com.sun.net.httpserver.HttpHandler tebex) throws java.io.IOException {
+        startBridge(tebex,java.util.Map.of());
+    }
+    public void startBridge(com.sun.net.httpserver.HttpHandler tebex,java.util.Map<String,Integer> packages) throws java.io.IOException {
         if (!config.bridgeToken().isEmpty()) {
             bridge=new GameBridgeServer(services,config);
             bridge.setOffers(offers);
+            if(tebex!=null)bridge.setTebexPackages(packages);
             if(tebex!=null)bridge.mount("/v1/commerce/tebex",tebex);
             bridge.start();
         }

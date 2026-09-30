@@ -11,3 +11,27 @@ button.primary,.button.primary{background:linear-gradient(#e0bf79,#b89855);borde
 button:active,.button:active{box-shadow:inset 0 2px 4px #00000044}
 .topbar{background:linear-gradient(105deg,#20373b,#101e22);box-shadow:inset 0 -3px #d8b66b0d}
 .brand{font-weight:600;letter-spacing:3px}h1,h2,h3{font-weight:500}
+
+/* Crown treasury uses the same brass and sage geometry as the game menus. */
+.treasury-intro{max-width:760px;border-left:3px solid var(--et-primary);padding:4px 0 4px 24px;margin:16px 0 32px}
+.treasury-intro h1{font-size:52px;margin-bottom:16px}
+.treasury-account{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-block:24px}
+.treasury-account:empty{display:none}
+.crown-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin:28px 0}
+.crown-package{position:relative;text-align:center;padding:28px 18px 22px;display:flex;flex-direction:column;align-items:center;overflow:hidden}
+.crown-package:before{content:'';position:absolute;inset:7px;border:1px solid #d8b66b33;pointer-events:none;clip-path:polygon(0 0,100% 0,100% 90%,90% 100%,0 100%)}
+.crown-package img{margin-bottom:22px}
+.crown-package h2{font-size:21px;min-height:2.4em;margin-bottom:12px}
+.crown-package .number{font-size:42px;line-height:1.15}
+.crown-package .eyebrow{color:var(--et-muted);font-size:12px;margin-top:6px}
+.crown-package p{color:var(--et-muted);font-size:14px;margin:20px 0 16px}
+.crown-package .crown-price{font-size:24px;margin-top:auto;margin-bottom:18px}
+.crown-package button,.crown-package .button{width:100%;z-index:1}
+.crown-package.tier-3{background:linear-gradient(150deg,#3a4238,#192d31 72%)}
+.checkout-review{margin:24px 0;display:flex;flex-direction:column;align-items:flex-start;gap:12px;border-color:var(--et-primary)}
+.checkout-review[hidden]{display:none}
+.checkout-review h2,.checkout-review p{margin:0}
+.checkout-review .number{margin:4px 0}
+.checkout-review a{overflow-wrap:anywhere}
+@media(max-width:1000px){.crown-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.crown-grid{grid-template-columns:1fr}.treasury-intro{padding-left:16px}.treasury-intro h1{font-size:36px}.crown-package h2{min-height:0}.crown-package{padding:24px}.checkout-review button{width:100%}}

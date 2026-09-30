@@ -1,10 +1,11 @@
 import express from 'express';import session from 'express-session';import connectPg from 'connect-pg-simple';import crypto from 'node:crypto';import path from 'node:path';
 import {root} from './config.js';import {createOidc,regenerate,saveSession,UUID} from './auth.js';import {createBridge,FIXTURE_UUID} from './bridge.js';import {createCatalog} from './catalog.js';import {createRenderQueue} from './render-queue.js';import {route,requireUser,requireAdmin,HttpError} from './errors.js';
 import {mountTebexRelay} from './tebex-relay.js';import {exportNativeBundle} from './native-export.js';
+import {createHeadless} from './tebex-headless.js';import {mountTebexCheckout} from './tebex-checkout.js';
 export function createApp(cfg,repo){
  const app=express(),oidc=createOidc(cfg),bridge=createBridge(cfg),catalog=createCatalog(repo),queue=createRenderQueue(cfg,repo,catalog);
  app.disable('x-powered-by');if(cfg.production)app.set('trust proxy',1);
- app.use((req,res,next)=>{res.set({'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY','Content-Security-Policy':"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"});next();});
+ app.use((req,res,next)=>{res.set({'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY','Content-Security-Policy':"default-src 'self'; script-src 'self' 'unsafe-inline' https://js.tebex.io; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.tebex.io; connect-src 'self' https://*.tebex.io; frame-src https://*.tebex.io; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"});next();});
  mountTebexRelay(app,cfg);
  const Store=connectPg(session);app.use(session({name:'eternia.sid',secret:cfg.secret,resave:false,saveUninitialized:false,store:cfg.fixtures?undefined:new Store({pool:repo.pool,schemaName:'eternia_web',tableName:'sessions',createTableIfMissing:false}),cookie:{httpOnly:true,sameSite:'lax',secure:cfg.production,maxAge:7*86400000}}));
  app.use((req,res,next)=>{if(req.session.user)req.session.user.admin=(cfg.fixtures&&req.session.user.fixture===true)||cfg.admins.has(req.session.user.uuid);next();});
@@ -13,12 +14,12 @@ export function createApp(cfg,repo){
  const token=req.get('X-CSRF-Token');if(!token||!req.session.csrf||token!==req.session.csrf)return res.status(403).json({error:'Invalid form token. Reload the page.'});next();});
  app.get('/api/v1/health',(req,res)=>res.json({status:'ok'}));
  app.get('/api/me',(req,res)=>{req.session.csrf??=crypto.randomBytes(24).toString('hex');res.set('Cache-Control','no-store').json({user:req.session.user||null,csrf:req.session.csrf,authConfigured:oidc.enabled,fixtures:cfg.fixtures});});
- app.get('/auth/login',route(async(req,res)=>{const start=await oidc.start();req.session.oidc=start.pending;await saveSession(req);res.redirect(start.url);}));
- app.get('/auth/callback',route(async(req,res)=>{const pending=req.session.oidc;delete req.session.oidc;await saveSession(req);const user=await oidc.finish(req.query,pending);await regenerate(req);req.session.user=user;await saveSession(req);res.redirect('/account');}));
+ app.get('/auth/login',route(async(req,res)=>{const start=await oidc.start();req.session.oidc={...start.pending,returnTo:req.query.returnTo==='store'?'/store':'/account'};await saveSession(req);res.redirect(start.url);}));
+ app.get('/auth/callback',route(async(req,res)=>{const pending=req.session.oidc;delete req.session.oidc;await saveSession(req);const user=await oidc.finish(req.query,pending);await regenerate(req);req.session.user=user;await saveSession(req);res.redirect(pending?.returnTo==='/store'?'/store':'/account');}));
  app.post('/auth/logout',route(async(req,res)=>{await new Promise((resolve,reject)=>req.session.destroy(e=>e?reject(e):resolve()));res.clearCookie('eternia.sid');res.json({ok:true});}));
  if(cfg.fixtures)app.post('/api/dev/login',route(async(req,res)=>{if(!['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress))throw new HttpError(403,'Local fixture login only');await regenerate(req);req.session.user={uuid:FIXTURE_UUID,name:'Local Explorer',admin:true,fixture:true};await saveSession(req);res.json({ok:true});}));
  app.get('/api/account',requireUser,route(async(req,res)=>res.set('Cache-Control','no-store').json(await bridge.getOverview(req.session.user.uuid))));
- app.get('/api/store',route(async(req,res)=>res.json(await bridge.getOffers())));
+ mountTebexCheckout(app,cfg,createHeadless(cfg),bridge);
  app.get('/api/admin/content',requireAdmin,route(async(req,res)=>res.json((await catalog.list()).map(({prefab,...rest})=>rest))));
  app.post('/api/admin/exports/native',requireAdmin,route(async(req,res)=>{
   const keys=req.body.contentKeys;if(!Array.isArray(keys)||!keys.length||keys.length>100||keys.some(k=>!UUID.test(k))||new Set(keys).size!==keys.length)throw new HttpError(400,'Choose 1–100 unique revision keys');
@@ -41,6 +42,7 @@ export function createApp(cfg,repo){
  app.use('/hytale-assets',assetGate,express.static(cfg.assetsDir,{dotfiles:'deny'}));
  app.use('/vendor/three',assetGate,express.static(path.join(root,'node_modules/three'),{dotfiles:'deny'}));
  app.get('/admin',requireAdmin,(req,res)=>res.sendFile(path.join(root,'web/admin/index.html')));
+ app.get('/admin/commerce',requireAdmin,(req,res)=>res.sendFile(path.join(root,'web/admin/commerce.html')));
  app.use('/admin',requireAdmin,express.static(path.join(root,'web/admin')));
  for(const page of ['/','/account','/owned','/seasons','/store'])app.get(page,(req,res)=>res.sendFile(path.join(root,'web/index.html')));
  app.use(express.static(path.join(root,'web'),{index:false,dotfiles:'deny'}));

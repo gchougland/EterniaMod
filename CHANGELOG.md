@@ -4,6 +4,7 @@
 
 ### Added
 
+- Crown treasury on the website with current package prices, account balances, and secure Tebex checkout.
 - **Hub plots** — Admins can mark plot areas and assign them to players, including assigning the plot you are standing in. Use `/eternia plots show` to toggle plot outlines.
 - **Building placement** — Use a building item in your plot to place and move a preview before building.
 - **House** — First test building available for hub plots.

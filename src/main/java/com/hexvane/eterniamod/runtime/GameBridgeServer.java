@@ -17,6 +17,8 @@ public final class GameBridgeServer implements AutoCloseable {
     private final Gson json=new GsonBuilder().registerTypeAdapter(Instant.class,(JsonSerializer<Instant>)(value,type,ctx)->new JsonPrimitive(value.toString())).create();
     private List<StoreOffers.Offer> offers=List.of();
     public void setOffers(List<StoreOffers.Offer> values){offers=List.copyOf(values);}
+    private Map<String,Integer> tebexPackages=Map.of();
+    public void setTebexPackages(Map<String,Integer> values){tebexPackages=Map.copyOf(values);}
     public GameBridgeServer(EterniaServices services,RuntimeConfig config)throws IOException {
         this.services=services;token=("Bearer "+config.bridgeToken()).getBytes(StandardCharsets.UTF_8);
         if(config.bridgeToken().length()<32)throw new IllegalArgumentException("Bridge requires a strong service token");
@@ -43,6 +45,13 @@ public final class GameBridgeServer implements AutoCloseable {
             String path=exchange.getRequestURI().getPath();
             if(path.equals("/v1/health")){reply(exchange,200,Map.of("status","ready"));return;}
             if(path.equals("/v1/store/offers")){reply(exchange,200,Map.of("source","game","offers",offers));return;}
+            if(path.equals("/v1/store/crowns")){
+                var products=services.commerce().products().stream()
+                    .filter(p->Objects.equals(tebexPackages.get(p.packageId()),p.revision())&&!p.subscription()&&p.benefits().size()==1)
+                    .filter(p->{var b=p.benefits().getFirst();return b.contentId().equals(PremiumService.CROWNS)&&b.kind()==OwnershipService.Kind.QUANTITY&&!b.expiresWithSubscription();})
+                    .map(p->Map.of("id",p.packageId(),"revision",p.revision(),"crowns",p.benefits().getFirst().quantity())).toList();
+                reply(exchange,200,Map.of("source","game","products",products));return;
+            }
             if(path.matches("/v1/players/[0-9a-fA-F-]{36}/overview")) {
                 UUID player=UUID.fromString(path.split("/")[3]);
                 var overview=services.overview(player);

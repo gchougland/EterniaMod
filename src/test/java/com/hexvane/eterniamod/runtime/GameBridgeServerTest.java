@@ -1,6 +1,10 @@
 package com.hexvane.eterniamod.runtime;
 
 import com.hexvane.eterniamod.domain.EterniaServices;
+import com.hexvane.eterniamod.domain.CommerceService;
+import com.hexvane.eterniamod.domain.OwnershipService;
+import com.hexvane.eterniamod.domain.PremiumService;
+import com.google.gson.JsonParser;
 import com.hexvane.eterniamod.persistence.InMemoryStore;
 import java.net.*;
 import java.net.http.*;
@@ -10,6 +14,25 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameBridgeServerTest {
+    @Test void crownCatalogContainsOnlyActiveMappedPermanentCurrencyProducts() throws Exception {
+        String token="test-service-token-12345678901234567890";
+        var config=new RuntimeConfig(true,"","","","127.0.0.1",0,token,"http://127.0.0.1:3000");
+        var services=new EterniaServices(new InMemoryStore());
+        var benefit=new CommerceService.Benefit(PremiumService.CROWNS,OwnershipService.Kind.QUANTITY,500,false);
+        services.commerce().register(new CommerceService.Product("7704919",1,"Pouch",java.util.List.of(benefit),false));
+        services.commerce().register(new CommerceService.Product("7704919",2,"Pouch revised",java.util.List.of(new CommerceService.Benefit(PremiumService.CROWNS,OwnershipService.Kind.QUANTITY,600,false)),false));
+        services.commerce().register(new CommerceService.Product("7704922",1,"Subscription",java.util.List.of(benefit),true));
+        services.commerce().register(new CommerceService.Product("7704924",1,"Mixed",java.util.List.of(benefit,new CommerceService.Benefit("eternia:prop/chair",OwnershipService.Kind.QUANTITY,1,false)),false));
+        try(var bridge=new GameBridgeServer(services,config);var client=HttpClient.newHttpClient()){
+            bridge.start();var uri=URI.create("http://127.0.0.1:"+bridge.port()+"/v1/store/crowns");
+            assertEquals(401,client.send(HttpRequest.newBuilder(uri).build(),HttpResponse.BodyHandlers.ofString()).statusCode());
+            var request=HttpRequest.newBuilder(uri).header("Authorization","Bearer "+token).build();
+            assertTrue(JsonParser.parseString(client.send(request,HttpResponse.BodyHandlers.ofString()).body()).getAsJsonObject().getAsJsonArray("products").isEmpty());
+            bridge.setTebexPackages(java.util.Map.of("7704919",1,"7704922",1,"7704924",1));
+            var products=JsonParser.parseString(client.send(request,HttpResponse.BodyHandlers.ofString()).body()).getAsJsonObject().getAsJsonArray("products");
+            assertEquals(1,products.size());var product=products.get(0).getAsJsonObject();assertEquals("7704919",product.get("id").getAsString());assertEquals(1,product.get("revision").getAsInt());assertEquals(500,product.get("crowns").getAsLong());
+        }
+    }
     @Test void privateRoutesAndMountedWebhooksRequireBearerAndExactPath() throws Exception {
         String token="test-service-token-12345678901234567890";
         var config=new RuntimeConfig(true,"","","","127.0.0.1",0,token,"http://127.0.0.1:3000");
