@@ -4,6 +4,7 @@
 
 ### Added
 
+- **Hytale Update 7** — Eternia runs on Hytale Update 7 (0.7.0).
 - Menu balances and price icons make Coins and Crowns easy to tell apart.
 - Season quests award Coins for shopping with other players and announce rewards with a toast.
 

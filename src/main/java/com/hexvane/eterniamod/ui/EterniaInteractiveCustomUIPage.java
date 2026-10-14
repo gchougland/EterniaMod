@@ -135,7 +135,7 @@ public abstract class EterniaInteractiveCustomUIPage<T> extends InteractiveCusto
                     return;
                 }
                 playerComponent.getPageManager()
-                    .updateCustomPage(
+                    .updateLegacyCustomPage(
                         new CustomPage(
                             this.getClass().getName(),
                             false,

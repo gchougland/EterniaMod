@@ -9,6 +9,8 @@ import com.hypixel.hytale.server.core.event.events.ecs.UseBlockEvent;
 import com.hypixel.hytale.server.core.modules.block.components.ItemContainerBlock;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.*;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.data.*;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.DoorInteraction;
+import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import java.util.*;
 
@@ -25,8 +27,13 @@ final class HousingUseCapabilities {
             if(root==null)return Set.of("housing.container.open");
             var collector=new Behaviors();InteractionManager.walkChain(collector,event.getInteractionType(),event.getContext(),root);
             return required(container,block.getBench() instanceof com.hypixel.hytale.server.core.asset.type.blocktype.config.bench.ProcessingBench,
-                "Eternia_Management_Block".equals(block.getId()),"Eternia_World_Portal".equals(block.getId()),block.isDoor(),block.getBeds()!=null,block.getBench()!=null,collector.types);
+                "Eternia_Management_Block".equals(block.getId()),"Eternia_World_Portal".equals(block.getId()),door(store.getExternalData().getWorld(),p.x,p.y,p.z),block.getBeds()!=null,block.getBench()!=null,collector.types);
         }catch(RuntimeException invalid){return Set.of("housing.container.open");}
+    }
+    /** The engine's own door lookup for the block in use; the per-block-type door flag is deprecated. */
+    private static boolean door(World world,int x,int y,int z) {
+        var section=ChunkSectionBlockUtil.blockSectionAt(world,x,y,z);
+        return section!=null&&DoorInteraction.getDoorAtPosition(world.getChunkStore(),x,y,z,section.getRotation(x,y,z).yaw())!=null;
     }
     static Set<String> required(boolean container,boolean processing,boolean ledger,boolean door,boolean bed,boolean bench,Set<String> behaviors) {
         return required(container,processing,ledger,false,door,bed,bench,behaviors);

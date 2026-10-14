@@ -56,7 +56,7 @@ public final class NativeRelocationCoordinator {
             services.housing().cancelRelocationBeforeMutation(owner,operation);
         }catch(Throwable failure){NativePlacementTransactions.lock(plugin,operation);throw new IllegalStateException("Recovery retained its lock: "+failure.getMessage(),failure);}
     }
-    public static NativeSnapshotStore.Bounds bounds(HubPlotRecord plot){var f=plot.getFootprint();return new NativeSnapshotStore.Bounds(f.getMinX(),ChunkUtil.MIN_Y,f.getMinZ(),f.getMaxX()+1,ChunkUtil.HEIGHT,f.getMaxZ()+1);}
+    public static NativeSnapshotStore.Bounds bounds(HubPlotRecord plot){var f=plot.getFootprint();return new NativeSnapshotStore.Bounds(f.getMinX(),ChunkUtil.MIN_Y,f.getMinZ(),f.getMaxX()+1,NativeSnapshotStore.MAX_Y,f.getMaxZ()+1);}
     /** Before claim activation, while construction is still locked. Existing unproven plots are never auto-baselined. */
     public static void captureBaseline(EterniaModPlugin plugin,World world,HubPlotRecord plot) {
         try {
@@ -147,7 +147,7 @@ public final class NativeRelocationCoordinator {
             var personal=store.load(parseReference(manifest.getString("personal").getValue()));
             int dy=Math.subtractExact(groundY,oldPlot.getFootprint().resolveVisualCenterY());
             var inset=PlotSnapshotTransform.centeredInset(original.bounds().maxX()-original.bounds().minX(),original.bounds().maxZ()-original.bounds().minZ(),destination.width(),destination.depth());
-            var movedPersonal=PlotSnapshotTransform.translate(personal.document(),inset.x(),dy,inset.z(),0,ChunkUtil.MIN_Y,0,destination.width(),ChunkUtil.HEIGHT,destination.depth());
+            var movedPersonal=PlotSnapshotTransform.translate(personal.document(),inset.x(),dy,inset.z(),0,ChunkUtil.MIN_Y,0,destination.width(),NativeSnapshotStore.MAX_Y,destination.depth());
             var infra=plugin.getInfrastructure().world(world.getName()).orElseThrow();if(!infra.supportsHousing())throw new IllegalStateException("Use a world with housing enabled");
             UUID guild=scope==HousingRules.Scope.PUBLIC?null:services.guilds().membership(actor).orElseThrow().guildId();
             if(owner.kind()==Owner.Kind.GUILD&&(scope!=HousingRules.Scope.GUILD_ROOT||!owner.id().equals(guild)))throw new IllegalStateException("Guild property owner cannot change");

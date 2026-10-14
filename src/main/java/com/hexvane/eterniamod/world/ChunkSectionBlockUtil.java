@@ -6,19 +6,23 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.RotationTuple;
+import com.hypixel.hytale.server.core.asset.type.environment.config.Environment;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.BlockChunk;
 import com.hypixel.hytale.server.core.universe.world.chunk.BlockOperations;
-import com.hypixel.hytale.server.core.universe.world.chunk.ChunkFlag;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
+import com.hypixel.hytale.server.core.universe.world.chunk.heightmap.HeightmapColumn;
 import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockComponentSection;
 import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
+import com.hypixel.hytale.server.core.universe.world.chunk.section.EnvironmentSection;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.GetChunkFlags;
 import com.hypixel.hytale.server.core.util.FillerBlockUtil;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.bson.BsonArray;
+import org.bson.BsonDocument;
 import org.joml.Vector3ic;
 
 /**
@@ -58,7 +62,29 @@ public final class ChunkSectionBlockUtil {
     }
 
     /**
-     * Chunk column in memory that is not simulating ({@link ChunkFlag#TICKING} clear). Matches vanilla
+     * Whether a chunk column is simulating. Since Hytale 0.7.0 a column that is not carries the engine's
+     * {@code NonTicking} marker component, as chunk sections do; the old {@code ChunkFlag.TICKING} is gone.
+     */
+    public static boolean isTicking(@Nonnull World world, @Nonnull WorldChunk chunk) {
+        Ref<ChunkStore> ref = chunk.getReference();
+        return ref != null
+            && ref.isValid()
+            && !world.getChunkStore().getStore().getArchetype(ref).contains(ChunkStore.REGISTRY.getNonTickingComponentType());
+    }
+
+    /**
+     * Starts a chunk column simulating by taking the {@code NonTicking} marker off, which is what the engine's own
+     * chunk loading does when a ticking column is asked for. World thread only, and not from a chunk store system.
+     */
+    public static void startTicking(@Nonnull World world, @Nonnull WorldChunk chunk) {
+        Ref<ChunkStore> ref = chunk.getReference();
+        if (ref != null && ref.isValid()) {
+            world.getChunkStore().getStore().tryRemoveComponent(ref, ChunkStore.REGISTRY.getNonTickingComponentType());
+        }
+    }
+
+    /**
+     * Chunk column in memory that is not simulating (see {@link #isTicking}). Matches vanilla
      * {@code getChunkIfNonTicking} — not {@code getNonTickingChunk}, which returns any in-memory column.
      *
      * <p>Near players, columns are almost always ticking; use {@link #worldChunkIfInMemory} for place/read
@@ -67,7 +93,7 @@ public final class ChunkSectionBlockUtil {
     @Nullable
     public static WorldChunk worldChunkIfNonTicking(@Nonnull World world, long chunkIndex) {
         WorldChunk chunk = worldChunkIfInMemory(world, chunkIndex);
-        if (chunk == null || chunk.is(ChunkFlag.TICKING)) {
+        if (chunk == null || isTicking(world, chunk)) {
             return null;
         }
         return chunk;
@@ -85,7 +111,7 @@ public final class ChunkSectionBlockUtil {
     @Nullable
     public static WorldChunk worldChunkIfTicking(@Nonnull World world, long chunkIndex) {
         WorldChunk chunk = worldChunkIfInMemory(world, chunkIndex);
-        return chunk != null && chunk.is(ChunkFlag.TICKING) ? chunk : null;
+        return chunk != null && isTicking(world, chunk) ? chunk : null;
     }
 
     @Nullable
@@ -109,8 +135,8 @@ public final class ChunkSectionBlockUtil {
             WorldChunk chunk =
                 world.getChunkStore().getStore().getComponent(inMemory, WorldChunk.getComponentType());
             if (chunk != null) {
-                chunk.setFlag(ChunkFlag.TICKING, true);
-                if (chunk.is(ChunkFlag.TICKING)) {
+                startTicking(world, chunk);
+                if (isTicking(world, chunk)) {
                     return chunk;
                 }
             }
@@ -137,7 +163,7 @@ public final class ChunkSectionBlockUtil {
 
     @Nullable
     public static BlockSection blockSectionAt(@Nonnull World world, int worldX, int worldY, int worldZ) {
-        if (worldY < ChunkUtil.MIN_Y || worldY > ChunkUtil.HEIGHT_MINUS_1) {
+        if (worldY < ChunkUtil.MIN_Y) {
             return null;
         }
         Ref<ChunkStore> sectionRef = world.getChunkStore().getChunkSectionReferenceAtBlock(worldX, worldY, worldZ);
@@ -154,7 +180,7 @@ public final class ChunkSectionBlockUtil {
         int worldY,
         int worldZ
     ) {
-        if (worldY < ChunkUtil.MIN_Y || worldY > ChunkUtil.HEIGHT_MINUS_1) {
+        if (worldY < ChunkUtil.MIN_Y) {
             return null;
         }
         Ref<ChunkStore> sectionRef = world.getChunkStore().getChunkSectionReferenceAtBlock(worldX, worldY, worldZ);
@@ -258,13 +284,51 @@ public final class ChunkSectionBlockUtil {
 
     /**
      * Highest non-transparent block Y in the column, or {@link ChunkUtil#MIN_Y}{@code - 1} if empty.
+     * Since Hytale 0.7.0 column heights live in the column's own heightmap component, not in {@link BlockChunk}.
      */
-    public static short columnHeight(@Nonnull World world, int blockX, int blockZ) {
-        BlockChunk chunk = loadBlockChunk(world, blockX, blockZ);
-        if (chunk == null) {
-            return (short) (ChunkUtil.MIN_Y - 1);
+    public static int columnHeight(@Nonnull World world, int blockX, int blockZ) {
+        if (loadBlockChunk(world, blockX, blockZ) == null) {
+            return ChunkUtil.MIN_Y - 1;
         }
-        return chunk.getHeight(blockX, blockZ);
+        HeightmapColumn heightmap =
+            world.getChunkStore()
+                .getChunkComponent(ChunkUtil.indexChunkFromBlock(blockX, blockZ), HeightmapColumn.getComponentType());
+        int height = heightmap != null ? heightmap.getHeight(blockX, blockZ) : HeightmapColumn.NO_HEIGHT;
+        return height != HeightmapColumn.NO_HEIGHT ? height : ChunkUtil.MIN_Y - 1;
+    }
+
+    /** Environment index at the cell, or {@link Environment#UNKNOWN_ID} when its section is not in memory. */
+    public static int environmentId(@Nonnull World world, int x, int y, int z) {
+        Ref<ChunkStore> sectionRef = sectionRefAt(world, x, y, z);
+        if (sectionRef == null) {
+            return Environment.UNKNOWN_ID;
+        }
+        EnvironmentSection section =
+            world.getChunkStore().getStore().getComponent(sectionRef, EnvironmentSection.getComponentType());
+        return section != null ? section.get(x, y, z) : Environment.UNKNOWN_ID;
+    }
+
+    /**
+     * One section of a column as the chunk loader reads it back from disk, or {@code null} when the column or
+     * that section was not saved. It is taken from the saved document, because the engine component that bridges
+     * a legacy column to its sections is deprecated and has no replacement yet.
+     */
+    @Nullable
+    public static Holder<ChunkStore> savedSectionHolder(@Nonnull World world, int chunkX, int sectionY, int chunkZ) {
+        Holder<ChunkStore> column = world.getChunkStore().getLoader().loadHolder(chunkX, chunkZ).join();
+        if (column == null) {
+            return null;
+        }
+        BsonArray sections =
+            ChunkStore.REGISTRY
+                .serialize(column)
+                .getDocument("Components", new BsonDocument())
+                .getDocument("ChunkColumn", new BsonDocument())
+                .getArray("Sections", new BsonArray());
+        if (sectionY < 0 || sectionY >= sections.size() || !sections.get(sectionY).isDocument()) {
+            return null;
+        }
+        return ChunkStore.REGISTRY.deserialize(sections.get(sectionY).asDocument());
     }
 
     public static boolean breakBlock(@Nonnull World world, int x, int y, int z, int settings) {
@@ -415,7 +479,7 @@ public final class ChunkSectionBlockUtil {
 
     @Nullable
     public static Ref<ChunkStore> sectionRefAt(@Nonnull World world, int worldX, int worldY, int worldZ) {
-        if (worldY < ChunkUtil.MIN_Y || worldY > ChunkUtil.HEIGHT_MINUS_1) {
+        if (worldY < ChunkUtil.MIN_Y) {
             return null;
         }
         Ref<ChunkStore> sectionRef = world.getChunkStore().getChunkSectionReferenceAtBlock(worldX, worldY, worldZ);

@@ -11,7 +11,6 @@ import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.server.core.*;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.Rotation;
 import com.hypixel.hytale.server.core.event.events.BootEvent;
-import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import java.nio.file.*;
 import java.util.*;
@@ -44,7 +43,7 @@ public final class NativeSmoke {
                 if(com.hypixel.hytale.server.core.asset.type.particle.config.ParticleSystem.getAssetMap().getAsset(id)==null||com.hypixel.hytale.server.core.asset.type.particle.config.ParticleSpawner.getAssetMap().getAsset(id+"_Spawner")==null)throw new IllegalStateException("Mote boundary assets failed native loading: "+id);
             }
             plugin.getLogger().atInfo().log("ETERNIA_NATIVE_BORDER_ASSETS_PASS: all mote systems and spawners loaded");
-            World world=Universe.get().addWorld("eternia_smoke", "Flat", null).join();
+            World world=com.hexvane.eterniamod.localplayground.LocalPlayground.createFlatWorld("eternia_smoke").join();
             com.hexvane.eterniamod.inventory.NativeInventorySmoke.run(world);
             plugin.getLogger().atInfo().log("ETERNIA_NATIVE_INVENTORY_SAVE_PASS: live components retained without cloning; inventory and custody proof saved together and reloaded");
             String previousGameplay=world.getWorldConfig().getGameplayConfig();var previousTickers=Set.copyOf(world.getWorldConfig().getDisabledFluidTickers());
@@ -53,9 +52,10 @@ public final class NativeSmoke {
             Files.writeString(plugin.getDataDirectory().resolve("housing-infrastructure.json"),new Gson().toJson(config)); plugin.getInfrastructure().load();
             com.hexvane.eterniamod.customization.HousingWorldPolicy.refreshAll().join();
             var loads=new ArrayList<CompletableFuture<?>>();
-            for(int x=-1;x<=8;x++)for(int z=-1;z<=5;z++)loads.add(world.getChunkAsync(ChunkUtil.indexChunk(x,z)));
+            for(int x=-1;x<=8;x++)for(int z=-1;z<=5;z++)loads.add(world.getChunkStore().getChunkReferenceAsync(ChunkUtil.indexChunk(x,z),com.hypixel.hytale.server.core.universe.world.storage.GetChunkFlags.SET_TICKING));
             CompletableFuture.allOf(loads.toArray(CompletableFuture[]::new)).join();
-            loads.clear();for(int sy=0;sy<ChunkUtil.HEIGHT/ChunkUtil.SIZE;sy++)loads.add(world.getChunkStore().getChunkSectionReferenceAsync(-1,sy,-1));
+            // Since 0.7.0 a section starts idle whatever its column does; this fixture has no player to wake them.
+            loads.clear();for(int x=-1;x<=8;x++)for(int z=-1;z<=5;z++)for(int sy=0;sy<NativeSnapshotStore.MAX_Y/ChunkUtil.SIZE;sy++)loads.add(world.getChunkStore().getChunkSectionReferenceAsync(x,sy,z,com.hypixel.hytale.server.core.universe.world.storage.GetChunkFlags.SET_TICKING));
             CompletableFuture.allOf(loads.toArray(CompletableFuture[]::new)).join();
             var result=new CompletableFuture<Void>();
             world.execute(()-> {try {

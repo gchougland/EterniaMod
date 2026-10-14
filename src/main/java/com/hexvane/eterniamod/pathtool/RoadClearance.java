@@ -1,5 +1,6 @@
 package com.hexvane.eterniamod.pathtool;
 
+import com.hexvane.eterniamod.housing.relocation.NativeSnapshotStore;
 import com.hexvane.eterniamod.world.ChunkSectionBlockUtil;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
@@ -34,7 +35,7 @@ final class RoadClearance {
         var cache=new HashMap<String,Section>();var missing=new HashSet<String>();
         var floors=new HashMap<SplineGeometry.Column,Integer>();ground.forEach(c->floors.put(c.column(),c.y()));
         for(var cell:ground){
-            for(int sy=cell.y()>>5;sy<ChunkUtil.HEIGHT/ChunkUtil.SIZE;sy++){
+            for(int sy=cell.y()>>5;sy<NativeSnapshotStore.MAX_Y/ChunkUtil.SIZE;sy++){
                 String key=(cell.x()>>5)+","+sy+","+(cell.z()>>5);
                 if(!cache.containsKey(key)&&!missing.contains(key)){
                     var ref=world.getChunkStore().getChunkSectionReference(cell.x()>>5,sy,cell.z()>>5);
@@ -65,7 +66,7 @@ final class RoadClearance {
             var boxes=FillerBlockUtil.multiCellFootprint(ChunkSectionBlockUtil.blockId(world,x,y,z),ChunkSectionBlockUtil.rotationIndex(world,x,y,z));
             if(boxes!=null)FillerBlockUtil.forEachFillerBlock(boxes,(dx,dy,dz)->{
                 Integer bottom=floors.get(new SplineGeometry.Column(x+dx,z+dz));
-                if(bottom==null||y+dy<=bottom||y+dy>=ChunkUtil.HEIGHT)invalid.put(cell.column(),"The road edge cuts through an object; widen or move the curve to include it completely");
+                if(bottom==null||y+dy<=bottom||y+dy>=NativeSnapshotStore.MAX_Y)invalid.put(cell.column(),"The road edge cuts through an object; widen or move the curve to include it completely");
             });
         }
         return new Result(List.copyOf(result),Map.copyOf(invalid));

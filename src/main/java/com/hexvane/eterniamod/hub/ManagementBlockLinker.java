@@ -231,7 +231,7 @@ public final class ManagementBlockLinker {
     ) {
         for (int dy = -2; dy <= 2; dy++) {
             int y = wy + dy;
-            if (y < ChunkUtil.MIN_Y || y > ChunkUtil.HEIGHT_MINUS_1) {
+            if (y < ChunkUtil.MIN_Y) {
                 continue;
             }
             BlockType bt = ChunkSectionBlockUtil.blockType(world, wx, y, wz);

@@ -34,6 +34,8 @@ public final class LocalPlayground {
     public static final UUID SELLER=UUID.nameUUIDFromBytes("eternia.local.seller.v1".getBytes(StandardCharsets.UTF_8));
     private static final UUID GUILD_LEADER=UUID.nameUUIDFromBytes("eternia.local.guild.v1".getBytes(StandardCharsets.UTF_8));
     private static final Gson JSON=new Gson();private static CompletableFuture<Void> building;
+    /** The one layer the engine's default flat generator lays at y 0. */
+    private static final String FLAT_GROUND="Soil_Grass";
     private record Manifest(int version,Map<String,UUID> worlds,boolean ready,boolean villageReady) {
         Manifest(int version,Map<String,UUID> worlds,boolean ready){this(version,worlds,ready,ready);}
     }
@@ -145,8 +147,18 @@ public final class LocalPlayground {
         Manifest m=manifest(plugin);World existing=Universe.get().getWorld(name);UUID id=m.worlds().get(name);
         if(id!=null){if(existing==null)existing=Universe.get().loadWorld(name).join();if(!id.equals(existing.getWorldConfig().getUuid()))throw new IllegalStateException("The saved playground world identity changed: "+name);return existing;}
         if(existing!=null||Files.exists(Universe.get().getWorldsPath().resolve(name)))throw new IllegalStateException("The world "+name+" already exists and is not owned by this playground");
-        var created=Universe.get().addWorld(name,"Flat",null).join();var worlds=new TreeMap<>(m.worlds());worlds.put(name,created.getWorldConfig().getUuid());write(plugin,new Manifest(1,worlds,false));
+        var created=createFlatWorld(name).join();var worlds=new TreeMap<>(m.worlds());worlds.put(name,created.getWorldConfig().getUuid());write(plugin,new Manifest(1,worlds,false));
         on(created,()->{created.getWorldConfig().setSpawnProvider(new com.hypixel.hytale.server.core.universe.world.spawn.GlobalSpawnProvider(new com.hypixel.hytale.math.vector.Transform(.5,1,.5)));created.getWorldConfig().markChanged();}).join();return created;
+    }
+    /** A new world on the engine's default flat generator, as the engine's deprecated addWorld(name, "Flat", null) made it. */
+    public static CompletableFuture<World> createFlatWorld(String name){
+        var universe=Universe.get();
+        if(universe.getWorld(name)!=null||universe.isWorldLoadable(name))throw new IllegalArgumentException("World "+name+" already exists");
+        Path path=universe.validateWorldPath(name);
+        return universe.getWorldConfigProvider().load(path,name).thenCompose(config->{
+            config.setWorldGenProvider(new com.hypixel.hytale.server.core.universe.world.worldgen.provider.FlatWorldGenProvider());config.markChanged();
+            return universe.makeWorld(name,path,config);
+        });
     }
     private static Path file(EterniaModPlugin plugin){return plugin.getDataDirectory().resolve("local-playground.json");}
     private static Manifest manifest(EterniaModPlugin plugin)throws java.io.IOException{Path file=file(plugin);if(!Files.exists(file))return new Manifest(1,Map.of(),false);if(Files.isSymbolicLink(file)||Files.size(file)>65536)throw new java.io.IOException("Invalid playground marker");var m=JSON.fromJson(Files.readString(file),Manifest.class);if(m==null||m.version()!=1||m.worlds()==null||m.worlds().keySet().stream().anyMatch(n->!Set.of(VILLAGE,TRIALS).contains(n)))throw new java.io.IOException("Invalid playground marker");return m;}
@@ -155,11 +167,13 @@ public final class LocalPlayground {
         // A loaded column does not imply loaded vertical sections on 0.6.5,
         // especially when resuming a saved world before a player arrives there.
         // Await the actual block sections before any terrain validation or write.
+        // Since 0.7.0 a section also starts idle whatever its column does, and an
+        // entity added to an idle section is parked instead of spawned.
         var loads=new ArrayList<CompletableFuture<?>>();
-        for(int x=minX;x<=maxX;x++)for(int z=minZ;z<=maxZ;z++)loads.add(w.getChunkAsync(ChunkUtil.indexChunk(x,z)));
+        for(int x=minX;x<=maxX;x++)for(int z=minZ;z<=maxZ;z++)loads.add(w.getChunkStore().getChunkReferenceAsync(ChunkUtil.indexChunk(x,z),com.hypixel.hytale.server.core.universe.world.storage.GetChunkFlags.SET_TICKING));
         CompletableFuture.allOf(loads.toArray(CompletableFuture[]::new)).join();loads.clear();
-        for(int x=minX;x<=maxX;x++)for(int z=minZ;z<=maxZ;z++)for(int y=0;y<ChunkUtil.HEIGHT/ChunkUtil.SIZE;y++)
-            loads.add(w.getChunkStore().getChunkSectionReferenceAsync(x,y,z));
+        for(int x=minX;x<=maxX;x++)for(int z=minZ;z<=maxZ;z++)for(int y=0;y<com.hexvane.eterniamod.housing.relocation.NativeSnapshotStore.MAX_Y/ChunkUtil.SIZE;y++)
+            loads.add(w.getChunkStore().getChunkSectionReferenceAsync(x,y,z,com.hypixel.hytale.server.core.universe.world.storage.GetChunkFlags.SET_TICKING));
         CompletableFuture.allOf(loads.toArray(CompletableFuture[]::new)).join();
     }
     @FunctionalInterface private interface Work {void run()throws Exception;}
@@ -170,7 +184,7 @@ public final class LocalPlayground {
         var existingPlan=plugin.getInfrastructure().world(w.getName());
         if(existingPlan.isEmpty()){
             var stone=Objects.requireNonNull(BlockType.getAssetMap().getAsset("Rock_Stone_Brick"));
-            int flat=BlockType.getAssetMap().getIndex(com.hypixel.hytale.server.core.util.TempAssetIdUtil.SOIL_GRASS),paved=BlockType.getAssetMap().getIndex(stone.getId());
+            int flat=BlockType.getAssetMap().getIndex(FLAT_GROUND),paved=BlockType.getAssetMap().getIndex(stone.getId());
             for(int x=-20;x<20;x++)for(int z=-20;z<20;z++){
                 int current=ChunkSectionBlockUtil.blockId(w,x,0,z);if(current!=flat&&current!=paved)throw new IllegalStateException("The unfinished village plaza was changed at "+x+", 0, "+z+". Setup will not overwrite that block.");
                 for(int y=1;y<=3;y++)if(ChunkSectionBlockUtil.blockId(w,x,y,z)!=0)throw new IllegalStateException("Clear the unfinished village plaza before resuming setup");

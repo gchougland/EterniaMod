@@ -24,6 +24,9 @@ import org.joml.Vector3i;
 
 /** World-thread-only native adapter. Strict component round trips reject lossy snapshots before mutation. */
 public final class NativeSnapshotStore {
+    /** Top of every plot and snapshot, exclusive. Saved baselines carry this bound, so it is this mod's own rule;
+     * Hytale 0.7.0 no longer has a fixed world height to read it from. A missing section is still refused cell by cell. */
+    public static final int MAX_Y=320;
     public record Bounds(int minX,int minY,int minZ,int maxX,int maxY,int maxZ) {
         public Bounds { if(minX>=maxX||minY>=maxY||minZ>=maxZ||(long)(maxX-minX)*(maxY-minY)*(maxZ-minZ)>3_000_000L) throw new IllegalArgumentException("Invalid or oversized snapshot bounds"); }
         public boolean contains(double x,double y,double z){return x>=minX&&x<maxX&&y>=minY&&y<maxY&&z>=minZ&&z<maxZ;}
@@ -36,7 +39,7 @@ public final class NativeSnapshotStore {
 
     public BsonDocument capture(World world,Bounds bounds,Set<UUID> allowedInstances,boolean captureEntities,boolean rejectPlayers) {
         world.getEntityStore().getStore().assertThread();
-        if(world.getChunkStore().supportsCubicSections()||bounds.minY()<ChunkUtil.MIN_Y||bounds.maxY()>ChunkUtil.HEIGHT) throw new IllegalStateException("Cubic or out-of-band sections need a dedicated snapshot adapter");
+        if(world.getChunkStore().supportsCubicSections()||bounds.minY()<ChunkUtil.MIN_Y||bounds.maxY()>MAX_Y) throw new IllegalStateException("Cubic or out-of-band sections need a dedicated snapshot adapter");
         BlockSelection selection=new BlockSelection();selection.setPosition(bounds.minX(),bounds.minY(),bounds.minZ());selection.setAnchor(0,0,0);
         selection.beginHolderInterning();
         for(int x=bounds.minX();x<bounds.maxX();x++)for(int z=bounds.minZ();z<bounds.maxZ();z++) {

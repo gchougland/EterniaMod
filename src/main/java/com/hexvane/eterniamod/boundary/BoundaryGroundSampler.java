@@ -39,7 +39,8 @@ final class BoundaryGroundSampler {
             for (int direction : new int[] {-1, 1}) {
                 if (distance == 0 && direction == 1) continue;
                 int y = baseline + distance * direction;
-                if (y < ChunkUtil.MIN_Y || y + 2 >= ChunkUtil.HEIGHT) continue;
+                // No section above the top of the world, so empty() already turns such a spot down.
+                if (y < ChunkUtil.MIN_Y) continue;
                 BlockType block = ChunkSectionBlockUtil.blockType(world, x, y, z);
                 if (block == null || !policy.isGround(world, x, y, z, block)) continue;
                 if (empty(world, x, y + 1, z) && empty(world, x, y + 2, z)) return y + 1.0;

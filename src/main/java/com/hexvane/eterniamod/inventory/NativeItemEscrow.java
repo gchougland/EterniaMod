@@ -27,8 +27,8 @@ public final class NativeItemEscrow {
         if(hotbar==null)throw new IllegalStateException("Hotbar unavailable");
         short slot=hotbar.getActiveSlot();ItemStack item=hotbar.getInventory().getItemStack(slot);
         if(ItemStack.isEmpty(item))throw new IllegalArgumentException("Hold the item stack you want to deposit.");
-        if(item.getItemId().startsWith("Eternia_")||item.getMetadata()!=null&&item.getMetadata().containsKey("EterniaBound"))throw new IllegalArgumentException("Account-bound housing and collection tokens cannot be traded.");
         BsonDocument encoded=ItemStack.CODEC.encode(item,new ExtraInfo());
+        if(item.getItemId().startsWith("Eternia_")||encoded.get("Metadata") instanceof BsonDocument metadata&&metadata.containsKey("EterniaBound"))throw new IllegalArgumentException("Account-bound housing and collection tokens cannot be traded.");
         if(!encoded.equals(ItemStack.CODEC.encode(ItemStack.CODEC.decode(encoded,new ExtraInfo()),new ExtraInfo())))throw new IllegalStateException("This item cannot be transferred without losing metadata.");
         String source=UUID.randomUUID().toString();
         var escrow=plugin.getServices().escrow().prepareDeposit(Owner.player(player.getUuid()),new EscrowService.Item(item.getItemId(),item.getQuantity(),Base64.getEncoder().encodeToString(encoded.toJson().getBytes(StandardCharsets.UTF_8)),true),"native:"+source);

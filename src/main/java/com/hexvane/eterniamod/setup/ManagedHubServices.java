@@ -344,11 +344,8 @@ public final class ManagedHubServices implements AutoCloseable {
     }
     private static Holder<ChunkStore> savedSection(World world,Pose pose){
         var chunk=ChunkSectionBlockUtil.worldChunkIfInMemory(world,pose.x(),pose.z());
-        var disk=world.getChunkStore().getLoader().loadHolder(chunk.getX(),chunk.getZ()).join();
-        if(disk==null)throw new IllegalStateException("Native saved column did not reload");
-        var column=disk.getComponent(com.hypixel.hytale.server.core.universe.world.chunk.ChunkColumn.getComponentType());
-        var sections=column==null?null:column.getSectionHolders();int index=com.hypixel.hytale.math.util.ChunkUtil.indexSection(pose.y());
-        if(sections==null||index>=sections.length||sections[index]==null)throw new IllegalStateException("Native saved section did not reload");return sections[index];
+        var section=ChunkSectionBlockUtil.savedSectionHolder(world,chunk.getX(),com.hypixel.hytale.math.util.ChunkUtil.indexSection(pose.y()),chunk.getZ());
+        if(section==null)throw new IllegalStateException("Native saved section did not reload");return section;
     }
     private static void checkSavedNpc(World world,Entry entry,boolean expected){
         var section=savedSection(world,entry.pose()).getComponent(EntitySection.getComponentType());

@@ -24,11 +24,11 @@ public final class FailedPropRecovery {
         for(var op:plugin.getServices().journal().unfinished())if(op.owner().equals(HousingAccess.owner(plot))&&op.kind().equals("PLACE_PROP")) {
             var manifest=BsonDocument.parse(new String(snapshots.files().read(new SnapshotFiles.Saved(op.snapshotRef(),op.snapshotHash())),StandardCharsets.UTF_8));
             var b=snapshots.load(new SnapshotFiles.Saved(manifest.getString("before").getValue(),manifest.getString("beforeHash").getValue())).bounds();bounds.add(b);
-            for(int x=Math.floorDiv(b.minX(),32);x<=Math.floorDiv(b.maxX()-1,32);x++)for(int z=Math.floorDiv(b.minZ(),32);z<=Math.floorDiv(b.maxZ()-1,32);z++)columns.add(world.getChunkAsync(com.hypixel.hytale.math.util.ChunkUtil.indexChunk(x,z)));
+            for(int x=Math.floorDiv(b.minX(),32);x<=Math.floorDiv(b.maxX()-1,32);x++)for(int z=Math.floorDiv(b.minZ(),32);z<=Math.floorDiv(b.maxZ()-1,32);z++)columns.add(world.getChunkStore().getChunkReferenceAsync(com.hypixel.hytale.math.util.ChunkUtil.indexChunk(x,z),com.hypixel.hytale.server.core.universe.world.storage.GetChunkFlags.SET_TICKING));
         }
         return java.util.concurrent.CompletableFuture.allOf(columns.toArray(java.util.concurrent.CompletableFuture[]::new)).thenCompose(v->{
             var sections=new ArrayList<java.util.concurrent.CompletableFuture<?>>();
-            for(var b:bounds)for(int x=Math.floorDiv(b.minX(),32);x<=Math.floorDiv(b.maxX()-1,32);x++)for(int z=Math.floorDiv(b.minZ(),32);z<=Math.floorDiv(b.maxZ()-1,32);z++)for(int y=Math.floorDiv(b.minY(),32);y<=Math.floorDiv(b.maxY()-1,32);y++)sections.add(world.getChunkStore().getChunkSectionReferenceAsync(x,y,z));
+            for(var b:bounds)for(int x=Math.floorDiv(b.minX(),32);x<=Math.floorDiv(b.maxX()-1,32);x++)for(int z=Math.floorDiv(b.minZ(),32);z<=Math.floorDiv(b.maxZ()-1,32);z++)for(int y=Math.floorDiv(b.minY(),32);y<=Math.floorDiv(b.maxY()-1,32);y++)sections.add(world.getChunkStore().getChunkSectionReferenceAsync(x,y,z,com.hypixel.hytale.server.core.universe.world.storage.GetChunkFlags.SET_TICKING));
             return java.util.concurrent.CompletableFuture.allOf(sections.toArray(java.util.concurrent.CompletableFuture[]::new));
         }).orTimeout(20,java.util.concurrent.TimeUnit.SECONDS);
     }
