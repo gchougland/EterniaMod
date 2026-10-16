@@ -1,0 +1,79 @@
+{
+  "Shape": "Cube",
+  "RenderMode": "BlendLinear",
+  "ParticleRotationInfluence": "None",
+  "ParticleRotateWithSpawner": true,
+  "LinearFiltering": true,
+  "LightInfluence": 0,
+  "MaxConcurrentParticles": 1,
+  "ParticleLifeSpan": {
+    "Min": 12,
+    "Max": 12
+  },
+  "SpawnBurst": false,
+  "SpawnRate": {
+    "Min": 20,
+    "Max": 20
+  },
+  "InitialVelocity": {
+    "Speed": {
+      "Min": 0,
+      "Max": 0
+    },
+    "Yaw": {
+      "Min": 0,
+      "Max": 0
+    },
+    "Pitch": {
+      "Min": 0,
+      "Max": 0
+    }
+  },
+  "Particle": {
+    "Texture": "Particles/Eternia/WaygateCompass.png",
+    "FrameSize": {
+      "Width": 256,
+      "Height": 256
+    },
+    "ScaleRatioConstraint": "None",
+    "SoftParticles": "Disable",
+    "InitialAnimationFrame": {
+      "Scale": {
+        "X": {
+          "Min": 0.2,
+          "Max": 0.2
+        },
+        "Y": {
+          "Min": 0.2,
+          "Max": 0.2
+        }
+      },
+      "Opacity": 0.85,
+      "Color": "#ffffff",
+      "Rotation": {
+        "Z": {
+          "Min": 0,
+          "Max": 0
+        }
+      }
+    },
+    "Animation": {
+      "0": {
+        "Rotation": {
+          "Z": {
+            "Min": 0,
+            "Max": 0
+          }
+        }
+      },
+      "100": {
+        "Rotation": {
+          "Z": {
+            "Min": 360,
+            "Max": 360
+          }
+        }
+      }
+    }
+  }
+}

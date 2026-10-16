@@ -48,7 +48,7 @@ public final class SkinComposer {
         if (!outfit.isEmpty()) outfit.forEach((slot,value) -> put(copy, slot, value));
         else for (var entry : wearables.entrySet()) {
             if (!WEARABLE_SLOTS.contains(entry.getKey()) || !entry.getValue().slot().equals(entry.getKey())) throw new IllegalArgumentException("Unsupported wearable slot: " + entry.getKey());
-            put(copy, entry.getKey(), entry.getValue().assetId());
+            if(!entry.getValue().assetId().equals("Eternia_Prowl_Shirt"))put(copy, entry.getKey(), entry.getValue().assetId());
         }
         return JSON.fromJson(copy, PlayerSkin.class);
     }

@@ -17,7 +17,6 @@ for ($x = -12; $x -le 12; $x++) {
         if ($z -eq -13 -and [Math]::Abs($x) -le 1 -and $y -le 4) { $block = 'Empty' }
       }
       if ($y -eq $roofY) { $block = 'Wood_Softwood_Roof_Flat' }
-      if ($x -eq 1 -and $z -eq -9 -and $y -eq 1) { $block = 'Eternia_Management_Block' }
       if ($y -eq 1 -and [Math]::Abs($x) -eq 5 -and [Math]::Abs($z) -le 7) { $block = 'Wood_Softwood_Planks' }
       $eterniaBlocks.Add([ordered]@{x=$x;y=$y;z=$z;name=$block})
     }

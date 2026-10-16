@@ -25,7 +25,8 @@ public final class NativePlacementTransactions {
     private NativePlacementTransactions() {}
     public static Owner owner(HubPlotRecord plot){return plot.getGuildOwnerUuid()!=null?Owner.guild(plot.getGuildOwnerUuid()):Owner.player(Objects.requireNonNull(plot.getOwnerUuid()));}
     public static NativeSnapshotStore snapshots(EterniaModPlugin plugin){return new NativeSnapshotStore(plugin.getDataDirectory().resolve("housing-snapshots"));}
-    public static void requireActive(EterniaModPlugin plugin,HubPlotRecord plot) {
+    public static void requireActive(EterniaModPlugin plugin,HubPlotRecord plot) {plugin.getServices().batch(()->{requireActiveInBatch(plugin,plot);return null;});}
+    private static void requireActiveInBatch(EterniaModPlugin plugin,HubPlotRecord plot) {
         var slot=plugin.getServices().housing().find(owner(plot)).orElseThrow(()->new IllegalStateException("Legacy property needs provenance migration"));
         if(slot.state()!=HousingService.State.ACTIVE||!slot.propertyId().equals(plot.getPlotId()))throw new IllegalStateException("Property is locked by another operation");
         if(plugin.getServices().journal().unfinished().stream().anyMatch(o->o.owner().equals(owner(plot))&&!o.state().equals(JournalService.State.PACKED)))throw new IllegalStateException("Unfinished native operation requires recovery");
@@ -36,12 +37,16 @@ public final class NativePlacementTransactions {
     }
     /** Explicit source owner enables a permitted guild quantity to remain guild-owned on an attached member plot. */
     public static Placed place(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID actor,String catalogId,Vector3i origin,Rotation yaw,IPrefabBuffer buffer,boolean house,Owner custodyOwner) throws IOException {
-        requireActive(plugin,plot);Owner owner=owner(plot);String content=(house?"eternia:house/":"eternia:prop/")+catalogId;
+        Owner owner=owner(plot);String content=(house?"eternia:house/":"eternia:prop/")+catalogId;
+        var packed=plugin.getServices().batch(()->{
+        requireActive(plugin,plot);
+        if(!house&&catalogId.equals("guild_waygate")&&!com.hexvane.eterniamod.runtime.GuildWaygate.canPlace(plugin,plot,custodyOwner))throw new IllegalStateException("Place this portal on its guild estate with Guild Waygate unlocked.");
         if(!com.hexvane.eterniamod.housing.HousingAccess.can(plugin,plot,actor,house?"housing.structure":"housing.prop.place"))throw new IllegalStateException("Housing permission required");
         if(house&&!custodyOwner.equals(owner))throw new IllegalStateException("House unlock must belong to the property owner");
         if(!house)com.hexvane.eterniamod.housing.HousingCustody.require(plugin,plot,actor,custodyOwner,com.hexvane.eterniamod.housing.HousingCustody.PLACE);
         if(house&&(!plugin.getServices().ownership().owns(owner,content)||plot.hasBuilding()))throw new IllegalStateException("House unlock required and only one house may be placed");
-        var packed=plugin.getServices().provenance().ownedInstances(custodyOwner).stream().filter(i->i.contentId().equals(content)&&i.state().equals("PACKED")).findFirst().orElse(null);
+        return plugin.getServices().provenance().ownedInstances(custodyOwner).stream().filter(i->i.contentId().equals(content)&&i.state().equals("PACKED")).findFirst().orElse(null);
+        });
         var nativeStore=snapshots(plugin);UUID operation=UUID.randomUUID(),instance=packed!=null?packed.id():UUID.randomUUID();
         var decorativeEntities=NativeDecorativeEntities.prepare(buffer,yaw,instance,catalogId,house);
         int[] min={Integer.MAX_VALUE,Integer.MAX_VALUE,Integer.MAX_VALUE},max={Integer.MIN_VALUE,Integer.MIN_VALUE,Integer.MIN_VALUE};
@@ -77,8 +82,14 @@ public final class NativePlacementTransactions {
         BsonDocument desiredDocument=SelectionPrefabSerializer.serialize(desired);
         if(packed!=null) {
             var saved=nativeStore.load(NativeRelocationCoordinator.parseReference(packed.snapshotRef()));
-            if(!yaw.name().equals(packed.nativeData().get("yaw"))||saved.bounds().maxX()-saved.bounds().minX()!=bounds.maxX()-bounds.minX()||saved.bounds().maxY()-saved.bounds().minY()!=bounds.maxY()-bounds.minY()||saved.bounds().maxZ()-saved.bounds().minZ()!=bounds.maxZ()-bounds.minZ())throw new IllegalStateException("Packed object must retain its original orientation and catalog bounds");
-            desiredDocument=before.document().clone();NativeRelocationCoordinator.overlay(desiredDocument,saved.document());
+            boolean sameBounds=saved.bounds().maxX()-saved.bounds().minX()==bounds.maxX()-bounds.minX()&&saved.bounds().maxY()-saved.bounds().minY()==bounds.maxY()-bounds.minY()&&saved.bounds().maxZ()-saved.bounds().minZ()==bounds.maxZ()-bounds.minZ();
+            BsonDocument savedContent=saved.document();
+            if(!house&&catalogId.equals("guild_waygate")&&!sameBounds){
+                savedContent=GuildWaygateSnapshot.withoutPlinth(savedContent).orElseThrow(()->new IllegalStateException("This saved portal needs review before it can be placed."));
+                sameBounds=bounds.maxX()-bounds.minX()==1&&bounds.maxY()-bounds.minY()==1&&bounds.maxZ()-bounds.minZ()==1;
+            }
+            if(!yaw.name().equals(packed.nativeData().get("yaw"))||!sameBounds)throw new IllegalStateException("Packed object must retain its original orientation and catalog bounds");
+            desiredDocument=before.document().clone();NativeRelocationCoordinator.overlay(desiredDocument,savedContent);
         }
         var after=nativeStore.save(operation+"-after.json",bounds,desiredDocument);
         var journal=plugin.getServices().journal();
@@ -142,7 +153,7 @@ public final class NativePlacementTransactions {
         }catch(Throwable failure){lock(plugin,operation);throw new IllegalStateException("Pickup is locked for recovery; saved contents retained",failure);}
     }
     /** Must run after the native plot metadata was successfully saved. */
-    public static void complete(EterniaModPlugin plugin,UUID operation){var op=plugin.getServices().journal().find(operation).orElseThrow();plugin.getServices().journal().advance(operation,op.revision(),JournalService.State.COMPLETED);}
+    public static void complete(EterniaModPlugin plugin,UUID operation){plugin.getServices().batch(()->{var op=plugin.getServices().journal().find(operation).orElseThrow();plugin.getServices().journal().advance(operation,op.revision(),JournalService.State.COMPLETED);return null;});}
     public static void lock(EterniaModPlugin plugin,UUID operation){var j=plugin.getServices().journal();var op=j.find(operation).orElse(null);if(op!=null&&op.state()!=JournalService.State.RECOVERY_REQUIRED&&op.state()!=JournalService.State.COMPLETED)j.advance(operation,op.revision(),JournalService.State.RECOVERY_REQUIRED);}
     public static void flush(World world,NativeSnapshotStore.Bounds b) throws IOException {
         var saver=world.getChunkStore().getSaver();if(saver==null)throw new IOException("World has no durable chunk saver");

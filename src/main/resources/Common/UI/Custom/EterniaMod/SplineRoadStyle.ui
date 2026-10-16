@@ -1,0 +1,45 @@
+$T = "Theme/Citadel.ui";
+$T.@PageOverlay {}
+Group {
+ Anchor: (Width: 940, Height: 760); Background: $T.@PanelSurface; Padding: (Full: 24); LayoutMode: Top;
+ Label { Text: "ROAD STYLE WORKSHOP"; Anchor: (Height: 36, Bottom: 8); Style: $T.@TitleStyle; }
+ Group { Anchor: (Height: 44, Bottom: 12); LayoutMode: Left;
+  Label { Text: "Style name"; Anchor: (Width: 112); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); }
+  $T.@TextField #Name { FlexWeight: 1; MaxLength: 48; }
+ }
+ Group { Anchor: (Height: 500); LayoutMode: Left;
+  Group { Anchor: (Width: 562, Right: 20); LayoutMode: Top; Background: $T.@InsetSurface; Padding: (Full: 12);
+   Label { Text: "PAINT YOUR PALETTE"; Anchor: (Height: 30); Style: $T.@SubtitleStyle; }
+   Label { Text: "Columns run across the road. Each column mixes its six slots. Repeat a block to make it more common."; Anchor: (Height: 48, Bottom: 8); Style: $T.@MutedStyle; }
+   Group { Anchor: (Height: 24, Bottom: 4); LayoutMode: Left;
+    Label { Text: "LEFT EDGE"; FlexWeight: 1; Style: $T.@MutedStyle; }
+    Label { Text: "CENTER"; FlexWeight: 1; Style: (...$T.@MutedStyle, HorizontalAlignment: Center); }
+    Label { Text: "RIGHT EDGE"; FlexWeight: 1; Style: (...$T.@MutedStyle, HorizontalAlignment: End); }
+   }
+   Group #Palette { Anchor: (Height: 312); LayoutMode: Top; }
+   Label { Text: "Narrow roads use the middle columns. Empty columns borrow from their nearest filled neighbour."; Anchor: (Height: 42, Top: 8); Style: $T.@MutedStyle; }
+  }
+  Group { FlexWeight: 1; LayoutMode: Top;
+   Group { Anchor: (Height: 40, Bottom: 8); LayoutMode: Left;
+    $T.@TextField #Search { FlexWeight: 1; MaxLength: 64; PlaceholderText: "Find a block"; }
+    $T.@SecondaryTextButton #SearchButton { Text: "Find"; Anchor: (Width: 74, Left: 6); }
+   }
+   Group #Materials { Anchor: (Height: 280); LayoutMode: Top; }
+   Group { Anchor: (Height: 36, Bottom: 10); LayoutMode: Left;
+    $T.@SecondaryTextButton #Previous { Text: "<"; Anchor: (Width: 54); }
+    Label #Pages { FlexWeight: 1; Style: (...$T.@MutedStyle, HorizontalAlignment: Center, VerticalAlignment: Center); }
+    $T.@SecondaryTextButton #Next { Text: ">"; Anchor: (Width: 54); }
+   }
+   Label #Brush { Anchor: (Height: 44, Bottom: 8); Style: $T.@SubtitleStyle; }
+   Group { Anchor: (Height: 42); LayoutMode: Left;
+    $T.@SecondaryTextButton #Erase { Text: "Eraser"; FlexWeight: 1; Anchor: (Right: 8); }
+    $T.@SecondaryTextButton #Fill { Text: "Fill all"; FlexWeight: 1; }
+   }
+  }
+ }
+ Label #Status { Anchor: (Height: 40, Top: 8, Bottom: 10); Style: $T.@MutedStyle; }
+ Group { Anchor: (Height: 44); LayoutMode: Left;
+  $T.@SecondaryTextButton #Cancel { Text: "Discard changes"; FlexWeight: 1; Anchor: (Right: 12); }
+  $T.@TextButton #Save { Text: "Save and use style"; FlexWeight: 1; }
+ }
+}

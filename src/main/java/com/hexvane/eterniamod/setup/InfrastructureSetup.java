@@ -135,8 +135,8 @@ public final class InfrastructureSetup {
         for(String id:splineNames)if(id.startsWith("spline-")&&!Objects.equals(before==null?null:before.areas().get(id),after.areas().get(id)))throw input("Edit authored spline roads with the Road Designer so terrain and protection stay synchronized.");
         var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);var claims=new LinkedHashMap<UUID,HousingRules.Anchor>();
         for(var plot:manager.listPlots())claims.put(plot.getPlotId(),new HousingRules.Anchor(plot.getPlotId(),NativeHousingChecks.rect(plot.getFootprint()),plot.getGuildOwnerUuid()!=null?HousingRules.Scope.GUILD_ROOT:plot.getAttachedGuildUuid()!=null?HousingRules.Scope.GUILD_MEMBER:HousingRules.Scope.PUBLIC,plot.getGuildOwnerUuid()!=null?plot.getGuildOwnerUuid():plot.getAttachedGuildUuid(),plot.hasBuilding()));
-        for(var slot:plugin.getServices().housing().allSlots()) {
-            var location=plugin.getServices().housing().location(slot.owner()).orElse(null);if(location==null||!location.worldId().equals(world.getName())||slot.state()==HousingService.State.PACKED)continue;
+        for(var property:plugin.getServices().housing().properties()) {
+            var slot=property.slot();var location=property.location();if(location==null||!location.worldId().equals(world.getName())||slot.state()==HousingService.State.PACKED)continue;
             if(slot.state()!=HousingService.State.ACTIVE)throw input("A housing operation is unfinished in this world. Recover it before changing infrastructure.");
             var rect=new PlotRect(location.minX(),location.minZ(),location.width(),location.depth());var projection=claims.get(slot.propertyId());
             if(projection!=null&&!projection.rect().equals(rect))throw input("A plot's saved reservation differs from its world projection. Recover it first.");

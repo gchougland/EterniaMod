@@ -12,11 +12,13 @@ public final class CustomizationBootstrap {
         plugin.getCodecRegistry(Interaction.CODEC).register("EterniaHousingTool",EterniaHousingTool.class,EterniaHousingTool.CODEC);
         HousingEnvironmentalProtection.register(plugin);
         HousingWorldPolicy.register(plugin);
+        HubBuildMode.register(plugin);
+        HousingInteractionGuard.register(plugin);
         service=new CustomizationService(plugin);
         timer=Executors.newSingleThreadScheduledExecutor(task->{var thread=new Thread(task,"Eternia-customization-preview");thread.setDaemon(true);return thread;});
         return service;
     }
     public static CustomizationService service(){return service;}
     static ScheduledFuture<?> previewTimer(Runnable task){return timer.scheduleWithFixedDelay(task,0,600,TimeUnit.MILLISECONDS);}
-    static void stop(){if(timer!=null)timer.shutdownNow();service=null;HousingWorldPolicy.stop();}
+    static void stop(){if(timer!=null)timer.shutdownNow();service=null;HousingWorldPolicy.stop();HousingInteractionGuard.stop();}
 }

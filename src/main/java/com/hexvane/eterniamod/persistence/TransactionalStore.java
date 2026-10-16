@@ -16,6 +16,12 @@ public interface TransactionalStore {
     }
     interface Transaction {
         Optional<Row> find(String namespace, String key);
+        /** Fetch a known set of keys in one database round trip when supported. Missing keys are omitted. */
+        default Map<String,Row> findAll(String namespace, java.util.Collection<String> keys) {
+            var rows=new java.util.HashMap<String,Row>();
+            for(String key:keys) find(namespace,key).ifPresent(row->rows.put(key,row));
+            return Map.copyOf(rows);
+        }
         List<Row> scan(String namespace);
         /** expectedRevision 0 inserts. Existing records require their exact current revision. */
         Row save(String namespace, String key, long expectedRevision, Map<String, String> fields);

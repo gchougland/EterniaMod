@@ -8,10 +8,10 @@ You do not need a separate housing world. Stay in your existing world, open setu
 
 A first-time setup sequence:
 
-1. Choose **Hub with player and guild housing** and confirm the world role.
+1. Choose **Hub with player and guild housing** and confirm the world role. Use `/e admin build on` to prepare level ground and build the public plaza, then `/e admin build off` when finished.
 2. Stand on a clear public arrival pad and select **Set arrival**. Review and confirm the coordinates. The pad needs solid ground and two empty, dry blocks above it.
 3. Reserve a public services plaza: stand at its first corner and choose **Plaza start**, then walk to the opposite corner and choose **Plaza end**. Open setup and choose **Register plaza**, then confirm. Select enough space for six NPCs, the portal, and walking room; each managed service needs a clear 3×3 footprint entirely inside the plaza and off any road.
-4. Choose **Hub services** to place the six NPCs and a physical world-select portal. Aim at the desired level ground. Each placement shows the location before confirmation.
+4. Choose **Hub services** to place the six NPCs and a physical world-select portal. Aim at the desired level ground. NPCs face you, and the portal faces your position at the nearest quarter turn. Each placement shows the location before confirmation. Existing portals keep their direction; use **Manage** to remove and place one again if you want it to face another way.
 5. Choose **Road Designer**, equip the item, and add spline nodes on the ground outside the plaza toward the residential area. Select and move node diamonds to adjust the curve. A grounded width preview shows valid and blocked cells. Use reviews the road; a second Use confirms physical construction and registration together. The native key legend follows remapped controls; Ability 2 opens the compact width/style selector.
 6. Aim at a saved spline road and use the item's Manage action to reopen its nodes or review undo. Use **Manage areas** in setup to inspect, resize, or unregister public plazas and legacy registrations. Changes that would strand a claim, damage a retained road junction, or remove a managed service's plaza are refused.
 7. Test `/e claim` outside the plaza, within five blocks of a registered road centerline connected to the plaza/portal (or a connected public house anchor). Review the red/green plot preview and confirm. `/e housing` opens house placement and management.
@@ -27,6 +27,9 @@ The menu is sufficient. These in-game commands are useful when you want descript
 
 | Command | Action |
 | --- | --- |
+| `/e admin build on` | Enable your Hub building session |
+| `/e admin build off` | End your Hub building session |
+| `/e admin build` | Toggle your Hub building session |
 | `/e admin setup` | Open the setup menu for the current world |
 | `/e admin setup world hub-housing` | Review making the current world the Hub with housing |
 | `/e admin setup world hub` | Review a Hub without housing |
@@ -54,7 +57,7 @@ Setup requires current Hytale WorldEditor permission, including inherited admini
 
 The item's Manage action provides saved-node editing, reviewed undo and recovery. Undo restores the road's own original terrain and removes its registration together; existing claims and branch junctions must remain valid. Recovery checks durable before/after snapshots, while unfinished road columns stay protected and new claims wait. Legacy rectangular paving remains recoverable under Manage → Legacy records. Do not delete recovery files to unlock an area.
 
-Housing-enabled worlds apply their native construction policy throughout the world: hand block placement/gathering, fluid buckets and fluid/fire simulation are disabled. NPC services, public portals, player house/prop/palette/path tools, and the checked administrative paving tool remain usable. These setup tools do not provide a general terrain sculptor or arbitrary structure editor. Author larger decorative Hub structures in a separate editor world and use your trusted content/prefab workflow. Raw native WorldEditor operations can bypass block-event protections; do not treat unrestricted editor commands as safe tools around live player plots.
+Housing-enabled worlds protect ordinary players from hand placement and breaking throughout the world. Admins with WorldEditor permission can use `/e admin build on` to place and break blocks on unclaimed ground and in public plazas, and `/e admin build off` when finished. `/e admin build` toggles the setting. Each admin enables their own session; it ends when they leave the world, disconnect, or the server restarts. The world must already have a Hub role. Claimed and reserved plots, registered public and guild roads, unfinished road work, and managed NPC/portal footprints stay protected. Use the dedicated tools for those areas. Fluid buckets, gathering and fluid/fire simulation remain disabled. NPC services, public portals, player house/prop/palette/path tools, and the checked administrative paving tool remain usable. Use admin building mode to shape the Hub terrain and build public structures. You can also author larger structures in a separate editor world and import them through your trusted prefab workflow. Raw native WorldEditor operations can bypass block-event protections; do not treat unrestricted editor commands as safe tools around live player plots.
 
 ## Hub NPCs and portal management
 

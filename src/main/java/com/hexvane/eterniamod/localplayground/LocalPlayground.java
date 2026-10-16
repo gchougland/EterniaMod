@@ -133,6 +133,7 @@ public final class LocalPlayground {
                 var guild=plugin.getServices().guilds().membership(GUILD_LEADER).orElseThrow();var owner=Owner.guild(guild.guildId());
                 var guildSlot=plugin.getServices().housing().find(owner).orElseThrow();var hall=manager.getPlot(guildSlot.propertyId());
                 UUID packed=NativePlacementTransactions.pickup(plugin,village,hall,hall.getPlotId());hall.setBuilding(null);manager.updatePlot(hall);manager.saveIfDirty();plugin.getServices().housing().updateBuildingPresent(owner,hall.getPlotId(),false);NativePlacementTransactions.complete(plugin,packed);
+                plugin.getServices().ownership().grant(new OwnershipService.GrantRequest("native-smoke:legacy-guild-hall",owner,"eternia:house/guild_hall",OwnershipService.Kind.UNLOCK,1,null));
                 house(plugin,village,GUILD_LEADER,owner,new PlotRect(8,52,48,48),"guild_hall",HousingRules.Scope.GUILD_ROOT);
                 if(!refreshExampleHall(plugin,village,actor)||!hall.getBuilding().getBuildingId().equals("founders_hall"))throw new IllegalStateException("Example hall refresh failed");
                 if(refreshExampleHall(plugin,village,actor))throw new IllegalStateException("Example hall refresh was not idempotent");

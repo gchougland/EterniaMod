@@ -29,6 +29,8 @@ public final class BuildingDefinition {
     private String rotationYaw = "None";
     private int[] spawnLocalPos;
     private String housingKind = "personal";
+    private boolean retired;
+    public boolean isRetired(){return retired;}
     public String getHousingKind() { return housingKind == null ? "personal" : housingKind; }
     public int[] getSpawnLocalPos() { return spawnLocalPos != null && spawnLocalPos.length == 3 ? spawnLocalPos.clone() : null; }
 
@@ -74,14 +76,14 @@ public final class BuildingDefinition {
         @Nonnull String id,
         @Nonnull String displayName,
         @Nonnull String prefabPath,
-        @Nonnull int[] managementBlockLocalPos
+        @Nullable int[] managementBlockLocalPos
     ) {
         BuildingDefinition def = new BuildingDefinition();
         def.id = id;
         def.displayName = displayName;
         def.prefabPath = prefabPath;
         def.plotAnchorOffset = new int[] {0, 0, 0};
-        def.managementBlockLocalPos = managementBlockLocalPos.clone();
+        def.managementBlockLocalPos = managementBlockLocalPos == null ? null : managementBlockLocalPos.clone();
         def.rotationYaw = "None";
         return def;
     }

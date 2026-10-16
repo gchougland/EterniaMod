@@ -1,0 +1,35 @@
+$T = "Theme/Citadel.ui";
+@SlotStyle = (
+ Default: (Background: $T.@SecondarySurface),
+ Hovered: (Background: $T.@PrimaryHoverSurface),
+ Pressed: (Background: $T.@PrimaryPressedSurface)
+);
+Group { Anchor: (Height: 52); LayoutMode: Left;
+ Button #Slot0 { FlexWeight: 1; Anchor: (Height: 50, Right: 3); LayoutMode: Center; Style: @SlotStyle; TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+  ItemIcon #Icon { Anchor: (Width: 42, Height: 42); HitTestVisible: false; }
+ }
+ Button #Slot1 { FlexWeight: 1; Anchor: (Height: 50, Right: 3); LayoutMode: Center; Style: @SlotStyle; TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+  ItemIcon #Icon { Anchor: (Width: 42, Height: 42); HitTestVisible: false; }
+ }
+ Button #Slot2 { FlexWeight: 1; Anchor: (Height: 50, Right: 3); LayoutMode: Center; Style: @SlotStyle; TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+  ItemIcon #Icon { Anchor: (Width: 42, Height: 42); HitTestVisible: false; }
+ }
+ Button #Slot3 { FlexWeight: 1; Anchor: (Height: 50, Right: 3); LayoutMode: Center; Style: @SlotStyle; TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+  ItemIcon #Icon { Anchor: (Width: 42, Height: 42); HitTestVisible: false; }
+ }
+ Button #Slot4 { FlexWeight: 1; Anchor: (Height: 50, Right: 3); LayoutMode: Center; Style: @SlotStyle; TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+  ItemIcon #Icon { Anchor: (Width: 42, Height: 42); HitTestVisible: false; }
+ }
+ Button #Slot5 { FlexWeight: 1; Anchor: (Height: 50, Right: 3); LayoutMode: Center; Style: @SlotStyle; TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+  ItemIcon #Icon { Anchor: (Width: 42, Height: 42); HitTestVisible: false; }
+ }
+ Button #Slot6 { FlexWeight: 1; Anchor: (Height: 50, Right: 3); LayoutMode: Center; Style: @SlotStyle; TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+  ItemIcon #Icon { Anchor: (Width: 42, Height: 42); HitTestVisible: false; }
+ }
+ Button #Slot7 { FlexWeight: 1; Anchor: (Height: 50, Right: 3); LayoutMode: Center; Style: @SlotStyle; TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+  ItemIcon #Icon { Anchor: (Width: 42, Height: 42); HitTestVisible: false; }
+ }
+ Button #Slot8 { FlexWeight: 1; Anchor: (Height: 50, Right: 3); LayoutMode: Center; Style: @SlotStyle; TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+  ItemIcon #Icon { Anchor: (Width: 42, Height: 42); HitTestVisible: false; }
+ }
+}

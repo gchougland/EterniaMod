@@ -21,6 +21,8 @@ import javax.annotation.Nullable;
  * so scheduled world tasks cannot push UI deltas to the wrong client surface.
  */
 public abstract class EterniaInteractiveCustomUIPage<T> extends InteractiveCustomUIPage<T> {
+    private record WalletKey(java.util.UUID actor) {}
+    private record Wallet(long coins,long crowns) {}
     private volatile boolean dismissed;
     private final String homeEvent = java.util.UUID.randomUUID().toString();
     private long walletRequest;
@@ -33,7 +35,7 @@ public abstract class EterniaInteractiveCustomUIPage<T> extends InteractiveCusto
         var plugin=com.hexvane.eterniamod.EterniaModPlugin.get();
         if(playerRef==null||ref==null||store==null||plugin==null)return;
         long request=++walletRequest;var services=plugin.getServices();var actor=playerRef.getUuid();var world=store.getExternalData().getWorld();
-        java.util.concurrent.CompletableFuture.supplyAsync(()->new long[]{services.economy().balance(com.hexvane.eterniamod.domain.Owner.player(actor)).available(),services.premium().balance(actor).available()})
+        com.hexvane.eterniamod.socialui.SocialUiBootstrap.supply(services,()->services.readView(new WalletKey(actor),java.time.Duration.ofSeconds(1),()->new Wallet(services.economy().balance(com.hexvane.eterniamod.domain.Owner.player(actor)).available(),services.premium().balance(actor).available())))
             .whenComplete((balance,error)->{
                 if(dismissed)return;
                 try {world.execute(()->{
@@ -41,7 +43,7 @@ public abstract class EterniaInteractiveCustomUIPage<T> extends InteractiveCusto
                     var player=store.getComponent(ref,Player.getComponentType());
                     if(player==null||player.getPageManager().getCustomPage()!=this)return;
                     var update=new UICommandBuilder();
-                    if(error==null){walletCoins=balance[0];walletCrowns=balance[1];CurrencyUi.wallet(update,walletCoins,walletCrowns);}
+                    if(error==null){walletCoins=balance.coins();walletCrowns=balance.crowns();CurrencyUi.wallet(update,walletCoins,walletCrowns);}
                     else {update.set("#WalletCoins.Text","Coins: unavailable");update.set("#WalletCrowns.Text","Crowns: unavailable");}
                     sendUpdate(update,null,false);
                 });}catch(RuntimeException ignored){/* World is closing. */}

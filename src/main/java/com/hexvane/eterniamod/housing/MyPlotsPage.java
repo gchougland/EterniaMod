@@ -11,14 +11,17 @@ import java.util.*;
 
 /** Account-level property directory; finding or packing a plot never requires standing inside it. */
 public final class MyPlotsPage {
+    private record Property(Owner owner,HousingService.Slot slot,HousingService.ClaimLocation location) {}
     private MyPlotsPage() {}
     public static void open(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
         var choices=new ArrayList<ChoicePage.Choice>();
-        var owners=new ArrayList<Owner>();owners.add(Owner.player(player.getUuid()));
-        plugin.getServices().guilds().membership(player.getUuid()).ifPresent(m->owners.add(Owner.guild(m.guildId())));
-        for(var owner:owners) {
-            var slot=plugin.getServices().housing().find(owner).orElse(null);
-            var location=plugin.getServices().housing().location(owner).orElse(null);
+        var services=plugin.getServices();
+        var directory=services.batch(()->{
+            var owners=new ArrayList<Owner>();owners.add(Owner.player(player.getUuid()));services.guilds().membership(player.getUuid()).ifPresent(m->owners.add(Owner.guild(m.guildId())));
+            return owners.stream().map(owner->new Property(owner,services.housing().find(owner).orElse(null),services.housing().location(owner).orElse(null))).toList();
+        });
+        for(var entry:directory) {
+            var owner=entry.owner();var slot=entry.slot();var location=entry.location();
             String name=owner.kind()==Owner.Kind.PLAYER?"Your plot":"Guild estate";
             if(slot==null){choices.add(new ChoicePage.Choice(name+" · No plot claimed","Preview claim",(r,s)->PlotClaimPage.openNew(r,s,player,plugin,owner.kind()==Owner.Kind.GUILD)));continue;}
             String where=location==null?"Location unavailable":location.worldId()+" · X "+location.minX()+" to "+(location.minX()+location.width()-1)+", Z "+location.minZ()+" to "+(location.minZ()+location.depth()-1);

@@ -8,7 +8,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 /** World-affecting transitions supplied by the root runtime; invoked only on the player's world thread. */
 @FunctionalInterface
 public interface SocialUiActions {
-    enum Action { HOUSING_CLAIM, HOUSING_MANAGE, GUILD_HOUSING, WORLD_SELECT, HUB_TRAVEL, STORE_OPEN, SHOP_BROWSE, SHOP_MANAGE, ITEM_DESK, TRADE_DESK }
+    enum Action { ARCHITECT_LEDGER, HOUSING_CLAIM, HOUSING_MANAGE, HOUSING_INVENTORY, GUILD_HOUSING, WORLD_SELECT, HUB_TRAVEL, STORE_OPEN, SHOP_BROWSE, SHOP_MANAGE, ITEM_DESK, TRADE_DESK }
     record Result(boolean opened, String message) {
         public static Result openedPage() { return new Result(true, ""); }
         public static Result notice(String message) { return new Result(false, message); }

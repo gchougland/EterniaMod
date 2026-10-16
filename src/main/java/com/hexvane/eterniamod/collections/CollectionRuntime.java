@@ -53,13 +53,21 @@ public final class CollectionRuntime implements AutoCloseable {
     private void reconcile() {
         if(closed||Universe.get()==null)return;
         try {
-            services.collection().reconcileEntitlements();
-            Map<String,CollectionService.Definition> catalog=new HashMap<>();services.collection().definitions().forEach(definition->catalog.put(definition.id(),definition));
+            var actors=Universe.get().getPlayers().stream().map(PlayerRef::getUuid).collect(java.util.stream.Collectors.toUnmodifiableSet());
+            if(actors.isEmpty()){for(World world:List.copyOf(Universe.get().getWorlds().values()))if(world.isAlive())world.execute(()->{if(!closed&&world.isAlive())apply(world,Map.of(),List.of());});return;}
+            var snapshot=services.readView(new RenderKey(actors),java.time.Duration.ofSeconds(10),()->{
+                var data=services.collection().renderState(actors);var properties=new HashMap<UUID,Property>();
+                for(var slot:services.housing().allSlots())if(slot.state()==HousingService.State.ACTIVE)
+                    services.housing().location(slot.owner()).ifPresent(location->properties.put(slot.propertyId(),new Property(slot.propertyId(),location)));
+                return new RenderSnapshot(data,Map.copyOf(properties));
+            });
+            var data=snapshot.data();
+            if(data.needsRepair())services.collection().reconcileEntitlements();
+            Map<String,CollectionService.Definition> catalog=new HashMap<>();data.definitions().forEach(definition->catalog.put(definition.id(),definition));
             Map<UUID,Selection> selections=new HashMap<>();
             for(PlayerRef player:List.copyOf(Universe.get().getPlayers())) {
                 UUID actor=player.getUuid();
-                if(services.accounts().find(actor).isEmpty())continue;
-                var selected=services.collection().selection(actor);
+                var selected=data.selections().get(actor);if(selected==null)continue;
                 try {
                     String prefix=title(catalog.get(selected.prefix())),suffix=title(catalog.get(selected.suffix()));
                     Map<String,String> outfit=Map.of();var outfitDefinition=catalog.get(selected.outfit());
@@ -68,13 +76,9 @@ public final class CollectionRuntime implements AutoCloseable {
                     selections.put(actor,new Selection(prefix,suffix,outfit,Map.copyOf(wearables)));
                 } catch(RuntimeException failure) {statuses.put(actor,"Collection asset unavailable: "+safe(failure.getMessage()));}
             }
-            Map<UUID,Property> properties=new HashMap<>();
-            for(var slot:services.housing().allSlots()) {
-                if(slot.state()!=HousingService.State.ACTIVE)continue;
-                services.housing().location(slot.owner()).ifPresent(location->properties.put(slot.propertyId(),new Property(slot.propertyId(),location)));
-            }
+            var properties=snapshot.properties();
             List<PetPlan> pets=new ArrayList<>();
-            for(var pet:services.collection().allPets()) {
+            for(var pet:data.pets()) {
                 Owner owner=pet.owner();
                 var definition=catalog.get(pet.contentId());if(definition==null||definition.kind()!=CollectionService.Kind.PET)continue;
                 if(pet.assignment().equals("FOLLOWER")&&owner.kind()==Owner.Kind.PLAYER&&selections.containsKey(owner.id())) pets.add(new PetPlan(pet,definition,null));
@@ -89,6 +93,8 @@ public final class CollectionRuntime implements AutoCloseable {
         }
     }
 
+    private record RenderKey(Set<UUID> actors) {}
+    private record RenderSnapshot(CollectionService.RenderState data,Map<UUID,Property> properties) {}
     private static String title(CollectionService.Definition definition) {
         if(definition==null)return "";
         if(definition.kind()!=CollectionService.Kind.PREFIX_TITLE&&definition.kind()!=CollectionService.Kind.SUFFIX_TITLE)return "";
@@ -170,6 +176,7 @@ public final class CollectionRuntime implements AutoCloseable {
             catch(Exception failure){statuses.put(actor,"Appearance could not be applied: "+safe(failure.getMessage()));desired=new PlayerSkin(state.original);}
         }
         if(!component.getPlayerSkin().equals(desired))store.putComponent(ref,PlayerSkinComponent.getComponentType(),new PlayerSkinComponent(desired));
+        CustomWearables.apply(ref,store,selection!=null&&selection.wearables.values().stream().anyMatch(d->d.assetId().equals("Eternia_Prowl_Shirt")));
         state.lastApplied=new PlayerSkin(desired);
         if(!name.equals(displayNames.put(actor,name)))store.putComponent(ref,DisplayNameComponent.getComponentType(),new DisplayNameComponent(Message.raw(name)));
     }
@@ -230,6 +237,7 @@ public final class CollectionRuntime implements AutoCloseable {
 
     void departed(RemovedPlayerFromWorldEvent event) {
         var player=event.getHolder().getComponent(PlayerRef.getComponentType());if(player==null)return;
+        CustomWearables.departed(event.getHolder());
         UUID actor=player.getUuid();Appearance state=appearances.remove(actor);displayNames.remove(actor);statuses.remove(actor);
         if(state!=null){event.getHolder().putComponent(PlayerSkinComponent.getComponentType(),new PlayerSkinComponent(new PlayerSkin(state.original)));
             event.getHolder().putComponent(DisplayNameComponent.getComponentType(),state.originalName==null?new DisplayNameComponent(Message.raw(player.getUsername())):state.originalName);}
@@ -241,6 +249,7 @@ public final class CollectionRuntime implements AutoCloseable {
         if(Universe.get()!=null)for(World world:List.copyOf(Universe.get().getWorlds().values()))if(world.isAlive())world.execute(()->{
             var store=world.getEntityStore().getStore();var pets=worldPets.remove(world.getName());if(pets!=null)pets.values().forEach(pet->remove(store,pet));
             for(PlayerRef player:world.getPlayerRefs()){var ref=player.getReference();Appearance state=appearances.remove(player.getUuid());if(ref==null||!ref.isValid()||state==null)continue;
+                CustomWearables.apply(ref,store,false);
                 store.putComponent(ref,PlayerSkinComponent.getComponentType(),new PlayerSkinComponent(new PlayerSkin(state.original)));
                 store.putComponent(ref,DisplayNameComponent.getComponentType(),state.originalName==null?new DisplayNameComponent(Message.raw(player.getUsername())):state.originalName);}
         });

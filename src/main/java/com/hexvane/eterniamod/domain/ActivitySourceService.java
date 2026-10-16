@@ -36,19 +36,25 @@ public final class ActivitySourceService extends DomainSupport {
         require(nativeGeneration>=0,INVALID_INPUT,"Invalid farming generation");
         return store.transaction(tx->enqueue(tx,actor,SeasonService.ActivityKind.HARVEST,target,xp,"harvest:"+blockKey(block)+":"+nativeGeneration));
     }
+    /** Native successful harvest transition: generation plus saved harvest time survives component recreation and replanting. */
+    public boolean verifiedHarvestCycle(UUID actor,Block block,String target,String cycle,long xp){
+        text(cycle,"crop cycle",100);
+        return store.transaction(tx->enqueue(tx,actor,SeasonService.ActivityKind.HARVEST,target,xp,"harvest:"+blockKey(block)+":"+cycle));
+    }
     private boolean enqueue(TransactionalStore.Transaction tx,UUID actor,SeasonService.ActivityKind kind,String target,long xp,String source){
         Objects.requireNonNull(actor);text(target,"activity target",200);require(xp>=0&&xp<=100000,INVALID_INPUT,"Invalid configured XP");String id=key(source);
         if(tx.find("activity_outbox",id).isPresent())return false;
         if(tx.find("account",actor.toString()).isEmpty())return false;
         UUID event=UUID.nameUUIDFromBytes(source.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         long coins=coinRewards.getOrDefault(kind,Map.of()).getOrDefault(target,0L);
-        tx.save("activity_outbox",id,0,fields("event",event,"actor",actor,"kind",kind,"target",target,"xp",xp,"coins",coins,"source",source,"state","READY"));return true;
+        tx.save("activity_outbox",id,0,fields("event",event,"actor",actor,"kind",kind,"target",target,"xp",xp,"coins",coins,"source",source,"occurredAt",clock.instant(),"state","READY"));return true;
     }
     /** XP and coins have independent stable receipts. A retry after XP committed still credits
      * pending coins, and a retry after the ledger committed never pays twice. */
+    public boolean hasPending(){return store.transaction(tx->tx.scan("activity_outbox").stream().anyMatch(row->row.value("state").equals("READY")));}
     public int drain(int limit){
         require(limit>0&&limit<=500,INVALID_INPUT,"Invalid activity batch");var batch=store.transaction(tx->tx.scan("activity_outbox").stream().filter(r->r.value("state").equals("READY")).limit(limit).toList());
-        for(var row:batch){seasons.recordActivity(new SeasonService.Activity(UUID.fromString(row.value("event")),UUID.fromString(row.value("actor")),SeasonService.ActivityKind.valueOf(row.value("kind")),row.value("target"),1,row.number("xp"),row.value("source"),true));
+        for(var row:batch){seasons.recordActivity(new SeasonService.Activity(UUID.fromString(row.value("event")),UUID.fromString(row.value("actor")),SeasonService.ActivityKind.valueOf(row.value("kind")),row.value("target"),1,row.number("xp"),row.value("source"),true,row.value("occurredAt").isEmpty()?null:java.time.Instant.parse(row.value("occurredAt"))));
             // Rows written before coin rewards existed intentionally pay zero, even after reconfiguration.
             long coins=row.value("coins").isEmpty()?0:row.number("coins");
             if(coins>0)economy.credit(Owner.player(UUID.fromString(row.value("actor"))),coins,"activity-coins:"+row.key());

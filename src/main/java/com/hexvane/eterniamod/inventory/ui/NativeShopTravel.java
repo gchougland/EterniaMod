@@ -90,7 +90,7 @@ public final class NativeShopTravel {
             });}catch(RuntimeException failure){result.complete(false);}
         },200,TimeUnit.MILLISECONDS);
     }
-    private static MarketService.Listing listing(EterniaModPlugin plugin,String id){return plugin.getServices().market().search("").stream().filter(l->l.id().equals(id)).findFirst().orElseThrow(()->new IllegalStateException("This listing is no longer available."));}
+    private static MarketService.Listing listing(EterniaModPlugin plugin,String id){return plugin.getServices().market().findActive(id).orElseThrow(()->new IllegalStateException("This listing is no longer available."));}
     private static Destination destination(EterniaModPlugin plugin,MarketService.Listing listing,World world){
         Owner seller=Owner.player(listing.seller());var slot=plugin.getServices().housing().find(seller).orElseThrow();var location=plugin.getServices().housing().location(seller).orElseThrow();
         if(slot.state()!=HousingService.State.ACTIVE||!slot.propertyId().equals(listing.propertyId())||!location.worldId().equals(world.getName())||!location.buildingPresent())throw new IllegalStateException("The seller's house is currently unavailable.");

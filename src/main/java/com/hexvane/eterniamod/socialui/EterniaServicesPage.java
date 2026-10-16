@@ -71,14 +71,27 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         commands.append("#ServicesBody", "EterniaMod/" + layout() + ".ui");
         commands.set("#ServicesTitle.TextSpans", Message.raw(playerRef.getUsername()));
         allowedActions.clear();bind(events,"#Return","return_parent");
+        bind(events,"#ArchitectLedger","external:ARCHITECT_LEDGER");
+        commands.set("#ArchitectLedger.Visible",true);
+        commands.set("#ArchitectLedger.Disabled",busy);
         int nav = 0;
         for (Section entry : Section.values()) {
             if (entry == Section.WORLDS) continue;
             appendNav(commands, events, nav++, entry.title, entry==Section.STORE?"external:STORE_OPEN":"nav:" + entry.name(), !busy, entry == section);
         }
-        com.hexvane.eterniamod.ui.MenuPagination.sidebar(commands, pending == null ? view.rows.size() : 0, PAGE_SIZE);commands.set("#Previous.Disabled", busy || pending!=null || page == 0);commands.set("#Next.Disabled",busy || pending!=null || (page+1)*PAGE_SIZE>=view.rows.size());
+        com.hexvane.eterniamod.ui.MenuPagination.sidebar(commands, pending == null ? view.rows.size() : 0, visiblePageSize());commands.set("#Previous.Disabled", busy || pending!=null || page == 0);commands.set("#Next.Disabled",busy || pending!=null || (page+1)*PAGE_SIZE>=view.rows.size());
         commands.set("#Pagination.Text", "Page " + (page+1) + " / " + Math.max(1,(view.rows.size()+PAGE_SIZE-1)/PAGE_SIZE));
         bind(events,"#Previous","previous");bind(events,"#Next","next");bind(events,"#Close","close");
+        if(section==Section.COLLECTION){
+            String[] categories={"Houses","Decorations","Materials","Titles","Wardrobe","Pets","Mounts","Upgrades"};
+            for(int i=0;i<categories.length;i++){
+                String category=categories[i].toLowerCase(java.util.Locale.ROOT);
+                String selector="#Category"+i;
+                commands.set(selector+".Text",categories[i]);
+                commands.set(selector+".Disabled",busy||category.equals(mode.isEmpty()?"houses":mode));
+                bind(events,selector,"collection_view:"+category);
+            }
+        }
         var tabs=tabs();commands.set("#Tabs.Visible",pending==null&&!tabs.isEmpty());
         for(int i=0;i<tabs.size();i++){var tab=tabs.get(i);commands.append("#Tabs","EterniaMod/ServiceTab.ui");commands.set("#Tabs["+i+"].Text",tab.label);commands.set("#Tabs["+i+"].Disabled",busy);bind(events,"#Tabs["+i+"]",tab.route);}
         commands.set("#SectionTitle.TextSpans", Message.raw(pending == null ? view.title : "Confirm action"));
@@ -86,9 +99,19 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         commands.setObject("#Description.Anchor",UiAnchors.heightWithBottom(Math.max(50,UiPresentation.wrappedHeight(pending==null?view.description:pending.explanation,786,24)),8));
         commands.set("#Status.TextSpans", Message.raw(busy ? "Working…" : status));
         List<Row> rows = pending == null ? view.rows : List.of();
-        int start = Math.min(page * PAGE_SIZE, rows.size());
-        for (int i = start; i < Math.min(rows.size(), start + PAGE_SIZE); i++) {
+        int start = Math.min(page * visiblePageSize(), rows.size());
+        for (int i = start; i < Math.min(rows.size(), start + visiblePageSize()); i++) {
             Row row = rows.get(i);
+            if(collectionGrid()&&!row.contentId.isEmpty()) {
+                int card=(i-start)%4;String grid="#Rows["+((i-start)/4)+"]";
+                if(card==0){commands.append("#Rows","EterniaMod/CollectionCardRow.ui");for(int slot=0;slot<4;slot++)commands.set(grid+" #Card"+slot+".Visible",i+slot<rows.size());}
+                String tile=grid+" #Card"+card;ContentImages.row(commands,tile,row.contentId);
+                commands.set(tile+" #CardName.Text",row.text);commands.set(tile+" #CardDetail.Text",row.goal);
+                commands.set(tile+" #RowAction.Text",row.label);commands.set(tile+" #RowAction.Visible",!row.label.isEmpty());
+                commands.set(tile+" #RowAction.Disabled",busy||row.route.isEmpty());
+                if(!row.route.isEmpty())bind(events,tile+" #RowAction",row.route);
+                continue;
+            }
             String selector = "#Rows[" + (i - start) + "]";
             if(!row.cells.isEmpty()) {commands.append("#Rows","EterniaMod/RewardLevel.ui");commands.set(selector+" #Level.Text",row.text);
                 for(int index=0;index<2;index++){Row cell=row.cells.get(index);String track=index==0?"Free":"Paid";ContentImages.row(commands,selector+" #"+track+"Reward",cell.contentId);commands.set(selector+" #"+track+"Name.Text",cell.text);commands.set(selector+" #"+track+"Action.Text",cell.label);commands.set(selector+" #"+track+"Action.Visible",!cell.label.isEmpty());commands.set(selector+" #"+track+"Action.Disabled",busy||cell.route.isEmpty());if(!cell.route.isEmpty())bind(events,selector+" #"+track+"Action",cell.route);}continue;}
@@ -109,7 +132,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if(section==Section.MAIL){commands.set("#Reader.Visible",!hasFields);commands.set("#Document.Text",pending==null?view.document:pending.explanation);commands.setObject("#Document.Anchor",UiAnchors.heightWithRight(Math.max(250,UiPresentation.wrappedHeight(view.document,390,25)),12));}
         if(layout().equals("ServicesOverview")){String feature=switch(section){case HOUSING->"Your own corner";case WORLDS->"The road awaits";case COMING_SOON->"More adventures ahead";default->"Welcome, adventurer";};commands.set("#FeatureTitle.Text",feature);commands.set("#FeatureText.Text",switch(section){case HOUSING->"A free plot, a home to personalize, and a place to return to after your adventures.";case WORLDS->"Public portals connect the Hub to the worlds beyond.";case COMING_SOON->"Minigames are coming soon. Your housing and season journeys are ready now.";default->"Prowl\nEternia Guide\n\nSettle in, find your guild, and start exploring.";});commands.setObject("#SectionArt.Background", new com.hypixel.hytale.server.core.ui.PatchStyle(com.hypixel.hytale.server.core.ui.Value.of("EterniaMod/Icons/"+(section==Section.WORLDS?"worlds":"housing")+".png")));}
         if(section==Section.SEASON){commands.set("#SeasonProgress.Visible",!focus.isEmpty()&&pending==null);commands.set("#ProgressLabel.Text",view.progressLabel);bar(commands,"#ProgressFill","#ProgressRest",view.progress,view.progressTotal);}
-        if(section==Section.COLLECTION){commands.set("#CollectionSummary.Text",view.document.isEmpty()?"Choose your appearance, meet your pets, or browse everything you own.":view.document);}
+        if(section==Section.COLLECTION){commands.set("#CollectionBanner.Visible",false);commands.set("#CollectionSummary.Text",view.document);}
         String[] values = {one, two, three};
         String[] ids = {"One", "Two", "Three"};
         for (int i = 0; i < 3; i++) {
@@ -127,15 +150,18 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             commands.set(buttonIds[i] + ".Disabled", busy || buttons[i].route.isEmpty());
             if (!buttons[i].route.isEmpty()) bind(events, buttonIds[i], buttons[i].route);
         }
-        if (initialLoad) { initialLoad = false; refresh(ref, store, ""); }
+        if (initialLoad) { initialLoad = false; store.getExternalData().getWorld().execute(()->{if(!isDismissed()&&ref.isValid())refresh(ref, store, "");}); }
     }
+
+    private boolean collectionGrid(){return section==Section.COLLECTION&&!mode.equals("pet");}
+    private int visiblePageSize(){return section==Section.COLLECTION&&(mode.equals("inventory")||collectionGrid())?Math.max(PAGE_SIZE,view.rows.size()):PAGE_SIZE;}
 
     private String layout(){return switch(section){case GREETER,HOUSING,WORLDS,COMING_SOON->"ServicesOverview";case GUILD->"ServicesRoster";case MAIL->"ServicesMail";case SEASON->"ServicesSeason";case COLLECTION->"ServicesCollection";default->"ServicesDirectory";};}
     private List<Button> tabs(){return switch(section){
         case GUILD->view.title.equals("Find your guild")||view.title.equals("Loading")?List.of():List.of(new Button("Members","back"),new Button("Roles","guild_roles"),new Button("Notice board","guild_board"),new Button("Guild house","external:GUILD_HOUSING"));
         case MAIL->List.of(new Button("Inbox","back"),new Button("Write a letter","mail_compose"),new Button("Deliveries","external:ITEM_DESK"));
         case SEASON->focus.isEmpty()?List.of():List.of(new Button("Rewards","season_rewards"),new Button("Quests","season_quests"),new Button("All passes","back"));
-        case COLLECTION->List.of(new Button("Appearance","back"),new Button("Pets","collection_view:pets"),new Button("Owned items","collection_view:inventory"));
+        case COLLECTION->List.of();
         case SHOP->List.of(new Button("Browse","back"),new Button("My shop","external:SHOP_MANAGE"),new Button("Trade","external:TRADE_DESK"));
         default->List.of();};}
     private static void bar(UICommandBuilder commands,String fill,String rest,long value,long total){int amount=total<=0?0:(int)Math.max(0,Math.min(1000,(double)value/total*1000));commands.set(fill+".Visible",amount>0);commands.set(rest+".Visible",amount<1000);commands.set(fill+".FlexWeight",Math.max(1,amount));commands.set(rest+".FlexWeight",Math.max(1,1000-amount));}
@@ -176,6 +202,9 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (route.equals("next") || route.equals("previous")) { page = Math.max(0, page + (route.equals("next") ? 1 : -1)); generation++; rebuild(); return; }
         if (route.equals("cancel_confirmation")) { pending = null; generation++; rebuild(); return; }
         if (route.equals("confirm")) { Pending current = pending; if (current == null) return; pending = null; runDomain(ref, store, current.route, current.input); return; }
+        if(route.startsWith("mount_summon:")){
+            close();com.hexvane.eterniamod.collections.MountRuntime.summon(services,playerRef,ref,store,route.substring(13));return;
+        }
         if (route.startsWith("external:")) {
             SocialUiActions.Result result = registration.actions.perform(SocialUiActions.Action.valueOf(route.substring(9)), ref, store, playerRef);
             if (!result.opened()) { status = result.message(); generation++; rebuild(); }
@@ -227,7 +256,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
 
     private void refresh(Ref<EntityStore> ref, Store<EntityStore> store, String notice) {
         Request request = request();
-        work(ref, store, () -> new Loaded(load(request), notice), false);
+        view = View.empty(section.title, "Loading your latest information…");
+        work(ref, store, () -> new Loaded(loadSnapshot(request), notice), false);
     }
 
     private void runDomain(Ref<EntityStore> ref, Store<EntityStore> store, String route, Input input) {
@@ -236,13 +266,15 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         work(ref, store, () -> {
             String notice = mutate(route, input, receipt);
             if(section==Section.COLLECTION)CollectionBootstrap.refresh();
-            return new Loaded(load(request), notice);
+            return new Loaded(loadSnapshot(request), notice);
         }, true);
     }
 
     private void work(Ref<EntityStore> ref, Store<EntityStore> store, Supplier<Loaded> operation, boolean mutation) {
         if (busy || registration.closed) return;
         busy = true; long expected = ++generation;
+        // Show the new section immediately instead of leaving the previous page on screen.
+        rebuild();
         var world = store.getExternalData().getWorld();
         CompletableFuture.supplyAsync(operation, registration.executor).whenComplete((loaded, failure) -> world.execute(() -> {
             if (isDismissed() || registration.closed || !ref.isValid() || expected != generation) return;
@@ -251,7 +283,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 if (mutation) operationNumber++;
                 if(!Arrays.equals(view.fields,loaded.view.fields))one=two=three="";
                 view = loaded.view;
-                status = loaded.notice.isEmpty() ? "Your latest account information. Entries " + (view.rows.isEmpty() ? "0" : Math.min(page * PAGE_SIZE + 1, view.rows.size()) + "–" + Math.min((page + 1) * PAGE_SIZE, view.rows.size())) + " of " + view.rows.size() : loaded.notice;
+                status = loaded.notice.isEmpty() ? "Your latest account information. Entries " + (view.rows.isEmpty() ? "0" : Math.min(page * visiblePageSize() + 1, view.rows.size()) + "–" + Math.min((page + 1) * visiblePageSize(), view.rows.size())) + " of " + view.rows.size() : loaded.notice;
                 if (view.role != null && draftCapabilities == null) {
                     GuildService.Role role = view.role;
                     boolean builtIn = Set.of("leader", "officer", "architect", "quartermaster", "member").contains(role.id());
@@ -318,6 +350,14 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
 
     private String name(UUID id) { return services.accounts().find(id).map(AccountService.Account::displayName).orElse("Unknown player"); }
 
+    private record ViewKey(UUID actor,Request request) {}
+    private View loadSnapshot(Request request){
+        return switch(request.section){
+            case COLLECTION,SHOP -> services.readView(new ViewKey(actor,request),java.time.Duration.ofSeconds(2),()->load(request));
+            case GREETER,STORE,WORLDS,COMING_SOON -> load(request);
+            default -> services.batch(()->load(request));
+        };
+    }
     private View load(Request request) {
         Input input = request.input;
         return switch (request.section) {
@@ -330,19 +370,20 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 Row.info("The hub's merchants connect you to mail, player shops, collections and optional store items.")),
                 noFields(), buttons("Get starter toolkit", "intro_toolkit", "Claim a plot", "external:HOUSING_CLAIM", "Quest journal", "nav:QUESTS"), null);
             case HOUSING -> {
-                var overview = services.overview(actor);
+                var housing = services.housing().find(Owner.player(actor)).orElse(null);
                 List<Row> rows = new ArrayList<>();
-                rows.add(Row.info(overview.housing() == null ? "Your free 24 × 24 plot is waiting for you." : "Your home · " + UiPresentation.friendlyId(overview.housing().state().name())));
+                rows.add(Row.info(housing == null ? "Your free 24 × 24 plot is waiting for you." : "Your home · " + UiPresentation.friendlyId(housing.state().name())));
                 services.housing().location(Owner.player(actor)).ifPresent(location -> rows.add(Row.info(location.width() + " × " + location.depth() + " plot in " + UiPresentation.friendlyId(location.worldId()) + (location.guildId()==null?"":" · Guild neighbourhood"))));
                 rows.add(Row.info("Move credits available: " + services.ownership().available(Owner.player(actor), HousingService.MOVE_CREDIT)));
                 rows.add(Row.info("Keep structures and additions five blocks inside the plot and five blocks away from roads."));
                 yield new View("Housing Ledger", "Build and personalize your home. Purchases and placement tokens stay linked to your account.", rows, noFields(),
-                    buttons(overview.housing() == null ? "Claim a plot" : "Manage house", overview.housing() == null ? "external:HOUSING_CLAIM" : "external:HOUSING_MANAGE", "My plots", "external:HOUSING_MANAGE", "Refresh", "refresh"), null);
+                    buttons(housing == null ? "Claim a plot" : "Manage house", housing == null ? "external:HOUSING_CLAIM" : "external:HOUSING_MANAGE", "My plots", "external:HOUSING_MANAGE", "Refresh", "refresh"), null);
             }
             case GUILD -> guildView(input);
             case MAIL -> mailView(input);
             case SHOP -> {
-                List<Row> rows = services.market().search(input.one).stream().map(listing -> new Row(UiPresentation.itemName(listing.itemId()) + "\n" + listing.stock() + " in stock · " + name(listing.seller()), "Visit shop", "shop_visit:" + listing.id()).image(listing.itemId()).price(listing.unitPrice())).toList();
+                var listings=services.market().search(input.one);services.accounts().findAll(listings.stream().map(MarketService.Listing::seller).toList());
+                List<Row> rows = listings.stream().map(listing -> new Row(UiPresentation.itemName(listing.itemId()) + "\n" + listing.stock() + " in stock · " + name(listing.seller()), "Visit shop", "shop_visit:" + listing.id()).image(listing.itemId()).price(listing.unitPrice())).toList();
                 yield new View("Player shops", "Browse real listings, then visit the seller's house to buy. Sellers can be offline.", rows.isEmpty() ? List.of(Row.info("No active listings match this search.")) : rows,
                     new String[] {"Find an item", "", ""}, buttons("Search", "refresh", "Manage my shop", "external:SHOP_MANAGE", "Item desk", "external:ITEM_DESK"), null);
             }
@@ -366,19 +407,31 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         Map<String, CollectionService.Definition> catalog = new HashMap<>();
         definitions.forEach(definition -> catalog.put(definition.id(), definition));
         var grants = services.ownership().grants(owner);
-        if (input.mode.equals("inventory")) {
+        if (Set.of("", "houses", "decorations", "materials", "upgrades").contains(input.mode)) {
             List<Row> rows = new ArrayList<>();
-            for (var grant : grants) {
-                boolean active = !grant.revoked() && (grant.validUntil() == null || grant.validUntil().isAfter(Instant.now()));
-                var definition = catalog.get(grant.contentId());
-                rows.add(Row.info((definition == null ? UiPresentation.contentName(grant.contentId()) : definition.name()) + " • "
-                    + (active ? grant.kind() == OwnershipService.Kind.QUANTITY ? grant.available() + " available" : "Owned" : "Inactive")
-                    + (grant.validUntil() == null ? "" : " • Until " + grant.validUntil())).image(grant.contentId()));
+            for (var item : com.hexvane.eterniamod.ui.CollectionInventory.summarize(grants,services.provenance().ownedInstances(owner),Instant.now())) {
+                if(!com.hexvane.eterniamod.ui.CollectionCategories.matches(input.mode,item.contentId()))continue;
+                var definition = catalog.get(item.contentId());
+                String detail=item.contentId().equals("eternia:convenience/teleporter")?"\nUse Home Waygate in the Architect's Ledger while on your plot. Nothing needs placing.":"";
+                String name=definition == null ? UiPresentation.contentName(item.contentId()) : definition.name();
+                String availability=item.status()+(item.earliestExpiry()==null?"":" • Some expire on "+item.earliestExpiry());
+                rows.add(Row.card(name,availability,"","",item.contentId()));
             }
-            return new View("Owned items", "Your house styles, decorations, cosmetics and other collected rewards.",
-                rows.isEmpty() ? List.of(Row.info("Your collection is waiting for its first treasure.")) : rows, noFields(),
-                buttons("Selections", "back", "Pets", "collection_view:pets", "Refresh", "refresh"), null);
+            String category=input.mode.isEmpty()?"houses":input.mode;
+            return new View("Your "+category, switch(category){
+                case "houses"->"Homes you can build. Open Housing inventory to choose one for your plot.";
+                case "decorations"->"Furniture, garden treasures and additions for your home.";
+                case "materials"->"Palettes and paths to make your home your own.";
+                default->"Your plot upgrades, waygates and passes.";
+            }, rows.isEmpty()?List.of(Row.info("Nothing in this collection yet.")):rows,noFields(),
+                buttons("Housing inventory","external:HOUSING_INVENTORY","","","Refresh","refresh"),null);
         }
+        if(input.mode.equals("mounts")){
+            var rows=definitions.stream().filter(d->d.kind()==CollectionService.Kind.MOUNT&&services.ownership().owns(owner,d.id()))
+                .map(d->Row.card(d.name(),"Ready to ride","Summon","mount_summon:"+d.id(),d.id())).toList();
+            return new View("Your mounts","Summon a mount to start riding. It leaves when you dismount.",rows.isEmpty()?List.of(Row.info("No mounts owned yet.")):rows,noFields(),buttons("Refresh","refresh","","","",""),null);
+        }
+
         if (input.mode.equals("pet") || input.mode.equals("pets")) {
             var pets = services.collection().pets(owner);
             if (input.mode.equals("pet")) {
@@ -386,14 +439,13 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 var definition = catalog.get(pet.contentId());
                 boolean home = services.housing().find(owner).filter(slot -> slot.state() == HousingService.State.ACTIVE).isPresent();
                 return new View(definition == null ? "Your pet" : definition.name(), "Choose one pet to follow you, or let it roam around your home.",
-                    List.of(Row.info("Current home: " + UiPresentation.friendlyId(pet.assignment())), Row.info("Only one personal pet can follow you at a time."),
-                        new Row("Return to all owned pets.", "All pets", "collection_view:pets")), noFields(),
+                    List.of(Row.info("Current home: " + UiPresentation.friendlyId(pet.assignment())), Row.info("Only one personal pet can follow you at a time.")), noFields(),
                     buttons("Assign follower", "pet_follow", "Assign to home", home ? "pet_home" : "", "Clear assignment", "pet_unassign"), null);
             }
             List<Row> rows = new ArrayList<>();
             for (var pet : pets) {
                 var definition = catalog.get(pet.contentId());
-                rows.add(new Row((definition == null ? UiPresentation.contentName(pet.contentId()) : definition.name()) + " · " + UiPresentation.friendlyId(pet.assignment()), "Manage pet", "pet_view:" + pet.id()).image(pet.contentId()));
+                rows.add(Row.card(definition == null ? UiPresentation.contentName(pet.contentId()) : definition.name(), UiPresentation.friendlyId(pet.assignment()), "Manage pet", "pet_view:" + pet.id(),pet.contentId()));
             }
             for (var grant : grants) {
                 var definition = catalog.get(grant.contentId());
@@ -403,34 +455,32 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 pets.stream().filter(pet -> pet.sourceGrant().equals(grant.id())).forEach(pet -> used.add(pet.sourceIndex()));
                 long next = 0;
                 while (used.contains(next)) next++;
-                if (next < grant.quantity()) rows.add(new Row(definition.name() + " · Ready to welcome", "Add pet", "pet_adopt:" + grant.id() + ":" + next).image(grant.contentId()));
+                if (next < grant.quantity()) rows.add(Row.card(definition.name(),"Ready to welcome", "Add pet", "pet_adopt:" + grant.id() + ":" + next,grant.contentId()));
             }
             return new View("Your pets", "Choose a companion from your pets, or welcome a new pet from your collection.",
                 rows.isEmpty() ? List.of(Row.info("You do not own any pets yet.")) : rows, noFields(),
-                buttons("Selections", "back", "Owned items", "collection_view:inventory", "Refresh", "refresh"), null);
+                buttons("Refresh", "refresh", "", "", "", ""), null);
         }
         var selection = services.collection().selection(actor);
         List<Row> rows = new ArrayList<>();
         for (var definition : definitions) {
-            if (definition.kind() == CollectionService.Kind.PET || !services.ownership().owns(owner, definition.id())) continue;
+            boolean title=definition.kind()==CollectionService.Kind.PREFIX_TITLE||definition.kind()==CollectionService.Kind.SUFFIX_TITLE;
+            if((input.mode.equals("titles")?!title:definition.kind()!=CollectionService.Kind.OUTFIT&&definition.kind()!=CollectionService.Kind.WEARABLE)||!services.ownership().owns(owner,definition.id()))continue;
             String selected = switch (definition.kind()) {
                 case PREFIX_TITLE -> selection.prefix(); case SUFFIX_TITLE -> selection.suffix(); case OUTFIT -> selection.outfit();
-                case WEARABLE -> selection.wearables().getOrDefault(definition.slot(), ""); case PET -> "";
+                case WEARABLE -> selection.wearables().getOrDefault(definition.slot(), ""); case PET, MOUNT -> "";
             };
             boolean equipped = definition.id().equals(selected);
-            rows.add(new Row(definition.name() + " • " + collectionKind(definition.kind()) + (definition.slot().isEmpty() ? "" : " / " + definition.slot()),
-                equipped ? "Clear selection" : "Select", equipped ? "collection_clear:" + definition.kind() + ":" + definition.slot() : "collection_equip:" + definition.id()).image(definition.id()));
+            rows.add(Row.card(definition.name(),equipped?"Equipped":collectionKind(definition.kind()),equipped?"Unequip":"Equip",equipped?"collection_clear:"+definition.kind()+":"+definition.slot():"collection_equip:"+definition.id(),definition.id()));
         }
-        rows.add(Row.info(CollectionBootstrap.status(actor)));
-        return new View("Collection selections", "Pair prefix and suffix titles, or choose an outfit and wearables. Supported selections apply in the world within two seconds; Refresh shows the current result.",
-            rows.isEmpty() ? List.of(Row.info("No selectable title or appearance content is owned yet. Account inventory includes housing unlocks and other grants.")) : rows,
-            noFields(), buttons("Owned items", "collection_view:inventory", "Pets", "collection_view:pets", "Refresh", "refresh"), null).document("YOUR TITLES\n"+selectionName(catalog,selection.prefix(),"No prefix")+"  ·  "+selectionName(catalog,selection.suffix(),"No suffix")+"\nOutfit: "+selectionName(catalog,selection.outfit(),"Your character"));
+        return new View(input.mode.equals("titles")?"Your titles":"Your wardrobe",input.mode.equals("titles")?"Pair a prefix and suffix to make your name your own.":"Choose a look to wear on your adventures.",
+            rows.isEmpty()?List.of(Row.info("Nothing in this collection yet.")):rows,noFields(),buttons("Refresh","refresh","","","",""),null);
     }
 
     private static String selectionName(Map<String,CollectionService.Definition> catalog,String id,String fallback){return id==null||id.isBlank()?fallback:catalog.containsKey(id)?catalog.get(id).name():UiPresentation.contentName(id);}
 
     private static String collectionKind(CollectionService.Kind kind) {
-        return switch (kind) { case PREFIX_TITLE -> "Prefix title"; case SUFFIX_TITLE -> "Suffix title"; case OUTFIT -> "Outfit"; case WEARABLE -> "Wearable"; case PET -> "Pet"; };
+        return switch (kind) { case PREFIX_TITLE -> "Prefix title"; case SUFFIX_TITLE -> "Suffix title"; case OUTFIT -> "Outfit"; case WEARABLE -> "Wearable"; case PET -> "Pet"; case MOUNT -> "Mount"; };
     }
 
     private View guildView(Input input) {
@@ -469,7 +519,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         List<Row> rows = new ArrayList<>();
         rows.add(new Row("Guild notices and pinned plans. Live chat: /e guildchat <message>","Notice board",services.guilds().can(actor,guild,"board.read")?"guild_board":""));
         var roleNames=new HashMap<String,String>();services.guilds().roles(actor).forEach(role->roleNames.put(role.id(),role.name()));
-        for (var member : services.guilds().roster(actor)) rows.add(new Row(name(member.playerId()) + " · " + online(member.playerId())+"\n"+roleNames.getOrDefault(member.role(),UiPresentation.friendlyId(member.role())), "Manage", "member_select:" + member.playerId()));
+        var roster=services.guilds().roster(actor);services.accounts().findAll(roster.stream().map(GuildService.Membership::playerId).toList());
+        for (var member : roster) rows.add(new Row(name(member.playerId()) + " · " + online(member.playerId())+"\n"+roleNames.getOrDefault(member.role(),UiPresentation.friendlyId(member.role())), "Manage", "member_select:" + member.playerId()));
         rows.add(new Row("Refresh roles and online status.","Refresh roster","refresh"));
         rows.add(membership.get().role().equals("leader")?Row.info("To leave, select another member and transfer leadership first."):new Row("Leave guild; attached plots have a 48-hour return grace period.", "Leave guild", "guild_leave"));
         return new View(guildName, "Your role: " + roleNames.get(membership.get().role()) + ". Invite a player, or select a member to manage their role.", rows,
@@ -484,6 +535,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
 
     private View mailView(Input input) {
         var inbox = services.mail().inbox(actor);
+        services.accounts().findAll(inbox.stream().map(MailService.Message::sender).toList());
         List<Row> rows=inbox.stream().sorted(Comparator.comparing(MailService.Message::sentAt).reversed()).map(mail->new Row((mail.read()?"":"NEW · ")+mail.subject()+"\nFrom "+name(mail.sender()),"Read","mail_read:"+mail.id())).toList();
         if(rows.isEmpty())rows=List.of(Row.info("Your mailbox is empty. A new adventure is a good reason to write to someone."));
         if(input.mode.equals("compose"))return new View("Write a letter","Your items are attached in the next step, before the letter is sent.",rows,new String[]{"To player","Subject","Your message"},buttons("Add attachments","mail_send","Inbox","back","",""),null);
@@ -503,7 +555,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if(active.isEmpty())return new View("Quest journal","Choose an active season pass to begin earning quest XP.",List.of(),noFields(),buttons("Choose pass","nav:SEASON","","","",""),null);
         var pass=active.get();
         var rows=services.seasons().quests(actor,pass.id()).stream().map(Row::quest).toList();
-        return new View("Quest journal",pass.name()+" · Progress is recorded while you play. Completed goals award XP and Coins automatically.",rows.isEmpty()?List.of(Row.info("No quests have been published for this pass.")):rows,noFields(),buttons("Refresh","refresh","Season passes","nav:SEASON","",""),null);
+        return new View("Quest journal",pass.name()+" · Daily quests reset at 00:00 UTC. Weekly quests reset Monday at 00:00 UTC. Play in Adventure mode. XP and Coins arrive automatically.",rows.isEmpty()?List.of(Row.info("No quests have been published for this pass.")):rows,noFields(),buttons("Refresh","refresh","Season passes","nav:SEASON","",""),null);
     }
 
     private View seasonView(Input input) {
@@ -517,22 +569,23 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (input.mode.equals("quests")) {
             var quests = services.seasons().quests(actor, input.focus).stream().map(Row::quest).toList();
             return new View(current.name() + " · Quests", "Complete these goals while you explore. Quest XP and Coins are awarded automatically.", quests.isEmpty() ? List.of(Row.info("No quests have been added to this pass yet.")) : quests,
-                noFields(), buttons(current.active()?"Active pass":"Activate pass",current.active()?"":"season_activate","Rewards","season_rewards","",""),null).progress(current);
+                noFields(), buttons(current.active()?"Active pass":"Activate pass",current.active()?"":"season_activate","","","",""),null).progress(current);
         }
         var definition = services.seasons().definitions().stream().filter(d -> d.id().equals(input.focus)).findFirst().orElseThrow();
         List<Row> rows = new ArrayList<>();
         var tiers=new TreeMap<Integer,TreeMap<Integer,Map<SeasonService.Track,Row>>>();
         var names=new HashMap<String,String>();services.collection().definitions().forEach(item->names.put(item.id(),item.name()));
+        var claimedRewards=services.seasons().claimedRewards(actor,definition);
         for (var reward : definition.rewards()) {
-            boolean claimed = services.seasons().isClaimed(actor, input.focus, reward.track(), reward.level(), reward.index());
+            boolean claimed = claimedRewards.contains(reward);
             boolean ready = !claimed && current.level() >= reward.level() && (reward.track() == SeasonService.Track.FREE || current.paid());
             String name=names.getOrDefault(reward.contentId(),UiPresentation.contentName(reward.contentId()));
             var row=new Row(name+(reward.quantity()>1?" × "+reward.quantity():""),claimed?"Claimed":ready?"Claim":reward.track()==SeasonService.Track.PAID&&!current.paid()?"Paid pass required":"Reach level "+reward.level(),ready?"reward:"+reward.track()+":"+reward.level()+":"+reward.index():"").image(reward.contentId());
-            tiers.computeIfAbsent(reward.level(),ignored->new TreeMap<>()).computeIfAbsent(reward.index(),ignored->new EnumMap<>(SeasonService.Track.class)).put(reward.track(),row);
+            tiers.computeIfAbsent(reward.level(),ignored->new TreeMap<>()).computeIfAbsent(reward.track()==SeasonService.Track.PAID&&reward.level()==1&&definition.rewards().stream().anyMatch(r->r.contentId().equals("eternia:wearable/prowl_shirt"))?(reward.contentId().equals("eternia:wearable/prowl_shirt")?0:reward.index()+1):reward.index(),ignored->new EnumMap<>(SeasonService.Track.class)).put(reward.track(),row);
         }
         tiers.forEach((level,indices)->indices.forEach((index,tracks)->rows.add(Row.rewards("Level "+level+(indices.size()>1?" · Reward "+(index+1):""),tracks.getOrDefault(SeasonService.Track.FREE,Row.info("No free reward here")),tracks.getOrDefault(SeasonService.Track.PAID,Row.info("No paid reward here"))))));
         return new View(current.name(),(current.paid()?"Both tracks are yours.":"The free track is yours. A paid pass unlocks the second track.")+" Every pass stays available forever.", rows,
-            noFields(), buttons(current.active() ? "Active pass" : "Activate pass", current.active() ? "" : "season_activate", "Quests", "season_quests", "All passes", "back"), null).progress(current);
+            noFields(), buttons(current.active() ? "Active pass" : "Activate pass", current.active() ? "" : "season_activate", "", "", "", ""), null).progress(current);
     }
 
     private static String bounded(String value, int length) { return value.length() <= length ? value : value.substring(0, length); }
@@ -544,6 +597,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         Row image(String id){return new Row(text,label,route,cells,goal,count,total,xp,id,coins);}
         Row price(long amount){return new Row(text,label,route,cells,goal,count,total,xp,contentId,amount);}
         static Row info(String text){return new Row(text,"","");}
+        static Row card(String title,String detail,String action,String route,String image){return new Row(title,action,route,List.of(),detail,0,0,0,image,-1);}
         static Row quest(SeasonService.QuestProgress progress){var quest=progress.quest();return new Row(UiPresentation.questTitle(quest),"","",List.of(),UiPresentation.questGoal(quest),progress.count(),quest.required(),quest.bonusXp(),"",quest.coins());}
         static Row rewards(String level,Row free,Row paid){return new Row(level,"","",List.of(free,paid),"",0,0,0,"",-1);}
     }

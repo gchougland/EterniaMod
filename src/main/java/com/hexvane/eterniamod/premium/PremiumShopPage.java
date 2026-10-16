@@ -86,7 +86,12 @@ public final class PremiumShopPage extends EterniaInteractiveCustomUIPage<Premiu
             if(action.equals("Refresh")){refresh(ref,store);return;}
             if(action.equals("GetCrowns")){
                 String url=plugin.getRuntimeConfig().websiteUrl();notice=url.isBlank()?"Website top-ups are not configured. Local testers can collect example Crowns from /e playground.":"Your secure Crown top-up link is in chat.";
-                if(!url.isBlank())playerRef.sendMessage(Message.raw("Buy Crowns on the Eternia website").link(url+"/store"));
+                if(!url.isBlank()){
+                    String storeUrl=url.replaceAll("/+$","")+"/store";
+                    close();
+                    playerRef.sendMessage(Message.raw("Click to get Crowns: ").insert(Message.raw(storeUrl).link(storeUrl)));
+                    return;
+                }
             }else if(action.startsWith("Category:")){
                 int index=Integer.parseInt(action.substring(9));if(index>=0&&index<categories.size()){category=categories.get(index);selected=null;requestId=null;page=0;}
             }else if(action.startsWith("Select:")&&selected==null){

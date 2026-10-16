@@ -1,0 +1,43 @@
+$T = "Theme/Citadel.ui";
+@Card = Group {
+  FlexWeight: 1; Background: $T.@SecondarySurface; Padding: (Full: 12); LayoutMode: Left;
+  Group #Art { Anchor: (Width: 80, Height: 80, Right: 16); }
+  Group { FlexWeight: 1; LayoutMode: Top;
+    Label #Name { Anchor: (Height: 28); Style: $T.@SubtitleStyle; }
+    Label #Detail { Anchor: (Height: 48, Bottom: 6); Style: $T.@MutedStyle; }
+    $T.@SecondaryTextButton #Open { Anchor: (Height: 36); }
+  }
+};
+$T.@PageOverlay { Anchor: (Full: 0); LayoutMode: Middle;
+  Group { Anchor: (Width: 1120, Height: 760); Background: $T.@PanelSurface; Padding: (Full: 24); LayoutMode: Top;
+    Group { Anchor: (Height: 64, Bottom: 12); LayoutMode: Left;
+      Label #Title { FlexWeight: 1; Style: $T.@TitleStyle; }
+      Group #CurrencyWallet { Anchor: (Width: 220, Height: 64, Right: 12); LayoutMode: Left; }
+      $T.@HomeButton #MenuHome {}
+    }
+    Group { Anchor: (Height: 3, Bottom: 12); Background: $T.@Primary; }
+    Label #Subtitle { Anchor: (Height: 28, Bottom: 4); Style: $T.@SubtitleStyle; }
+    Label #Description { Anchor: (Height: 48, Bottom: 12); Style: $T.@DefaultLabelStyle; }
+    Group { Anchor: (Height: 144, Bottom: 8); LayoutMode: Left;
+      @Card #Card0 { Anchor: (Right: 12); }
+      @Card #Card1 {}
+    }
+    Group { Anchor: (Height: 144, Bottom: 8); LayoutMode: Left;
+      @Card #Card2 { Anchor: (Right: 12); }
+      @Card #Card3 {}
+    }
+    Group { Anchor: (Height: 144, Bottom: 8); LayoutMode: Left;
+      @Card #Card4 { Anchor: (Right: 12); }
+      @Card #Card5 {}
+    }
+    Label #Notice { FlexWeight: 1; Style: $T.@MutedStyle; }
+    Group { Anchor: (Height: 40); LayoutMode: Left;
+      $T.@SecondaryTextButton #Back { Anchor: (Width: 110, Right: 12); Text: "Back"; }
+      $T.@SecondaryTextButton #Previous { Anchor: (Width: 130, Right: 12); Text: "Previous"; }
+      Label #Pagination { Anchor: (Width: 70); Style: (...$T.@MutedStyle, HorizontalAlignment: Center, VerticalAlignment: Center); }
+      $T.@SecondaryTextButton #Next { Anchor: (Width: 110); Text: "Next"; }
+      Group { FlexWeight: 1; }
+      $T.@SecondaryTextButton #Close { Anchor: (Width: 132); Text: "Close"; }
+    }
+  }
+}

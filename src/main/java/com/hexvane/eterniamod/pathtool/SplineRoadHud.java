@@ -8,16 +8,16 @@ import com.hexvane.eterniamod.ui.ToolKeybindSlot;
 import com.hypixel.hytale.server.core.Message;
 
 public final class SplineRoadHud extends CustomUIHud {
-    private final PlayerRef viewer;
+    private final PlayerRef viewer;private String lastState="";private Boolean lastReview;private long lastKeys;
     SplineRoadHud(PlayerRef player){super(player,SplineRoadTool.HUD,0);viewer=player;}
     @Override protected void build(UICommandBuilder commands){commands.append("EterniaMod/SplineRoadHud.ui");}
     void refresh(SplineRoadTool.Session session){var commands=new UICommandBuilder();var styles=SplineRoadTool.service().styles();String style=styles.get(Math.floorMod(session.style,styles.size())).name();
         // Same dynamic CustomUIHud rows and resolver as Aetherhaven's PathToolStatusHud.
-        controls(commands,viewer,session.review!=null||session.recovery!=null);
+        boolean reviewing=session.review!=null||session.recovery!=null;String state=session.revision+":"+session.message+":"+session.selected+":"+style+":"+reviewing+":"+(session.plan==null?"":session.plan.invalid());long now=System.currentTimeMillis();boolean refreshKeys=now-lastKeys>=2000;if(state.equals(lastState)&&!refreshKeys)return;lastState=state;if(lastReview==null||lastReview!=reviewing||refreshKeys){controls(commands,viewer,reviewing);lastReview=reviewing;lastKeys=now;}
         commands.set("#Mode.Text",session.recovery!=null?"RECOVER ROAD":session.review!=null?"REVIEW · USE TO CONFIRM":session.editing!=null?"EDIT SAVED ROAD":"ROAD DESIGNER");
-        commands.set("#Summary.Text",session.nodes.size()+" nodes  ·  "+session.width+" blocks wide\n"+style);
+        commands.set("#Summary.Text",session.nodes.size()+" nodes  ·  "+session.width+" blocks wide\n"+style+"\n"+(session.selected>=0?"Selected node "+(session.selected+1)+" of "+session.nodes.size():"Aim at a node to select it"));
         String status=session.message;if(session.review==null&&session.recovery==null&&session.plan!=null&&!session.plan.valid())status=session.plan.invalid().size()+" blocked columns · "+session.plan.invalid().values().stream().findFirst().orElse("Adjust the road");
-        commands.set("#Status.Text",status);commands.set("#Help.Text",session.review!=null?"Gold ground will change. Ivory junction cells belong to an existing road and stay unchanged. Edit a node to cancel.":"Green edges follow the ground; red marks blocked cells. Ivory endpoint cells join an existing road without changing it.");update(false,commands);
+        commands.set("#Status.Text",status);commands.set("#Help.Text",session.review!=null?"Gold ground will change. Ivory junction cells belong to a road or plaza and stay unchanged. Edit a node to cancel.":"Green edges follow the ground; red marks blocked cells. Ivory endpoint cells join a road or plaza without changing it. Review checks the full area before building.");update(false,commands);
     }
     public static void controls(UICommandBuilder commands,PlayerRef player,boolean reviewing) {
         commands.clear("#ControlRows");

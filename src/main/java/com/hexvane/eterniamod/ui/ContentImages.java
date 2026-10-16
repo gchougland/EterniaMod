@@ -13,6 +13,7 @@ public final class ContentImages {
         String base="EterniaMod/Catalog/"+relative+"/";
         if(screenshot&&exists(base+"screenshot.png"))return base+"screenshot.png";
         if(exists(base+"icon.png"))return base+"icon.png";
+        if(content.equals("eternia:prop/guild_waygate"))return "EterniaMod/Icons/worlds.png";
         String kind=content.substring(8).split("/",2)[0];
         return "EterniaMod/Icons/"+switch(kind){
             case "house" -> "housing";

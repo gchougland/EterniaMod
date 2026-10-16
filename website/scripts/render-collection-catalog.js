@@ -30,18 +30,24 @@ try {
  // Serve source assets only to this local render page, without copying them into the public site.
  await page.route('**/hytale-assets/Common/**',async route=>{
   const relative=decodeURIComponent(new URL(route.request().url()).pathname.split('/hytale-assets/Common/')[1]);
-  const root=path.join(assets,'Common'),file=path.resolve(root,relative);
+  const root=path.join(assets,'Common');let file=path.resolve(root,relative);
   if(!file.startsWith(root+path.sep))return route.abort();
+  const custom=path.resolve(repo,'src/main/resources/Common',relative);if(custom.startsWith(path.join(repo,'src/main/resources/Common')+path.sep)){try{await fs.access(custom);file=custom;}catch{}}
   await route.fulfill({body:await fs.readFile(file),contentType:file.endsWith('.png')?'image/png':'application/json'});
  });
  await page.route('**/__collection-render',r=>r.fulfill({contentType:'text/html',body:'<!doctype html><script type="importmap">{"imports":{"three":"/vendor/three/build/three.module.js"}}</script>'}));
  await page.goto(base+'/__collection-render');
  for(const file of (await fs.readdir(path.join(catalog,'Collections'))).filter(f=>f.endsWith('.json'))){
   const item=await read(path.join(catalog,'Collections',file));let layers=[];
-  if(item.kind==='WEARABLE')layers=[await clothing(item.slot,item.assetId)];
+  if(process.env.COLLECTION_IDS&&!process.env.COLLECTION_IDS.split(',').includes(item.id))continue;
+  if(item.assetId==='Eternia_Prowl_Shirt')layers=[{model:'Items/Cosmetics/Eternia/Prowl_Shirt.blockymodel',texture:'NPC/Eternia/Prowl/prowl_hytale.png'}];
+  else if(item.kind==='WEARABLE')layers=[await clothing(item.slot,item.assetId)];
   else if(item.kind==='OUTFIT'){
    const appearance=await read(path.join(catalog,'Appearances',item.assetId+'.json'));
    for(const [slot,value]of Object.entries(appearance))if(value)layers.push(await clothing(slot,value));
+  }else if(item.kind==='MOUNT'){
+   const model=await read(path.join(assets,'Server/Models/Livestock',item.assetId+'.json'));
+   layers=[{model:model.Model,texture:model.Texture}];
   }else if(item.kind==='PET'){
    const model=await read(path.join(repo,'src/main/resources/Server/Models/Eternia',item.assetId+'.json'));
    layers=[{model:model.Model,texture:model.Texture}];
@@ -53,7 +59,7 @@ try {
    for(const layer of layers){
     const model=await loadBlockyModel(layer.model,layer.texture);if(!model)throw new Error(layer.model);
     // Cosmetics use player units, regardless of the block viewer's default density.
-    if(layer.model.startsWith('Cosmetics/'))model.scale.setScalar(1/64);
+    if((layer.model.startsWith('Cosmetics/')||layer.model.startsWith('Items/Cosmetics/')))model.scale.setScalar(1/64);
     if(layer.gradient){
      const bitmap=await loadImage(layer.texture),gradient=await loadImage(layer.gradient);
      const canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;
@@ -81,6 +87,7 @@ try {
   await fs.writeFile(path.join(out,'screenshot.png'),Buffer.from(screenshot,'base64'));
   // Downsample in the browser so the script only needs the website's existing dependencies.
   const icon=await page.evaluate(async png=>{const img=new Image();img.src='data:image/png;base64,'+png;await img.decode();const c=document.createElement('canvas');c.width=c.height=128;c.getContext('2d').drawImage(img,0,0,128,128);return c.toDataURL('image/png').split(',')[1];},png);
-  await fs.writeFile(path.join(out,'icon.png'),Buffer.from(icon,'base64'));console.log('Rendered '+item.id);
+  await fs.writeFile(path.join(out,'icon.png'),Buffer.from(icon,'base64'));
+  if(item.assetId==='Eternia_Prowl_Shirt'){const itemIcon=path.join(repo,'src/main/resources/Common/Icons/Items/Eternia_Prowl_Shirt.png');await fs.mkdir(path.dirname(itemIcon),{recursive:true});await fs.writeFile(itemIcon,Buffer.from(icon,'base64'));}console.log('Rendered '+item.id);
  }
 }finally{await browser.close();}

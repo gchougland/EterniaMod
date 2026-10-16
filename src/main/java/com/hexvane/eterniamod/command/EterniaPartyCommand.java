@@ -23,7 +23,7 @@ public final class EterniaPartyCommand extends AbstractCommandCollection {
                     case "invite"->{parties.invite(player.getUuid(),target.id());var online=Universe.get().getPlayer(target.id());if(online!=null)online.sendMessage(Message.raw(player.getUsername()+" invited you to a party. Use /e party accept "+player.getUsername()+" within 15 minutes."));player.sendMessage(Message.raw("Party invitation sent."));}
                     case "accept"->{parties.accept(player.getUuid(),target.id());player.sendMessage(Message.raw("You joined the party."));}
                     case "leave"->{parties.leave(player.getUuid());player.sendMessage(Message.raw("You left the party."));}
-                    default->{var party=parties.find(player.getUuid()).orElseThrow(()->new IllegalArgumentException("You have no party. Use /e party create."));for(var id:party.members()){String label=services.accounts().find(id).map(a->a.displayName()).orElse(id.toString());player.sendMessage(Message.raw(label+(id.equals(party.leader())?" · Leader":"")+(Universe.get().getPlayer(id)==null?" · Offline":" · Online")));}}
+                    default->{var party=parties.find(player.getUuid()).orElseThrow(()->new IllegalArgumentException("You have no party. Use /e party create."));var names=services.accounts().findAll(party.members());for(var id:party.members()){String label=names.containsKey(id)?names.get(id).displayName():id.toString();player.sendMessage(Message.raw(label+(id.equals(party.leader())?" · Leader":"")+(Universe.get().getPlayer(id)==null?" · Offline":" · Online")));}}
                 }
             }catch(RuntimeException failure){player.sendMessage(Message.raw(failure.getMessage()==null?"Party action could not finish.":failure.getMessage()));}
         }

@@ -1,0 +1,10 @@
+{
+  "TranslationProperties": {"Name": "eternia_services.items.prowl_shirt"},
+  "Model": "Items/Cosmetics/Eternia/Prowl_Shirt.blockymodel",
+  "Texture": "NPC/Eternia/Prowl/prowl_hytale.png",
+  "Icon": "Icons/Items/Eternia_Prowl_Shirt.png",
+  "PlayerAnimationsId": "Block",
+  "Quality": "Common",
+  "MaxStack": 1,
+  "Armor": {"ArmorSlot": "Chest", "BaseDamageResistance": 0, "CosmeticsToHide": ["Undertop", "Overtop"]}
+}

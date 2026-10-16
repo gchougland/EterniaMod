@@ -30,7 +30,7 @@ public final class PremiumService extends DomainSupport {
         if(!receipt(tx,"premium_credit",source,fields("player",player,"amount",amount)))return;
         adjust(tx,player,amount);tx.save("premium_credit_state",key(source),0,fields("player",player,"amount",amount,"reversed",false,"at",clock.instant()));
     }
-    /** Only local setup adapters may call this; production credit enters through verified CommerceService. */
+    /** Only local setup adapters may call this. Paid credit uses verified CommerceService; support uses audited grants. */
     public void creditLocalExample(UUID player,long amount,String source){require(source.startsWith("local-playground:"),INVALID_INPUT,"Local credit requires a playground receipt");store.transaction(tx->{creditIn(tx,player,amount,source);return null;});}
     void reverseCreditIn(TransactionalStore.Transaction tx,String source){
         var r=tx.find("premium_credit_state",key(source));if(r.isEmpty()||r.get().value("reversed").equals("true"))return;

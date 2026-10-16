@@ -105,7 +105,7 @@ public final class ManagedHubServices implements AutoCloseable {
         for(String role:ROLES.keySet().stream().sorted().toList())choices.add(new ChoicePage.Choice("Place "+ROLES.get(role),"Place NPC",(r,s)->attempt(player,()->previewAdd(r,s,player,Kind.NPC,role))));
         choices.add(new ChoicePage.Choice("Place a physical world-select portal","Place portal",(r,s)->attempt(player,()->previewAdd(r,s,player,Kind.PORTAL,"Eternia_World_Portal"))));
         choices.add(new ChoicePage.Choice("List, move, remove or finish setup of managed services in this world","Manage",(r,s)->attempt(player,()->list(r,s,player))));
-        ChoicePage.open(ref,store,player,"Hub NPCs and portals","Aim at level ground inside a registered portal / public services plaza. NPCs face you. If no block is aimed at, placement uses the ground three blocks ahead. Each placement shows its exact location before confirmation.",choices);
+        ChoicePage.open(ref,store,player,"Hub NPCs and portals","Aim at level ground inside a registered public plaza. NPCs and portals face you. If no block is aimed at, placement uses the ground three blocks ahead. Each placement shows its location before confirmation.",choices);
     }
     private void list(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player){
         guard(ref,store,player);String world=store.getExternalData().getWorld().getName();var choices=new ArrayList<ChoicePage.Choice>();
@@ -126,7 +126,10 @@ public final class ManagedHubServices implements AutoCloseable {
         ChoicePage.open(ref,store,player,entry.name(),"Managed service at "+location(entry.pose())+". Portal pads can be removed and placed again; NPC moves keep their managed identity.",choices);
     }
     private void previewAdd(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,Kind kind,String role)throws Exception{
-        guard(ref,store,player);Pose pose=target(ref,store);World world=store.getExternalData().getWorld();validatePlace(world,kind,pose,null);
+        guard(ref,store,player);Pose aimed=target(ref,store);
+        var viewer=store.getComponent(ref,TransformComponent.getComponentType()).getPosition();
+        Pose pose=kind==Kind.PORTAL?new Pose(aimed.x(),aimed.y(),aimed.z(),PortalFacing.toward(aimed.x(),aimed.z(),viewer.x,viewer.z,aimed.yaw())):aimed;
+        World world=store.getExternalData().getWorld();validatePlace(world,kind,pose,null);
         String name=kind==Kind.PORTAL?"world-select portal":ROLES.get(role);
         confirm(ref,store,player,"Place "+name+"?","Place at "+location(pose)+" in "+world.getName()+". The marked public plaza stays open to visitors.",()->{
             add(world,player.getUuid(),kind,role,pose);
@@ -209,8 +212,8 @@ public final class ManagedHubServices implements AutoCloseable {
         if(plan.portals().stream().noneMatch(rect->rect.contains(area)))throw new IllegalStateException("Place services inside a registered public portal / services plaza with a clear 3 × 3 footprint.");
         if(plan.roads().stream().anyMatch(rect->rect.overlaps(area))||com.hexvane.eterniamod.guildroads.GuildRoads.roadRects(world.getName()).stream().anyMatch(rect->rect.overlaps(area)))throw new IllegalStateException("Keep service objects off road columns");
         if(EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots().stream().anyMatch(plot->area.overlaps(NativeHousingChecks.rect(plot.getFootprint()))))throw new IllegalStateException("Public services cannot occupy a player or guild plot");
-        for(var slot:plugin.getServices().housing().allSlots())if(slot.state()!=com.hexvane.eterniamod.domain.HousingService.State.PACKED){
-            var location=plugin.getServices().housing().location(slot.owner()).orElse(null);
+        for(var property:plugin.getServices().housing().properties())if(property.slot().state()!=com.hexvane.eterniamod.domain.HousingService.State.PACKED){
+            var location=property.location();
             if(location!=null&&location.worldId().equals(world.getName())&&area.overlaps(new PlotRect(location.minX(),location.minZ(),location.width(),location.depth())))throw new IllegalStateException("Public services cannot occupy a reserved housing plot");
         }
         if(com.hexvane.eterniamod.setup.paving.RoadPaving.protectedRects(world.getName()).stream().anyMatch(area::overlaps))throw new IllegalStateException("Finish or undo pending paving before placing services here");
@@ -236,10 +239,12 @@ public final class ManagedHubServices implements AutoCloseable {
     }
     private void placePortal(World world,Entry entry)throws IOException{
         var pose=entry.pose();var existing=portalTag(world,pose);
-        if(existing==null){validatePlace(world,Kind.PORTAL,pose,entry.id());setPortalTag(world,pose,new ManagedPortalTag(entry.id()));}
+        if(existing==null){validatePlace(world,Kind.PORTAL,pose,entry.id());setPortalTag(world,pose,new ManagedPortalTag(entry.id(),PortalFacing.rotation(pose.yaw())));}
         else if(!existing.matches(entry.id()))throw new IllegalStateException("This portal position belongs to a different managed object");
         verifyPortal(world,entry,true);BlockType type=portalType();int id=BlockType.getAssetMap().getIndex(type.getId());
-        for(var cell:portalShape())ChunkSectionBlockUtil.setBlock(world,pose.x()+cell.x(),pose.y()+cell.y(),pose.z()+cell.z(),id,type,0,FillerBlockUtil.pack(cell.x(),cell.y(),cell.z()),BLOCK_FLAGS);
+        int rotation=portalTag(world,pose).rotation();
+        // The verified 3 by 3 pad is symmetric; filler offsets stay unchanged for quarter turns.
+        for(var cell:portalShape())ChunkSectionBlockUtil.setBlock(world,pose.x()+cell.x(),pose.y()+cell.y(),pose.z()+cell.z(),id,type,rotation,FillerBlockUtil.pack(cell.x(),cell.y(),cell.z()),BLOCK_FLAGS);
         verifyPortal(world,entry,false);flush(world,pose);
     }
     private void removePortal(World world,Entry entry)throws IOException{
@@ -253,7 +258,7 @@ public final class ManagedHubServices implements AutoCloseable {
         var pose=entry.pose();var tag=portalTag(world,pose);if(tag==null||!tag.matches(entry.id()))throw new IllegalStateException("The portal's managed identity is missing or changed");int expected=BlockType.getAssetMap().getIndex("Eternia_World_Portal");
         for(var cell:portalShape()){
             int x=pose.x()+cell.x(),y=pose.y()+cell.y(),z=pose.z()+cell.z();boolean primary=cell.x()==0&&cell.y()==0&&cell.z()==0;
-            int id=ChunkSectionBlockUtil.blockId(world,x,y,z);if(!(allowAir&&id==BlockType.EMPTY_ID)&&!(id==expected&&ChunkSectionBlockUtil.rotationIndex(world,x,y,z)==0&&ChunkSectionBlockUtil.filler(world,x,y,z)==FillerBlockUtil.pack(cell.x(),cell.y(),cell.z())))throw new IllegalStateException("Portal cells changed. No unrelated blocks will be overwritten.");
+            int id=ChunkSectionBlockUtil.blockId(world,x,y,z);if(!(allowAir&&id==BlockType.EMPTY_ID)&&!(id==expected&&ChunkSectionBlockUtil.rotationIndex(world,x,y,z)==tag.rotation()&&ChunkSectionBlockUtil.filler(world,x,y,z)==FillerBlockUtil.pack(cell.x(),cell.y(),cell.z())))throw new IllegalStateException("Portal cells changed. No unrelated blocks will be overwritten.");
             var holder=ChunkSectionBlockUtil.blockEntityHolderAt(world,x,y,z);if(!primary&&holder!=null)throw new IllegalStateException("A functional block now overlaps this portal");
             if(primary&&holder!=null&&holder.getComponent(com.hypixel.hytale.server.core.modules.block.components.ItemContainerBlock.getComponentType())!=null)throw new IllegalStateException("A container was added to this portal. Inspect it before setup changes.");
             if(fluid(world,x,y,z))throw new IllegalStateException("Fluid now overlaps the managed portal");
@@ -270,7 +275,7 @@ public final class ManagedHubServices implements AutoCloseable {
     private static void setPortalTag(World world,Pose pose,ManagedPortalTag tag){
         var ref=ChunkSectionBlockUtil.sectionRefAt(world,pose.x(),pose.y(),pose.z());var section=world.getChunkStore().getStore().getComponent(ref,BlockComponentSection.getComponentType());if(section==null)throw new IllegalStateException("Portal block metadata storage is unavailable");
         Holder<ChunkStore> holder=null;if(tag!=null){holder=ChunkStore.REGISTRY.newHolder();holder.putComponent(ManagedPortalTag.TYPE,tag);}
-        BlockEntity.setBlockEntity(world.getChunkStore().getStore(),ref,section,pose.x(),pose.y(),pose.z(),tag==null?BlockType.EMPTY:portalType(),0,holder);
+        BlockEntity.setBlockEntity(world.getChunkStore().getStore(),ref,section,pose.x(),pose.y(),pose.z(),tag==null?BlockType.EMPTY:portalType(),tag==null?0:tag.rotation(),holder);
     }
     private static void loaded(World world,Pose pose){
         world.getEntityStore().getStore().assertThread();if(world.getChunkStore().supportsCubicSections())throw new IllegalStateException("Managed services require the supported section layout");
@@ -330,12 +335,18 @@ public final class ManagedHubServices implements AutoCloseable {
             try{validateInfrastructure(world,activePlan.withAreas(roadAreas));}catch(IllegalArgumentException expected){roadRejected=true;}
             if(!roadRejected)throw new IllegalStateException("Road registration bypassed managed service protection");
             service.remove(world,actor,portal);checkSavedPortal(world,portal,false);
+            for(int turn=1;turn<4;turn++){
+                var rotated=new Pose(pad.x(),pad.y(),pad.z(),(float)(turn*Math.PI/2));
+                var gate=service.add(world,actor,Kind.PORTAL,"Eternia_World_Portal",rotated);
+                if(ChunkSectionBlockUtil.rotationIndex(world,pad.x(),pad.y(),pad.z())!=PortalFacing.rotation(rotated.yaw()))throw new IllegalStateException("Portal placement ignored its facing");
+                checkSavedPortal(world,gate,true);service.remove(world,actor,gate);checkSavedPortal(world,gate,false);
+            }
             // Simulate a crash after durable pad creation and before registry acknowledgement.
             var pending=service.registry.create(Kind.PORTAL,world.getName(),"Eternia_World_Portal",pad,actor);service.placePortal(world,pending);checkSavedPortal(world,pending,true);
             if(new ManagedHubRegistry(plugin.getDataDirectory().resolve("managed-hub-services")).require(pending.id(),pending.revision()).state()!=State.PLACING)throw new IllegalStateException("Interrupted portal placement lost its saved operation");
             service.finish(world,pending,actor);var recovered=service.registry.find(pending.id()).orElseThrow();checkSavedPortal(world,recovered,true);service.remove(world,actor,recovered);checkSavedPortal(world,recovered,false);
             if(service.registry.entries().stream().anyMatch(e->e.live()&&e.editor().equals(actor)))throw new IllegalStateException("Managed service smoke left a live fixture record");
-            plugin.getLogger().atInfo().log("ETERNIA_NATIVE_MANAGED_SERVICES_SMOKE_PASS: current permissions, tagged NPC spawn/move/remove, stale and foreign identity rejection, native disk reload of NPC UUID/tag and portal pad/tag, pending portal recovery and protected plaza edits");
+            plugin.getLogger().atInfo().log("ETERNIA_NATIVE_MANAGED_SERVICES_SMOKE_PASS: current permissions, tagged NPC spawn/move/remove, stale and foreign identity rejection, native disk reload of NPC UUID/tag and portal pad/tag at all four rotations, pending portal recovery and protected plaza edits");
         }finally{
             permissions.removeUserPermission(actor,builder);
             // A failed acceptance keeps the plaza around any pending records so recovery remains safe.
@@ -366,7 +377,7 @@ public final class ManagedHubServices implements AutoCloseable {
         if(expected?(tag==null||!tag.matches(entry.id())):tag!=null)throw new IllegalStateException("Native portal identity did not survive block mutation and disk reload");
         var blocks=section.getComponent(BlockSection.getComponentType());int portal=BlockType.getAssetMap().getIndex("Eternia_World_Portal");
         for(var cell:portalShape()){int x=pose.x()+cell.x(),y=pose.y()+cell.y(),z=pose.z()+cell.z();
-            if(blocks==null||blocks.get(x,y,z)!=(expected?portal:BlockType.EMPTY_ID)||blocks.getFiller(x,y,z)!=(expected?FillerBlockUtil.pack(cell.x(),cell.y(),cell.z()):0)||blocks.getRotationIndex(x,y,z)!=0)throw new IllegalStateException("Native portal cells did not survive disk reload");}
+            if(blocks==null||blocks.get(x,y,z)!=(expected?portal:BlockType.EMPTY_ID)||blocks.getFiller(x,y,z)!=(expected?FillerBlockUtil.pack(cell.x(),cell.y(),cell.z()):0)||blocks.getRotationIndex(x,y,z)!=(expected?tag.rotation():0))throw new IllegalStateException("Native portal cells did not survive disk reload");}
     }
     private static Vector3d position(Pose pose){return new Vector3d(pose.x()+.5,pose.y(),pose.z()+.5);}
     private static boolean near(Vector3d position,Pose pose){return position.distanceSquared(position(pose))<.25;}

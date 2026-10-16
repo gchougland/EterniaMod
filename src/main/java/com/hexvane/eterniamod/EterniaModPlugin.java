@@ -121,6 +121,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
         try { discoveries = new com.hexvane.eterniamod.discovery.DiscoveryBootstrap(this,getServices(),infrastructure,dataDirectory.resolve("discoveries.json")); }
         catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
+        getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.runtime.GuildWaygateEntrySystem(this));
         com.hexvane.eterniamod.runtime.NativeSmoke.register(this);
         departures = new com.hexvane.eterniamod.housing.relocation.GuildDepartureWorker(this,
             error -> getLogger().atWarning().withCause(error).log("Guild property return needs recovery"));

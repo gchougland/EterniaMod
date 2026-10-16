@@ -1,0 +1,8 @@
+{
+  "Parent": "Eternia_Housing",
+  "World": {
+    "AllowBlockBreaking": true,
+    "AllowBlockGathering": false,
+    "AllowBlockPlacement": true
+  }
+}

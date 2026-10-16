@@ -10,7 +10,7 @@ Content is separated from entitlement sources. A house, prop, skin, title, or pe
 | Prop/addition | `Props/` | `Props/` | `eternia:prop/<id>` |
 | Palette | `Palettes/` | `Palettes/` | `eternia:palette/<id>` |
 | Path style | `PathStyles/` | `PathStyles/` | `eternia:path/<id>` |
-| Title/outfit/wearable/pet | `Collections/` | `Collections/` | Definition's full namespaced ID |
+| Title/outfit/wearable/pet/mount | `Collections/` | `Collections/` | Definition's full namespaced ID |
 | Full-skin fields | `Appearances/` | `Appearances/` | Referenced by outfit `assetId` |
 | Permanent pass | `Seasons/` | `Seasons/` | Definition's full namespaced ID |
 | Tebex product revision | `Products/` | `Products/` | Actual package ID + immutable revision |
@@ -29,13 +29,12 @@ A native house definition looks like the bundled [starter house](../../src/main/
   "displayName": "Garden cottage",
   "prefabPath": "GardenCottage.prefab.json",
   "plotAnchorOffset": [0, 0, 0],
-  "managementBlockLocalPos": [1, 1, 0],
   "spawnLocalPos": [0, 1, 0],
   "housingKind": "personal"
 }
 ```
 
-Author the management block at the declared local position, and ensure `spawnLocalPos` has a solid floor plus two clear cells. Set `housingKind: "guild"` for guild-only houses. The whole house/addition footprint must stay five blocks inside the plot and five blocks from a road. A 24×24 plot leaves a 14×14 structure envelope. Guild halls use the same engine with a distinct catalog and larger assets.
+Buildings no longer need a Building Records Shelf. Use the Architect's Ledger or main menu to manage them. Ensure `spawnLocalPos` has a solid floor plus two clear cells. Set `housingKind: "guild"` for guild-only houses. The whole house/addition footprint must stay five blocks inside the plot and five blocks from a road. A 24Ã—24 plot leaves a 14Ã—14 structure envelope. Guild halls use the same engine with a distinct catalog and larger assets.
 
 Props use the same `id`, `displayName`, `prefabPath`, and optional anchor/rotation fields; they omit house-specific management/spawn fields. Set `category: "addition"` for a porch, room, or basement; an addition must touch its placed house and obey structure setbacks. Furniture, trees, fountains, paintings, and statues are ordinary props. Package a placed prop to preserve its exact saved native state; the original quantity remains reserved by that instance.
 
@@ -62,15 +61,15 @@ Use `OwnershipService.GrantRequest(receipt, owner, contentId, kind, quantity, va
 
 The [Foundations pass](../../src/main/resources/Server/EterniaMod/Seasons/foundations.json) demonstrates thresholds, free/paid reward rows, count quests, and distinct-resource quests. Another reward row can grant any registered content type. Paid pass access uses `SeasonService.paidEntitlementId(passId)`; for `eternia:foundations` this is `eternia:season_paid/eternia/foundations`. Grant it as an unlock or capability from the actual product. Rewards remain claimable permanently. Register the appropriate paid-pass benefit in a real immutable product revision.
 
-Each quest also has a `coins` amount. The default is 100 Coins, including the Foundations and local practice quests. Set an explicit nonnegative whole number when authoring a new pass; zero disables the Coin reward. The quest journal displays XP and Coins separately, and successful completion pays Coins automatically into the regular player shop wallet. Paid pass ownership is not required. This is a completion reward, in addition to any configured Coins for ordinary activities. It never grants Crowns.
+Each quest also has a `coins` amount. The default is 100 Coins. Foundations gives 80 for a daily quest and 300 for a weekly quest. Local practice quests give 100. Set an explicit nonnegative whole number when authoring a new pass; zero disables the Coin reward. The quest journal displays XP and Coins separately, and successful completion pays Coins automatically into the regular player shop wallet. Paid pass ownership is not required. This is a completion reward, in addition to any configured Coins for ordinary activities. It never grants Crowns.
 
-Quest completions show a native success toast with a banner icon, the journal quest title, XP, and Coins. The notification is queued in the same transaction as the reward, waits while the player is offline, and is sent by the activity worker, at most one per player per second. Previously completed quests receiving their new Coins use a Coin icon and do not announce XP again. Activity retries cannot create another notification for the same player, pass, and quest. Toast delivery is best effort after the packet is sent; a disconnect at that moment can hide a toast, and a server crash before acknowledgement can replay it. Rewards remain protected by their receipts.
+Quest completions show a native success toast with a banner icon, the journal quest title, XP, Coins, and the native short discovery sound. The notification is queued in the same transaction as the reward, waits while the player is offline, and is sent by the activity worker, at most one per player per second. Previously completed quests receiving their new Coins use a Coin icon and do not announce XP again. Activity retries cannot create another notification for the same player, pass, and quest. Toast delivery is best effort after the packet is sent; a disconnect at that moment can hide a toast, and a server crash before acknowledgement can replay it. Rewards remain protected by their receipts.
 
 Quest progress, completion XP, and the Coin credit commit together. A receipt scoped to the player, pass, and quest prevents repeat payouts after retries, switching passes, or reconnecting. Existing stored definitions without a `coins` field are upgraded to 100 without changing their requirements or progress. Opening a quest journal pays any previously completed quests that have not received their Coin reward. Registered amounts remain immutable; publish a new pass ID to change established rewards.
 
 Menus show available Coins and Crowns in the upper right, including the main menu, ledger choice pages, trade desk, and Crown Store. Balances refresh when a page opens or rebuilds after an action. Coins reserved in a trade are excluded from the available balance. Large header balances use compact notation, while shop prices retain their exact whole number amounts. Currency artwork is generated by `scripts/generate-citadel-icons.py`: `coins.png` is the round Coin stack, and `crown.png` is the Crown symbol.
 
-For in-world housing tokens, place the shipped `Eternia_Discovery_Cache` and add its exact position, stable cache ID and reward to `discoveries.json`. The [discovery authoring guide](discoveries.md) includes the complete schema and native test flow. Collection grants the entitlement directly with a durable per-player receipt. The gameplay adapter also provides qualified kill, natural mining, and opted-in crop sources for pass XP and configured coins; add a new activity adapter for future minigames or world-specific quests without changing existing pass progress.
+For in-world housing tokens, place the shipped `Eternia_Discovery_Cache` and add its exact position, stable cache ID and reward to `discoveries.json`. The [discovery authoring guide](discoveries.md) includes the complete schema and native test flow. Collection grants the entitlement directly with a durable per-player receipt. The gameplay adapter also provides qualified enemy kill, natural mining, and native crop harvest sources for pass XP and configured coins; add a new activity adapter for future minigames or world-specific quests without changing existing pass progress.
 
 For local testing, use the logged `/e admin grant` command from the [setup guide](README.md). For paid acquisition, define a product with `packageId`, `revision`, `name`, `subscription`, and `benefits` (`contentId`, `kind`, `quantity`, `expiresWithSubscription`). Use leased benefits for supporter access and permanent benefits for monthly gifts. Keep actual product IDs and checkout mappings in operator configuration, and test provider callbacks as described in [commerce setup](commerce-and-activities.md).
 
@@ -92,8 +91,47 @@ Citadel uses deep green panels, warm ivory text, brass actions, sage focus, thin
 
 The shared colors live in [theme tokens](../planning/theme-tokens.json). Run `npm run sync:theme` in `website/` after changing them, and update [Citadel.ui](../../src/main/resources/Common/UI/Custom/EterniaMod/Theme/Citadel.ui) to match. Add new native menus using the existing button/input/row styles instead of drawing a separate theme. Keep red/green validation understandable through accompanying text.
 
+Public portals and guild waygates use the shared `Blocks/Eternia/Waygate.blockymodel` and `Eternia_Waygate` particle system, generated by `scripts/generate-waygate-effects.py` with Python and Pillow. The generator reads the installed Hytale Assets.zip; set `HYTALE_ASSETS_SRC` to use another location. The fixed, fullbright model holds the arch, gold cut gems and ground seal, so they have no particle expiry. The translucent faceted center uses one particle with constant opacity, a one hour lifetime and MaxConcurrentParticles set to 1. Never stack center particles: alpha accumulation causes brightness pulses. Model quads did not blend translucently in the tested client, so the center must remain a particle. The compass also permits only one particle; rising lights remain animated. The shared system attaches at Y 2.0. The palette and diamond motif match the plot border. Stop the local server before rebuilding, and inspect both portal sides after restarting.
+
+Collection categories use `CollectionCardRow.ui`, with four card slots per row and 144 pixel previews. `ContentImages` supplies the same catalog art as store and reward pages. Keep names and availability separate from descriptions. The top collection tabs own navigation; footer buttons should provide actions, not repeat the tabs. Decoration quantities still come from `CollectionInventory`, preserving available, packed and placed counts. Pet cards retain their individual assignment and source grant.
+
 ### Eternia Guild Hall
 
-`Buildings/founders_hall.json` and `Prefabs/FoundersHall.prefab.json` contain the adapted Stormwind hall. Its coordinates are centered for Eternia plots, its entrance is defined for arrivals, and its management block uses `Eternia_Management_Block`. Native decorative doors and the sign retain their geometry; fresh instance UUIDs and custody links are assigned by the normal placement adapter. The prefab contains no Aetherhaven block IDs, POI components, seeded inventory, or custom smoke emitters. Unsupported loose weapon/model displays were omitted. Catalog icon and screenshot images were rendered through the website's native prefab viewer.
+`Buildings/founders_hall.json` and `Prefabs/FoundersHall.prefab.json` contain the adapted Stormwind hall. Its coordinates are centered for Eternia plots, its entrance is defined for arrivals, and it no longer includes a Building Records Shelf. Native decorative doors and the sign retain their geometry; fresh instance UUIDs and custody links are assigned by the normal placement adapter. The prefab contains no Aetherhaven block IDs, POI components, seeded inventory, or custom smoke emitters. Unsupported loose weapon/model displays were omitted. Catalog icon and screenshot images were rendered through the website's native prefab viewer.
 
 Keep this distinct from the old `guild_hall`: changing the dimensions of an existing catalog ID would invalidate packed snapshots. Ship future incompatible house replacements under a new ID, retain the old definition/prefab for restoration, and add an explicit migration if existing placed examples need updating.
+
+
+A building definition can set `"retired": true` to remove an old style from Housing inventory without deleting the assets needed to pack existing buildings or restore saved plots. The original `guild_hall` is retired; `founders_hall` is the current Eternia Guild Hall. Keep those IDs unchanged so saved ownership and building records remain valid.
+
+
+### Daily and weekly quest pools
+
+Foundations has 30 daily quests and 15 weekly quests. See [the full quest catalog](quest-catalog.md). Each quest sets `cadence` (`DAILY`, `WEEKLY`, or legacy `ONCE`), `name`, and `goal`. There is one active daily and one active weekly per activity type. Sort each pool by stable quest ID; the UTC date selects a slot with a different activity offset. Choices are deterministic and shared by everyone, so reconnecting cannot reroll them. Adding more quests of an activity expands that pool. Quest names and goal wording can be revised without resetting progress. Registered requirements, targets, rotation and rewards remain immutable; use a new pass ID for changes to those fields.
+
+Daily progress resets at 00:00 UTC. Weekly progress resets Monday at 00:00 UTC. These use the server's real clock, never the world clock. The activity outbox records when gameplay happened, so delayed work stays in its original window. Progress, Coin receipts and completion notices are scoped to player, pass, quest and window. Unfinished progress does not carry into the next window. Pass XP, reward claims and ownership are permanent. Opening or refreshing the journal shows the current choices.
+
+The old shipped three objective Foundations prototype has a narrowly checked upgrade to this pool. Existing pass XP, levels, paid access, claimed rewards and account balances are preserved. Other existing pass definitions are not rewritten.
+
+Targets accept exact native IDs or selectors: `npc:Skeleton` includes skeleton variants, `npc:Skeleton_Archer` includes patrol and wander variants, `ore:iron` includes iron in every host rock, and `crop:wheat` includes native wheat and the playground wheat. Broad selectors are `group:undead`, `group:enemies`, `group:trorks`, `group:ores`, and `group:crops`. Enemies means undead, Trorks, goblins and Outlanders, not animals. Distinct crops normalize native growth state IDs so one crop cannot count as multiple kinds.
+
+Activity credit requires Adventure mode in an adventure world or an explicitly enabled activity world. Recognized enemies, ores and crops have default XP of 100, 40 and 30 respectively; exact `activity-xp.json` mappings override those amounts. In local mode the managed playground village also allows enemy kill credit. Native crop templates and sickle selectors use `EterniaHarvestCrop`, which calls normal harvesting once and records a verified block transition with the native generation and saved harvest time. This also handles mature crops whose farming component was removed, or replanted crops whose generation starts over. Unsupported custom crop templates can opt into this same interaction. Successful harvesting of crops with no regrowth generation is not credited by this adapter.
+
+
+### Collection categories, custom clothing and mounts
+
+Collection navigation separates Houses, Decorations, Materials, Titles, Wardrobe, Pets, Mounts and Upgrades. `CollectionCategories` classifies housing and upgrade entitlements by content ID; appearance and companions come from their registered kind. `service/` entries such as the free mailbox remain valid entitlements but are hidden because they are not collectible objects. Add actual decorative mailboxes as `prop/` content if desired.
+
+The Prowl Shirt uses a custom chest item for its visual model. `CustomWearables` projects that item into outgoing equipment updates without changing real inventory or armor stats. It hides the underlying top only while worn and restores the actual equipment when removed. Other armor slots and held items retain their original appearance. This currently supports the Prowl Shirt explicitly; extend the projection mapping when adding another custom clothing model. Native character creator wearables continue to use `SkinComposer`.
+
+Run `python scripts/extract-prowl-shirt.py` against the installed Hytale assets to regenerate the shirt from Prowl's cloth meshes and texture. The source Prowl model is unchanged. After editing the model, run `website/scripts/render-collection-catalog.js` with `COLLECTION_IDS=eternia:wearable/prowl_shirt` to regenerate previews and the equipment icon. The model must be under `Common/Items/` and its item icon under `Common/Icons/Items/` for native item validation.
+
+Foundations adds the shirt at paid level 1 without changing existing reward receipts, claimed rewards or XP. It displays first, while the existing Cacti remains available. The migration only accepts this exact additive reward change; arbitrary changes to established rewards remain rejected.
+
+For another horse-shaped mount, add a `MOUNT` collection definition, a native model `assetId`, its catalog entry and artwork, then grant an `UNLOCK`. Horse is a free starter unlock. Summoning requires clear loaded space, mounts the player immediately, and uses native riding controls. Dismount, disconnect and world departure remove the temporary creature. Mount entities are invulnerable and never saved as livestock. Current seat height is 1.6 blocks and clearance is sized for a horse; extend the mount schema and validation before adding differently shaped mounts.
+
+The retired `Eternia_Management_Block` asset remains available for old saved houses and snapshots. New shipped houses omit it, and both the in game prefab importer and website export accept houses without it. Existing shelves are not automatically deleted from player buildings.
+
+The portal compass is a model quad with a looping `Waygate_Idle.blockyanim`, rather than a particle that expires each turn. Its 720 animation frames at 60 frames per second describe a twelve second rotation; public and guild gates share it. The arch, seal, translucent center and rising lights retain their existing appearance. Regenerate with `scripts/generate-waygate-effects.py`.
+
+Block animation tracks must include all five channels: `position`, `orientation`, `shapeStretch`, `shapeVisible`, and `shapeUvOffset`. Use empty arrays for unused channels. Omitting them causes the client to reject the animation. Track keys match model node names.

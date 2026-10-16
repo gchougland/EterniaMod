@@ -16,6 +16,7 @@ public final class EterniaHousingTool extends SimpleInstantInteraction {
     private String route="CLAIM";
     @Override protected void firstRun(InteractionType type,InteractionContext context,CooldownHandler cooldown){
         var commands=context.getCommandBuffer();if(commands==null)return;var ref=context.getEntity();var player=commands.getComponent(ref,PlayerRef.getComponentType());if(player==null)return;
-        var store=commands.getStore();String destination=route;store.getExternalData().getWorld().execute(()->{if(!ref.isValid())return;var plugin=EterniaModPlugin.get();if(destination.equals("CLAIM"))PlotClaimPage.open(ref,store,player,plugin);else if(destination.equals("LEDGER"))CustomizationTools.ledger(plugin,ref,store,player);else if(destination.equals("WORLDS"))plugin.getMenuActions().perform(com.hexvane.eterniamod.socialui.SocialUiActions.Action.WORLD_SELECT,ref,store,player);});
+        var target=context.getTargetBlock();var position=target==null?null:new org.joml.Vector3i(target.x,target.y,target.z);
+        var store=commands.getStore();String destination=route;store.getExternalData().getWorld().execute(()->{if(!ref.isValid())return;var plugin=EterniaModPlugin.get();if(destination.equals("CLAIM"))PlotClaimPage.open(ref,store,player,plugin);else if(destination.equals("LEDGER"))CustomizationTools.ledger(plugin,ref,store,player);else if(destination.equals("WORLDS"))plugin.getMenuActions().perform(com.hexvane.eterniamod.socialui.SocialUiActions.Action.WORLD_SELECT,ref,store,player);else if(destination.equals("GUILD_WAYGATE")&&type==InteractionType.Use)com.hexvane.eterniamod.runtime.GuildWaygate.open(plugin,ref,store,player,position);});
     }
 }

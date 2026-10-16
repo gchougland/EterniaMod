@@ -9,6 +9,8 @@ class HousingWorldPolicyTest {
         var before=new HousingWorldPolicy.Previous("houses","Default",Set.of("Fluid=Lava"));
         var restored=HousingWorldPolicy.restore(before,HousingWorldPolicy.GAMEPLAY,Set.of("Fluid","Fluid=Lava"));
         assertEquals("Default",restored.gameplay());assertEquals(Set.of("Fluid=Lava"),restored.disabled());
+        var fromBuilding=HousingWorldPolicy.restore(before,HousingWorldPolicy.BUILD_GAMEPLAY,Set.of("Fluid","Fluid=Lava"));
+        assertEquals("Default",fromBuilding.gameplay());assertEquals(Set.of("Fluid=Lava"),fromBuilding.disabled());
         var modified=HousingWorldPolicy.restore(before,"CustomGameplay",Set.of("Fluid","Fluid=Lava","CustomTag"));
         assertEquals("CustomGameplay",modified.gameplay());assertEquals(Set.of("Fluid","Fluid=Lava","CustomTag"),modified.disabled());
     }

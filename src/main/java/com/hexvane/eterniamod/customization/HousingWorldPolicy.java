@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 /** Housing permits checked Eternia edits only. Native hand placement and all fluid simulation stop. */
 public final class HousingWorldPolicy {
-    public static final String GAMEPLAY="Eternia_Housing",FLUID_TAG="Fluid";
+    public static final String GAMEPLAY="Eternia_Housing", BUILD_GAMEPLAY="Eternia_Housing_Build",FLUID_TAG="Fluid";
     record Previous(String world,String gameplay,Set<String> disabled) {
         Previous {Objects.requireNonNull(world);Objects.requireNonNull(gameplay);disabled=Set.copyOf(disabled);}
     }
@@ -51,6 +51,10 @@ public final class HousingWorldPolicy {
         }
         return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
     }
+    public static void refresh(World world) {
+        var policy=active;if(policy==null)throw new IllegalStateException("Housing policy is unavailable");
+        policy.apply(world);
+    }
     private synchronized void apply(World world) {
         String id=world.getWorldConfig().getUuid().toString();var config=world.getWorldConfig();var saved=previous.get(id);
         if(plugin.getInfrastructure().isHousing(world.getName())) {
@@ -64,21 +68,33 @@ public final class HousingWorldPolicy {
             }
             if(saved==null) {
                 // A pre-existing policy ID cannot reveal the prior gameplay config: never invent one.
-                if(GAMEPLAY.equals(config.getGameplayConfig()))saved=new Previous(world.getName(),GAMEPLAY,config.getDisabledFluidTickers());
+                if(GAMEPLAY.equals(config.getGameplayConfig())||BUILD_GAMEPLAY.equals(config.getGameplayConfig()))saved=new Previous(world.getName(),GAMEPLAY,config.getDisabledFluidTickers());
                 else saved=new Previous(world.getName(),config.getGameplayConfig(),config.getDisabledFluidTickers());
                 previous.put(id,saved);persist();
             }
             var disabled=new HashSet<>(config.getDisabledFluidTickers());disabled.add(FLUID_TAG);
-            config.setGameplayConfig(GAMEPLAY);config.setDisabledFluidTickers(Set.copyOf(disabled));config.markChanged();
+            String selected=HubBuildMode.any(plugin,world)?BUILD_GAMEPLAY:GAMEPLAY;
+            if(GameplayConfig.getAssetMap().getAsset(selected)==null)throw new IllegalStateException("Missing housing gameplay asset: "+selected);
+            config.setDisabledFluidTickers(Set.copyOf(disabled));config.markChanged();
+            changeGameplayConfig(config,selected,world::resendGameplayConfig);
         }else if(saved!=null) {
             var restored=restore(saved,config.getGameplayConfig(),config.getDisabledFluidTickers());
-            config.setGameplayConfig(restored.gameplay);config.setDisabledFluidTickers(restored.disabled);config.markChanged();
+            config.setDisabledFluidTickers(restored.disabled);config.markChanged();
+            changeGameplayConfig(config,restored.gameplay,world::resendGameplayConfig);
             previous.remove(id);persist();
         }
     }
+    /** Changing WorldConfig alone does not update connected clients' placement rules. */
+    static void changeGameplayConfig(com.hypixel.hytale.server.core.universe.world.WorldConfig config,
+                                     String gameplay,Runnable resend) {
+        if(gameplay.equals(config.getGameplayConfig()))return;
+        config.setGameplayConfig(gameplay);
+        config.markChanged();
+        resend.run();
+    }
     /** Restore each independent field only while it still equals the value this policy installed. */
     static Restore restore(Previous before,String currentGameplay,Set<String> currentDisabled) {
-        String gameplay=GAMEPLAY.equals(currentGameplay)?before.gameplay:currentGameplay;
+        String gameplay=(GAMEPLAY.equals(currentGameplay)||BUILD_GAMEPLAY.equals(currentGameplay))?before.gameplay:currentGameplay;
         var expected=new HashSet<>(before.disabled);expected.add(FLUID_TAG);
         return new Restore(gameplay,currentDisabled.equals(expected)?before.disabled:Set.copyOf(currentDisabled));
     }
@@ -89,5 +105,5 @@ public final class HousingWorldPolicy {
             try{Files.move(pending,file,StandardCopyOption.ATOMIC_MOVE,StandardCopyOption.REPLACE_EXISTING);}catch(AtomicMoveNotSupportedException ignored){Files.move(pending,file,StandardCopyOption.REPLACE_EXISTING);}
         }catch(IOException failure){throw new UncheckedIOException("Could not save housing world policy",failure);}
     }
-    static void stop(){active=null;}
+    static void stop(){HubBuildMode.SESSIONS.clear();active=null;}
 }

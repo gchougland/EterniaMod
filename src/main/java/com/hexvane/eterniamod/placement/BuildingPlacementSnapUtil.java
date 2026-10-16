@@ -30,6 +30,21 @@ public final class BuildingPlacementSnapUtil {
         );
     }
 
+    /** Initial decoration preview sits three blocks ahead, on the nearby surface. */
+    @Nullable
+    public static Vector3i anchorInFrontOfPlayer(Ref<EntityStore> ref,Store<EntityStore> store){
+        var transform=store.getComponent(ref,TransformComponent.getComponentType());if(transform==null)return null;
+        var position=transform.getPosition();float yaw=BuildingPlacementNudgeUtil.getPlayerYawRadians(ref,store);
+        int x=(int)Math.floor(position.x-Math.sin(yaw)*3),z=(int)Math.floor(position.z-Math.cos(yaw)*3);
+        int feet=(int)Math.floor(position.y);var world=store.getExternalData().getWorld();
+        for(int y=feet+1;y>=feet-3;y--){
+            var ground=com.hexvane.eterniamod.world.ChunkSectionBlockUtil.blockType(world,x,y-1,z);
+            if(ground!=null&&ground.isCubeDrawType()&&ground.getMaterial()==com.hypixel.hytale.protocol.BlockMaterial.Solid)
+                return BuildingPlacementAnchorUtil.pickAnchor(world,new BlockPosition(x,y-1,z));
+        }
+        return new Vector3i(x,feet+com.hexvane.eterniamod.EterniaModConstants.PLOT_SIGN_BLOCK_Y_ABOVE_LOGICAL_ANCHOR,z);
+    }
+
     public static void snapSessionToPlayer(@Nonnull BuildingPlacementSession session, @Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
         Vector3i anchor = anchorAtPlayerFeet(ref, store);
         if (anchor == null) {
@@ -40,7 +55,7 @@ public final class BuildingPlacementSnapUtil {
     }
 
     public static void snapPropSessionToPlayer(@Nonnull PropPlacementSession session, @Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
-        Vector3i anchor = anchorAtPlayerFeet(ref, store);
+        Vector3i anchor = anchorInFrontOfPlayer(ref, store);
         if (anchor == null) {
             return;
         }

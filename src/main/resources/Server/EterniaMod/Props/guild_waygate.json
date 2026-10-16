@@ -1,0 +1,7 @@
+{
+  "id": "guild_waygate",
+  "displayName": "Guild Waygate Portal",
+  "prefabPath": "Eternia_Guild_Waygate.prefab.json",
+  "plotAnchorOffset": [0, 0, 0],
+  "rotationYaw": "None"
+}

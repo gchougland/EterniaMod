@@ -29,6 +29,8 @@ public final class AccountService extends DomainSupport {
             require(old.isEmpty()||old.get().value("gameId").equals(gameId.toString()),CONFLICT,"Identity belongs to another game account");
             if(old.isEmpty())tx.save("identity",k,0,data);return null;});
     }
+    public Map<UUID,Account> findAll(Collection<UUID> ids){return store.transaction(tx->{var result=new HashMap<UUID,Account>();tx.findAll("account",ids.stream().map(UUID::toString).toList()).values().forEach(row->{var value=account(row);result.put(value.id(),value);});return Map.copyOf(result);});}
+    public void heartbeats(Collection<UUID> ids){store.transaction(tx->{tx.findAll("account",ids.stream().map(UUID::toString).toList());for(var id:ids)accrue(tx,id);return null;});}
     public Optional<Account> find(UUID id) { return store.transaction(tx->tx.find("account",id.toString()).map(AccountService::account)); }
     public Optional<Account> findByName(String name) {text(name,"display name",64);return store.transaction(tx->{var matches=tx.scan("account").stream().filter(r->r.value("name").equalsIgnoreCase(name)).toList();require(matches.size()<=1,CONFLICT,"Display name is ambiguous");return matches.stream().findFirst().map(AccountService::account);});}
     private static Account account(TransactionalStore.Row r) { return new Account(UUID.fromString(r.key()),r.value("name"),Instant.parse(r.value("lastSeen")),r.value("lastDisconnect").isEmpty()?null:Instant.parse(r.value("lastDisconnect"))); }

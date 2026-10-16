@@ -9,7 +9,7 @@ import static com.hexvane.eterniamod.domain.DomainException.Code.*;
 /** Durable selections and pet assignments. Native appearance/follower adapters apply these choices;
  * selecting an entry does not claim its game asset has rendered successfully. */
 public final class CollectionService extends DomainSupport {
-    public enum Kind { PREFIX_TITLE, SUFFIX_TITLE, OUTFIT, WEARABLE, PET }
+    public enum Kind { PREFIX_TITLE, SUFFIX_TITLE, OUTFIT, WEARABLE, PET, MOUNT }
     public record Definition(String id,String name,Kind kind,String slot,String assetId){
         public Definition{content(id);text(name,"collection name",100);Objects.requireNonNull(kind);slot=slot==null?"":slot;text(assetId,"asset id",200);require(kind!=Kind.WEARABLE||slot.matches("[a-z][a-z0-9_-]{0,30}"),INVALID_INPUT,"Wearable needs a slot");}}
     public record Selection(String prefix,String suffix,String outfit,Map<String,String> wearables){public Selection{wearables=Map.copyOf(wearables);}}
@@ -20,12 +20,12 @@ public final class CollectionService extends DomainSupport {
     public List<Definition> definitions(){return store.transaction(tx->tx.scan("collection_definition").stream().map(CollectionService::definition).toList());}
     public Selection selection(UUID actor){return store.transaction(tx->selection(tx.find("collection_selection",actor.toString()).map(TransactionalStore.Row::fields).orElse(Map.of())));}
     public Selection equip(UUID actor,String contentId){
-        return store.transaction(tx->{row(tx,"account",actor.toString());var definition=definition(row(tx,"collection_definition",contentId));require(definition.kind!=Kind.PET,INVALID_INPUT,"Pets use assignments");require(ownership.ownsIn(tx,Owner.player(actor),contentId),FORBIDDEN,"Collection item is not owned");
+        return store.transaction(tx->{row(tx,"account",actor.toString());var definition=definition(row(tx,"collection_definition",contentId));require(definition.kind!=Kind.PET&&definition.kind!=Kind.MOUNT,INVALID_INPUT,"Choose a companion from its collection");require(ownership.ownsIn(tx,Owner.player(actor),contentId),FORBIDDEN,"Collection item is not owned");
             var old=tx.find("collection_selection",actor.toString());var data=new TreeMap<>(old.map(TransactionalStore.Row::fields).orElse(Map.of()));
             switch(definition.kind){case PREFIX_TITLE->data.put("prefix",contentId);case SUFFIX_TITLE->data.put("suffix",contentId);case OUTFIT->{data.keySet().removeIf(k->k.startsWith("wearable."));data.put("outfit",contentId);}case WEARABLE->{data.put("outfit","");data.put("wearable."+definition.slot,contentId);}default->throw new DomainException(INVALID_INPUT,"Not equippable");}
             tx.save("collection_selection",actor.toString(),old.map(TransactionalStore.Row::revision).orElse(0L),data);return selection(data);});
     }
-    public Selection unequip(UUID actor,Kind kind,String slot){return store.transaction(tx->{var old=tx.find("collection_selection",actor.toString());var data=new TreeMap<>(old.map(TransactionalStore.Row::fields).orElse(Map.of()));String k=switch(kind){case PREFIX_TITLE->"prefix";case SUFFIX_TITLE->"suffix";case OUTFIT->"outfit";case WEARABLE->"wearable."+slot;case PET->throw new DomainException(INVALID_INPUT,"Pets use assignments");};data.remove(k);tx.save("collection_selection",actor.toString(),old.map(TransactionalStore.Row::revision).orElse(0L),data);return selection(data);});}
+    public Selection unequip(UUID actor,Kind kind,String slot){return store.transaction(tx->{var old=tx.find("collection_selection",actor.toString());var data=new TreeMap<>(old.map(TransactionalStore.Row::fields).orElse(Map.of()));String k=switch(kind){case PREFIX_TITLE->"prefix";case SUFFIX_TITLE->"suffix";case OUTFIT->"outfit";case WEARABLE->"wearable."+slot;case PET, MOUNT->throw new DomainException(INVALID_INPUT,"Choose a companion from its collection");};data.remove(k);tx.save("collection_selection",actor.toString(),old.map(TransactionalStore.Row::revision).orElse(0L),data);return selection(data);});}
     public Pet materializePet(Owner owner,String sourceGrant,long index){
         require(index>=0,INVALID_INPUT,"Invalid pet index");return store.transaction(tx->{var grant=row(tx,"grant",sourceGrant);require(grant.value("owner").equals(owner.key())&&index<grant.number("quantity"),FORBIDDEN,"Pet grant does not belong to owner");requireActiveGrant(grant);
             var definition=definition(row(tx,"collection_definition",grant.value("content")));require(definition.kind==Kind.PET,INVALID_INPUT,"Grant is not a pet");
@@ -49,7 +49,11 @@ public final class CollectionService extends DomainSupport {
     }
     public Pet unassign(UUID actor,UUID petId){return store.transaction(tx->{var r=row(tx,"pet",petId.toString());authorizeOwner(tx,actor,Owner.parse(r.value("owner")));return pet(save(tx,r,"assignment","UNASSIGNED","property",""));});}
     public int reconcileEntitlements(){
-        return store.transaction(tx->{int changes=0;for(var r:tx.scan("pet"))if(!r.value("assignment").equals("UNASSIGNED")){var grant=row(tx,"grant",r.value("source"));boolean invalidProperty=false;
+        return store.transaction(tx->{int changes=0;for(var r:tx.scan("pet"))if(!r.value("assignment").equals("UNASSIGNED")){var grant=row(tx,"grant",r.value("source"));if(!validPet(tx,r,grant)){save(tx,r,"assignment","UNASSIGNED","property","");changes++;}}
+            for(var r:tx.scan("collection_selection")){Owner owner=Owner.player(UUID.fromString(r.key()));var data=new TreeMap<>(r.fields());data.entrySet().removeIf(e->!e.getValue().isEmpty()&&!ownership.ownsIn(tx,owner,e.getValue()));if(!data.equals(r.fields())){tx.save(r.namespace(),r.key(),r.revision(),data);changes++;}}return changes;});
+    }
+    private boolean validPet(TransactionalStore.Transaction tx,TransactionalStore.Row r,TransactionalStore.Row grant){
+        boolean invalidProperty=false;
             if(r.value("assignment").equals("PROPERTY")){var property=tx.scan("housing_slot").stream().filter(p->p.value("property").equals(r.value("property"))).findFirst();
                 if(property.isEmpty())invalidProperty=true;else{Owner petOwner=Owner.parse(r.value("owner")),propertyOwner=Owner.parse(property.get().key());
                     if(!petOwner.equals(propertyOwner)){
@@ -57,9 +61,20 @@ public final class CollectionService extends DomainSupport {
                         invalidProperty=player.kind()!=Owner.Kind.PLAYER||guild.kind()!=Owner.Kind.GUILD||tx.find("guild_member",player.id().toString()).filter(m->m.value("active").equals("true")&&m.value("guild").equals(guild.id().toString())).isEmpty();
                     }
                 }}
-            if(grant.value("revoked").equals("true")||!future(grant.value("until"),clock.instant())||invalidProperty){save(tx,r,"assignment","UNASSIGNED","property","");changes++;}}
-            for(var r:tx.scan("collection_selection")){Owner owner=Owner.player(UUID.fromString(r.key()));var data=new TreeMap<>(r.fields());data.entrySet().removeIf(e->!e.getValue().isEmpty()&&!ownership.ownsIn(tx,owner,e.getValue()));if(!data.equals(r.fields())){tx.save(r.namespace(),r.key(),r.revision(),data);changes++;}}return changes;});
+        return !grant.value("revoked").equals("true")&&future(grant.value("until"),clock.instant())&&!invalidProperty;
     }
+    public record RenderState(List<Definition> definitions,Map<UUID,Selection> selections,List<Pet> pets,boolean needsRepair) {}
+    /** Read-only renderer projection. Invalid or expired entitlements are omitted, never granted by the cache. */
+    public RenderState renderState(Set<UUID> actors){return store.transaction(tx->{
+        var selected=new HashMap<UUID,Selection>();boolean repair=false;
+        tx.scan("grant");
+        var rows=tx.findAll("collection_selection",actors.stream().map(UUID::toString).toList());
+        for(var actor:actors){var row=rows.get(actor.toString());var data=new TreeMap<String,String>(row==null?Map.of():row.fields());
+            repair|=data.entrySet().removeIf(e->!e.getValue().isEmpty()&&!ownership.ownsIn(tx,Owner.player(actor),e.getValue()));selected.put(actor,selection(data));}
+        var pets=new ArrayList<Pet>();for(var row:tx.scan("pet"))if(!row.value("assignment").equals("UNASSIGNED")){
+            var grant=tx.find("grant",row.value("source")).orElse(null);if(grant!=null&&validPet(tx,row,grant))pets.add(pet(row));else repair=true;}
+        return new RenderState(tx.scan("collection_definition").stream().map(CollectionService::definition).toList(),Map.copyOf(selected),List.copyOf(pets),repair);
+    });}
     private void requireActiveGrant(TransactionalStore.Row grant){require(!grant.value("revoked").equals("true")&&future(grant.value("until"),clock.instant()),FORBIDDEN,"Pet entitlement is not active");}
     private static void authorizeOwner(TransactionalStore.Transaction tx,UUID actor,Owner owner){if(owner.kind()==Owner.Kind.PLAYER)require(owner.id().equals(actor),FORBIDDEN,"Property or pet belongs to another player");else if(owner.kind()==Owner.Kind.GUILD)GuildService.requireCapability(tx,actor,owner.id(),"housing.prop.place");else throw new DomainException(FORBIDDEN,"Server-owned pet cannot be managed");}
     private static Definition definition(TransactionalStore.Row r){return new Definition(r.key(),r.value("name"),Kind.valueOf(r.value("kind")),r.value("slot"),r.value("asset"));}

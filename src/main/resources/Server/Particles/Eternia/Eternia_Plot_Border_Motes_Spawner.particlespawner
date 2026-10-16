@@ -63,7 +63,7 @@
       },
       "Scale": {
         "X": {
-          "Min": 0.08,
+          "Min": 0.1,
           "Max": 0.12
         }
       },
@@ -82,11 +82,11 @@
         "Color": "#6cc9b5"
       },
       "3": {
-        "Opacity": 0.85,
+        "Opacity": 0.95,
         "Color": "#8ddfca"
       },
       "60": {
-        "Opacity": 0.68,
+        "Opacity": 0.76,
         "Color": "#d5c78d"
       },
       "100": {

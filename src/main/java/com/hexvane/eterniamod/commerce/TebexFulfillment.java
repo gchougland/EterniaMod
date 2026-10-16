@@ -37,7 +37,7 @@ public final class TebexFulfillment {
     public void registerConsole(EterniaModPlugin plugin){plugin.getCommandRegistry().registerCommand(new DeliveryCommand());}
     public HttpHandler webhookHandler(){return this::handle;}
     public Map<String,Integer> packageRevisions(){return mappings;}
-    public int reconcile(){return services.commerceIngress().reconcile(100);}
+    public int reconcile(){if(!services.readView(TebexFulfillment.class,java.time.Duration.ofSeconds(10),()->services.commerceIngress().hasPending()))return 0;return services.batch(()->services.commerceIngress().reconcile(25));}
     private void handle(HttpExchange exchange)throws IOException{
         try{
             if(!exchange.getRequestMethod().equals("POST")){exchange.getResponseHeaders().set("Allow","POST");respond(exchange,405,"{}");return;}
@@ -77,6 +77,7 @@ public final class TebexFulfillment {
         String transaction=required(payment,"transaction_id");Instant created=Instant.parse(required(payment,"created_at"));
         String subscription=recurringReference!=null?recurringReference:optional(payment,"recurring_payment_reference");
         JsonArray products=payment.getAsJsonArray("products");if(products==null||products.size()>100)throw new IllegalArgumentException("Invalid products");
+        var registeredProducts=services.commerce().products();
         var seen=new HashSet<String>();
         var verifiedLines=new ArrayList<CommerceService.VerifiedPurchase>();
         for(JsonElement element:products){
@@ -85,7 +86,7 @@ public final class TebexFulfillment {
             JsonObject username=product.getAsJsonObject("username");if(username==null)throw new IllegalArgumentException("Missing product recipient");
             UUID recipient=gameUuid(required(username,"id"));long quantity=product.get("quantity").getAsBigDecimal().longValueExact();
             String expiry=optional(product,"expires_at");Instant end=!expiry.isEmpty()?Instant.parse(expiry):nextPayment;
-            boolean recurring=services.commerce().products().stream().filter(p->p.packageId().equals(packageId)&&p.revision()==revision).findFirst().map(CommerceService.Product::subscription).orElse(false);
+            boolean recurring=registeredProducts.stream().filter(p->p.packageId().equals(packageId)&&p.revision()==revision).findFirst().map(CommerceService.Product::subscription).orElse(false);
             if(recurring&&(subscription.isEmpty()||end==null))throw new IllegalArgumentException("Missing verified paid subscription period");
             verifiedLines.add(new CommerceService.VerifiedPurchase("tebex",transaction,packageId,packageId,revision,Owner.player(recipient),quantity,recurring?subscription:"",recurring?created:null,recurring?end:null));
         }

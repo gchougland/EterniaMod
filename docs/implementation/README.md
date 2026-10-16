@@ -4,6 +4,8 @@ The plugin and website have separate responsibilities. The Java plugin owns acco
 
 ## Run locally
 
+For live server currency grants and the first join Coin gift, see [Admin currency commands](admin-currency.md).
+
 For a populated in-game test experience, use **`/e playground`** as a WorldEditor after joining your local server. See the [manual playtesting route](manual-playground.md) and [Crown store guide](crown-store.md). It creates its own persistent example worlds, supplies and shops while retaining your current Hub, house and guild.
 
 Requirements: the installed Hytale server/assets, Java 25, and Node 22 or later for the website. On this machine the bundled Node 24 runtime is available through `website/scripts/local.ps1`; the system Node 18 is too old.
@@ -100,3 +102,5 @@ The [local validation record](validation.md) lists the completed build, test, na
 Automated tests cover domain atomicity, replay and refunds, local restart persistence, permissions, plot graph/setbacks, border budgets, content schemas, skin preservation, snapshot tampering, parties, and bridge authorization. The optional PostgreSQL integration test reports skipped when an isolated database is absent. The website tests cover auth boundaries, CSRF, catalog revision import/export, render jobs, and raw webhook forwarding.
 
 Native tests and renderer outputs are kept in ignored build/test-output directories. Actual client GUI interaction, final fog appearance/performance, a real new OAuth client, real Tebex test subscription/payment lifecycle, and Railway deployment remain distinct acceptance steps. Do not infer those have happened from passing fixture tests.
+
+- [Database access audit](database-access-audit.md): read lifetimes, grouped operations, freshness rules, complete service inventory and verification.

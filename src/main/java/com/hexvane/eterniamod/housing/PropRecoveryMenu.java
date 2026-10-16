@@ -17,8 +17,8 @@ public final class PropRecoveryMenu {
     private PropRecoveryMenu() {}
     public static void open(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,Owner owner) {
         try {
-            var slot=plugin.getServices().housing().find(owner).orElseThrow();
-            var location=plugin.getServices().housing().location(owner).orElseThrow();
+            var property=plugin.getServices().housing().property(owner).orElseThrow();
+            var slot=property.slot();var location=java.util.Objects.requireNonNull(property.location());
             var world=store.getExternalData().getWorld();
             if(!location.worldId().equals(world.getName()))throw new IllegalStateException("Visit "+location.worldId()+" first, then retry recovery. Plot: X "+location.minX()+", Z "+location.minZ()+".");
             var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).getPlot(slot.propertyId());

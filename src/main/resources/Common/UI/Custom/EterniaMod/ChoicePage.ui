@@ -2,9 +2,9 @@ $T = "Theme/Citadel.ui";
 $C = "../Common.ui";
 $T.@PageOverlay { Anchor: (Full: 0); LayoutMode: Middle;
 Group { Anchor: (Width: 920, Height: 720); Padding: (Full: 24); Background: $T.@PanelSurface; LayoutMode: Top;
-Group { Anchor: (Height: 44, Bottom: 8); LayoutMode: Left;
+Group { Anchor: (Height: 64, Bottom: 12); LayoutMode: Left;
 Label #Title { FlexWeight: 1; Style: $T.@TitleStyle; }
-Group #CurrencyWallet { Anchor: (Width: 220, Height: 44); LayoutMode: Left; }
+Group #CurrencyWallet { Anchor: (Width: 220, Height: 64); LayoutMode: Left; }
 $T.@HomeButton #MenuHome {}
 }
 Label #Description { Anchor: (Height: 76, Bottom: 12); Style: $T.@DefaultLabelStyle; }

@@ -17,6 +17,8 @@ public final class BuildingPlacementNudgeUtil {
     private BuildingPlacementNudgeUtil() {}
 
     public static float getPlayerYawRadians(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
+        var head=store.getComponent(ref,com.hypixel.hytale.server.core.modules.entity.component.HeadRotation.getComponentType());
+        if(head!=null)return head.getRotation().yaw();
         TransformComponent tc = store.getComponent(ref, TransformComponent.getComponentType());
         if (tc == null) {
             return 0f;
@@ -27,54 +29,22 @@ public final class BuildingPlacementNudgeUtil {
     public static void nudgeHorizontal(
         @Nonnull BuildingPlacementSession session, boolean birdsEye, float yawRadians, @Nonnull Horizontal kind
     ) {
-        int dx = 0;
-        int dz = 0;
-        if (birdsEye) {
-            switch (kind) {
-                case NEG_Z -> {
-                    dx = 0;
-                    dz = -1;
-                }
-                case POS_Z -> {
-                    dx = 0;
-                    dz = 1;
-                }
-                case NEG_X -> {
-                    dx = -1;
-                    dz = 0;
-                }
-                case POS_X -> {
-                    dx = 1;
-                    dz = 0;
-                }
-            }
-        } else {
-            double sin = Math.sin(yawRadians);
-            double cos = Math.cos(yawRadians);
-            switch (kind) {
-                case NEG_Z -> {
-                    int[] xz = dominantUnitXZ(-sin, -cos);
-                    dx = xz[0];
-                    dz = xz[1];
-                }
-                case POS_Z -> {
-                    int[] xz = dominantUnitXZ(sin, cos);
-                    dx = xz[0];
-                    dz = xz[1];
-                }
-                case NEG_X -> {
-                    int[] xz = dominantUnitXZ(-cos, sin);
-                    dx = xz[0];
-                    dz = xz[1];
-                }
-                case POS_X -> {
-                    int[] xz = dominantUnitXZ(cos, -sin);
-                    dx = xz[0];
-                    dz = xz[1];
-                }
-            }
-        }
-        session.nudge(dx, 0, dz);
+        int[] direction=horizontalStep(birdsEye,yawRadians,kind);
+        session.nudge(direction[0],0,direction[1]);
+    }
+
+    public static int[] horizontalStep(boolean birdsEye,float yawRadians,Horizontal kind){
+        if(birdsEye)return switch(kind){
+            case NEG_Z -> new int[]{0,-1};case POS_Z -> new int[]{0,1};
+            case NEG_X -> new int[]{-1,0};case POS_X -> new int[]{1,0};
+        };
+        double sin=Math.sin(yawRadians),cos=Math.cos(yawRadians);
+        // Choose the forward cardinal once so left/right stay perpendicular at diagonal boundaries.
+        int[] forward=dominantUnitXZ(-sin,-cos);
+        return switch(kind){
+            case NEG_Z -> forward;case POS_Z -> new int[]{-forward[0],-forward[1]};
+            case NEG_X -> new int[]{forward[1],-forward[0]};case POS_X -> new int[]{-forward[1],forward[0]};
+        };
     }
 
     @Nonnull

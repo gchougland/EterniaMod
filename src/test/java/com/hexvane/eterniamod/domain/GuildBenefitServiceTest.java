@@ -10,6 +10,31 @@ class GuildBenefitServiceTest {
     private static final String VOUCHER="eternia:guild_voucher/teleporter", BENEFIT="eternia:convenience/teleporter";
     private record Fixture(EterniaServices services,UUID leader,UUID member,UUID guild,String source,String purchase){}
     private Fixture fixture(){return fixture(1);}
+    @Test void waygatePortalIsGrantedOnceAndRefundFollowsTheOriginalPurchase(){
+        var f=fixture();Owner guild=Owner.guild(f.guild);
+        f.services.guildBenefits().redeem(f.leader,f.guild,f.source,"portal");
+        f.services.guildBenefits().ensureWaygateProp(f.guild);
+        f.services.guildBenefits().ensureWaygateProp(f.guild);
+        assertEquals(1,f.services.ownership().available(guild,GuildBenefitService.WAYGATE_PROP));
+        String reservation=f.services.ownership().reserve(guild,GuildBenefitService.WAYGATE_PROP,1,"place-portal").id();
+        f.services.guildBenefits().ensureWaygateProp(f.guild);
+        assertEquals(0,f.services.ownership().available(guild,GuildBenefitService.WAYGATE_PROP),"Opening inventory must not duplicate a placed portal");
+        f.services.commerce().reverse(f.purchase,"portal-refund","Refund");
+        f.services.ownership().releaseReservation(reservation);
+        f.services.guildBenefits().ensureWaygateProp(f.guild);
+        assertFalse(f.services.ownership().owns(guild,GuildBenefitService.WAYGATE));
+        assertEquals(0,f.services.ownership().available(guild,GuildBenefitService.WAYGATE_PROP));
+    }
+    @Test void existingGuildUnlockGetsPortalButPersonalWaygateDoesNot(){
+        var f=fixture();Owner guild=Owner.guild(f.guild);
+        f.services.ownership().grant(new OwnershipService.GrantRequest("old-guild-unlock",guild,BENEFIT,OwnershipService.Kind.CAPABILITY,1,null));
+        f.services.ownership().grant(new OwnershipService.GrantRequest("personal-unlock",Owner.player(f.leader),BENEFIT,OwnershipService.Kind.CAPABILITY,1,null));
+        f.services.guildBenefits().ensureWaygateProp(f.guild);
+        assertEquals(1,f.services.ownership().available(guild,GuildBenefitService.WAYGATE_PROP));
+        assertEquals(0,f.services.ownership().available(Owner.player(f.leader),GuildBenefitService.WAYGATE_PROP));
+        f.services.ownership().revokeSource("old-guild-unlock");
+        assertEquals(0,f.services.ownership().available(guild,GuildBenefitService.WAYGATE_PROP));
+    }
     private Fixture fixture(int quantity){
         var services=new EterniaServices(new InMemoryStore());UUID leader=UUID.randomUUID(),member=UUID.randomUUID();
         services.accounts().recordAuthenticatedLogin(leader,"Leader");services.accounts().recordAuthenticatedLogin(member,"Member");

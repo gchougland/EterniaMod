@@ -21,6 +21,7 @@ public final class UiPresentation {
         return friendlyId(id);
     }
     public static String contentName(String id){
+        if("eternia:convenience/teleporter".equals(id))return "Home Waygate";
         var plugin=EterniaModPlugin.get();String key=id==null?"":id.substring(id.lastIndexOf('/')+1);
         if(plugin!=null){var building=plugin.getBuildingCatalog()==null?null:plugin.getBuildingCatalog().get(key);if(building!=null&&building.getDisplayName()!=null)return building.getDisplayName();var prop=plugin.getPropCatalog()==null?null:plugin.getPropCatalog().get(key);if(prop!=null&&prop.getDisplayName()!=null)return prop.getDisplayName();}
         return friendlyId(id);
@@ -29,9 +30,10 @@ public final class UiPresentation {
     public static int textWidth(String text){double width=0;for(char c:text.toCharArray())width+=Character.isWhitespace(c)?4.5:"ilI.,'!:;|".indexOf(c)>=0?4.5:"MW@%&".indexOf(c)>=0?13:Character.isUpperCase(c)?10:8.5;return (int)Math.ceil(width);}
     public static int buttonWidth(String text){return Math.max(168,Math.min(320,textWidth(text)+32));}
     public static int wrappedHeight(String text,int width,int lineHeight){int chars=Math.max(12,width/9);return Arrays.stream(text.split("\\R",-1)).mapToInt(line->Math.max(1,(line.length()+chars-1)/chars)).sum()*lineHeight;}
-    public static String questTitle(SeasonService.Quest quest){return questTitle(quest.activity());}
+    public static String questTitle(SeasonService.Quest quest){return (quest.cadence()==SeasonService.Cadence.ONCE?"":quest.cadence()==SeasonService.Cadence.DAILY?"Daily · ":"Weekly · ")+(quest.name().isBlank()?questTitle(quest.activity()):quest.name());}
     public static String questTitle(SeasonService.ActivityKind activity){return switch(activity){case KILL->"On patrol";case MINE->"A miner's work";case HARVEST->"A fruitful harvest";case ACQUIRE->"Gathering expedition";case MINIGAME->"A friendly challenge";case INTEGRATION->"An adventurer's task";};}
     public static String questGoal(SeasonService.Quest quest){
+        if(!quest.goal().isBlank())return quest.goal();
         String verb=switch(quest.activity()){case KILL->"Defeat";case MINE->"Mine";case HARVEST->"Harvest";case ACQUIRE->"Gather";case MINIGAME->"Complete";case INTEGRATION->"Finish";};
         String noun=switch(quest.activity()){case KILL->"creatures";case MINE,ACQUIRE->"resources";case HARVEST->"crops";case MINIGAME->"games";case INTEGRATION->"activities";};
         String goal=verb+" "+quest.required()+(quest.kind()==SeasonService.ObjectiveKind.DISTINCT?" different types of ":" ")+noun;

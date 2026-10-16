@@ -22,6 +22,7 @@ final class GuildRoadService {
     static final String CAPABILITY="housing.road.manage";
     private static final Gson JSON=new Gson();
     record Preview(UUID actor,Road road,boolean remove,Instant expires){}
+    private record PlotData(HousingService.Slot slot,boolean member,boolean locked,List<ProvenanceService.Instance> instances){}
     private final EterniaModPlugin plugin;private final GuildRoadRegistry registry;private final CustomizationCatalog catalog;
     private volatile Map<UUID,Road> emergency=Map.of();
     GuildRoadService(EterniaModPlugin plugin)throws IOException{
@@ -59,7 +60,7 @@ final class GuildRoadService {
         if(canManage(actor,road.guild()))return true;
         return EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots().stream().anyMatch(p->actor.equals(p.getOwnerUuid())&&p.getGuildOwnerUuid()==null&&road.guild().equals(p.getAttachedGuildUuid())&&road.rectangle().overlaps(NativeHousingChecks.rect(p.getFootprint())));
     }
-    List<CustomizationCatalog.PathStyle> styles(UUID guild){return catalog.paths().stream().filter(s->s.id().equals("cobblestone")||plugin.getServices().ownership().owns(Owner.guild(guild),"eternia:path/"+s.id())).toList();}
+    List<CustomizationCatalog.PathStyle> styles(UUID guild){return plugin.getServices().batch(()->catalog.paths().stream().filter(s->s.id().equals("cobblestone")||plugin.getServices().ownership().owns(Owner.guild(guild),"eternia:path/"+s.id())).toList());}
     UUID guild(UUID actor){UUID guild=plugin.getServices().guilds().membership(actor).orElseThrow(()->new IllegalStateException("Join a guild to manage its roads")).guildId();if(!plugin.getServices().guilds().can(actor,guild,CAPABILITY))throw new IllegalStateException("Guild road permission is required");return guild;}
     private HubPlotRecord root(World world,UUID guild,boolean active){
         var slot=plugin.getServices().housing().find(Owner.guild(guild)).orElseThrow(()->new IllegalStateException("Place the guild estate first"));
@@ -137,13 +138,21 @@ final class GuildRoadService {
         var zone=new ArrayList<PlotRect>();var forbidden=new ArrayList<PlotRect>();var structures=new ArrayList<PlotRect>();
         var infrastructure=plugin.getInfrastructure().world(world.getName()).orElseThrow();forbidden.addAll(infrastructure.roads());forbidden.addAll(infrastructure.portals());
         for(var road:roads())if(road.world().equals(world.getName())&&!road.id().equals(ignore))forbidden.add(road.rectangle());
-        for(var plot:EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots()){
-            var rect=NativeHousingChecks.rect(plot.getFootprint());var owner=HousingAccess.owner(plot);var slot=owner==null?null:plugin.getServices().housing().find(owner).orElse(null);
-            boolean member=guild.equals(plot.getGuildOwnerUuid())||guild.equals(plot.getAttachedGuildUuid())&&plot.getOwnerUuid()!=null&&plugin.getServices().guilds().membership(plot.getOwnerUuid()).map(m->guild.equals(m.guildId())).orElse(false);
+        var plots=List.copyOf(EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots());
+        var services=plugin.getServices();
+        var data=services.batch(()->{var result=new HashMap<UUID,PlotData>();
+            // The plot metadata belongs to this world thread and is captured before file/terrain work.
+            for(var plot:plots){var owner=HousingAccess.owner(plot);var slot=owner==null?null:services.housing().find(owner).orElse(null);
+                boolean member=guild.equals(plot.getGuildOwnerUuid())||guild.equals(plot.getAttachedGuildUuid())&&plot.getOwnerUuid()!=null&&services.guilds().membership(plot.getOwnerUuid()).map(m->guild.equals(m.guildId())).orElse(false);
+                result.put(plot.getPlotId(),new PlotData(slot,member,HousingAccess.locked(plugin,plot),services.provenance().instances(plot.getPlotId())));}
+            return Map.copyOf(result);
+        });
+        for(var plot:plots){
+            var rect=NativeHousingChecks.rect(plot.getFootprint());var state=data.get(plot.getPlotId());var slot=state.slot();boolean member=state.member();
             boolean consent=guild.equals(plot.getGuildOwnerUuid())||actor.equals(plot.getOwnerUuid())||registry.easement(plot.getPlotId(),guild);
-            boolean usable=member&&consent&&slot!=null&&slot.state()==HousingService.State.ACTIVE&&slot.propertyId().equals(plot.getPlotId())&&!HousingAccess.locked(plugin,plot);
+            boolean usable=member&&consent&&slot!=null&&slot.state()==HousingService.State.ACTIVE&&slot.propertyId().equals(plot.getPlotId())&&!state.locked();
             if(usable)zone.add(rect);else forbidden.add(rect);
-            for(var item:plugin.getServices().provenance().instances(plot.getPlotId()))if(item.state().equals("PLACED")){
+            for(var item:state.instances())if(item.state().equals("PLACED")){
                 var image=files().load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));var b=image.bounds();var objectRect=new PlotRect(b.minX(),b.minZ(),b.maxX()-b.minX(),b.maxZ()-b.minZ());
                 boolean structure="HOUSE".equals(item.nativeData().get("kind"));var prop=plugin.getPropCatalog().get(item.nativeData().get("catalog"));structure|=prop!=null&&"addition".equals(prop.getCategory());
                 if(structure)structures.add(objectRect);else forbidden.add(objectRect);

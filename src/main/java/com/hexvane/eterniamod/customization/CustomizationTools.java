@@ -2,9 +2,6 @@ package com.hexvane.eterniamod.customization;
 
 import com.hexvane.eterniamod.EterniaModPlugin;
 import com.hexvane.eterniamod.housing.*;
-import com.hexvane.eterniamod.runtime.NativeMenuActions;
-import com.hexvane.eterniamod.socialui.*;
-import com.hexvane.eterniamod.ui.ChoicePage;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.server.core.inventory.*;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -27,12 +24,6 @@ public final class CustomizationTools {
     }
     public static void ledger(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
         if(HousingInventory.resume(plugin,ref,store,player))return;
-        ChoicePage.open(ref,store,player,"Architect’s ledger","Your homes, current quests and Eternia services.",List.of(
-            new ChoicePage.Choice("All Eternia services","Main menu",(r,s)->SocialUiBootstrap.open(r,s,player,plugin.getServices(),plugin.getMenuActions(),EterniaServicesPage.Section.GREETER)),
-            new ChoicePage.Choice("Your current goals and progress","Quests",(r,s)->SocialUiBootstrap.open(r,s,player,plugin.getServices(),plugin.getMenuActions(),EterniaServicesPage.Section.QUESTS)),
-            new ChoicePage.Choice("House styles, decorations and whole-plot moves","Housing",(r,s)->HousingInventory.open(plugin,r,s,player)),
-            new ChoicePage.Choice("House palettes and a path toward the road","Customize",(r,s)->CustomizationMenus.open(plugin,r,s,player)),
-            new ChoicePage.Choice("Send offline messages and receive items","Mailbox",(r,s)->SocialUiBootstrap.open(r,s,player,plugin.getServices(),new NativeMenuActions(plugin),EterniaServicesPage.Section.MAIL)),
-            new ChoicePage.Choice("Browse player stores","Player shops",(r,s)->SocialUiBootstrap.open(r,s,player,plugin.getServices(),new NativeMenuActions(plugin),EterniaServicesPage.Section.SHOP))));
+        ArchitectLedgerPage.open(plugin,ref,store,player);
     }
 }

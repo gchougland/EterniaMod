@@ -17,11 +17,14 @@ public final class NativeMenuActions implements SocialUiActions {
     public NativeMenuActions(EterniaModPlugin plugin){this.plugin=plugin;}
     @Override public Result perform(Action action,Ref<EntityStore>ref,Store<EntityStore>store,PlayerRef player) {
         switch(action) {
+            case ARCHITECT_LEDGER -> com.hexvane.eterniamod.customization.CustomizationTools.ledger(plugin,ref,store,player);
+            case HOUSING_INVENTORY -> HousingInventory.open(plugin,ref,store,player);
             case HOUSING_CLAIM -> {player.sendMessage(Message.raw(com.hexvane.eterniamod.customization.CustomizationTools.reissue(ref,store,player,true)));PlotClaimPage.open(ref,store,player,plugin);}
             case HOUSING_MANAGE -> {player.sendMessage(Message.raw(com.hexvane.eterniamod.customization.CustomizationTools.reissue(ref,store,player,true)));HousingInventory.open(plugin,ref,store,player);}
-            case GUILD_HOUSING -> ChoicePage.open(ref,store,player,"Guild estate","Guild leaders claim estates; authorized builders furnish them.",List.of(
-                new ChoicePage.Choice("Claim an estate","Choose plot",(r,s)->PlotClaimPage.open(r,s,player,plugin)),
+            case GUILD_HOUSING -> ChoicePage.open(ref,store,player,"Guild estate",plugin.getRuntimeConfig().local()?"Local testing: a solo guild can claim an estate. Normal placement rules still apply.":"Guild leaders claim estates with at least five members. Authorized builders furnish them.",List.of(
+                new ChoicePage.Choice("Claim an estate","Choose plot",(r,s)->PlotClaimPage.openNew(r,s,player,plugin,true)),
                 new ChoicePage.Choice("Furnish the estate","Inventory",(r,s)->HousingInventory.open(plugin,r,s,player)),
+                new ChoicePage.Choice("Stand on the estate, then choose Guild decorations to place your unlocked Waygate portal","Place Waygate",(r,s)->HousingInventory.open(plugin,r,s,player),"eternia:prop/guild_waygate"),
                 new ChoicePage.Choice("Plan or remove a community road","Roads",(r,s)->com.hexvane.eterniamod.guildroads.GuildRoads.open(r,s,player)),
                 new ChoicePage.Choice("Redeem a purchased guild upgrade","Review vouchers",(r,s)->GuildBenefitsMenu.open(plugin,r,s,player))));
             case WORLD_SELECT -> {

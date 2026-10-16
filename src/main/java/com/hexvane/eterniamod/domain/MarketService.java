@@ -21,6 +21,7 @@ public final class MarketService extends DomainSupport {
         String query=itemQuery==null?"":itemQuery.toLowerCase(Locale.ROOT);
         return store.transaction(tx->tx.scan("listing").stream().filter(r->r.value("state").equals("ACTIVE")&&r.value("item").toLowerCase(Locale.ROOT).contains(query)).map(MarketService::listing).toList());
     }
+    public Optional<Listing> findActive(String id){return store.transaction(tx->tx.find("listing",id).filter(r->r.value("state").equals("ACTIVE")).map(MarketService::listing));}
     public Purchase buy(UUID buyer,String listingId,long quantity,long quotedRevision,String receiptId){
         positive(quantity);
         return store.transaction(tx->{var input=fields("buyer",buyer,"listing",listingId,"quantity",quantity,"quote",quotedRevision);String id=key(receiptId);

@@ -8,6 +8,30 @@ Revisiting does not rebuild modified roads or houses. The worlds, shop stock and
 
 ## Suggested route
 
+### Solo guild placement and the Architect's Ledger
+
+On servers running with `ETERNIA_MODE=local`, a guild with one member can claim and restore its estate. Production still requires five members. Guild claim permissions, road connections, portal distance, plot borders, paid sizes and the one estate limit still apply. You do not need to add fake members to your existing guild.
+
+Open `/e menu`, choose **Architect's Ledger** at the top, then **Guild estate → Choose plot**. This opens the guild estate preview directly. Use a clear area near a public road and within 240 blocks of a Hub portal. The example guild's estate belongs to that example guild, so your guild needs its own clear site. After claiming, stand inside your estate and choose **Housing inventory** to place the guild hall.
+
+The Ledger has separate illustrated cards for plots, housing inventory, customization, claiming, guild estates and Home Waygate. A physical ledger item opens the same page. An unfinished placement still resumes when reopening the Ledger.
+
+**Home Waygate** is a travel unlock, not a decoration or block. Stand inside your personal plot after buying it, then choose **Architect's Ledger → Use Waygate**. Guild Waygate charters must first be redeemed for the guild and require its convenience permission. Public portals also open the destination picker.
+
+**Guild Waygate Portal:** Redeem a Guild Waygate Charter through **Guild estate → Review vouchers**. Stand on the guild estate and open **Housing inventory → Guild decorations → Guild Waygate Portal → Place**. The unlock includes one portal decoration per source; existing guild unlocks receive it when their estate inventory opens. Only one portal can be placed on the estate at a time. The glowing pad opens destination choices when a permitted member interacts with it. It does not make a public portal or a housing anchor. The original menu travel option remains available.
+
+Place and pack permissions follow the guild's decoration and build inventory permissions. Use requires the guild's active Waygate unlock and the member's convenience permission, checked again when selecting a destination. The Packaging Wand returns the portal to guild custody for placement elsewhere on the estate. Moving the entire guild plot preserves it. Refunding the unlock disables the portal and revokes its unused quantity.
+
+Portal verification: 20 focused checks passed, including grant backfill, repeated inventory opens, packing reservations and refund propagation. The new portal asset loaded in the isolated native server. The full native run stopped on the same Windows save replacement error before reaching the portal placement fixture, so in-world appearance, interaction and packing still need an in-game check.
+
+**Get Crowns** closes the store and posts a clickable `/store` link in chat using `ETERNIA_WEBSITE_URL`. Local mode defaults to `http://127.0.0.1:3847`. Set that variable to your website's address if testing against another website instance. No browser is opened automatically.
+
+Collection's **Owned items** groups matching content into one row. Its available count totals only active, unspent quantities. Expired or revoked purchases do not increase it. Individual pet assignments and packed decorations retain their own identities and contents.
+
+Validation on 30 September 2026: the release jar and 22 focused checks passed, including solo guild placement, production member requirements, collection totals and the Crown catalog. Two isolated native smoke attempts started successfully but stopped on Windows `AccessDeniedException` while atomically replacing their disposable `local-authority.bin` files. Neither attempt completed the full native suite. The new Ledger layout still needs a client visual check after restarting the local server.
+
+### Walkthrough
+
 1. **Collect Starter supplies** in `/e playground`: 5,000 Crowns, 2,000 trading coins, extra housing props, the housing tools and a real item parcel. This allowance is issued once per profile. **More supplies** grants an additional explicitly requested local allowance.
 2. **Visit all six NPCs.** Inspect their different appearances, names and professions. Confirm the native interaction prompt shows your bound Use key. Only Prowl uses the Prowl model.
 3. **Shop with Lyra.** Buy a decoration, outfit, pet, title or housing convenience with Crowns. Use Collection to equip an outfit/title or choose your follower. Buy another pet to assign to your property. Test the purchase confirmation and insufficient-balance behavior.
@@ -37,4 +61,40 @@ For the new frames, fonts, local preview and manual client checks, see [Citadel 
 4. From the ledger, open **Customize**, choose your plot and path style, then a width from one to three blocks. Start far enough from your house to leave one empty block beside the entire path. Review and confirm the result. Remove the old path before choosing another width. Place a prop nearby to check the clearance and rounded bends.
 5. New example villages use **Eternia Guild Hall**, adapted from the Stormwind hall. For an existing village, leave the Lantern Company plot, open **/e playground**, and select **Refresh guild hall**. Confirm the refresh. The original example hall is packed into guild custody before replacement. Changed blocks, moved example buildings, added decorations, players in the plot, or an unfinished operation block the refresh. The new hall faces its entrance toward the village. Player homes and other guild halls are not replaced.
 
-The new hall has a separate `founders_hall` catalog ID. The original `guild_hall` definition and prefab remain intact so previously packed buildings can still be restored with their original dimensions. The adapter preserves native decorative doors and the sign; Aetherhaven quest boards, smoke emitters, POI marker, and unsupported loose display entities are removed. The Eternia management block is inside the hall.
+The new hall has a separate `founders_hall` catalog ID. The old Founder’s Hall (`guild_hall`) is retired from the house picker and is no longer granted to new guilds. Its definition and prefab remain for safely packing existing halls and restoring whole plot snapshots. The adapter preserves native decorative doors and the sign; Aetherhaven quest boards, smoke emitters, POI marker, and unsupported loose display entities are removed. The Eternia management block is inside the hall.
+
+
+## Housing and travel menu follow-up
+
+- Open Housing inventory while outside every plot. The personal Decorations and House styles cards remain available. Guild members also see separate Guild decorations and Guild houses cards. Clicking Place outside the appropriate plot explains where to stand without creating a placement session or consuming an item.
+- Personal items remain visible while standing on a guild estate. They can only be placed on the personal plot. Guild inventory placement still requires the existing build and inventory permissions.
+- Collection now has a Decorations tab. Owned items and Decorations scroll through the entire list. Each item has one row with separate available, packed, and placed counts. Packing does not create extra available copies.
+- Build & Furnish uses the Potion Shelf icon. Housing categories use distinct house, shelf, guild, palette, and plot art. Travel uses illustrated destination cards with direct Travel buttons, Back, and Home.
+- New Guild Waygate portals have no stone platform. To update an existing raised portal, recover it with the Packaging Wand and place it again. Its original stone base is removed by normal recovery; a strictly recognized old portal snapshot is converted on replacement. Unexpected saved blocks, entities, fluids, or components stop conversion for review. No new entitlement or item is minted.
+- Place a decoration while looking east, then slightly north or south of east. The initial preview appears three blocks ahead on the nearby surface. The forward arrow follows the nearest cardinal direction of the player's look, with perpendicular left and right movement. **In front of me** moves the preview back ahead of the player.
+- Turn on Bird's eye view during prop placement. Check pan, zoom buttons, zoom slider, and movement arrows. Arrows follow the overhead screen in this view. Escape, Home, Cancel, and successful placement restore the player camera. Escape keeps the existing placement draft available when reopening housing tools.
+
+Automated verification for this follow-up covers the full unit suite and release packaging. It includes cardinal direction boundaries, packed/placed item counts, and safe conversion of original Waygate snapshots. These changes still need a live client visual check after restarting the updated mod.
+
+
+## Daily quests, weekly quests and border check
+
+1. Activate Foundations and open Quests. There are three daily and three weekly goals. Each card names the exact target, amount, XP and Coin reward.
+2. Use Adventure mode. Skeleton variants and ghouls advance an undead goal; cows do not. Combat trials also count in the managed local village. Production activity belongs in an adventure world or an explicitly enabled world.
+3. Harvest ripe crops by interacting or using a sickle. Each successful regrowth cycle counts once. Player placed ore never pays mining XP or progresses ore quests.
+4. Complete a current goal. Check for its toast, completion sound, Coin credit and XP. Reopen the menu and reconnect to confirm no second payment.
+5. Daily goals change at 00:00 UTC. Weekly goals change Monday at 00:00 UTC. Changing the in game time has no effect. The automated clock tests cover both boundaries without changing the computer clock.
+6. Enter your placed guild portal. Travel opens automatically. Close it while standing inside: it stays closed until you leave and enter again. Visitors without guild travel permission cannot use it.
+7. Look at the top right wallet in the main menu and Travel. Both balances sit inside a dark framed panel.
+8. Approach a plot corner. A turquoise ground line with gold runes appears promptly, with small rising lights. Its segments meet at the corner without extending beyond it and fade with distance. Check all sides and road crossings.
+
+See [all 45 Foundations quests](quest-catalog.md) and [authoring recurring goals](content-authoring.md#daily-and-weekly-quest-pools).
+
+
+## Collections, clothing and mounts
+
+Open Collection and browse Houses, Decorations, Materials, Titles, Wardrobe, Pets, Mounts and Upgrades. Cards fit four across. The mailbox is accessed from the main menu and does not appear as a collectible.
+
+For Prowl Shirt, open Foundations rewards with its paid track unlocked and claim the first paid reward. Equip it from Collection, Wardrobe. Check the front logo and sleeves while moving, then unequip and check that your usual outfit returns. Existing pass claims stay claimed and the new shirt remains claimable for eligible players.
+
+Open Collection, Mounts in an open space. Horse is available to everyone. Summon it and you should immediately ride it. Use your mapped dismount key and the horse should disappear. Also try reconnecting, world travel and a blocked indoor location. Summoning should never change nearby blocks or leave a permanent horse behind.

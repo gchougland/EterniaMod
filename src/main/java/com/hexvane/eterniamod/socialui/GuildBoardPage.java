@@ -117,10 +117,12 @@ public final class GuildBoardPage extends EterniaInteractiveCustomUIPage<GuildBo
         generation++;rebuild();
     }
     private GuildCommunicationService.Post current(){return selected==null?null:snapshot.posts.stream().filter(p->p.id().equals(selected)).findFirst().orElse(null);}
-    private Snapshot load(){
+    private Snapshot load(){return services.batch(this::loadInBatch);}
+    private Snapshot loadInBatch(){
         var membership=services.guilds().membership(actor).orElseThrow(()->new IllegalArgumentException("Join a guild to use its notice board."));UUID guild=membership.guildId();
         var posts=services.guildCommunications().board(actor).stream().filter(p->!p.removed()).toList();var authors=new HashMap<UUID,String>();
         if(posts.stream().anyMatch(post->!post.guild().equals(guild))||services.guilds().membership(actor).filter(member->member.guildId().equals(guild)).isEmpty())throw new IllegalArgumentException("Your guild membership changed. Reopen the board.");
+        services.accounts().findAll(posts.stream().map(GuildCommunicationService.Post::author).toList());
         for(var post:posts)authors.computeIfAbsent(post.author(),id->services.accounts().find(id).map(AccountService.Account::displayName).orElse("Former member"));
         return new Snapshot(guild,services.guilds().find(guild).map(GuildService.Guild::name).orElse("Guild"),posts,Map.copyOf(authors),services.guilds().can(actor,guild,"board.post"),services.guilds().can(actor,guild,"board.moderate"));
     }

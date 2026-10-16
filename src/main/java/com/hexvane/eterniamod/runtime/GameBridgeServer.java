@@ -48,7 +48,7 @@ public final class GameBridgeServer implements AutoCloseable {
             if(path.equals("/v1/health")){reply(exchange,200,Map.of("status","ready"));return;}
             if(path.equals("/v1/store/offers")){reply(exchange,200,Map.of("source","game","offers",offers));return;}
             if(path.equals("/v1/store/crowns")){
-                var products=services.commerce().products().stream()
+                var products=services.readView(GameBridgeServer.class,java.time.Duration.ofSeconds(10),()->services.commerce().products()).stream()
                     .filter(p->Objects.equals(tebexPackages.get(p.packageId()),p.revision())&&!p.subscription()&&p.benefits().size()==1)
                     .filter(p->{var b=p.benefits().getFirst();return b.contentId().equals(PremiumService.CROWNS)&&b.kind()==OwnershipService.Kind.QUANTITY&&!b.expiresWithSubscription();})
                     .map(p->Map.of("id",p.packageId(),"revision",p.revision(),"crowns",p.benefits().getFirst().quantity())).toList();
@@ -56,8 +56,20 @@ public final class GameBridgeServer implements AutoCloseable {
             }
             if(path.matches("/v1/players/[0-9a-fA-F-]{36}/overview")) {
                 UUID player=UUID.fromString(path.split("/")[3]);
+                var payload=services.readView(new OverviewKey(player),java.time.Duration.ofSeconds(2),()->overviewPayload(player));
+                if(payload==null){reply(exchange,404,Map.of("error","Join Eternia once to create your game profile."));return;}
+                reply(exchange,200,payload);return;
+            }
+            reply(exchange,404,Map.of("error","Not found"));
+        } catch(DomainException e){reply(exchange,503,Map.of("error","Authoritative account data is temporarily unavailable."));}
+          catch(IllegalArgumentException e){reply(exchange,400,Map.of("error","Invalid request"));}
+          catch(RuntimeException e){reply(exchange,500,Map.of("error","Internal server error"));}
+        finally {exchange.close();}
+    }
+    private record OverviewKey(UUID player) {}
+    private String overviewPayload(UUID player){
                 var overview=services.overview(player);
-                if(overview.account()==null){reply(exchange,404,Map.of("error","Join Eternia once to create your game profile."));return;}
+                if(overview.account()==null)return null;
                 var payload=new LinkedHashMap<String,Object>();
                 payload.put("source","game");payload.put("updatedAt",Instant.now());
                 payload.put("account",Map.of("uuid",player,"name",overview.account().displayName(),"rank",services.ownership().owns(Owner.player(player),"eternia:rank/supporter")?"Supporter":"Citizen"));
@@ -75,16 +87,10 @@ public final class GameBridgeServer implements AutoCloseable {
                 payload.put("seasons",services.seasons().progress(player));
                 var stats=services.accounts().stats(player).orElse(null);
                 if(stats!=null){var measured=new LinkedHashMap<String,Object>();measured.put("playtimeHours",stats.playtimeSeconds()/3600.0);measured.put("mobsDefeated",stats.mobsDefeated());measured.put("resourcesGathered",stats.resourcesGathered());payload.put("stats",measured);}
-                reply(exchange,200,payload);return;
-            }
-            reply(exchange,404,Map.of("error","Not found"));
-        } catch(DomainException e){reply(exchange,503,Map.of("error","Authoritative account data is temporarily unavailable."));}
-          catch(IllegalArgumentException e){reply(exchange,400,Map.of("error","Invalid request"));}
-          catch(RuntimeException e){reply(exchange,500,Map.of("error","Internal server error"));}
-        finally {exchange.close();}
+        return json.toJson(payload);
     }
     private void reply(HttpExchange e,int status,Object value)throws IOException {
-        byte[] body=json.toJson(value).getBytes(StandardCharsets.UTF_8);
+        byte[] body=(value instanceof String encoded?encoded:json.toJson(value)).getBytes(StandardCharsets.UTF_8);
         e.getResponseHeaders().set("Content-Type","application/json; charset=utf-8");e.getResponseHeaders().set("Cache-Control","no-store");
         e.getResponseHeaders().set("X-Content-Type-Options","nosniff");
         if(e.getRequestMethod().equals("HEAD")){

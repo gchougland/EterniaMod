@@ -1,0 +1,13 @@
+{
+  "Spawners": [
+    {
+      "SpawnerId": "Eternia_Waygate_Veil"
+    },
+    {
+      "SpawnerId": "Eternia_Waygate_Sparks"
+    }
+  ],
+  "CullDistance": 64,
+  "BoundingRadius": 4,
+  "IsImportant": true
+}

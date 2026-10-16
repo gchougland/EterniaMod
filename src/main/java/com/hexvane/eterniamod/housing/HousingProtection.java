@@ -22,6 +22,12 @@ public final class HousingProtection {
         boolean use=!capability.startsWith("housing.block.");
         var world=store.getExternalData().getWorld();
         var infrastructure=plugin.getInfrastructure();
+        if (!use) {
+            var actor=chunk.getComponent(index,PlayerRef.getComponentType());
+            if (actor!=null&&com.hexvane.eterniamod.customization.HubBuildMode.canEdit(plugin,actor.getUuid(),world,pos.x,pos.z)) return false;
+            // Native placement can be enabled for an administrator's session, never for ordinary residents.
+            if (infrastructure.isHousing(world.getName())) return true;
+        }
         if (!use&&infrastructure.protectedColumn(world.getName(),pos.x,pos.z)) return true;
         if (!infrastructure.isHousing(world.getName())) return false;
         var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).findPlotContainingHorizontal(pos.x,pos.z);

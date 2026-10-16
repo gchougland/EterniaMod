@@ -1,8 +1,18 @@
 # PostgreSQL setup and operating plan
 
-PostgreSQL holds Eternia's durable MMO records: accounts, guilds, property ownership, balances, entitlements, season progress, mailbox and item escrow, payment receipts, and operation journals. It does not replace Hytale's world files. Terrain, native players/entities, housing snapshots and their manifests still need disk storage and coordinated backups. Website prefab revisions, render-job metadata and login sessions use a separate database; native assets and rendered PNG files remain on disk.
+PostgreSQL holds Eternia's durable player records: accounts, guilds, property ownership, balances, entitlements, season progress, mailbox and item escrow, payment receipts, and operation journals. It does not replace Hytale's world files. Terrain, native players/entities, housing snapshots and their manifests still need disk storage and coordinated backups. Website prefab revisions, render-job metadata and login sessions use a separate database; native assets and rendered PNG files remain on disk.
 
 The game is the authority for player records. The website reads them through the authenticated game bridge and has no database rights to change them. The initial game adapter serializes domain transactions with a PostgreSQL advisory lock and checks record revisions. This favors correctness for one game server; concurrency tests passing locally do not establish performance under production load. Network latency, connection overhead and large housing snapshots must be measured before launch.
+
+## Menu database access
+
+The game reuses up to four PostgreSQL connections through [HikariCP](https://github.com/brettwooldridge/HikariCP). It keeps one idle connection and closes the pool when the plugin stops. The pool wraps the bundled PostgreSQL driver directly so it also works with Hytale's plugin class loader. No new environment settings are required.
+
+Main menu projections, Crown Store snapshots and wallet balances use short `EterniaServices.batch` calls. Related service calls share one transaction, and repeated record/namespace reads are memoized only for that transaction. Quest objectives and season reward receipts use bulk key lookups. Every subsequent refresh reads current database records. Purchases still validate current balances, ownership and prices in their own authoritative transaction; advisory locking and revision checks remain in place.
+
+Keep batch callbacks limited to domain work. Never wait for world edits, HTTP requests or player input while holding one. Any failed service callback aborts the batch, including an exception caught by the caller. Native menu projections continue to load on workers; selecting a sidebar section immediately displays its loading state.
+
+To update an existing hosted server, stop it, replace the mod JAR, then start it again. Keep the existing plugin data directory, database settings and Railway database. This change needs no data reset or website redeployment. Compare navigation through Housing, Guild, Collection, Quests and the Crown Store after joining. Local regression tests cover connection reuse, pool cleanup, rollback, simultaneous credits, plugin loader isolation, fresh grants and purchase retry safety; they do not measure the live SparkedHost to Railway route.
 
 ## Local setup without editing configuration files
 
@@ -86,6 +96,16 @@ Keep this file private: it contains credentials. New files use owner-only permis
 The release jar bundles PostgreSQL's JDBC driver. `DriverDataSource` connects through that driver directly, because `DriverManager` discovery may run before Hytale loads plugins and then cannot see the plugin's driver. A `No suitable driver found` error with a valid PostgreSQL URL is therefore a mod loading issue, not evidence of an incorrect database password. Update the jar rather than changing credentials to address this error.
 
 `PluginDatabaseDriverTest` reproduces the old failure with an isolated plugin class loader and a server context that cannot discover its driver. Both connection overloads now pass against the isolated PostgreSQL test database. The rebuilt release jar was also loaded from `mods/` by the installed Hytale server in a fresh directory, with production mode and the isolated PostgreSQL test database: plugin setup and asset validation passed, then the server shut down normally. Release verification checks that the driver classes are bundled. This verifies local packaging and connectivity, not the remote provider's network or credentials.
+
+### Season conflicts after changing development computers
+
+An older source checkout can build successfully while being incompatible with definitions already saved by a newer deployed jar. The recovered Foundations catalog contains 30 daily quests and 15 weekly quests, including `eternia:quest/daily_undead` with 1,500 XP and 80 Coins. A jar proposing the old three one-time quests against these records is missing the newer implementation. Recover and merge the corresponding source, assets, and tests before building; do not reset database records or bypass the immutable-definition check. Startup errors identify the content file, season ID, and differing fields. `SeasonCatalogCompatibilityTest` keeps a snapshot of the recovered released catalog and verifies restart preserves progress and reward claims.
+
+### Migration checksum errors
+
+The game checks V001 against `eternia_schema_migrations` before loading player records. Earlier builds hashed raw SQL bytes, so an identical migration packaged with Windows CRLF line endings had a different checksum from a Unix LF build. Startup now accepts either historical checksum for the bundled SQL, preserves existing migration history, and uses LF checksums for new databases. SQL resources are also pinned to LF in Git.
+
+For a line-ending mismatch, replace the server's Eternia jar with the rebuilt jar and restart; no database reset or manual checksum update is needed. If startup still reports a mismatch, the error includes the migration resource, stored checksum, and both expected checksums. Compare those with the previously deployed migration and restore the original SQL; schema changes belong in a new migration. Do not delete migration history or overwrite its checksum to bypass an unexplained mismatch.
 
 ### Launch checklist
 

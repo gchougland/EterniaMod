@@ -8,6 +8,24 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class BoundaryParticleAssetTest {
+    @Test void runeRibbonAppearsImmediatelyAndFitsOneBlockSegments() throws Exception {
+        for(String suffix:List.of("","_Soft","_Faint")) {
+            String id="Eternia_Plot_Border_Motes"+suffix;
+            var spawner=resource(id+"_Rune.particlespawner");
+            assertTrue(spawner.get("SpawnBurst").getAsBoolean());
+            assertTrue(spawner.get("LifeSpan").getAsDouble()>=.1,"Emitter must survive the first client update");
+            assertEquals(1,spawner.get("TotalParticles").getAsJsonObject().get("Max").getAsInt());
+            assertEquals("None",spawner.get("ParticleRotationInfluence").getAsString());
+            assertTrue(spawner.get("ParticleRotateWithSpawner").getAsBoolean());
+            var particle=spawner.getAsJsonObject("Particle");var frame=particle.getAsJsonObject("InitialAnimationFrame");
+            assertEquals(90,frame.getAsJsonObject("Rotation").getAsJsonObject("X").get("Max").getAsInt());
+            // Native particles use 32 texture pixels per world unit at scale 1.
+            double width=particle.getAsJsonObject("FrameSize").get("Width").getAsDouble()*frame.getAsJsonObject("Scale").getAsJsonObject("X").get("Max").getAsDouble()/32;
+            assertEquals(1,width,.0001,"Adjacent segments must meet without extending beyond a corner");
+            assertTrue(spawner.getAsJsonObject("ParticleLifeSpan").get("Min").getAsDouble()>BoundaryFogSystem.REFRESH_SECONDS);
+            assertTrue(particle.getAsJsonObject("Animation").getAsJsonObject("0").get("Opacity").getAsDouble()>0);
+        }
+    }
     @Test void motesMoveContinuouslyStayLowAndHaveBoundedEmission() throws Exception {
         for(String suffix:List.of("","_Soft","_Faint")) {
             String id="Eternia_Plot_Border_Motes"+suffix;

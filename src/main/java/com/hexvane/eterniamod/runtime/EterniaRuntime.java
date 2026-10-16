@@ -15,7 +15,10 @@ public final class EterniaRuntime implements AutoCloseable {
         this.config=config;
         if (!config.postgres()) store=new LocalFileStore(data.resolve("local-authority.bin"));
         else {
-            var jdbc=new JdbcStore(new DriverDataSource(config));jdbc.migrate();store=jdbc;
+            var pool=DatabasePool.open(new DriverDataSource(config));
+            var jdbc=new JdbcStore(pool);
+            try { jdbc.migrate(); } catch(RuntimeException | Error failure) { pool.close(); throw failure; }
+            store=jdbc;
         }
         services=new EterniaServices(store);
         try {
@@ -41,12 +44,14 @@ public final class EterniaRuntime implements AutoCloseable {
     public EterniaServices services(){return services;}
     public RuntimeConfig config(){return config;}
     /** Each source receipt is stable: retries and repeated joins cannot mint more starter content. */
-    public void welcome(UUID player,String name) {
-        services.accounts().recordAuthenticatedLogin(player,name);
+    public void welcome(UUID player,String name) {services.batch(()->{welcomeInBatch(player,name);return null;});}
+    private void welcomeInBatch(UUID player,String name) {
+        services.welcomePlayer(player,name);
         Owner owner=Owner.player(player);
         grant(owner,"eternia:plot/free",OwnershipService.Kind.CAPABILITY);
         grant(owner,HousingService.MOVE_CREDIT,OwnershipService.Kind.QUANTITY);
         grant(owner,"eternia:house/hub_house",OwnershipService.Kind.UNLOCK);
+        grant(owner,"eternia:mount/horse",OwnershipService.Kind.UNLOCK);
         grant(owner,"eternia:service/mailbox",OwnershipService.Kind.UNLOCK);
         grant(owner,"eternia:prop/aqua_lamp",OwnershipService.Kind.QUANTITY);
         grant(owner,"eternia:prop/starter_porch",OwnershipService.Kind.QUANTITY);
@@ -58,10 +63,10 @@ public final class EterniaRuntime implements AutoCloseable {
     private void grant(Owner owner,String content,OwnershipService.Kind kind) {
         services.ownership().grant(new OwnershipService.GrantRequest("starter-v1:"+owner.key()+":"+content,owner,content,kind,1,null));
     }
-    public void welcomeGuild(UUID guild) {
+    public void welcomeGuild(UUID guild) {services.batch(()->{welcomeGuildInBatch(guild);return null;});}
+    private void welcomeGuildInBatch(UUID guild) {
         if(services.guilds().find(guild).isEmpty())throw new IllegalArgumentException("Guild does not exist");
         Owner owner=Owner.guild(guild);
-        grant(owner,"eternia:house/guild_hall",OwnershipService.Kind.UNLOCK);
         grant(owner,"eternia:house/founders_hall",OwnershipService.Kind.UNLOCK);
         grant(owner,"eternia:path/cobblestone",OwnershipService.Kind.UNLOCK);
         grant(owner,HousingService.MOVE_CREDIT,OwnershipService.Kind.QUANTITY);

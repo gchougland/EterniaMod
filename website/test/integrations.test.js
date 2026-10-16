@@ -3,7 +3,7 @@ import {mountTebexRelay} from '../server/tebex-relay.js';import {exportNativeBun
 import {resolveBlockDef} from '../web/prefab-viewer/BlockCatalog.js';
 const listen=async app=>{const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));return {server,url:'http://127.0.0.1:'+server.address().port};};
 test('public relay preserves signed raw bytes, forwards only bridge authority, and needs no browser session',async()=>{
- const body=Buffer.from('{  "id": "local-validation", "unicode": "é" }\n'),secret='synthetic-test-secret';
+ const body=Buffer.from('{  "id": "local-validation", "unicode": "Ã©" }\n'),secret='synthetic-test-secret';
  const signature=crypto.createHmac('sha256',secret).update(crypto.createHash('sha256').update(body).digest('hex')).digest('hex');let received;
  const upstream=await listen(http.createServer(async(req,res)=>{const chunks=[];for await(const c of req)chunks.push(c);received={url:req.url,headers:req.headers,body:Buffer.concat(chunks)};res.setHeader('Content-Type','application/json');const expected=crypto.createHmac('sha256',secret).update(crypto.createHash('sha256').update(received.body).digest('hex')).digest('hex');if(req.headers['x-signature']!==expected){res.statusCode=401;res.end('{"status":"invalid_signature"}');return;}res.end('{"id":"local-validation","secret":"must-not-leak"}');}));
  const app=express();mountTebexRelay(app,{bridgeUrl:upstream.url,bridgeToken:'synthetic-bridge-token'});app.use(express.json());app.use((req,res)=>res.sendStatus(403));const web=await listen(app);
@@ -28,6 +28,7 @@ test('render preflight resolves native state IDs, nested state overrides and rej
 });
 test('native export converts typed fields and creates deterministic indexed asset bundle',()=>{
  const house={definition:{schemaVersion:1,kind:'house',id:'eternia:house/hub_house',revision:3,displayName:'House',native:{managementBlockLocalPos:[1,2,2],spawnLocalPos:[0,1,0],plotAnchorOffset:[4,0,4]}},prefab:prop.prefab};
+ const withoutShelf=structuredClone(house);delete withoutShelf.definition.native.managementBlockLocalPos;assert.doesNotThrow(()=>exportNativeBundle([withoutShelf]));
  const a=exportNativeBundle([prop,house]),b=exportNativeBundle([house,prop]);assert.deepEqual(a.bytes,b.bytes);assert.ok(gunzipSync(a.bytes).length>1024);
  const imageRecord={...house,key:'house-fixture'},png=Buffer.from([137,80,78,71,13,10,26,10,0,0,0,0]);
  const illustrated=exportNativeBundle([imageRecord],new Map([['house-fixture:icon',png],['house-fixture:screenshot',png]]));
@@ -35,5 +36,5 @@ test('native export converts typed fields and creates deterministic indexed asse
  assert.deepEqual(illustrated.files.get('Common/UI/Custom/EterniaMod/Catalog/house/hub_house/screenshot.png'),png);
  assert.throws(()=>exportNativeBundle([imageRecord],new Map([['house-fixture:icon',Buffer.from('invalid')]])),/Invalid rendered/);
  const definition=JSON.parse(a.files.get('Server/EterniaMod/Buildings/hub_house.json'));assert.deepEqual(definition.plotAnchorOffset,[4,0,4]);assert.deepEqual(definition.spawnLocalPos,[0,1,0]);assert.ok(a.files.has('Server/Prefabs/'+definition.prefabPath));assert.equal(a.files.get('Server/EterniaMod/Buildings/catalog.index').toString(),'hub_house.json\n');
- assert.throws(()=>exportNativeBundle([prop,prop]),/one revision/);assert.throws(()=>exportNativeBundle([{...house,definition:{...house.definition,native:{}}}]),/managementBlockLocalPos/);assert.throws(()=>exportNativeBundle([{...prop,definition:{...prop.definition,id:'eternia:prop/../../oops'}}]),/safe_catalog_id/);
+ assert.throws(()=>exportNativeBundle([prop,prop]),/one revision/);assert.throws(()=>exportNativeBundle([{...house,definition:{...house.definition,native:{}}}]),/spawnLocalPos/);assert.throws(()=>exportNativeBundle([{...prop,definition:{...prop.definition,id:'eternia:prop/../../oops'}}]),/safe_catalog_id/);
 });

@@ -40,12 +40,11 @@ final class HousingEnvironmentalProtection {
             if(block==null){if(plugin.getInfrastructure().isHousing(world.getName()))event.setCancelled(true);return;}
             var position=event.getTargetBlock();if(authored.protectedCell(world,position.x,position.y,position.z)){event.setCancelled(true);return;}
             var hitbox=BlockBoundingBoxes.getAssetMap().getAsset(block.getHitboxTypeIndex());if(hitbox==null){if(plugin.getInfrastructure().isHousing(world.getName()))event.setCancelled(true);return;}
-            var actor=chunk.getComponent(index,PlayerRef.getComponentType());var origin=event.getTargetBlock();Map<UUID,Boolean> permissions=new HashMap<>();
+            var actor=chunk.getComponent(index,PlayerRef.getComponentType());var origin=event.getTargetBlock();
             FillerBlockUtil.forEachFillerBlock(hitbox.get(event.getRotation().index()),(dx,dy,dz)->{
-                int x=origin.x+dx,z=origin.z+dz;if(plugin.getInfrastructure().protectedColumn(world.getName(),x,z)||authored.protectedCell(world,x,origin.y+dy,z)){event.setCancelled(true);return;}
+                int x=origin.x+dx,z=origin.z+dz;if(actor!=null&&HubBuildMode.canEdit(plugin,actor.getUuid(),world,x,z))return;if(plugin.getInfrastructure().protectedColumn(world.getName(),x,z)||authored.protectedCell(world,x,origin.y+dy,z)){event.setCancelled(true);return;}
                 if(!plugin.getInfrastructure().isHousing(world.getName()))return;
-                var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).findPlotContainingHorizontal(x,z);
-                if(plot==null||actor==null||!permissions.computeIfAbsent(plot.getPlotId(),id->HousingAccess.can(plugin,plot,actor.getUuid(),"housing.block.build")))event.setCancelled(true);
+                event.setCancelled(true);
             });
         }
     }

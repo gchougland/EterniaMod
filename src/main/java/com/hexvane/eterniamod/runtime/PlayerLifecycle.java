@@ -33,7 +33,7 @@ public final class PlayerLifecycle implements AutoCloseable {
         });
         plugin.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class,event->{var player=event.getPlayerRef();plugin.getItemEscrow().forgetSession(player);com.hexvane.eterniamod.inventory.ui.NativeShopTravel.forget(player.getUuid());UUID id=player.getUuid();homeOnReady.remove(id);if(online.remove(id))plugin.getServices().accounts().recordDisconnect(id);});
         plugin.getEventRegistry().registerGlobal(StartWorldEvent.class,event->event.getWorld().execute(()->plugin.getClaims().recoverClaims(event.getWorld())));
-        timer.scheduleAtFixedRate(()->{for(UUID id:online)try{plugin.getServices().accounts().heartbeat(id);}catch(RuntimeException e){plugin.getLogger().atWarning().withCause(e).log("Account heartbeat failed");}},30,30,TimeUnit.SECONDS);
+        timer.scheduleAtFixedRate(()->{try{var ids=List.copyOf(online);for(int start=0;start<ids.size();start+=64)plugin.getServices().accounts().heartbeats(ids.subList(start,Math.min(start+64,ids.size())));}catch(RuntimeException e){plugin.getLogger().atWarning().withCause(e).log("Account heartbeat failed");}},30,30,TimeUnit.SECONDS);
     }
     public static boolean returnHomeAfter(Instant disconnect,Instant lastSeen,Instant now) {
         Instant last=disconnect==null||lastSeen!=null&&lastSeen.isAfter(disconnect)?lastSeen:disconnect;

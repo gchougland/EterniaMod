@@ -19,6 +19,10 @@ public final class HousingRules {
         return claim(candidate,plots,roads,portals,PublicRoadNetwork.rectangles(roads));
     }
     public static Result claim(Candidate candidate,List<Anchor> plots,List<PlotRect> roads,List<PlotRect> portals,PublicRoadNetwork network) {
+        return claim(candidate,plots,roads,portals,network,false);
+    }
+    /** Local playtests may use a solo guild; all geometry and ownership rules still apply. */
+    public static Result claim(Candidate candidate,List<Anchor> plots,List<PlotRect> roads,List<PlotRect> portals,PublicRoadNetwork network,boolean localTesting) {
         Objects.requireNonNull(candidate); Objects.requireNonNull(candidate.rect); Objects.requireNonNull(candidate.scope);
         if (!allowedSize(candidate.rect, candidate.scope == Scope.GUILD_ROOT, candidate.upgraded))
             return Result.no("size", "This plot size requires the matching plot entitlement.");
@@ -27,7 +31,7 @@ public final class HousingRules {
         if (plots.stream().anyMatch(p -> p.rect.overlaps(candidate.rect))) return Result.no("overlap", "Another plot occupies this space.");
         if (portals.stream().anyMatch(p -> p.overlaps(candidate.rect))) return Result.no("portal", "Public portal land must remain clear.");
         if (candidate.scope == Scope.GUILD_ROOT) {
-            if (candidate.guildMemberCount < 5) return Result.no("members", "A guild needs at least five members to claim a guild plot.");
+            if (candidate.guildMemberCount < (localTesting ? 1 : 5)) return Result.no("members", localTesting ? "Create or join a guild before claiming its plot." : "A guild needs at least five members to claim a guild plot.");
             if (plots.stream().anyMatch(p -> p.scope == Scope.GUILD_ROOT && p.guildId.equals(candidate.guildId)))
                 return Result.no("guildSlot", "This guild already has a plot.");
             if (!near(candidate.rect, portals, 240)) return Result.no("guildPortal", "Place the guild plot within 240 blocks of a hub portal.");

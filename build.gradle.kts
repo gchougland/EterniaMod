@@ -21,6 +21,9 @@ repositories {
 
 dependencies {
     add(embeddedLibraries.name, "org.postgresql:postgresql:42.7.13") { isTransitive = false }
+    add(embeddedLibraries.name, "com.zaxxer:HikariCP:7.0.2") { isTransitive = false }
+    add(embeddedLibraries.name, "org.slf4j:slf4j-api:2.0.17") { isTransitive = false }
+    add(embeddedLibraries.name, "org.slf4j:slf4j-jdk14:2.0.17") { isTransitive = false }
     compileOnly(libs.jetbrains.annotations)
     compileOnly(libs.jspecify)
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
@@ -72,9 +75,10 @@ tasks.register("verifyReleaseJar") {
                 )
             }
         }
-        for (required in listOf("org/postgresql/Driver.class", "org/postgresql/core/v3/ConnectionFactoryImpl.class")) {
+        for (required in listOf("org/postgresql/Driver.class", "org/postgresql/core/v3/ConnectionFactoryImpl.class",
+            "com/zaxxer/hikari/HikariDataSource.class", "org/slf4j/LoggerFactory.class", "org/slf4j/jul/JULServiceProvider.class")) {
             if (!listing.lineSequence().any { it.trim() == required }) {
-                error("Release jar ${jarFile.name} is missing its PostgreSQL driver: $required")
+                error("Release jar ${jarFile.name} is missing a database dependency: $required")
             }
         }
         val sizeMb = jarFile.length() / (1024.0 * 1024.0)

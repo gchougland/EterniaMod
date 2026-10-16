@@ -2939,20 +2939,6 @@
     },
     {
       "x": 1,
-      "y": 2,
-      "z": 2,
-      "name": "Eternia_Management_Block",
-      "rotation": 2,
-      "components": {
-        "Components": {
-          "EterniaManagementBlock": {
-            "PlotId": ""
-          }
-        }
-      }
-    },
-    {
-      "x": 1,
       "y": 3,
       "z": 2,
       "name": "Empty"

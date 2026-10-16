@@ -1,0 +1,17 @@
+$T = "Theme/Citadel.ui";
+@SlotStyle = (
+ Default: (Background: $T.@SecondarySurface),
+ Hovered: (Background: $T.@PrimaryHoverSurface),
+ Pressed: (Background: $T.@PrimaryPressedSurface)
+);
+Group { Anchor: (Height: 70); LayoutMode: Left;
+ Button #Slot0 { FlexWeight: 1; Anchor: (Height: 68, Right: 3); LayoutMode: Center; Style: @SlotStyle; TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+  ItemIcon #Icon { Anchor: (Width: 60, Height: 60); HitTestVisible: false; }
+ }
+ Button #Slot1 { FlexWeight: 1; Anchor: (Height: 68, Right: 3); LayoutMode: Center; Style: @SlotStyle; TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+  ItemIcon #Icon { Anchor: (Width: 60, Height: 60); HitTestVisible: false; }
+ }
+ Button #Slot2 { FlexWeight: 1; Anchor: (Height: 68, Right: 3); LayoutMode: Center; Style: @SlotStyle; TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+  ItemIcon #Icon { Anchor: (Width: 60, Height: 60); HitTestVisible: false; }
+ }
+}

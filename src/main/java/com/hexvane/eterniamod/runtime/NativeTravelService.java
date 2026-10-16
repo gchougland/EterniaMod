@@ -45,15 +45,15 @@ public final class NativeTravelService {
         var ref=player.getReference();if(ref==null||!ref.isValid())return;
         if(owner.kind()==Owner.Kind.PLAYER&&!owner.id().equals(player.getUuid())||owner.kind()==Owner.Kind.GUILD&&!plugin.getServices().guilds().can(player.getUuid(),owner.id(),"housing.visit"))return;
         if(!canUseTravel(ref,ref.getStore(),player.getUuid())){player.sendMessage(Message.raw("Use Locate plot from the Hub or a public portal. The plot coordinates are shown in My plots."));return;}
-        var slot=plugin.getServices().housing().find(owner).orElseThrow();var location=plugin.getServices().housing().location(owner).orElseThrow();
+        var property=plugin.getServices().housing().property(owner).orElseThrow();var slot=property.slot();var location=java.util.Objects.requireNonNull(property.location());
         var world=Universe.get().getWorld(location.worldId());if(world==null||slot.state()!=HousingService.State.ACTIVE)return;
         world.execute(()->{var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).getPlot(slot.propertyId());if(plot==null)return;
             var fp=plot.getFootprint();arrive(player,world,new Vector3d(fp.getMinX()+2.5,fp.resolveVisualCenterY(),fp.getMinZ()+2.5),NativeHousingChecks.rect(fp)).thenAccept(ok->player.sendMessage(Message.raw(ok?"Your plot. Open /e housing to choose a house or decoration.":"The plot arrival is obstructed. Use the coordinates in My plots to reach it.")));
         });
     }
     public void returnHome(PlayerRef player) {
-        var slot=plugin.getServices().housing().find(Owner.player(player.getUuid())).orElse(null);
-        var location=plugin.getServices().housing().location(Owner.player(player.getUuid())).orElse(null);
+        var property=plugin.getServices().housing().property(Owner.player(player.getUuid())).orElse(null);
+        var slot=property==null?null:property.slot();var location=property==null?null:property.location();
         World world=location==null?null:Universe.get().getWorld(location.worldId());
         if(slot==null||slot.state()!=HousingService.State.ACTIVE||world==null){returnHub(player);return;}
         world.execute(()->{

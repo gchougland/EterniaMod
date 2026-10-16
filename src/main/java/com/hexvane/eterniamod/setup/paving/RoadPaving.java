@@ -136,7 +136,7 @@ public final class RoadPaving {
         var forbidden=new ArrayList<PlotRect>();var plan=plugin.getInfrastructure().world(world.getName()).orElseThrow();forbidden.addAll(plan.roads());forbidden.addAll(plan.portals());forbidden.addAll(com.hexvane.eterniamod.guildroads.GuildRoads.roadRects(world.getName()));
         registry.all().stream().filter(op->op.state()==State.PENDING&&!op.id().equals(ignore)&&op.world().equals(world.getName())).map(Operation::rect).forEach(forbidden::add);
         EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots().forEach(plot->forbidden.add(NativeHousingChecks.rect(plot.getFootprint())));
-        for(var slot:plugin.getServices().housing().allSlots())if(slot.state()!=HousingService.State.PACKED)plugin.getServices().housing().location(slot.owner()).filter(location->location.worldId().equals(world.getName())).ifPresent(location->forbidden.add(new PlotRect(location.minX(),location.minZ(),location.width(),location.depth())));
+        for(var property:plugin.getServices().housing().properties())if(property.slot().state()!=HousingService.State.PACKED&&property.location()!=null){var location=property.location();if(location.worldId().equals(world.getName()))forbidden.add(new PlotRect(location.minX(),location.minZ(),location.width(),location.depth()));}
         PavingRegistry.requireClear(rect,forbidden);
         for(int x=rect.x();x<rect.endX();x++)for(int z=rect.z();z<rect.endZ();z++){
             if(ChunkSectionBlockUtil.sectionRefAt(world,x,y,z)==null)throw new IllegalStateException("Load the complete road area before paving");

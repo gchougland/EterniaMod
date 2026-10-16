@@ -51,6 +51,7 @@ final class NativeGuildSmoke {
         var guildPlot = manager.getPlot(guildProperty);
         check(guildPlot != null && guild.id().equals(guildPlot.getGuildOwnerUuid()),
             "Guild claim must persist its guild owner");
+        exerciseWaygate(plugin,world,guildPlot,leader,guildOwner);
         var hall = placeHouse(plugin, world, guildPlot, leader, "founders_hall", new Vector3i(72, 1, 32));
         check(services.housing().find(guildOwner).orElseThrow().state() == HousingService.State.ACTIVE,
             "Guild root must be active before it anchors a member claim");
@@ -183,6 +184,28 @@ final class NativeGuildSmoke {
         plugin.getServices().housing().updateBuildingPresent(NativePlacementTransactions.owner(plot), plot.getPlotId(), true);
         NativePlacementTransactions.complete(plugin, placed.operation());
         return placed;
+    }
+
+    private static void exerciseWaygate(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID actor,Owner owner)throws Exception{
+        var services=plugin.getServices();
+        services.ownership().grant(new OwnershipService.GrantRequest("native-guild-waygate",owner,GuildBenefitService.WAYGATE,OwnershipService.Kind.CAPABILITY,1,null));
+        services.guildBenefits().ensureWaygateProp(owner.id());
+        check(GuildWaygate.canPlace(plugin,plot,owner),"Unlocked guild can place its portal");
+        check(!GuildWaygate.canPlace(plugin,plot,Owner.player(actor)),"Personal custody cannot place a guild portal");
+        var definition=Objects.requireNonNull(plugin.getPropCatalog().get("guild_waygate"));
+        var prefab=Objects.requireNonNull(PrefabResolveUtil.resolvePrefabBuffer(definition.getPrefabPath()));
+        var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);
+        UUID previous=null;
+        for(int pass=0;pass<2;pass++){
+            var placed=NativePlacementTransactions.place(plugin,world,plot,actor,"guild_waygate",new Vector3i(51,1,11),Rotation.None,prefab,false,owner);
+            plot.addProp(new HubPlotProp(placed.instanceId(),"guild_waygate",51,1,11,Rotation.None));manager.updatePlot(plot);manager.saveIfDirty();NativePlacementTransactions.complete(plugin,placed.operation());
+            if(previous!=null)check(previous.equals(placed.instanceId()),"Portal repacking preserves custody identity");previous=placed.instanceId();
+            check("Eternia_Guild_Waygate".equals(com.hexvane.eterniamod.world.ChunkSectionBlockUtil.blockType(world,51,1,11).getId()),"Native portal block is placed");
+            check(!GuildWaygate.canPlace(plugin,plot,owner),"Only one portal may be placed on an estate");
+            var packed=NativePlacementTransactions.pickup(plugin,world,plot,actor,placed.instanceId());plot.removeProp(placed.instanceId());manager.updatePlot(plot);manager.saveIfDirty();NativePlacementTransactions.complete(plugin,packed);
+            services.guildBenefits().ensureWaygateProp(owner.id());check(services.ownership().available(owner,GuildBenefitService.WAYGATE_PROP)==0,"Opening inventory does not refill a packed portal");
+        }
+        plugin.getLogger().atInfo().log("ETERNIA_NATIVE_GUILD_WAYGATE_PASS: placement, packing, replacement, single portal and guild custody verified");
     }
 
     private static Set<UUID> entityIds(World world, HubPlotRecord plot) {

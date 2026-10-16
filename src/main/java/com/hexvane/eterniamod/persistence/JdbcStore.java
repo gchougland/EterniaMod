@@ -11,12 +11,15 @@ import javax.sql.DataSource;
  * adapter must not mutate eternia_records. Replace with scoped locking only with concurrency tests.
  * No driver is bundled here: bootstrap supplies a PostgreSQL DataSource.
  */
-public final class JdbcStore implements TransactionalStore {
+public final class JdbcStore implements TransactionalStore, AutoCloseable {
     static final long LOCK_ID = 0x455445524e49414cL;
     private final DataSource source;
     private final ThreadLocal<Boolean> active = ThreadLocal.withInitial(() -> false);
     public JdbcStore(DataSource source) { this.source = Objects.requireNonNull(source); }
     public void migrate() { DatabaseMigrations.migrate(source); }
+    @Override public void close() throws Exception {
+        if (source instanceof AutoCloseable closeable) closeable.close();
+    }
     @Override public <T> T transaction(Function<Transaction,T> work) {
         if (active.get()) throw new IllegalStateException("Nested transactions are unsupported");
         active.set(true);
@@ -56,6 +59,19 @@ public final class JdbcStore implements TransactionalStore {
                 try(var rs=q.executeQuery()) { while(rs.next()) rows.add(new Row(ns,rs.getString(1),rs.getLong(2),RecordCodec.decode(rs.getBytes(3)))); }
                 return List.copyOf(rows);
             } catch(SQLException e) { throw storage(e); }
+        }
+        public Map<String,Row> findAll(String ns,Collection<String> keys) {
+            check();RecordCodec.validateKey(ns,"findAll");
+            keys.forEach(key->RecordCodec.validateKey(ns,key));
+            if(keys.isEmpty())return Map.of();
+            try {
+                var array=connection.createArrayOf("text",keys.toArray(String[]::new));
+                try(var q=connection.prepareStatement("SELECT record_key, revision, payload FROM eternia_records WHERE namespace=? AND record_key=ANY(?)")) {
+                    q.setString(1,ns);q.setArray(2,array);var rows=new HashMap<String,Row>();
+                    try(var rs=q.executeQuery()){while(rs.next()){String key=rs.getString(1);rows.put(key,new Row(ns,key,rs.getLong(2),RecordCodec.decode(rs.getBytes(3))));}}
+                    return Map.copyOf(rows);
+                } finally {array.free();}
+            } catch(SQLException e){throw storage(e);}
         }
         public Row save(String ns,String key,long revision,Map<String,String> fields) {
             check(); RecordCodec.validateKey(ns,key);

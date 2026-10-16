@@ -6,6 +6,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static com.hexvane.eterniamod.housing.HousingRules.*;
 
 class HousingRulesTest {
+    @Test void soloGuildTestingKeepsProductionThresholdAndPlacementRules() {
+        var candidate=new Candidate(new PlotRect(0,0,48,48),Scope.GUILD_ROOT,UUID.randomUUID(),false,1);
+        var roads=List.of(new PlotRect(0,-5,48,1));var portals=List.of(new PlotRect(-10,0,1,1));
+        var network=PublicRoadNetwork.rectangles(roads);
+        assertEquals("members",claim(candidate,List.of(),roads,portals,network).code());
+        assertTrue(claim(candidate,List.of(),roads,portals,network,true).valid());
+        assertEquals("connector",claim(candidate,List.of(),List.of(),portals,PublicRoadNetwork.rectangles(List.of()),true).code());
+        assertEquals("guildPortal",claim(candidate,List.of(),roads,List.of(),network,true).code());
+        var occupied=new Anchor(UUID.randomUUID(),candidate.rect(),Scope.PUBLIC,null,true);
+        assertEquals("overlap",claim(candidate,List.of(occupied),roads,portals,network,true).code());
+    }
     @Test void inclusiveLegacyConversionHasFiveWholeBlocksBetweenBorders() {
         PlotRect a = new PlotRect(0,0,24,24), b = new PlotRect(29,0,24,24);
         assertEquals(5,a.gap(b)); assertFalse(a.contains(24,0)); assertFalse(a.overlaps(b));

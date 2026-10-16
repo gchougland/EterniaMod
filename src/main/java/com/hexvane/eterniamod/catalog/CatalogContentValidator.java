@@ -30,7 +30,7 @@ public final class CatalogContentValidator {
         if (definition.has("displayName") && (string(definition, "displayName") == null
             || string(definition, "displayName").isBlank())) errors.add("displayName must be nonblank text");
         vector(definition, "plotAnchorOffset", false, false, errors);
-        if (building) vector(definition, "managementBlockLocalPos", true, false, errors);
+        if (building) vector(definition, "managementBlockLocalPos", false, false, errors);
         if (building) {
             vector(definition, "spawnLocalPos", false, false, errors);
             if (definition.has("housingKind") && !Set.of("personal","guild").contains(String.valueOf(string(definition,"housingKind")))) errors.add("housingKind must be personal or guild");

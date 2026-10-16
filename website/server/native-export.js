@@ -2,7 +2,7 @@ import crypto from 'node:crypto';import {gzipSync} from 'node:zlib';import {Http
 const supported=new Set(['house','prop','addition']),rotations=new Set(['None','Ninety','OneEighty','TwoSeventy']);
 function stable(value){if(Array.isArray(value))return value.map(stable);if(value&&typeof value==='object')return Object.fromEntries(Object.keys(value).sort().map(k=>[k,stable(value[k])]));return value;}
 const json=value=>JSON.stringify(stable(value),null,2)+'\n';
-function vector(value,name,required=false){if(value===undefined){if(required)throw new HttpError(400,name+' is required for native export');return undefined;}if(!Array.isArray(value)||value.length!==3||!value.every(n=>Number.isSafeInteger(n)&&Math.abs(n)<=4096))throw new HttpError(400,name+' must contain three integers within ±4096');return value;}
+function vector(value,name,required=false){if(value===undefined){if(required)throw new HttpError(400,name+' is required for native export');return undefined;}if(!Array.isArray(value)||value.length!==3||!value.every(n=>Number.isSafeInteger(n)&&Math.abs(n)<=4096))throw new HttpError(400,name+' must contain three integers within Â±4096');return value;}
 export function nativeDefinition(record){
  const d=record.definition;if(!supported.has(d.kind)||!record.prefab)throw new HttpError(400,'Native bundles currently support houses, props and additions.');
  const match=/^eternia:(house|prop|addition)\/([a-z0-9][a-z0-9_-]{0,95})$/.exec(d.id);
@@ -12,7 +12,7 @@ export function nativeDefinition(record){
  const prefabPath='EterniaAuthored/'+d.kind+'/'+id+'/r'+d.revision+'.prefab.json';
  const definition={id,displayName:d.displayName,prefabPath,plotAnchorOffset:vector(n.plotAnchorOffset,'native.plotAnchorOffset')||[0,0,0],rotationYaw};
  if(d.kind==='house'){
-  definition.managementBlockLocalPos=vector(n.managementBlockLocalPos,'native.managementBlockLocalPos',true);
+  definition.managementBlockLocalPos=vector(n.managementBlockLocalPos,'native.managementBlockLocalPos');
   definition.spawnLocalPos=vector(n.spawnLocalPos,'native.spawnLocalPos',true);
   definition.housingKind=n.housingKind||'personal';if(!['personal','guild'].includes(definition.housingKind))throw new HttpError(400,'native.housingKind must be personal or guild');
  }else definition.category=d.kind==='addition'?'addition':'prop';
@@ -22,7 +22,7 @@ export function nativeDefinition(record){
 }
 /** Fixed timestamps, sorted files and canonical JSON make identical selected revisions byte-identical. */
 export function exportNativeBundle(records,images=new Map()){
- if(!records.length||records.length>100)throw new HttpError(400,'Select 1–100 revisions for native export');
+ if(!records.length||records.length>100)throw new HttpError(400,'Select 1â€“100 revisions for native export');
  const files=new Map(),indexes={Buildings:[],Props:[]},manifest=[];const used=new Set();let prefabBytes=0;
  for(const record of [...records].sort((a,b)=>a.definition.id.localeCompare(b.definition.id))){
   const converted=nativeDefinition(record),key=converted.directory+'/'+converted.definition.id;

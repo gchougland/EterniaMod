@@ -21,7 +21,10 @@ class PluginDatabaseDriverTest {
         var originalContext = thread.getContextClassLoader();
         var platform = ClassLoader.getPlatformClassLoader();
         var urls = new URL[]{RuntimeConfig.class.getProtectionDomain().getCodeSource().getLocation(),
-            org.postgresql.Driver.class.getProtectionDomain().getCodeSource().getLocation()};
+            org.postgresql.Driver.class.getProtectionDomain().getCodeSource().getLocation(),
+            com.zaxxer.hikari.HikariDataSource.class.getProtectionDomain().getCodeSource().getLocation(),
+            org.slf4j.LoggerFactory.class.getProtectionDomain().getCodeSource().getLocation(),
+            org.slf4j.jul.JULServiceProvider.class.getProtectionDomain().getCodeSource().getLocation()};
         try (var plugin = new URLClassLoader(urls, platform)) {
             thread.setContextClassLoader(platform);
             var configClass = plugin.loadClass(RuntimeConfig.class.getName());
@@ -41,6 +44,13 @@ class PluginDatabaseDriverTest {
             try (var connection = source.getConnection(System.getenv("ETERNIA_TEST_DATABASE_USER"),
                     System.getenv("ETERNIA_TEST_DATABASE_PASSWORD"))) {
                 assertTrue(connection.isValid(5));
+            }
+            var openPool=plugin.loadClass(DatabasePool.class.getName()).getDeclaredMethod("open",DataSource.class);
+            openPool.setAccessible(true);
+            var pooled=(DataSource)openPool.invoke(null,source);
+            try(var closePool=(AutoCloseable)pooled;var connection=pooled.getConnection()) {
+                assertTrue(connection.isValid(5));
+                assertSame(plugin,connection.getClass().getClassLoader(),"The pool must also work inside Hytale's isolated plugin loader");
             }
         } finally {
             thread.setContextClassLoader(originalContext);

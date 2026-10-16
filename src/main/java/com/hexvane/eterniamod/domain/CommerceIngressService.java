@@ -28,8 +28,7 @@ public final class CommerceIngressService extends DomainSupport {
     /** May be retried after a crash between grant commit and queue acknowledgement. */
     public int reconcile(int limit){
         require(limit>0&&limit<=100,CAPACITY,"Reconciliation batch must be 1..100");
-        var candidates=store.transaction(tx->tx.scan("tebex_verified").stream().filter(r->tx.find("tebex_done",r.key()).isEmpty()&&tx.find("tebex_review",r.key()).isEmpty()&&
-            (tx.find("tebex_reversal",r.value("transaction")).isPresent()||tx.find("tebex_console",r.key()).isPresent()&&recipientExists(tx,r)&&tx.find("commerce_product",r.value("package")+":"+r.value("revision")).isPresent())).limit(limit).toList());int delivered=0;
+        var candidates=store.transaction(tx->candidates(tx,limit));int delivered=0;
         for(var verified:candidates){
             var decision=store.transaction(tx->{if(tx.find("tebex_reversal",verified.value("transaction")).isPresent())return "REVERSED";
                 if(tx.find("tebex_review",verified.key()).isPresent())return "REVIEW";
@@ -49,6 +48,19 @@ public final class CommerceIngressService extends DomainSupport {
             store.transaction(tx->{if(tx.find("tebex_done",verified.key()).isEmpty())tx.save("tebex_done",verified.key(),0,fields("state",decision));return null;});
         }reconcileControls(limit);return delivered;
     }
+    private List<TransactionalStore.Row> candidates(TransactionalStore.Transaction tx,int limit){
+        var all=tx.scan("tebex_verified");var allKeys=all.stream().map(TransactionalStore.Row::key).toList();
+        tx.findAll("tebex_done",allKeys);tx.findAll("tebex_review",allKeys);
+        var verified=all.stream().filter(r->tx.find("tebex_done",r.key()).isEmpty()&&tx.find("tebex_review",r.key()).isEmpty()).toList();
+        var keys=verified.stream().map(TransactionalStore.Row::key).toList();tx.findAll("tebex_console",keys);
+        tx.findAll("tebex_reversal",verified.stream().map(r->r.value("transaction")).toList());
+        tx.findAll("commerce_product",verified.stream().map(r->r.value("package")+":"+r.value("revision")).toList());
+        tx.findAll("account",verified.stream().map(r->Owner.parse(r.value("recipient"))).filter(o->o.kind()==Owner.Kind.PLAYER).map(o->o.id().toString()).toList());
+        tx.findAll("guild",verified.stream().map(r->Owner.parse(r.value("recipient"))).filter(o->o.kind()==Owner.Kind.GUILD).map(o->o.id().toString()).toList());
+        return verified.stream().filter(r->tx.find("tebex_done",r.key()).isEmpty()&&tx.find("tebex_review",r.key()).isEmpty()&&
+            (tx.find("tebex_reversal",r.value("transaction")).isPresent()||tx.find("tebex_console",r.key()).isPresent()&&recipientExists(tx,r)&&tx.find("commerce_product",r.value("package")+":"+r.value("revision")).isPresent())).limit(limit).toList();
+    }
+    public boolean hasPending(){return store.transaction(tx->!candidates(tx,1).isEmpty()||!controls(tx,1).isEmpty());}
     public record Review(String transaction,String packageId,String reason){}
     public List<Review> reviews(){return store.transaction(tx->tx.scan("tebex_review").stream().map(r->new Review(r.value("transaction"),r.value("package"),r.value("reason"))).toList());}
     private static boolean recipientExists(TransactionalStore.Transaction tx,TransactionalStore.Row line){Owner owner=Owner.parse(line.value("recipient"));return owner.kind()==Owner.Kind.PLAYER?tx.find("account",owner.id().toString()).isPresent():owner.kind()==Owner.Kind.GUILD&&tx.find("guild",owner.id().toString()).isPresent();}
@@ -58,8 +70,14 @@ public final class CommerceIngressService extends DomainSupport {
             if(state.equals("ENDED")){String sid=key("tebex",reference);var ended=tx.find("subscription_end",sid);if(ended.isEmpty()||Instant.parse(ended.get().value("at")).isBefore(at))tx.save("subscription_end",sid,ended.map(TransactionalStore.Row::revision).orElse(0L),fields("at",at));}
             tx.save("tebex_sub_control",id,previous.map(TransactionalStore.Row::revision).orElse(0L),fields("reference",reference,"state",state,"at",at,"event",eventId));return null;});
     }
+    private List<TransactionalStore.Row> controls(TransactionalStore.Transaction tx,int limit){
+        var controls=tx.scan("tebex_sub_control");
+        tx.findAll("tebex_control_done",controls.stream().map(r->key(r.value("event"))).toList());
+        tx.findAll("subscription",controls.stream().map(r->key("tebex",r.value("reference"))).toList());
+        return controls.stream().filter(r->tx.find("tebex_control_done",key(r.value("event"))).isEmpty()&&tx.find("subscription",key("tebex",r.value("reference"))).isPresent()).limit(limit).toList();
+    }
     private void reconcileControls(int limit){
-        var controls=store.transaction(tx->tx.scan("tebex_sub_control").stream().filter(r->tx.find("tebex_control_done",key(r.value("event"))).isEmpty()&&tx.find("subscription",key("tebex",r.value("reference"))).isPresent()).limit(limit).toList());
+        var controls=store.transaction(tx->controls(tx,limit));
         for(var control:controls){commerce.applySubscriptionControl("tebex",control.value("reference"),control.value("state"),Instant.parse(control.value("at")),"tebex:"+control.value("event"));
             store.transaction(tx->{String id=key(control.value("event"));if(tx.find("tebex_control_done",id).isEmpty())tx.save("tebex_control_done",id,0,fields("state","APPLIED"));return null;});}
     }

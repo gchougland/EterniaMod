@@ -1,0 +1,76 @@
+{
+  "Shape": "Cube",
+  "RenderMode": "BlendLinear",
+  "ParticleRotationInfluence": "None",
+  "ParticleRotateWithSpawner": true,
+  "LinearFiltering": true,
+  "LightInfluence": 0,
+  "LifeSpan": 1.2,
+  "MaxConcurrentParticles": 1,
+  "ParticleLifeSpan": {
+    "Min": 1.35,
+    "Max": 1.35
+  },
+  "SpawnBurst": true,
+  "SpawnRate": {
+    "Min": 1,
+    "Max": 1
+  },
+  "TotalParticles": {
+    "Min": 1,
+    "Max": 1
+  },
+  "InitialVelocity": {
+    "Speed": {
+      "Min": 0,
+      "Max": 0
+    },
+    "Yaw": {
+      "Min": 0,
+      "Max": 0
+    },
+    "Pitch": {
+      "Min": 0,
+      "Max": 0
+    }
+  },
+  "Particle": {
+    "Texture": "Particles/Eternia/PlotRune.png",
+    "FrameSize": {
+      "Width": 256,
+      "Height": 256
+    },
+    "ScaleRatioConstraint": "OneToOne",
+    "SoftParticles": "Disable",
+    "InitialAnimationFrame": {
+      "Scale": {
+        "X": {
+          "Min": 0.125,
+          "Max": 0.125
+        }
+      },
+      "Rotation": {
+        "X": {
+          "Min": 90,
+          "Max": 90
+        }
+      },
+      "Opacity": 1,
+      "Color": "#ffffff"
+    },
+    "Animation": {
+      "0": {
+        "Opacity": 0.4675
+      },
+      "35": {
+        "Opacity": 0.55
+      },
+      "80": {
+        "Opacity": 0.4675
+      },
+      "100": {
+        "Opacity": 0
+      }
+    }
+  }
+}

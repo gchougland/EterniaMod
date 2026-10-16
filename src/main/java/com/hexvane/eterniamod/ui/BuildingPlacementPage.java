@@ -115,7 +115,7 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
         commandBuilder.set("#Summary.TextSpans", Message.translation(MSG_UI + ".summary").param("building", name));
         var manager=plugin==null?null:EterniaWorldRegistries.getOrCreateHubPlotManager(store.getExternalData().getWorld(),plugin);
         var plot=manager==null?null:manager.getPlot(session.getPlotId());
-        String problem=plot==null||def==null?"unavailable":BuildingPlacementValidator.validate(store.getExternalData().getWorld(),manager,plot,playerRef.getUuid(),sign,session.getPrefabYaw(),def,plugin);
+        String problem=plot==null||def==null?"unavailable":BuildingPlacementValidator.preview(store.getExternalData().getWorld(),manager,plot,playerRef.getUuid(),sign,session.getPrefabYaw(),def,plugin);
         commandBuilder.set("#Details.TextSpans",problem==null?Message.raw("Ready to place. You can adjust the position or rotate the house before confirming."):Message.translation("eterniamod_common.eterniamod.common."+problem));
         bind(eventBuilder,"#FindValidPosition","FindValidPosition");
         commandBuilder.set("#PlotTypeDropdown.Visible", false);
@@ -502,7 +502,7 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
             return false;
         }
         String errKey =
-            BuildingPlacementValidator.validate(
+            BuildingPlacementValidator.preview(
                 world, plotManager, plot, uc.getUuid(), session.getAnchor(), session.getPrefabYaw(), def, plugin
             );
         if (errKey != null) {
@@ -563,7 +563,7 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
             return;
         }
         String errKey =
-            BuildingPlacementValidator.validate(
+            BuildingPlacementValidator.preview(
                 world, plotManager, plot, uc.getUuid(), session.getAnchor(), session.getPrefabYaw(), def, plugin
             );
         boolean valid = errKey == null;

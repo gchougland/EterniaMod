@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
-/** Success-qualified native activity. Empty world/target allowlists are intentionally disabled. */
+/** Verified native activity in adventure worlds, with explicit world and target overrides. */
 public final class ActivityBootstrap implements AutoCloseable {
     private static final Logger LOG=Logger.getLogger(ActivityBootstrap.class.getName());
     private static volatile ActivityBootstrap active;
@@ -40,13 +40,13 @@ public final class ActivityBootstrap implements AutoCloseable {
     private volatile boolean closed;
     public ActivityBootstrap(EterniaModPlugin plugin,EterniaServices services,Settings settings){
         this.plugin=plugin;this.services=Objects.requireNonNull(services);this.settings=Objects.requireNonNull(settings);active=this;
-        questToasts=new QuestToasts(services.seasons());
+        questToasts=new QuestToasts(services);
         var registry=plugin.getEntityStoreRegistry();registry.registerSystem(new Placement());registry.registerSystem(new Mining());registry.registerSystem(new Kills());
         plugin.getCodecRegistry(Interaction.CODEC).register("EterniaHarvestCrop",EterniaHarvestCrop.class,EterniaHarvestCrop.CODEC);
         plugin.getCodecRegistry(com.hypixel.hytale.server.core.asset.type.blocktype.config.farming.FarmingStageData.CODEC).register("EterniaAwaitHarvest",EterniaAwaitHarvestStage.class,EterniaAwaitHarvestStage.CODEC);
         worker.scheduleWithFixedDelay(()->{
             if(closed)return;
-            try{services.activitySources().drain(100);}catch(RuntimeException e){LOG.warning("Activity outbox remains pending: "+e.getClass().getSimpleName());}
+            try{if(services.readView(ActivityBootstrap.class,java.time.Duration.ofSeconds(10),()->services.activitySources().hasPending()))for(int batch=0;batch<4;batch++){if(services.batch(()->services.activitySources().drain(25))<25)break;}}catch(RuntimeException e){LOG.warning("Activity outbox remains pending: "+e.getClass().getSimpleName());}
             try{questToasts.deliver();}catch(RuntimeException e){LOG.warning("Quest notification remains pending: "+e.getClass().getSimpleName());}
         },1,1,TimeUnit.SECONDS);
     }
@@ -64,9 +64,11 @@ public final class ActivityBootstrap implements AutoCloseable {
         if(managedTrial(world))return localTrials.computeIfAbsent(world.getWorldConfig().getUuid(),id->com.hexvane.eterniamod.localplayground.PlaygroundActivities.settings(world));
         return settings;
     }
-    boolean enabled(World world){return !closed&&settings(world).worlds.contains(world.getName());}
-    void harvested(World world,UUID actor,Vector3i position,String target,int generation){
-        Long xp=settings(world).harvesting.get(target);if(enabled(world)&&xp!=null)services.activitySources().verifiedHarvest(actor,block(world,position),target,generation,xp);
+    boolean enabled(World world){return !closed&&(settings(world).worlds.contains(world.getName())||plugin.getInfrastructure().world(world.getName()).map(w->w.role().equals("adventure")).orElse(false));}
+    private boolean killsEnabled(World world){return enabled(world)||!closed&&plugin.getRuntimeConfig().local()&&com.hexvane.eterniamod.localplayground.LocalPlayground.managedWorld(plugin,world.getName());}
+    private Long xp(World world,SeasonService.ActivityKind kind,String target){var configured=switch(kind){case KILL->settings(world).kills;case MINE->settings(world).mining;case HARVEST->settings(world).harvesting;default->Map.<String,Long>of();};return configured.containsKey(target)?configured.get(target):QuestTargets.defaultXp(kind,target);}
+    void harvested(World world,UUID actor,Vector3i position,String target,String cycle){
+        Long xp=xp(world,SeasonService.ActivityKind.HARVEST,target);if(enabled(world)&&xp!=null)services.activitySources().verifiedHarvestCycle(actor,block(world,position),target,cycle,xp);
     }
     static ActivitySourceService.Block block(World w,Vector3i p){return new ActivitySourceService.Block(w.getWorldConfig().getUuid(),p.x,p.y,p.z);}
     static BlockType blockType(World world,Vector3i p){
@@ -86,7 +88,7 @@ public final class ActivityBootstrap implements AutoCloseable {
     private final class Mining extends EntityEventSystem<EntityStore,BreakBlockEvent>{
         Mining(){super(BreakBlockEvent.class);}public Query<EntityStore> getQuery(){return PlayerRef.getComponentType();}
         public void handle(int index,ArchetypeChunk<EntityStore> chunk,Store<EntityStore> store,CommandBuffer<EntityStore> buffer,BreakBlockEvent event){
-            World world=store.getExternalData().getWorld();Long xp=settings(world).mining.get(event.getBlockType().getId());if(!enabled(world)||xp==null||event.isCancelled()||!adventure(store,chunk.getReferenceTo(index)))return;
+            World world=store.getExternalData().getWorld();Long xp=xp(world,SeasonService.ActivityKind.MINE,event.getBlockType().getId());if(!enabled(world)||xp==null||event.isCancelled()||!adventure(store,chunk.getReferenceTo(index)))return;
             var player=chunk.getComponent(index,PlayerRef.getComponentType());if(player==null)return;UUID actor=player.getUuid();var position=new Vector3i(event.getTargetBlock());String target=event.getBlockType().getId();
             world.execute(()->{
                 if(closed||event.isCancelled()||!position.equals(event.getTargetBlock()))return;
@@ -98,9 +100,9 @@ public final class ActivityBootstrap implements AutoCloseable {
     private final class Kills extends DeathSystems.OnDeathSystem{
         public Query<EntityStore> getQuery(){return NPCEntity.getComponentType();}
         public void onComponentAdded(Ref<EntityStore> ref,DeathComponent death,Store<EntityStore> store,CommandBuffer<EntityStore> buffer){
-            World world=store.getExternalData().getWorld();if(!enabled(world)||death.getDeathInfo()==null||!(death.getDeathInfo().getSource() instanceof Damage.EntitySource source)||!source.getRef().isValid())return;
+            World world=store.getExternalData().getWorld();if(!killsEnabled(world)||death.getDeathInfo()==null||!(death.getDeathInfo().getSource() instanceof Damage.EntitySource source)||!source.getRef().isValid())return;
             var killer=store.getComponent(source.getRef(),PlayerRef.getComponentType());var npc=store.getComponent(ref,NPCEntity.getComponentType());var identity=store.getComponent(ref,UUIDComponent.getComponentType());
-            if(killer==null||npc==null||identity==null||!adventure(store,source.getRef()))return;Long xp=settings(world).kills.get(npc.getRoleName());if(xp==null)return;
+            if(killer==null||npc==null||identity==null||!adventure(store,source.getRef()))return;Long xp=xp(world,SeasonService.ActivityKind.KILL,npc.getRoleName());if(xp==null)return;
             try{services.activitySources().verifiedDeath(killer.getUuid(),world.getWorldConfig().getUuid(),identity.getUuid(),npc.getRoleName(),xp);}catch(RuntimeException e){LOG.warning("Death source could not persist; no XP granted");}
         }
     }

@@ -9,12 +9,24 @@ import static com.hexvane.eterniamod.domain.DomainException.Code.*;
 /** A purchaser explicitly donates a verified permanent voucher to a named guild.
  * The source grant remains attached to the benefit so refunds revoke both in one transaction. */
 public final class GuildBenefitService extends DomainSupport {
+    public static final String WAYGATE="eternia:convenience/teleporter", WAYGATE_PROP="eternia:prop/guild_waygate";
+    /** Backfills existing unlocks, once per source. The portal stays linked to its refundable entitlement. */
+    public void ensureWaygateProp(UUID guild){store.transaction(tx->{ensureWaygatePropIn(tx,guild);return null;});}
+    private void ensureWaygatePropIn(TransactionalStore.Transaction tx,UUID guild){
+        Owner owner=Owner.guild(guild);
+        for(var source:tx.scan("grant")){
+            if(!source.value("owner").equals(owner.key())||!source.value("content").equals(WAYGATE)||source.value("revoked").equals("true")||!future(source.value("until"),clock.instant()))continue;
+            String receipt="guild-waygate-prop:"+source.key();
+            var child=ownership.grantIn(tx,new OwnershipService.GrantRequest(receipt,owner,WAYGATE_PROP,OwnershipService.Kind.QUANTITY,1,source.value("until").isEmpty()?null:java.time.Instant.parse(source.value("until"))));
+            if(tx.find("grant_derivation",child.id()).isEmpty())tx.save("grant_derivation",child.id(),0,fields("parent",source.key(),"child",child.id()));
+        }
+    }
     public record Benefit(String voucherId,String name,String entitlementId) {}
     public record Voucher(String grantId,Benefit benefit,long available) {}
     public record Redemption(UUID actor,UUID guild,String sourceGrantId,String benefitId,String grantReceipt,boolean active) {}
     public static final List<Benefit> BENEFITS=List.of(
         new Benefit("eternia:guild_voucher/large_plot","Larger guild estate","eternia:plot/guild_64"),
-        new Benefit("eternia:guild_voucher/teleporter","Guild teleporter","eternia:convenience/teleporter"));
+        new Benefit("eternia:guild_voucher/teleporter","Guild Waygate","eternia:convenience/teleporter"));
     private final OwnershipService ownership;
     GuildBenefitService(TransactionalStore store,Clock clock,Supplier<UUID> ids,OwnershipService ownership){super(store,clock,ids);this.ownership=ownership;}
 
@@ -46,6 +58,7 @@ public final class GuildBenefitService extends DomainSupport {
             String derivedReceipt="guild-redemption:"+id;
             var derived=ownership.grantIn(tx,new OwnershipService.GrantRequest(derivedReceipt,Owner.guild(confirmedGuild),benefit.entitlementId,OwnershipService.Kind.CAPABILITY,1,null));
             tx.save("grant_derivation",derived.id(),0,fields("parent",source.key(),"child",derived.id()));
+            if(benefit.entitlementId.equals(WAYGATE))ensureWaygatePropIn(tx,confirmedGuild);
             input.putAll(fields("benefit",benefit.entitlementId,"grantReceipt",derivedReceipt));
             return redemption(tx,tx.save("guild_redemption",id,0,input));
         });

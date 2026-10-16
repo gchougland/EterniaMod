@@ -19,6 +19,8 @@ public final class ChoicePage extends EterniaInteractiveCustomUIPage<ChoicePage.
     public ChoicePage(PlayerRef player,String title,String description,List<Choice> choices){super(player,CustomPageLifetime.CanDismissOrCloseThroughInteraction,Data.CODEC);this.title=title;this.description=description;this.choices=List.copyOf(choices);}
     public static void open(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,String title,String description,List<Choice> choices){var component=store.getComponent(ref,Player.getComponentType());if(component!=null){var next=new ChoicePage(player,title,description,choices);next.back=returnAction(component.getPageManager().getCustomPage());component.getPageManager().openCustomPage(ref,store,next);}}
     public static BiConsumer<Ref<EntityStore>,Store<EntityStore>> returnAction(com.hypixel.hytale.server.core.entity.entities.player.pages.CustomUIPage current){
+        if(current instanceof IllustratedMenuPage menu)return menu::reopen;
+        if(current instanceof com.hexvane.eterniamod.customization.ArchitectLedgerPage ledger)return ledger::reopen;
         if(!(current instanceof ChoicePage parent))return null;
         return (ref,store)->{var component=store.getComponent(ref,Player.getComponentType());if(component==null)return;var fresh=new ChoicePage(parent.playerRef,parent.title,parent.description,parent.choices);fresh.page=parent.page;fresh.back=parent.back;component.getPageManager().openCustomPage(ref,store,fresh);};
     }

@@ -1,6 +1,6 @@
 $T = "Theme/Citadel.ui";
 Group {
-  Anchor: (Top: 64, Right: 24, Width: 360, Height: 336);
+  Anchor: (Top: 64, Right: 24, Width: 360, Height: 450);
   Background: $T.@PanelSurface;
   Padding: (Full: 20);
   LayoutMode: Top;
@@ -18,6 +18,11 @@ Group {
     Label #Style { FlexWeight: 1; Style: (FontSize: 16, TextColor: #f0e8d5, HorizontalAlignment: Center, VerticalAlignment: Center, Wrap: true); }
     $T.@SecondaryTextButton #Next { Text: ">"; Anchor: (Width: 52, Left: 12); }
   }
+  Group { Anchor: (Height: 42, Bottom: 10); LayoutMode: Left;
+    $T.@SecondaryTextButton #EditStyle { Text: "Edit style"; FlexWeight: 1; Anchor: (Right: 8); }
+    $T.@SecondaryTextButton #NewStyle { Text: "New style"; FlexWeight: 1; }
+  }
+  $T.@SecondaryTextButton #SavedStyles { Text: "Browse saved styles"; Anchor: (Height: 42, Bottom: 12); }
   Label { Text: "Changes update the grounded preview. Your road is saved only after review and confirmation."; Anchor: (Height: 48, Bottom: 10); Style: (...$T.@MutedStyle); }
   $T.@TextButton #Done { Text: "Back to the road"; Anchor: (Height: 42); }
 }

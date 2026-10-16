@@ -17,7 +17,8 @@ import java.util.*;
 public final class EterniaAdminCommand extends AbstractCommandCollection {
     public EterniaAdminCommand(){
         super("admin","Eternia administration");setPermissionGroups("hytale:WorldEditor");
-        addSubCommand(new Status());addSubCommand(new Reload());addSubCommand(new Inspect());addSubCommand(new Recover());addSubCommand(new Grant());addSubCommand(new EterniaSetupCommand());addSubCommand(new RoadTool());
+        addSubCommand(new CurrencyGrantCommand(CurrencyGrantService.Currency.CROWNS));addSubCommand(new CurrencyGrantCommand(CurrencyGrantService.Currency.COINS));
+        addSubCommand(new Status());addSubCommand(new Reload());addSubCommand(new Inspect());addSubCommand(new Recover());addSubCommand(new Grant());addSubCommand(new EterniaSetupCommand());addSubCommand(new RoadTool());addSubCommand(new HubBuildCommand());
     }
     private static final class RoadTool extends AbstractPlayerCommand {
         RoadTool(){super("roadtool","Get the held spline Road Designer");setPermissionGroups("hytale:WorldEditor");}

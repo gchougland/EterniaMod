@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Migration resources must package identically on Windows and Unix.
+src/main/resources/Server/EterniaMod/Database/*.sql text eol=lf

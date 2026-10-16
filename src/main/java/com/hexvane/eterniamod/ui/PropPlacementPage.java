@@ -6,6 +6,7 @@ import com.hexvane.eterniamod.hub.HubPlotFootprint;
 import com.hexvane.eterniamod.hub.HubPlotManager;
 import com.hexvane.eterniamod.hub.HubPlotRecord;
 import com.hexvane.eterniamod.placement.BuildingPlacementClientPrefabPreview;
+import com.hexvane.eterniamod.placement.BuildingPlacementCameraUtil;
 import com.hexvane.eterniamod.placement.BuildingPlacementNudgeUtil;
 import com.hexvane.eterniamod.placement.BuildingPlacementSnapUtil;
 import com.hexvane.eterniamod.placement.PlotFootprintUtil;
@@ -46,6 +47,9 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
     @Nonnull
     private final PropPlacementSession session;
 
+    private boolean birdsEyeEnabled;
+    private float birdsEyeDistance=BuildingPlacementCameraUtil.DEFAULT_DISTANCE;
+    private double focusX,focusY,focusZ,panX,panZ;
     private int wireframeRefreshSerial;
     private boolean clientPrefabPreviewActive;
 
@@ -121,9 +125,19 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
         commandBuilder.set("#PlotTypeLabel.Visible", false);
         commandBuilder.set("#MoveConfirmGroup.Visible", false);
         commandBuilder.set("#PlaceButton.Visible", true);
-        commandBuilder.set("#BirdsEyeToggle.Visible", false);
-        commandBuilder.set("#BirdsEyeZoomRow.Visible", false);
-        commandBuilder.set("#BirdsEyePanColumn.Visible", false);
+        commandBuilder.set("#BirdsEyeToggle.Visible", true);
+        commandBuilder.set("#BirdsEyeToggle #BirdsEyeLabel.Text", "Bird's eye view");
+        commandBuilder.set("#BirdsEyeToggle #CheckBox.Value",birdsEyeEnabled);
+        commandBuilder.set("#BirdsEyeZoomRow.Visible",birdsEyeEnabled);
+        commandBuilder.set("#BirdsEyePanColumn.Visible",birdsEyeEnabled);
+        commandBuilder.set("#BirdsEyeDistanceSlider.Value",birdsEyeDistance);
+        commandBuilder.set("#BirdsEyeDistanceValue.Text",String.format("%.0f",birdsEyeDistance));
+        commandBuilder.set("#BtnZoomOut.Disabled",birdsEyeDistance>=BuildingPlacementCameraUtil.MAX_DISTANCE);
+        commandBuilder.set("#BtnZoomIn.Disabled",birdsEyeDistance<=BuildingPlacementCameraUtil.MIN_DISTANCE);
+        commandBuilder.set("#BtnZm.TooltipTextSpans",Message.raw(birdsEyeEnabled?"Move up on screen":"Move forward where you are looking"));
+        commandBuilder.set("#BtnZp.TooltipTextSpans",Message.raw(birdsEyeEnabled?"Move down on screen":"Move back toward you"));
+        commandBuilder.set("#BtnXm.TooltipTextSpans",Message.raw(birdsEyeEnabled?"Move left on screen":"Move left from your view"));
+        commandBuilder.set("#BtnXp.TooltipTextSpans",Message.raw(birdsEyeEnabled?"Move right on screen":"Move right from your view"));
         lastValidationError = resolveValidationError(ref, store);
         boolean canPlace = lastValidationError == null;
         commandBuilder.set("#PlaceButton.Disabled", !canPlace);
@@ -138,6 +152,9 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
         } else {
             commandBuilder.set("#MoveConfirmGroup.Visible", false);
         }
+        eventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged,"#BirdsEyeToggle #CheckBox",EventData.of("@BirdsEye","#BirdsEyeToggle #CheckBox.Value"),false);
+        eventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged,"#BirdsEyeDistanceSlider",EventData.of("@BirdsEyeDistance","#BirdsEyeDistanceSlider.Value"),false);
+        for(String action:new String[]{"PanXm","PanXp","PanZm","PanZp","ZoomIn","ZoomOut"})bind(eventBuilder,"#Btn"+action,action);
         bind(eventBuilder, "#SnapToLocationButton", "SnapToLocation");
         bind(eventBuilder, "#BtnXm", "MoveXm");
         bind(eventBuilder, "#BtnXp", "MoveXp");
@@ -155,30 +172,45 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
 
     @Override
     public void handleDataEvent(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull PageData data) {
-        if (data.action == null) {
-            return;
+        if(isDismissed()||!ref.isValid())return;
+        store.getExternalData().getWorld().execute(()->handleOnWorld(ref,store,data));
+    }
+    private void handleOnWorld(Ref<EntityStore> ref,Store<EntityStore> store,PageData data){
+        if(isDismissed()||!ref.isValid())return;
+        if(data.birdsEye!=null){
+            birdsEyeEnabled=data.birdsEye;panX=panZ=0;captureFocus();
+            if(!birdsEyeEnabled)BuildingPlacementCameraUtil.resetToPlayerCamera(playerRef);
+            schedulePreviewAndRebuild(ref,store);return;
         }
+        if(data.birdsEyeDistance!=null){if(!Float.isFinite(data.birdsEyeDistance))return;birdsEyeDistance=Math.max(BuildingPlacementCameraUtil.MIN_DISTANCE,Math.min(BuildingPlacementCameraUtil.MAX_DISTANCE,data.birdsEyeDistance));schedulePreviewAndRebuild(ref,store);return;}
+        if(data.action==null)return;
         float yawRad = BuildingPlacementNudgeUtil.getPlayerYawRadians(ref, store);
         switch (data.action) {
             case "MoveXm" ->
                 PropPlacementNudgeUtil.nudgeHorizontal(
-                    session, yawRad, BuildingPlacementNudgeUtil.Horizontal.NEG_X
+                    session, birdsEyeEnabled, yawRad, BuildingPlacementNudgeUtil.Horizontal.NEG_X
                 );
             case "MoveXp" ->
                 PropPlacementNudgeUtil.nudgeHorizontal(
-                    session, yawRad, BuildingPlacementNudgeUtil.Horizontal.POS_X
+                    session, birdsEyeEnabled, yawRad, BuildingPlacementNudgeUtil.Horizontal.POS_X
                 );
             case "MoveZm" ->
                 PropPlacementNudgeUtil.nudgeHorizontal(
-                    session, yawRad, BuildingPlacementNudgeUtil.Horizontal.NEG_Z
+                    session, birdsEyeEnabled, yawRad, BuildingPlacementNudgeUtil.Horizontal.NEG_Z
                 );
             case "MoveZp" ->
                 PropPlacementNudgeUtil.nudgeHorizontal(
-                    session, yawRad, BuildingPlacementNudgeUtil.Horizontal.POS_Z
+                    session, birdsEyeEnabled, yawRad, BuildingPlacementNudgeUtil.Horizontal.POS_Z
                 );
             case "MoveYm" -> session.nudge(0, -1, 0);
             case "MoveYp" -> session.nudge(0, 1, 0);
             case "Rotate" -> applyRotate();
+            case "PanXm" -> panX-=BuildingPlacementCameraUtil.PAN_STEP;
+            case "PanXp" -> panX+=BuildingPlacementCameraUtil.PAN_STEP;
+            case "PanZm" -> panZ-=BuildingPlacementCameraUtil.PAN_STEP;
+            case "PanZp" -> panZ+=BuildingPlacementCameraUtil.PAN_STEP;
+            case "ZoomIn" -> birdsEyeDistance=Math.max(BuildingPlacementCameraUtil.MIN_DISTANCE,birdsEyeDistance-BuildingPlacementCameraUtil.DISTANCE_STEP);
+            case "ZoomOut" -> birdsEyeDistance=Math.min(BuildingPlacementCameraUtil.MAX_DISTANCE,birdsEyeDistance+BuildingPlacementCameraUtil.DISTANCE_STEP);
             case "Cancel" -> {
                 scheduleCancel(ref, store);
                 return;
@@ -189,6 +221,7 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
             }
             case "SnapToLocation" -> {
                 BuildingPlacementSnapUtil.snapPropSessionToPlayer(session, ref, store);
+                panX=panZ=0;captureFocus();
                 schedulePreviewAndRebuild(ref, store);
                 return;
             }
@@ -199,6 +232,21 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
         schedulePreviewAndRebuild(ref, store);
     }
 
+    private void captureFocus(){
+        var anchor=session.getAnchor();focusX=anchor.x+.5;focusY=anchor.y+.5;focusZ=anchor.z+.5;
+        var plugin=EterniaModPlugin.get();var def=plugin==null?null:plugin.getPropCatalog().get(session.getPropId());
+        var buffer=def==null?null:PrefabResolveUtil.resolvePrefabBuffer(def.getPrefabPath());
+        if(buffer!=null){var footprint=PlotFootprintUtil.computeFootprint(def.resolvePrefabAnchorWorld(anchor,session.getPrefabYaw()),session.getPrefabYaw(),buffer);focusX=(footprint.getMinX()+footprint.getMaxX()+1)*.5;focusZ=(footprint.getMinZ()+footprint.getMaxZ()+1)*.5;}
+    }
+    private void applyCamera(Ref<EntityStore> ref,Store<EntityStore> store){
+        if(!birdsEyeEnabled)return;
+        var transform=store.getComponent(ref,com.hypixel.hytale.server.core.modules.entity.component.TransformComponent.getComponentType());if(transform==null)return;
+        var p=transform.getPosition();BuildingPlacementCameraUtil.applyBirdsEye(playerRef,birdsEyeDistance,p.x,p.y,p.z,focusX+panX,focusY,focusZ+panZ);
+    }
+    @Override public void onDismiss(Ref<EntityStore> ref,Store<EntityStore> store){
+        super.onDismiss(ref,store);wireframeRefreshSerial++;clearPreview(playerRef);
+        if(birdsEyeEnabled)BuildingPlacementCameraUtil.resetToPlayerCamera(playerRef);
+    }
     private void applyRotate() {
         EterniaModPlugin plugin = EterniaModPlugin.get();
         PropDefinition def = plugin != null ? plugin.getPropCatalog().get(session.getPropId()) : null;
@@ -220,11 +268,12 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
         final int serial = ++wireframeRefreshSerial;
         world.execute(
             () -> {
-                if (!ref.isValid() || serial != wireframeRefreshSerial) {
+                if (isDismissed() || !ref.isValid() || serial != wireframeRefreshSerial) {
                     return;
                 }
+                applyCamera(ref,store);
                 refreshPreview(ref, store);
-                if (!ref.isValid() || serial != wireframeRefreshSerial) {
+                if (isDismissed() || !ref.isValid() || serial != wireframeRefreshSerial) {
                     return;
                 }
                 rebuild();
@@ -237,7 +286,7 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
         final int serial = ++wireframeRefreshSerial;
         world.execute(
             () -> {
-                if (!ref.isValid() || serial != wireframeRefreshSerial) {
+                if (isDismissed() || !ref.isValid() || serial != wireframeRefreshSerial) {
                     return;
                 }
                 refreshPreview(ref, store);
@@ -300,12 +349,12 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
             return "notInPlot";
         }
         var custody=session.getCustodyOwner()!=null?session.getCustodyOwner():com.hexvane.eterniamod.housing.HousingAccess.owner(plot);
-        if(!com.hexvane.eterniamod.housing.HousingCustody.can(plugin,plot,uc.getUuid(),custody,com.hexvane.eterniamod.housing.HousingCustody.PLACE))return "notYourPlot";
+        if(!com.hexvane.eterniamod.housing.HousingCustody.previewCan(plugin,plot,uc.getUuid(),custody,com.hexvane.eterniamod.housing.HousingCustody.PLACE))return "notYourPlot";
         PropDefinition def = plugin.getPropCatalog().get(session.getPropId());
         if (def == null) {
             return "unknownProp";
         }
-        return PropPlacementValidator.validate(
+        return PropPlacementValidator.preview(
             world, plot, uc.getUuid(), session.getAnchor(), session.getPrefabYaw(), def
         );
     }
@@ -329,7 +378,7 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
             return false;
         }
         String errKey =
-            PropPlacementValidator.validate(
+            PropPlacementValidator.preview(
                 world, plot, uc.getUuid(), session.getAnchor(), session.getPrefabYaw(), def
             );
         if (errKey != null) {
@@ -470,8 +519,11 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
             BuilderCodec.builder(PageData.class, PageData::new)
                 .append(new KeyedCodec<>("Action", Codec.STRING), (d, a) -> d.action = a, d -> d.action)
                 .add()
+                .append(new KeyedCodec<>("@BirdsEye",Codec.BOOLEAN),(d,v)->d.birdsEye=v,d->d.birdsEye).add()
+                .append(new KeyedCodec<>("@BirdsEyeDistance",Codec.FLOAT),(d,v)->d.birdsEyeDistance=v,d->d.birdsEyeDistance).add()
                 .build();
-
+        public Boolean birdsEye;
+        public Float birdsEyeDistance;
         @Nullable
         public String action;
     }

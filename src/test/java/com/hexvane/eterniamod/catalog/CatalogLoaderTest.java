@@ -67,6 +67,15 @@ class CatalogLoaderTest {
         }
     }
 
+    @Test void housesLoadWithoutTheRetiredRecordsShelf() {
+        var house=JsonParser.parseString(definition("cottage", "Cottage")).getAsJsonObject();
+        assertTrue(CatalogContentValidator.validate(house,true).isEmpty());
+        var created=com.hexvane.eterniamod.building.BuildingDefinition.create("cottage","Cottage","House.prefab.json",null);
+        assertNull(created.getManagementBlockLocalPos());
+        house.add("managementBlockLocalPos",JsonParser.parseString("[1,2]"));
+        assertFalse(CatalogContentValidator.validate(house,true).isEmpty());
+    }
+
     @Test void rejectsTraversalInvalidDimensionsAndUnknownRotation() {
         var json = JsonParser.parseString(definition("a", "A")).getAsJsonObject();
         json.addProperty("prefabPath", "../House.prefab.json");

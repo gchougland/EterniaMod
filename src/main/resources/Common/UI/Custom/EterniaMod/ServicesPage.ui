@@ -1,10 +1,11 @@
 $T = "Theme/Citadel.ui";
 $T.@PageOverlay { Anchor: (Full: 0); LayoutMode: Middle;
 Group { Anchor: (Width: 1120, Height: 760); Background: $T.@InsetSurface; Padding: (Full: 16); LayoutMode: Top;
-Group { Anchor: (Height: 48, Bottom: 12); LayoutMode: Left;
+Group { Anchor: (Height: 64, Bottom: 12); LayoutMode: Left;
 Group { Anchor: (Width: 180, Height: 40, Right: 18); Background: "Theme/Surfaces/EterniaWordmark.png"; }
 Label #ServicesTitle { FlexWeight: 1; Style: $T.@TitleStyle; Text: "ETERNIA"; }
-Group #CurrencyWallet { Anchor: (Width: 220, Height: 44); LayoutMode: Left; }
+$T.@SecondaryTextButton #ArchitectLedger { Anchor: (Width: 202, Height: 44, Right: 12); Text: "Architect's Ledger"; Visible: false; }
+Group #CurrencyWallet { Anchor: (Width: 220, Height: 64); LayoutMode: Left; }
 $T.@SecondaryTextButton #Return { Anchor: (Width: 96, Right: 10); Text: "Back"; Visible: false; }
 $T.@SecondaryTextButton #Close { Anchor: (Width: 96, Right: 10); Text: "Close"; }
 $T.@HomeButton #MenuHome {}

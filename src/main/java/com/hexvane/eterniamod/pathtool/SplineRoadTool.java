@@ -26,10 +26,10 @@ public final class SplineRoadTool {
     private static final Map<UUID,Session> sessions=new ConcurrentHashMap<>();
     static final class Session{
         final String world;List<SplineGeometry.Node> nodes=List.of();final Deque<List<SplineGeometry.Node>> undo=new ArrayDeque<>();int width=5,selected=-1,style;
-        UUID editing,recovery;Instant recoveryExpiry;SplineRoadService.Review review;SplineRoadService.Plan plan;String message="Aim at the ground and add the first node";long revision,lastPaint,confirmAfter;boolean shown;
+        UUID editing,recovery;Instant recoveryExpiry;SplineRoadService.Review review;SplineRoadService.Plan plan;String message="Aim at the ground and add the first node";long revision,lastPaint,lastPlan,lastEdges,lastEdgeRevision,confirmAfter;boolean shown;
         Session(String world){this.world=world;}
         void change(List<SplineGeometry.Node> value){undo.push(nodes);while(undo.size()>32)undo.removeLast();nodes=List.copyOf(value);invalidate();}
-        void invalidate(){review=null;recovery=null;plan=null;revision++;}
+        void invalidate(){review=null;recovery=null;plan=null;lastPaint=0;revision++;}
     }
     private SplineRoadTool(){}
     public static synchronized void startup(EterniaModPlugin owner)throws IOException{if(service!=null)throw new IllegalStateException("Spline road tool already started");plugin=owner;service=new SplineRoadService(owner);owner.getCodecRegistry(Interaction.CODEC).register("EterniaSplineRoad",SplineRoadInteraction.class,SplineRoadInteraction.CODEC);owner.getEntityStoreRegistry().registerSystem(new SplineRoadPreviewSystem());}
@@ -58,7 +58,7 @@ public final class SplineRoadTool {
             if(action.equals("Use")){use(world,player,s);return;}
             if(action.equals("Undo")){if(!s.undo.isEmpty()){s.nodes=s.undo.pop();s.selected=-1;s.invalidate();s.message="Previous node edit restored";}return;}
             var look=TargetUtil.getLook(ref,store);int picked=look==null?-1:SplineGeometry.pick(s.nodes,look.getPosition().x,look.getPosition().y,look.getPosition().z,look.getDirection().x,look.getDirection().y,look.getDirection().z);
-            if(action.equals("Select")&&picked>=0){s.selected=picked;s.message="Node "+(picked+1)+" selected · aim at new ground and use Select / move again";s.revision++;return;}
+            if(action.equals("Select")&&picked>=0){s.selected=picked;s.message="Node "+(picked+1)+" selected · aim at new ground and use Select / move again";s.revision++;s.lastPaint=0;return;}
             if(action.equals("Add")&&picked>=0){var next=new ArrayList<>(s.nodes);next.remove(picked);s.change(next);s.selected=-1;s.message="Node removed · undo restores it";return;}
             var target=TargetUtil.getTargetBlock(ref,64,store);if(target==null){s.message="Aim at solid ground within 64 blocks";return;}
             var node=new SplineGeometry.Node(target.x+.5,target.y+1,target.z+.5);var next=new ArrayList<>(s.nodes);

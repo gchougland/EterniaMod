@@ -28,7 +28,7 @@ public final class BuildingPlacementValidator {
         for(int x=minX;x<=maxX;x++)for(int z=minZ;z<=maxZ;z++)candidates.add(new Vector3i(x,y,z));
         double cx=(minX+maxX)/2.0,cz=(minZ+maxZ)/2.0;candidates.sort(java.util.Comparator.comparingDouble(v->Math.pow(v.x-cx,2)+Math.pow(v.z-cz,2)));
         var manager=com.hexvane.eterniamod.hub.EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);
-        for(var candidate:candidates)if(validate(world,manager,plot,actor,candidate,session.getPrefabYaw(),def,plugin)==null){session.setAnchor(candidate);session.clearBirdsEyeSnapshot();return true;}
+        for(var candidate:candidates)if(preview(world,manager,plot,actor,candidate,session.getPrefabYaw(),def,plugin)==null){session.setAnchor(candidate);session.clearBirdsEyeSnapshot();return true;}
         return false;
     }
 
@@ -43,7 +43,11 @@ public final class BuildingPlacementValidator {
         @Nonnull BuildingDefinition def,
         @Nonnull EterniaModPlugin plugin
     ) {
-        if (!com.hexvane.eterniamod.housing.HousingAccess.can(plugin, plot, playerUuid, "housing.structure")) {
+        return validateInternal(world,plotManager,plot,playerUuid,previewSignAnchor,prefabYaw,def,plugin,false);
+    }
+    public static String preview(World world,HubPlotManager plotManager,HubPlotRecord plot,UUID playerUuid,Vector3i previewSignAnchor,Rotation prefabYaw,BuildingDefinition def,EterniaModPlugin plugin){return validateInternal(world,plotManager,plot,playerUuid,previewSignAnchor,prefabYaw,def,plugin,true);}
+    private static String validateInternal(World world,HubPlotManager plotManager,HubPlotRecord plot,UUID playerUuid,Vector3i previewSignAnchor,Rotation prefabYaw,BuildingDefinition def,EterniaModPlugin plugin,boolean preview){
+        if (!(preview?com.hexvane.eterniamod.housing.HousingAccess.previewCan(plugin,plot,playerUuid,"housing.structure"):com.hexvane.eterniamod.housing.HousingAccess.can(plugin,plot,playerUuid,"housing.structure"))) {
             return "notYourPlot";
         }
         if (plot.hasBuilding()) {

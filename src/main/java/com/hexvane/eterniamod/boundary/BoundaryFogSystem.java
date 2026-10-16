@@ -27,13 +27,13 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 
-/** Default-on enchanted boundary motes, entirely cosmetic and explicitly addressed to each nearby viewer. */
+/** Default-on ground runes and rising lights, entirely cosmetic and explicitly addressed to each nearby viewer. */
 public final class BoundaryFogSystem extends EntityTickingSystem<EntityStore> implements AutoCloseable {
     public static final String PARTICLE_SYSTEM = "Eternia_Plot_Border_Motes";
     public static final float REFRESH_SECONDS = 1.2f;
     public static final float MAX_EFFECT_SECONDS = 3.7f;
     public static final double EMITTER_HEIGHT = .07;
-    public static final double SPRITE_ENVELOPE_RADIUS = .44;
+    public static final double SPRITE_ENVELOPE_RADIUS = .5;
     private final EterniaModPlugin plugin;
     private final BoundaryGroundSampler sampler;
     private final Map<UUID, BoundaryEmissionSchedule> schedules = new ConcurrentHashMap<>();
@@ -70,7 +70,7 @@ public final class BoundaryFogSystem extends EntityTickingSystem<EntityStore> im
             if (!Double.isFinite(ground) || Math.abs(position.y - ground) > 3) continue;
             double strength = BoundaryGeometry.intensity(sample.distance());
             if (strength <= 0) continue;
-            // Steady emission of small rising motes; overlapping lifetimes prevent a synchronized pulse.
+            // Immediate ground ribbon plus drifting lights, with bounded overlapping lifetimes.
             String particle = strength > .66 ? PARTICLE_SYSTEM : strength > .25 ? PARTICLE_SYSTEM + "_Soft" : PARTICLE_SYSTEM + "_Faint";
             ParticleUtil.spawnParticleEffect(particle, sample.x(), ground + EMITTER_HEIGHT, sample.z(),
                 sample.horizontal()?0:(float)(Math.PI/2), 0, 0, 1, null, null, List.of(ref), commandBuffer, MAX_EFFECT_SECONDS);

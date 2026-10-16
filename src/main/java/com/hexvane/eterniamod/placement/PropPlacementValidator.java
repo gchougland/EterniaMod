@@ -26,11 +26,16 @@ public final class PropPlacementValidator {
         @Nonnull Rotation prefabYaw,
         @Nonnull PropDefinition def
     ) {
+        return validateInternal(world,plot,playerUuid,previewSignAnchor,prefabYaw,def,false);
+    }
+    public static String preview(World world,HubPlotRecord plot,UUID playerUuid,Vector3i previewSignAnchor,Rotation prefabYaw,PropDefinition def){return validateInternal(world,plot,playerUuid,previewSignAnchor,prefabYaw,def,true);}
+    private static String validateInternal(World world,HubPlotRecord plot,UUID playerUuid,Vector3i previewSignAnchor,Rotation prefabYaw,PropDefinition def,boolean preview){
         var plugin = com.hexvane.eterniamod.EterniaModPlugin.get();
-        if (plugin == null || !com.hexvane.eterniamod.housing.HousingAccess.can(plugin, plot, playerUuid, "housing.prop.place")) {
+        if (plugin == null || !(preview?com.hexvane.eterniamod.housing.HousingAccess.previewCan(plugin,plot,playerUuid,"housing.prop.place"):com.hexvane.eterniamod.housing.HousingAccess.can(plugin,plot,playerUuid,"housing.prop.place"))) {
             return "notYourPlot";
         }
         Path prefabPath = PrefabResolveUtil.resolvePrefabPath(def.getPrefabPath());
+        if(def.getId().equals("guild_waygate")&&!com.hexvane.eterniamod.runtime.GuildWaygate.canPlace(plugin,plot,com.hexvane.eterniamod.housing.HousingAccess.owner(plot),preview))return "notYourPlot";
         if (prefabPath == null) {
             return "prefabMissing";
         }
@@ -43,7 +48,7 @@ public final class PropPlacementValidator {
         HubPlotFootprint plotFp = plot.getFootprint();
         if (def.getCategory().equals("addition")) {
             if (!plot.hasBuilding()) return "needsHouse";
-            if (!com.hexvane.eterniamod.housing.HousingAccess.can(plugin,plot,playerUuid,"housing.addition")) return "notYourPlot";
+            if (!(preview?com.hexvane.eterniamod.housing.HousingAccess.previewCan(plugin,plot,playerUuid,"housing.addition"):com.hexvane.eterniamod.housing.HousingAccess.can(plugin,plot,playerUuid,"housing.addition"))) return "notYourPlot";
             var result = com.hexvane.eterniamod.housing.HousingRules.structure(
                 com.hexvane.eterniamod.housing.NativeHousingChecks.rect(plotFp),com.hexvane.eterniamod.housing.NativeHousingChecks.rect(propFp),
                 plugin.getInfrastructure().structureRoads(world.getName()));

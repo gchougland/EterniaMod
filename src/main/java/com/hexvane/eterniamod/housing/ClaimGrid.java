@@ -10,9 +10,9 @@ import org.joml.Vector3f;
 
 /** Opaque per-viewer claim aid, refreshed while its page owns the debug surface. */
 final class ClaimGrid {
-    static void draw(PlayerRef player,PlotRect rect,double groundY,boolean valid,boolean bird) {
+    static void draw(PlayerRef player,PlotRect rect,double groundY,Boolean valid,boolean bird) {
         player.getPacketHandler().write(new com.hypixel.hytale.protocol.packets.player.ClearDebugShapes());
-        Vector3f color=valid?new Vector3f(.57f,.79f,.55f):new Vector3f(.9f,.4f,.35f);
+        Vector3f color=valid==null?new Vector3f(.85f,.71f,.42f):valid?new Vector3f(.57f,.79f,.55f):new Vector3f(.9f,.4f,.35f);
         int step=Math.max(1,(int)Math.ceil(Math.max(rect.width(),rect.depth())/32.0));
         // At the guild camera's height the old 0.018-block strokes were subpixel.
         double thickness=bird?Math.max(.07,Math.max(rect.width(),rect.depth())*1.25*.0028):.035;

@@ -8,6 +8,9 @@ import static com.hexvane.eterniamod.domain.DomainException.Code.*;
 
 public final class EconomyService extends DomainSupport {
     public static final String COINS="eternia:coins";
+    public static final long STARTING_COINS=500;
+    /** Called atomically with account creation, never as a repeatable login reward. */
+    void welcomeNewPlayer(UUID player){credit(Owner.player(player),STARTING_COINS,"welcome-coins-v1:"+player);}
     public record Balance(long available,long reserved) {}
     EconomyService(TransactionalStore s,Clock c,Supplier<UUID> i) { super(s,c,i); }
     public Balance balance(Owner owner) { return store.transaction(tx->balanceIn(tx,owner)); }

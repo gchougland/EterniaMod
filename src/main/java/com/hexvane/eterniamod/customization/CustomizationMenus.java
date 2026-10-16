@@ -19,9 +19,11 @@ public final class CustomizationMenus {
         var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(store.getExternalData().getWorld(),plugin).findPlotAtPlayerOrTarget(ref,store);
         if(plot==null){player.sendMessage(Message.raw("Stand in your plot to customize it."));return;}
         var owner=HousingAccess.owner(plot);List<ChoicePage.Choice> choices=new ArrayList<>();
-        for(var palette:service.catalog().palettes())if(plugin.getServices().ownership().owns(owner,"eternia:palette/"+palette.id()))
+        var contents=new ArrayList<String>();service.catalog().palettes().forEach(p->contents.add("eternia:palette/"+p.id()));service.catalog().paths().forEach(p->contents.add("eternia:path/"+p.id()));
+        var owned=plugin.getServices().batch(()->contents.stream().filter(id->plugin.getServices().ownership().owns(owner,id)).collect(java.util.stream.Collectors.toUnmodifiableSet()));
+        for(var palette:service.catalog().palettes())if(owned.contains("eternia:palette/"+palette.id()))
             choices.add(new ChoicePage.Choice(palette.name(),"Preview palette",(r,s)->preview(player,r,s,()->service.palette(s.getExternalData().getWorld(),plot.getPlotId(),player.getUuid(),palette))));
-        for(var path:service.catalog().paths())if(plugin.getServices().ownership().owns(owner,"eternia:path/"+path.id()))
+        for(var path:service.catalog().paths())if(owned.contains("eternia:path/"+path.id()))
             choices.add(new ChoicePage.Choice(path.name()+" · choose a width and review your route","Choose path",(r,s)->pathWidth(service,plot.getPlotId(),path,r,s,player)));
         choices.add(new ChoicePage.Choice("Restore the ground beneath your existing path","Remove path",(r,s)->preview(player,r,s,()->service.removePath(s.getExternalData().getWorld(),plot.getPlotId(),player.getUuid()))));
         choices.add(new ChoicePage.Choice("Replace missing deed and service tools","Reissue tools",(r,s)->player.sendMessage(Message.raw(CustomizationTools.reissue(r,s,player,true)))));

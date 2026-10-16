@@ -7,12 +7,18 @@ export function createApp(cfg,repo){
  app.disable('x-powered-by');if(cfg.production)app.set('trust proxy',1);
  app.use((req,res,next)=>{res.set({'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY','Content-Security-Policy':"default-src 'self'; script-src 'self' 'unsafe-inline' https://js.tebex.io; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.tebex.io; connect-src 'self' https://*.tebex.io; frame-src https://*.tebex.io; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"});next();});
  mountTebexRelay(app,cfg);
+ // Public artwork, fonts and page shells never need a session database lookup.
+ for(const folder of ['assets','fonts','icons','js','media'])app.use('/'+folder,express.static(path.join(root,'web',folder),{dotfiles:'deny'}));
+ for(const file of ['styles.css','theme.css'])app.get('/'+file,(req,res)=>res.sendFile(path.join(root,'web',file)));
+ for(const page of ['/','/account','/owned','/seasons','/store'])app.get(page,(req,res)=>res.sendFile(path.join(root,'web/index.html')));
+ app.get('/api/v1/health',(req,res)=>res.json({status:'ok'}));
+
  const Store=connectPg(session);app.use(session({name:'eternia.sid',secret:cfg.secret,resave:false,saveUninitialized:false,store:cfg.fixtures?undefined:new Store({pool:repo.pool,schemaName:'eternia_web',tableName:'sessions',createTableIfMissing:false}),cookie:{httpOnly:true,sameSite:'lax',secure:cfg.production,maxAge:7*86400000}}));
  app.use((req,res,next)=>{if(req.session.user)req.session.user.admin=(cfg.fixtures&&req.session.user.fixture===true)||cfg.admins.has(req.session.user.uuid);next();});
  app.use(express.json({limit:'12mb'}));
  app.use((req,res,next)=>{if(['GET','HEAD','OPTIONS'].includes(req.method))return next();if(req.get('Origin')&&req.get('Origin')!==cfg.baseUrl)return res.status(403).json({error:'Unexpected request origin'});
  const token=req.get('X-CSRF-Token');if(!token||!req.session.csrf||token!==req.session.csrf)return res.status(403).json({error:'Invalid form token. Reload the page.'});next();});
- app.get('/api/v1/health',(req,res)=>res.json({status:'ok'}));
+
  app.get('/api/me',(req,res)=>{req.session.csrf??=crypto.randomBytes(24).toString('hex');res.set('Cache-Control','no-store').json({user:req.session.user||null,csrf:req.session.csrf,authConfigured:oidc.enabled,fixtures:cfg.fixtures});});
  app.get('/auth/login',route(async(req,res)=>{const start=await oidc.start();req.session.oidc={...start.pending,returnTo:req.query.returnTo==='store'?'/store':'/account'};await saveSession(req);res.redirect(start.url);}));
  app.get('/auth/callback',route(async(req,res)=>{const pending=req.session.oidc;delete req.session.oidc;await saveSession(req);const user=await oidc.finish(req.query,pending);await regenerate(req);req.session.user=user;await saveSession(req);res.redirect(pending?.returnTo==='/store'?'/store':'/account');}));
@@ -44,7 +50,7 @@ export function createApp(cfg,repo){
  app.get('/admin',requireAdmin,(req,res)=>res.sendFile(path.join(root,'web/admin/index.html')));
  app.get('/admin/commerce',requireAdmin,(req,res)=>res.sendFile(path.join(root,'web/admin/commerce.html')));
  app.use('/admin',requireAdmin,express.static(path.join(root,'web/admin')));
- for(const page of ['/','/account','/owned','/seasons','/store'])app.get(page,(req,res)=>res.sendFile(path.join(root,'web/index.html')));
+
  app.use(express.static(path.join(root,'web'),{index:false,dotfiles:'deny'}));
  app.use((err,req,res,next)=>{if(res.headersSent)return next(err);const status=err.status|| (err.code==='23505'?409:500);res.status(status).json({error:status<500?err.message:'Service unavailable. Please try again.'});});
  return {app,queue,catalog};

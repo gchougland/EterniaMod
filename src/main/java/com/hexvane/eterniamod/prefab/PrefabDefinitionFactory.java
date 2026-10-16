@@ -141,8 +141,8 @@ public final class PrefabDefinitionFactory {
         @Nonnull Path resolvedFile,
         @Nonnull IPrefabBuffer buffer
     ) {
-        int[] managementPos = findManagementBlockLocalPos(buffer);
-        if (managementPos == null) {
+        int[] managementPos = null;
+        if (!validatePropPrefab(buffer)) {
             return null;
         }
         String id = idFromPrefabPath(virtualPath);

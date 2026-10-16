@@ -60,6 +60,7 @@ public final class NativeSmoke {
             var result=new CompletableFuture<Void>();
             world.execute(()-> {try {
                 com.hexvane.eterniamod.boundary.NativeBoundarySmoke.validate(world);
+                com.hexvane.eterniamod.customization.HubBuildMode.nativeSmoke(plugin,world);
                 plugin.getLogger().atInfo().log("ETERNIA_NATIVE_BOUNDARY_SIDES_PASS: all four sides and protected public paving support the visual border");
                 long personalStarted=System.nanoTime();exercise(plugin,world);
                 plugin.getLogger().atInfo().log("ETERNIA_NATIVE_SMOKE_STAGE: personal custody complete; durationMs="+TimeUnit.NANOSECONDS.toMillis(System.nanoTime()-personalStarted));

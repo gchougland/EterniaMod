@@ -1,0 +1,63 @@
+{
+  "Shape": "Cube",
+  "RenderMode": "BlendLinear",
+  "ParticleRotationInfluence": "None",
+  "ParticleRotateWithSpawner": true,
+  "LinearFiltering": true,
+  "LightInfluence": 0,
+  "MaxConcurrentParticles": 1,
+  "ParticleLifeSpan": {
+    "Min": 3600,
+    "Max": 3600
+  },
+  "SpawnBurst": false,
+  "SpawnRate": {
+    "Min": 60,
+    "Max": 60
+  },
+  "InitialVelocity": {
+    "Speed": {
+      "Min": 0,
+      "Max": 0
+    },
+    "Yaw": {
+      "Min": 0,
+      "Max": 0
+    },
+    "Pitch": {
+      "Min": 0,
+      "Max": 0
+    }
+  },
+  "Particle": {
+    "Texture": "Particles/Eternia/WaygateVeil.png",
+    "FrameSize": {
+      "Width": 512,
+      "Height": 512
+    },
+    "ScaleRatioConstraint": "None",
+    "SoftParticles": "Disable",
+    "InitialAnimationFrame": {
+      "Scale": {
+        "X": {
+          "Min": 0.2,
+          "Max": 0.2
+        },
+        "Y": {
+          "Min": 0.25,
+          "Max": 0.25
+        }
+      },
+      "Opacity": 1,
+      "Color": "#ffffff"
+    },
+    "Animation": {
+      "0": {
+        "Opacity": 1
+      },
+      "100": {
+        "Opacity": 1
+      }
+    }
+  }
+}

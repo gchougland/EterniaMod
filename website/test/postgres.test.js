@@ -94,6 +94,10 @@ test('PostgreSQL HTTP sessions survive app restart and apply current admin permi
   let base=await boot(uuid);
   const first=await get(base,'/api/me');assert.equal(first.status,200);
   const anonymous=await first.json();assert.equal(anonymous.user,null);assert.ok(cookie);
+  const originalQuery=repo.pool.query.bind(repo.pool);let assetQueries=0;
+  repo.pool.query=(...args)=>{assetQueries++;return originalQuery(...args);};
+  try{for(const url of ['/','/styles.css','/theme.css','/api/v1/health']){const response=await get(base,url);assert.equal(response.status,200);await response.arrayBuffer();}assert.equal(assetQueries,0,'Public assets and page shells must bypass session SQL, even with a session cookie');}
+  finally{repo.pool.query=originalQuery;}
   const rawCookie=decodeURIComponent(cookie.slice(cookie.indexOf('=')+1));
   assert.ok(rawCookie.startsWith('s:'));sid=rawCookie.slice(2,rawCookie.lastIndexOf('.'));
   const stored=(await repo.pool.query('SELECT sess FROM eternia_web.sessions WHERE sid=$1',[sid])).rows[0].sess;

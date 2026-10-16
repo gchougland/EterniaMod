@@ -3,13 +3,13 @@ $C = "../Common.ui";
 Group {
   Anchor: (Top: 0, Bottom: 0, Left: 0, Right: 0); LayoutMode: Middle; Background: #101e22(0.7);
   Group { Anchor: (Width: 1120, Height: 760); Background: $T.@PanelSurface; Padding: (Full: 24); LayoutMode: Top;
-    Group { Anchor: (Height: 64); LayoutMode: Left;
+    Group { Anchor: (Height: 64, Bottom: 16); LayoutMode: Left;
       Group { Anchor: (Width: 52, Height: 52, Right: 16); Background: (TexturePath: "Icons/crown.png"); }
       Group { FlexWeight: 1; LayoutMode: Top;
         Label { Anchor: (Height: 32); Text: "The Crown Store"; Style: $T.@TitleStyle; }
         Label { Anchor: (Height: 26); Text: "A little more you."; Style: $T.@MutedStyle; }
       }
-      Group #CurrencyWallet { Anchor: (Width: 220, Height: 44); LayoutMode: Left; }
+      Group #CurrencyWallet { Anchor: (Width: 220, Height: 64); LayoutMode: Left; }
       $T.@SecondaryTextButton #Refresh { Anchor: (Width: 112, Right: 12); Text: "Refresh"; }
       $T.@TextButton #GetCrowns { Anchor: (Width: 180, Right: 12); Text: "Get Crowns"; }
       $T.@HomeButton #MenuHome {}
@@ -33,8 +33,11 @@ Group {
           Label #SelectedName { Anchor: (Height: 58); Style: (...$T.@TitleStyle, Wrap: true); }
           Group #SelectedImage { Anchor: (Width: 384, Height: 240, Bottom: 16); }
           Label #SelectedDescription { Anchor: (Height: 100); Style: $T.@DefaultLabelStyle; }
-          Group { Anchor: (Height: 126); LayoutMode: Left; Group { Anchor: (Width: 30, Height: 30, Right: 10); Background: "Icons/crown.png"; } Label #SelectedPrice { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 20); } }
           Label { Anchor: (Height: 70); Text: "Your item is delivered immediately. Crowns are separate from the coins used in player shops."; Style: $T.@MutedStyle; }
+          }
+          Group #PriceSummary { Anchor: (Height: 92, Bottom: 12); Padding: (Full: 10); Background: $T.@HeaderSurface; LayoutMode: Left;
+            Group { Anchor: (Width: 28, Height: 28, Right: 12); Background: "Icons/crown.png"; }
+            Label #SelectedPrice { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 18, VerticalAlignment: Center); }
           }
           Group { Anchor: (Height: 48); LayoutMode: Left;
             $T.@SecondaryTextButton #Back { Anchor: (Width: 200, Right: 16); Text: "Keep browsing"; }

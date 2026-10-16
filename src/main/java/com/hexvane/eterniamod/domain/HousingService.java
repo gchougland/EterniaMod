@@ -18,6 +18,9 @@ public final class HousingService extends DomainSupport {
     HousingService(TransactionalStore s,Clock c,Supplier<UUID> i,OwnershipService ownership,JournalService journal) { super(s,c,i);this.ownership=ownership;this.journal=journal; }
     public Optional<Slot> find(Owner owner) { return store.transaction(tx->tx.find("housing_slot",owner.key()).map(HousingService::slot)); }
     public List<Slot> allSlots() { return store.transaction(tx->tx.scan("housing_slot").stream().map(HousingService::slot).toList()); }
+    public record Property(Slot slot,ClaimLocation location) {}
+    public Optional<Property> property(Owner owner){return store.transaction(tx->tx.find("housing_slot",owner.key()).map(r->new Property(slot(r),r.value("world").isEmpty()?null:location(r))));}
+    public List<Property> properties(){return store.transaction(tx->tx.scan("housing_slot").stream().map(r->new Property(slot(r),r.value("world").isEmpty()?null:location(r))).toList());}
     public Optional<ClaimLocation> location(Owner owner) { return store.transaction(tx->tx.find("housing_slot",owner.key()).filter(r->!r.value("world").isEmpty()).map(HousingService::location)); }
     /** Called only after native geometry/anchor checks; durable uniqueness is enforced here. */
     public Slot beginClaim(Owner owner,UUID propertyId,UUID operationId,UUID attachedGuild) {

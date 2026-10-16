@@ -1,6 +1,9 @@
 {
   "Spawners": [
     {
+      "SpawnerId": "Eternia_Plot_Border_Motes_Soft_Rune"
+    },
+    {
       "SpawnerId": "Eternia_Plot_Border_Motes_Soft_Spawner"
     }
   ],

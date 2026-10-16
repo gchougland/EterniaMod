@@ -8,6 +8,6 @@ Group { Anchor: (Height: 136, Bottom: 8); Background: $T.@SecondarySurface; Padd
   }
   Group { Anchor: (Width: 188); LayoutMode: Top;
     Group { Anchor: (Height: 34); LayoutMode: Left; Group { Anchor: (Width: 28, Height: 28, Right: 6); Background: "Icons/crown.png"; } Label #Price { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 15, VerticalAlignment: Center); } }
-    $T.@TextButton #Review { Anchor: (Width: 188); Text: "View item"; }
+    $T.@TextButton #Review { Anchor: (Width: 188, Height: 44); Text: "View item"; }
   }
 }

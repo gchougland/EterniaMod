@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 /** Hytale-free entry point. Production bootstrap must select a durable store and fail closed on errors. */
 public final class EterniaServices {
+    private final com.hexvane.eterniamod.persistence.BatchedStore batched;
     private final AccountService accounts;
     private final OwnershipService ownership;
     private final EconomyService economy;
@@ -21,6 +22,7 @@ public final class EterniaServices {
     private final ProvenanceService provenance;
     private final CommerceService commerce;
     private final PremiumService premium;
+    private final CurrencyGrantService currencyGrants;
     private final CollectionService collection;
     private final CommerceIngressService commerceIngress;
     private final ActivitySourceService activitySources;
@@ -29,6 +31,8 @@ public final class EterniaServices {
     private final GuildBenefitService guildBenefits;
     private final GuildCommunicationService guildCommunications;
     public EterniaServices(TransactionalStore store,Clock clock,Supplier<UUID> ids) {
+        batched=new com.hexvane.eterniamod.persistence.BatchedStore(store);
+        store=batched;
         accounts=new AccountService(store,clock,ids);ownership=new OwnershipService(store,clock,ids);
         economy=new EconomyService(store,clock,ids);journal=new JournalService(store,clock,ids);
         guilds=new GuildService(store,clock,ids);housing=new HousingService(store,clock,ids,ownership,journal);
@@ -36,6 +40,7 @@ public final class EterniaServices {
         market=new MarketService(store,clock,ids,economy,escrow);trades=new TradeService(store,clock,ids,economy,escrow);
         seasons=new SeasonService(store,clock,ids,ownership,economy);
         provenance=new ProvenanceService(store,clock,ids);premium=new PremiumService(store,clock,ids,ownership);commerce=new CommerceService(store,clock,ids,ownership,premium);
+        currencyGrants=new CurrencyGrantService(store,clock,ids,premium,economy);
         collection=new CollectionService(store,clock,ids,ownership);
         commerceIngress=new CommerceIngressService(store,clock,ids,commerce);
         activitySources=new ActivitySourceService(store,clock,ids,seasons,economy);
@@ -45,6 +50,19 @@ public final class EterniaServices {
         guildCommunications=new GuildCommunicationService(store,clock,ids);
     }
     public EterniaServices(TransactionalStore store) { this(store,Clock.systemUTC(),UUID::randomUUID); }
+    /** A short group of domain calls sharing one transaction. Never invoke world or network work here. */
+    public <T> T batch(Supplier<T> work) { return batched.batch(work); }
+    /** Bounded, invalidated display data. Callers must return immutable values and keep native/network work outside. */
+    public <T>T readView(Object key,java.time.Duration ttl,Supplier<T> work){return batched.readView(key,ttl,work);}
+    /** Authenticated game login only. Existing accounts never receive the new-player gift retroactively. */
+    public boolean welcomePlayer(UUID player,String name) {
+        return batch(()->{
+            boolean first=accounts.find(player).isEmpty();
+            accounts.recordAuthenticatedLogin(player,name);
+            if(first)economy.welcomeNewPlayer(player);
+            return first;
+        });
+    }
     public AccountService accounts(){return accounts;}
     public OwnershipService ownership(){return ownership;}
     public EconomyService economy(){return economy;}
@@ -59,6 +77,7 @@ public final class EterniaServices {
     public ProvenanceService provenance(){return provenance;}
     public CommerceService commerce(){return commerce;}
     public PremiumService premium(){return premium;}
+    public CurrencyGrantService currencyGrants(){return currencyGrants;}
     public CollectionService collection(){return collection;}
     public CommerceIngressService commerceIngress(){return commerceIngress;}
     public ActivitySourceService activitySources(){return activitySources;}
@@ -70,7 +89,7 @@ public final class EterniaServices {
         List<OwnershipService.Grant> grants,HousingService.Slot housing,GuildService.Membership guild) {}
     /** Read projection for an already-authorized caller. Do not expose this without account authorization. */
     public Overview overview(UUID playerId) {
-        return new Overview(playerId,accounts.find(playerId).orElse(null),economy.balance(Owner.player(playerId)),
-            ownership.grants(Owner.player(playerId)),housing.find(Owner.player(playerId)).orElse(null),guilds.membership(playerId).orElse(null));
+        return batch(()->new Overview(playerId,accounts.find(playerId).orElse(null),economy.balance(Owner.player(playerId)),
+            ownership.grants(Owner.player(playerId)),housing.find(Owner.player(playerId)).orElse(null),guilds.membership(playerId).orElse(null)));
     }
 }

@@ -27,12 +27,12 @@ final class SplineRoadService {
     record Review(UUID actor,Road expected,Road pending,HousingInfrastructure.Snapshot infrastructure,HousingInfrastructure.WorldPlan nextPlan,Instant expires){}
     record Write(String world,UUID road,Set<String> areas,Set<SplineGeometry.Column> cells){}
     private static final ThreadLocal<Write> WRITING=new ThreadLocal<>();
-    private final EterniaModPlugin plugin;private final SplineRoadStore registry;private final CustomizationCatalog catalog;
+    private final EterniaModPlugin plugin;private final SplineRoadStore registry;private final CustomizationCatalog catalog;private final RoadStyleStore styleStore;
     private volatile Map<UUID,Road> emergency=Map.of();
     private record PendingIndex(Map<UUID,Road> authority,Map<UUID,Road> emergency,Map<String,Map<SplineGeometry.Column,Set<UUID>>> columns,Map<String,List<PlotRect>> rectangles){}
     private volatile PendingIndex pendingIndex;
     SplineRoadService(EterniaModPlugin plugin)throws IOException{
-        this.plugin=plugin;registry=new SplineRoadStore(plugin.getDataDirectory().resolve("spline-roads"));catalog=new CustomizationCatalog(plugin.getDataDirectory());
+        this.plugin=plugin;registry=new SplineRoadStore(plugin.getDataDirectory().resolve("spline-roads"));catalog=new CustomizationCatalog(plugin.getDataDirectory());styleStore=new RoadStyleStore(plugin.getDataDirectory().resolve("road-styles.json"),catalog.paths().stream().map(s->RoadStyle.uniform(s.id(),s.name(),s.blockId())).toList());
         for(var road:registry.all()){
             if(road.current()!=null)verifyVersion(road.id(),road.current());
             if(road.change()!=null){metadata(road.change().before(),road.change().cells(),null);metadata(road.change().after(),road.change().cells(),null);if(road.change().next()!=null)verifyVersion(road.id(),road.change().next());}
@@ -42,7 +42,8 @@ final class SplineRoadService {
     private NativeSnapshotStore files(){return NativePlacementTransactions.snapshots(plugin);}
     List<Road> roads(){var all=new TreeMap<UUID,Road>();registry.all().forEach(r->all.put(r.id(),r));all.putAll(emergency);return List.copyOf(all.values());}
     Road find(UUID id){var r=emergency.get(id);return r!=null?r:registry.get(id);}
-    List<CustomizationCatalog.PathStyle> styles(){return catalog.paths();}
+    List<RoadStyle> styles(){return styleStore.all();}
+    void saveStyle(UUID actor,RoadStyle style,long expected)throws IOException{SetupAccess.require(actor);style.blocks().forEach(SplineRoadService::plain);styleStore.save(style,expected);}
     PublicRoadNetwork network(String world,HousingInfrastructure.WorldPlan plan,Version extra){
         if(plan==null)return PublicRoadNetwork.rectangles(List.of());
         var versions=new ArrayList<Version>();if(extra!=null)versions.add(extra);
@@ -69,19 +70,23 @@ final class SplineRoadService {
         current=new PendingIndex(authority,overrides,Map.copyOf(columns),Map.copyOf(rectangles));pendingIndex=current;return current;
     }
     Plan plan(World world,List<SplineGeometry.Node> nodes,int width,UUID editing){
+        return plan(world,nodes,width,editing,true);
+    }
+    Plan preview(World world,List<SplineGeometry.Node> nodes,int width,UUID editing){return plan(world,nodes,width,editing,false);}
+    private Plan plan(World world,List<SplineGeometry.Node> nodes,int width,UUID editing,boolean authoritative){
         requireWorld(world);
-        var hints=SplineGeometry.footprint(nodes,width);var cells=new ArrayList<SplineGeometry.Cell>();var connections=new ArrayList<SplineGeometry.Cell>();var invalid=new LinkedHashMap<SplineGeometry.Column,String>();var forbidden=forbidden(world,editing);var publicRoads=connectionRoads(world,editing);
-        for(var hint:hints){var c=hint.column();Integer y=ground(world,c.x(),c.z(),hint.y());if(y==null){invalid.put(c,"Load the ground under every part of the road");continue;}var cell=new SplineGeometry.Cell(c.x(),y,c.z());boolean shared=publicRoads.stream().anyMatch(r->r.contains(c.x(),c.z()));if(shared)connections.add(cell);else cells.add(cell);String problem=cellProblem(world,cell,forbidden);if(problem!=null)invalid.put(c,problem);if(shared&&!SplineGeometry.endpointConnection(c,nodes,width))invalid.put(c,"Only a short endpoint junction can overlap an existing road; route the curve around it");}
+        var materials=pavingMaterials();var hints=SplineGeometry.footprint(nodes,width);var cells=new ArrayList<SplineGeometry.Cell>();var connections=new ArrayList<SplineGeometry.Cell>();var invalid=new LinkedHashMap<SplineGeometry.Column,String>();var forbidden=forbidden(world,authoritative);var publicRoads=connectionRoads(world,editing);
+        for(var hint:hints){var c=hint.column();boolean shared=publicRoads.stream().anyMatch(r->r.contains(c.x(),c.z()));Integer y=ground(world,c.x(),c.z(),hint.y(),shared,materials);if(y==null){invalid.put(c,"Load the ground under every part of the road");continue;}var cell=new SplineGeometry.Cell(c.x(),y,c.z());if(shared)connections.add(cell);else cells.add(cell);String problem=cellProblem(world,cell,forbidden,shared,materials);if(problem!=null)invalid.put(c,problem);if(shared&&!SplineGeometry.endpointConnection(c,nodes,width))invalid.put(c,"Only a short road endpoint can join a road or plaza. Move the rest of the curve outside it");}
         var all=new ArrayList<>(cells);all.addAll(connections);var heights=new HashMap<SplineGeometry.Column,Integer>();all.forEach(c->heights.put(c.column(),c.y()));for(var cell:all)for(var neighbor:List.of(new SplineGeometry.Column(cell.x()+1,cell.z()),new SplineGeometry.Column(cell.x(),cell.z()+1))){Integer y=heights.get(neighbor);if(y!=null&&Math.abs(y-cell.y())>1){invalid.put(cell.column(),"The road is too steep here; move its nodes onto gentler ground");invalid.put(neighbor,"The road is too steep here");}}
         world.getEntityStore().getStore().forEachChunk(TransformComponent.getComponentType(),(chunk,commands)->{for(int i=0;i<chunk.size();i++){if(chunk.getComponent(i,Player.getComponentType())!=null)continue;var p=chunk.getComponent(i,TransformComponent.getComponentType()).getPosition();var column=new SplineGeometry.Column((int)Math.floor(p.x),(int)Math.floor(p.z));var floor=heights.get(column);if(floor!=null&&p.y>=floor)invalid.put(column,"Move props, creatures and dropped items out of the road");}});
-        if(cells.isEmpty()&&!connections.isEmpty())invalid.put(connections.getFirst().column(),"Extend beyond the existing road to create new ground");var clearance=RoadClearance.scan(world,cells);invalid.putAll(clearance.invalid());return new Plan(List.copyOf(cells),List.copyOf(connections),Map.copyOf(invalid),clearance.blocks());
+        if(cells.isEmpty()&&!connections.isEmpty())invalid.put(connections.getFirst().column(),"Extend beyond the existing road to create new ground");if(!authoritative)return new Plan(List.copyOf(cells),List.copyOf(connections),Map.copyOf(invalid),List.of());var clearance=RoadClearance.scan(world,cells);invalid.putAll(clearance.invalid());return new Plan(List.copyOf(cells),List.copyOf(connections),Map.copyOf(invalid),clearance.blocks());
     }
     synchronized Review review(World world,UUID actor,List<SplineGeometry.Node> nodes,int width,String styleId,UUID editing)throws Exception{
         return review(world,actor,nodes,width,styleId,editing,null);
     }
     synchronized Review review(World world,UUID actor,List<SplineGeometry.Node> nodes,int width,String styleId,UUID editing,UUID initialId)throws Exception{
         SetupAccess.require(actor);world.getEntityStore().getStore().assertThread();requireWorld(world);
-        var style=styles().stream().filter(s->s.id().equals(styleId)).findFirst().orElseThrow(()->new IllegalStateException("Unknown road style"));plain(style.blockId());
+        var style=styles().stream().filter(s->s.id().equals(styleId)).findFirst().orElseThrow(()->new IllegalStateException("Unknown road style"));style.blocks().forEach(SplineRoadService::plain);
         Road current=editing==null?null:find(editing);if(editing!=null&&(current==null||current.state()!=State.ACTIVE||!current.world().equals(world.getName())))throw new IllegalStateException("The selected road changed; reopen it");
         var plan=plan(world,nodes,width,editing);if(!plan.valid())throw new IllegalStateException(plan.invalid().values().stream().findFirst().orElse("Add at least two nodes"));
         UUID id=current==null?(initialId==null?UUID.randomUUID():initialId):current.id();if(current==null&&find(id)!=null)throw new IllegalStateException("This road receipt already exists");long rev=current==null?0:current.revision();var floors=new HashMap<SplineGeometry.Column,Integer>();plan.cells().forEach(c->floors.put(c.column(),c.y()));var retained=current==null?List.<SplineGeometry.Cell>of():current.current().snapshotCells().stream().filter(c->floors.containsKey(c.column())&&c.y()>floors.get(c.column())+2).toList();var above=union(plan.above(),retained).stream().filter(c->c.y()>floors.get(c.column())+2).toList();var nextCells=union(SparseRoadSnapshots.withClearance(plan.cells(),2),above);var union=union(current==null?List.of():current.current().snapshotCells(),nextCells);var bounds=SparseRoadSnapshots.bounds(union);
@@ -89,9 +94,9 @@ final class SplineRoadService {
         RoadClearance.requireLoaded(world,union);BsonDocument actual=scoped(scope,()->SparseRoadSnapshots.capture(files(),world,union));plainSnapshot(actual);plainGround(actual,bounds,plan.cells());
         if(current!=null){var expected=files().load(current.current().after());SparseRoadSnapshots.requireSame(SparseRoadSnapshots.select(actual,bounds,current.current().snapshotCells()),expected.document(),null);}
         var original=actual.clone();if(current!=null)SparseRoadSnapshots.overlay(original,bounds,files().load(current.current().before()));
-        RoadClearance.validateSavedObjects(original,bounds,plan.cells());var nextOriginal=SparseRoadSnapshots.select(original,bounds,nextCells);var painted=nextOriginal.clone();paint(painted,SparseRoadSnapshots.bounds(nextCells),plan.cells(),style.blockId());
+        RoadClearance.validateSavedObjects(original,bounds,plan.cells());var nextOriginal=SparseRoadSnapshots.select(original,bounds,nextCells);var painted=nextOriginal.clone();paint(painted,SparseRoadSnapshots.bounds(nextCells),plan.cells(),RoadStyle.surface(nodes,width,plan.cells(),style.columns(),style.blockId()));
         String operation=UUID.randomUUID().toString();var nextBounds=SparseRoadSnapshots.bounds(nextCells);var savedOriginal=files().save(operation+"-original.json",nextBounds,nextOriginal);var savedPainted=files().save(operation+"-painted.json",nextBounds,painted);
-        var next=new Version(nodes,width,style.id(),style.blockId(),plan.cells(),areas(id,plan.cells()),savedOriginal.file(),savedPainted.file(),plan.connections(),2,above);
+        var next=new Version(nodes,width,style.id(),style.blockId(),plan.cells(),areas(id,plan.cells()),savedOriginal.file(),savedPainted.file(),plan.connections(),2,above,style.columns());
         var desired=original.clone();SparseRoadSnapshots.overlay(desired,bounds,savedPainted);
         var before=files().save(operation+"-before.json",bounds,actual);var after=files().save(operation+"-after.json",bounds,desired);
         var pending=new Road(id,actor,world.getName(),rev+1,State.PENDING,current==null?null:current.current(),new Change(before.file(),after.file(),union,next));
@@ -108,7 +113,7 @@ final class SplineRoadService {
         SetupAccess.require(review.actor());world.getEntityStore().getStore().assertThread();var pending=review.pending();if(Instant.now().isAfter(review.expires())||!world.getName().equals(pending.world())||!Objects.equals(find(pending.id()),review.expected()))throw new IllegalStateException("Road preview expired or changed. Review again");
         var snapshot=plugin.getInfrastructure().snapshot();if(snapshot.revision()!=review.infrastructure().revision())throw new IllegalStateException("World infrastructure changed; review again");
         var nextPlan=infrastructure(world,pending.current(),pending.change().next(),snapshot,pending.id());
-        if(pending.change().next()!=null){var next=pending.change().next();plain(next.block());var fresh=plan(world,next.nodes(),next.width(),pending.current()==null?null:pending.id());if(!fresh.valid()||!fresh.cells().equals(next.cells())||!fresh.connections().equals(next.connections())||!new HashSet<>(next.snapshotCells()).containsAll(fresh.above()))throw new IllegalStateException("Ground or protected areas changed after preview");}
+        if(pending.change().next()!=null){var next=pending.change().next();plain(next.block());next.palette().stream().flatMap(Collection::stream).filter(s->!s.isEmpty()).distinct().forEach(SplineRoadService::plain);var fresh=plan(world,next.nodes(),next.width(),pending.current()==null?null:pending.id());if(!fresh.valid()||!fresh.cells().equals(next.cells())||!fresh.connections().equals(next.connections())||!new HashSet<>(next.snapshotCells()).containsAll(fresh.above()))throw new IllegalStateException("Ground or protected areas changed after preview");}
         RoadClearance.requireLoaded(world,pending.change().cells());var before=files().load(pending.change().before());var after=files().load(pending.change().after());var allowed=areaIds(pending);var scope=scope(world,pending.id(),allowed,pending.change().cells());
         scoped(scope,()->{SparseRoadSnapshots.requireSame(SparseRoadSnapshots.capture(files(),world,pending.change().cells()),before.document(),null);return null;});
         registry.put(pending.revision()-1,pending);
@@ -141,43 +146,45 @@ final class SplineRoadService {
     }
     private void validateInfrastructure(World world,HousingInfrastructure.WorldPlan before,HousingInfrastructure.WorldPlan after,UUID ignore,Version next){
         var claims=new LinkedHashMap<UUID,HousingRules.Anchor>();for(var plot:EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots())claims.put(plot.getPlotId(),new HousingRules.Anchor(plot.getPlotId(),NativeHousingChecks.rect(plot.getFootprint()),plot.getGuildOwnerUuid()!=null?HousingRules.Scope.GUILD_ROOT:plot.getAttachedGuildUuid()!=null?HousingRules.Scope.GUILD_MEMBER:HousingRules.Scope.PUBLIC,plot.getGuildOwnerUuid()!=null?plot.getGuildOwnerUuid():plot.getAttachedGuildUuid(),plot.hasBuilding()));
-        for(var slot:plugin.getServices().housing().allSlots())if(slot.state()!=HousingService.State.PACKED){var loc=plugin.getServices().housing().location(slot.owner()).orElse(null);if(loc==null||!loc.worldId().equals(world.getName()))continue;if(slot.state()!=HousingService.State.ACTIVE)throw new IllegalStateException("Recover unfinished housing operations before editing public roads");claims.putIfAbsent(slot.propertyId(),new HousingRules.Anchor(slot.propertyId(),new PlotRect(loc.minX(),loc.minZ(),loc.width(),loc.depth()),slot.owner().kind()==Owner.Kind.GUILD?HousingRules.Scope.GUILD_ROOT:loc.guildId()!=null?HousingRules.Scope.GUILD_MEMBER:HousingRules.Scope.PUBLIC,loc.guildId(),loc.buildingPresent()));}
+        plugin.getServices().batch(()->{for(var slot:plugin.getServices().housing().allSlots())if(slot.state()!=HousingService.State.PACKED){var loc=plugin.getServices().housing().location(slot.owner()).orElse(null);if(loc==null||!loc.worldId().equals(world.getName()))continue;if(slot.state()!=HousingService.State.ACTIVE)throw new IllegalStateException("Recover unfinished housing operations before editing public roads");claims.putIfAbsent(slot.propertyId(),new HousingRules.Anchor(slot.propertyId(),new PlotRect(loc.minX(),loc.minZ(),loc.width(),loc.depth()),slot.owner().kind()==Owner.Kind.GUILD?HousingRules.Scope.GUILD_ROOT:loc.guildId()!=null?HousingRules.Scope.GUILD_MEMBER:HousingRules.Scope.PUBLIC,loc.guildId(),loc.buildingPresent()));}return null;});
         var pending=new ArrayList<>(com.hexvane.eterniamod.guildroads.GuildRoads.roadRects(world.getName()));pending.addAll(com.hexvane.eterniamod.setup.paving.RoadPaving.protectedRects(world.getName()));for(var r:roads())if(r.state()==State.PENDING&&!r.id().equals(ignore)&&r.world().equals(world.getName()))pending.addAll(SplineGeometry.rectangles(r.protectedCells().stream().map(SplineGeometry.Cell::column).toList()));
         InfrastructureRules.validate(before,after,List.copyOf(claims.values()),pending,network(world.getName(),before,null),network(world.getName(),after,next));ManagedHubServices.validateInfrastructure(world,after);
     }
-    private List<PlotRect> forbidden(World world,UUID editing){
-        var result=new ArrayList<PlotRect>();var plan=plugin.getInfrastructure().world(world.getName()).orElseThrow();plan.areas().forEach((id,a)->{if(a.kind()==HousingInfrastructure.AreaKind.PORTAL)result.add(a.rect());});
+    private List<PlotRect> forbidden(World world,boolean authoritative){
+        var result=new ArrayList<PlotRect>();
         result.addAll(com.hexvane.eterniamod.guildroads.GuildRoads.roadRects(world.getName()));result.addAll(com.hexvane.eterniamod.setup.paving.RoadPaving.protectedRects(world.getName()));result.addAll(pendingRects(world.getName()));
         EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots().forEach(p->result.add(NativeHousingChecks.rect(p.getFootprint())));
-        for(var slot:plugin.getServices().housing().allSlots())if(slot.state()!=HousingService.State.PACKED)plugin.getServices().housing().location(slot.owner()).filter(l->l.worldId().equals(world.getName())).ifPresent(l->result.add(new PlotRect(l.minX(),l.minZ(),l.width(),l.depth())));return result;
+        if(authoritative)plugin.getServices().batch(()->{for(var slot:plugin.getServices().housing().allSlots())if(slot.state()!=HousingService.State.PACKED)plugin.getServices().housing().location(slot.owner()).filter(l->l.worldId().equals(world.getName())).ifPresent(l->result.add(new PlotRect(l.minX(),l.minZ(),l.width(),l.depth())));return null;});return result;
     }
-    private List<PlotRect> connectionRoads(World world,UUID editing){var edited=editing==null?null:find(editing);Set<String> own=edited==null||edited.current()==null?Set.of():edited.current().areas().keySet();return plugin.getInfrastructure().world(world.getName()).orElseThrow().areas().entrySet().stream().filter(e->e.getValue().kind()==HousingInfrastructure.AreaKind.ROAD&&!own.contains(e.getKey())).map(e->e.getValue().rect()).toList();}
-    private String cellProblem(World world,SplineGeometry.Cell cell,List<PlotRect> forbidden){
-        if(forbidden.stream().anyMatch(r->r.contains(cell.x(),cell.z())))return "Road crosses a plot, reserved claim, public plaza or another protected road";
-        var block=ChunkSectionBlockUtil.blockType(world,cell.x(),cell.y(),cell.z());if(block==null||!block.isCubeDrawType()||block.getBlockEntity()!=null||!natural(block.getId()))return "Road needs natural plain ground; move the node around structures";
+    private List<PlotRect> connectionRoads(World world,UUID editing){var edited=editing==null?null:find(editing);Set<String> own=edited==null||edited.current()==null?Set.of():edited.current().areas().keySet();return plugin.getInfrastructure().world(world.getName()).orElseThrow().areas().entrySet().stream().filter(e->!own.contains(e.getKey())).map(e->e.getValue().rect()).toList();}
+    private String cellProblem(World world,SplineGeometry.Cell cell,List<PlotRect> forbidden,boolean shared,Set<String> materials){
+        if(ManagedHubServices.intersectsManaged(world.getName(),new PlotRect(cell.x(),cell.z(),1,1)))return "Move the road around the portal or service NPC";
+        if(forbidden.stream().anyMatch(r->r.contains(cell.x(),cell.z())))return "Road crosses a plot, reserved claim or another protected road";
+        var block=ChunkSectionBlockUtil.blockType(world,cell.x(),cell.y(),cell.z());if(block==null||!block.isCubeDrawType()||block.getBlockEntity()!=null||!shared&&!natural(block.getId(),materials))return "Road needs natural plain ground; move the node around structures";
         var section=ChunkSectionBlockUtil.sectionRefAt(world,cell.x(),cell.y(),cell.z());if(section==null)return "Load every ground section";var fluids=section.getStore().getComponent(section,com.hypixel.hytale.server.core.universe.world.chunk.section.FluidSection.getComponentType());if(fluids!=null&&fluids.getFluidId(cell.x(),cell.y(),cell.z())!=0)return "Move the road around water or lava";
         return null;
     }
-    private Integer ground(World world,int x,int z,double hint){for(int y=Math.min(316,(int)Math.floor(hint)+6);y>=Math.max(0,(int)Math.floor(hint)-24);y--){if(ChunkSectionBlockUtil.sectionRefAt(world,x,y,z)==null)return null;var block=ChunkSectionBlockUtil.blockType(world,x,y,z);if(block!=null&&block.getMaterial()==BlockMaterial.Solid&&natural(block.getId())&&!surfaceDebris(block))return y;}return null;}
+    private Integer ground(World world,int x,int z,double hint,boolean shared,Set<String> materials){for(int y=Math.min(316,(int)Math.floor(hint)+6);y>=Math.max(0,(int)Math.floor(hint)-24);y--){if(ChunkSectionBlockUtil.sectionRefAt(world,x,y,z)==null)return null;var block=ChunkSectionBlockUtil.blockType(world,x,y,z);if(block!=null&&block.getMaterial()==BlockMaterial.Solid&&(shared||natural(block.getId(),materials))&&!surfaceDebris(block))return y;}return null;}
     private void requireWorld(World world){if(!plugin.getInfrastructure().world(world.getName()).map(p->!p.role().equals("adventure")).orElse(false))throw new IllegalStateException("Configure this world as Hub or Housing before authoring public roads");}
-    private boolean natural(String id){return id.startsWith("Soil_")||id.startsWith("Grass_")||id.startsWith("Sand_")||id.equals("Rock_Stone")||styles().stream().anyMatch(s->s.blockId().equals(id));}
+    private Set<String> pavingMaterials(){var blocks=new HashSet<String>();styles().forEach(s->blocks.addAll(s.blocks()));for(var road:roads())if(road.current()!=null){blocks.add(road.current().block());road.current().palette().forEach(c->c.stream().filter(b->!b.isEmpty()).forEach(blocks::add));}return blocks;}
+    private static boolean natural(String id,Set<String> materials){return id.startsWith("Soil_")||id.startsWith("Grass_")||id.startsWith("Sand_")||id.equals("Rock_Stone")||materials.contains(id);}
     private static boolean surfaceDebris(BlockType block){
         return block.getId().startsWith("Plant_")||block.getId().startsWith("Rubble_")||block.getId().startsWith("Wood_")&&!block.isCubeDrawType();
     }
-    private static void paint(BsonDocument document,NativeSnapshotStore.Bounds bounds,List<SplineGeometry.Cell> ground,String block){
-        var surface=new HashSet<String>();ground.forEach(c->surface.add(SparseRoadSnapshots.key(c.x()-bounds.minX(),c.y()-bounds.minY(),c.z()-bounds.minZ())));
+    private static void paint(BsonDocument document,NativeSnapshotStore.Bounds bounds,List<SplineGeometry.Cell> ground,Map<SplineGeometry.Column,String> materials){
+        var surface=new HashMap<String,String>();ground.forEach(c->surface.put(SparseRoadSnapshots.key(c.x()-bounds.minX(),c.y()-bounds.minY(),c.z()-bounds.minZ()),materials.get(c.column())));
         for(var value:document.getArray("blocks")){
-            var cell=value.asDocument();cell.put("name",new BsonString(surface.contains(SparseRoadSnapshots.key(cell))?block:BlockType.EMPTY.getId()));if(!surface.contains(SparseRoadSnapshots.key(cell))){cell.remove("components");cell.remove("filler");cell.remove("rotation");}
+            var cell=value.asDocument();cell.put("name",new BsonString(surface.getOrDefault(SparseRoadSnapshots.key(cell),BlockType.EMPTY.getId())));if(!surface.containsKey(SparseRoadSnapshots.key(cell))){cell.remove("components");cell.remove("filler");cell.remove("rotation");}
         }
     }
     private void verifyPainted(Version version)throws IOException{
         // Startup precedes native asset registration. Validate names/masks without
         // deserializing a prefab against the still-empty native asset maps.
         var document=BsonDocument.parse(new String(files().files().read(version.after()),StandardCharsets.UTF_8)).getDocument("prefab");
-        var expected=document.clone();paint(expected,SparseRoadSnapshots.bounds(version.snapshotCells()),version.cells(),version.block());
+        var expected=document.clone();paint(expected,SparseRoadSnapshots.bounds(version.snapshotCells()),version.cells(),RoadStyle.surface(version.nodes(),version.width(),version.cells(),version.palette(),version.block()));
         if(!document.equals(expected))throw new IOException("Road surface or cleared headroom differs from its saved cells");
     }
-    private static void plain(String id){var block=BlockType.getAssetMap().getAsset(id);if(block==null||!block.isCubeDrawType()||block.getBlockEntity()!=null)throw new IllegalStateException("Road styles require plain cube blocks");}
+    static void plain(String id){var block=BlockType.getAssetMap().getAsset(id);if(block==null||!block.isCubeDrawType()||block.getBlockEntity()!=null)throw new IllegalStateException("Road styles require plain cube blocks");}
     private static void plainSnapshot(BsonDocument doc){if(!doc.getArray("fluids",new BsonArray()).isEmpty()||!doc.getArray("entities",new BsonArray()).isEmpty())throw new IllegalStateException("Road snapshot contains unsupported fluids or entities");}
 
     private static void plainGround(BsonDocument doc,NativeSnapshotStore.Bounds bounds,List<SplineGeometry.Cell> ground){
@@ -217,6 +224,24 @@ final class SplineRoadService {
             confirm(world,reviewRemoval(world,actor,id));var removed=find(id);if(removed.state()!=State.REMOVED||!removed.protectedCells().isEmpty())throw new IllegalStateException("Road undo retained active road protection");
             SparseRoadSnapshots.requireSame(SparseRoadSnapshots.capture(files(),world,initial.pending().change().cells()),files().load(initial.pending().change().before()).document(),null);
             for(var entry:clutter.entrySet())if(!entry.getValue().equals(ChunkSectionBlockUtil.blockType(world,-27,entry.getKey(),-23).getId()))throw new IllegalStateException("Undo did not restore original road clutter at height "+entry.getKey());
+            // Paved plaza cells are borrowed, never repainted or included in road undo.
+            var plaza=new PlotRect(-18,-30,4,3);String plazaBlock="Rock_Stone_Brick";
+            for(int x=plaza.x();x<plaza.x()+plaza.width();x++)for(int z=plaza.z();z<plaza.z()+plaza.depth();z++)if(!ChunkSectionBlockUtil.setBlock(world,x,0,z,BlockType.getAssetMap().getAsset(plazaBlock),0))throw new IllegalStateException("Could not pave the plaza fixture");
+            var plazaSnapshot=plugin.getInfrastructure().snapshot();var plazaAreas=new TreeMap<>(plazaSnapshot.worlds().get(world.getName()).areas());plazaAreas.put("smoke-road-plaza",new HousingInfrastructure.Area(HousingInfrastructure.AreaKind.PORTAL,plaza));plugin.getInfrastructure().saveWorld(plazaSnapshot.revision(),world.getName(),plazaSnapshot.worlds().get(world.getName()).withAreas(plazaAreas));
+            var palette=new ArrayList<List<String>>();for(int i=0;i<9;i++)palette.add(List.of(i%2==0?"Rock_Stone_Cobble":plazaBlock,"","","","",""));
+            var pattern=new RoadStyle("smoke_pattern","Smoke paving",1,palette);saveStyle(actor,pattern,0);
+            var joinNodes=List.of(new SplineGeometry.Node(-16.5,1,-28.5),new SplineGeometry.Node(-5.5,1,-28.5));
+            var joined=review(world,actor,joinNodes,3,pattern.id(),null);var joinedVersion=joined.pending().change().next();if(joinedVersion.connections().isEmpty()||joinedVersion.cells().stream().anyMatch(c->plaza.contains(c.x(),c.z())))throw new IllegalStateException("Plaza junction did not preserve its borrowed paving");confirm(world,joined);
+            var paintedBlocks=new HashSet<String>();for(var c:joinedVersion.cells())paintedBlocks.add(ChunkSectionBlockUtil.blockType(world,c.x(),c.y(),c.z()).getId());if(!paintedBlocks.containsAll(Set.of("Rock_Stone_Cobble",plazaBlock)))throw new IllegalStateException("Mixed road palette did not paint both materials");
+            saveStyle(actor,new RoadStyle(pattern.id(),pattern.name(),2,RoadStyle.uniform("uniform","Uniform","Rock_Stone_Cobble").columns()),1);
+            new SplineRoadService(plugin); // Previously placed pattern still verifies after its palette changes.
+            var currentInfrastructure=plugin.getInfrastructure().world(world.getName()).orElseThrow();var withoutPlaza=new TreeMap<>(currentInfrastructure.areas());withoutPlaza.remove("smoke-road-plaza");boolean plazaLocked=false;try{validateConnections(world.getName(),currentInfrastructure.withAreas(withoutPlaza),null);}catch(IllegalStateException expected){plazaLocked=true;}if(!plazaLocked)throw new IllegalStateException("Plaza could be unregistered underneath a joined road");
+            confirm(world,reviewRemoval(world,actor,joined.pending().id()));
+            for(int x=plaza.x();x<plaza.x()+plaza.width();x++)for(int z=plaza.z();z<plaza.z()+plaza.depth();z++)if(!plazaBlock.equals(ChunkSectionBlockUtil.blockType(world,x,0,z).getId()))throw new IllegalStateException("Road building or undo damaged plaza paving");
+            var endSnapshot=plugin.getInfrastructure().snapshot();var endPlan=endSnapshot.worlds().get(world.getName());var endAreas=new TreeMap<>(endPlan.areas());endAreas.remove("smoke-road-plaza");plugin.getInfrastructure().saveWorld(endSnapshot.revision(),world.getName(),endPlan.withAreas(endAreas));
+            var editorCommands=new com.hypixel.hytale.server.core.ui.builder.UICommandBuilder();var editorEvents=new com.hypixel.hytale.server.core.ui.builder.UIEventBuilder();new SplineRoadStylePage(null,new SplineRoadTool.Session(world.getName()),pattern,false).build(null,editorCommands,editorEvents,null);
+            if(Arrays.stream(editorEvents.getEvents()).filter(e->e.selector!=null&&e.selector.startsWith("#Palette[")).count()!=54)throw new IllegalStateException("Road style editor did not expose every palette slot");
+            plugin.getLogger().atInfo().log("ETERNIA_NATIVE_ROAD_WORKSHOP_PASS: mixed palette placement, independent saved style edits, restart snapshot verification, paved plaza junction, plaza protection and unchanged paving after road removal; 54 editor slots serialized");
             plugin.getLogger().atInfo().log("ETERNIA_NATIVE_SPLINE_ROAD_SMOKE_PASS: full-height plants/rubble clearance and restoration (including Y=40), native curve, empty interior, read-only junction and independent undo, revoked permission, saved-node edit, interrupted write recovery, claim lock and exact original terrain undo");
         }finally{permissions.removeUserPermission(actor,builder);}
     }

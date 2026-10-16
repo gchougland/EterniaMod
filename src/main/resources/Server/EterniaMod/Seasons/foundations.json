@@ -1,18 +1,754 @@
 {
-  "id":"eternia:foundations","name":"Foundations",
-  "thresholds":[2000,4000,6000,8000,10000,12000,14000,16000,18000,20000,22000,24000,26000,28000,30000,32000,34000,36000,38000,40000,42000,44000,46000,48000,50000,52000,54000,56000,58000,60000],
-  "rewards":[
-    {"track":"FREE","level":1,"index":0,"contentId":"eternia:prop/aqua_lamp","kind":"QUANTITY","quantity":1},
-    {"track":"FREE","level":5,"index":0,"contentId":"eternia:title/wayfarer","kind":"UNLOCK","quantity":1},
-    {"track":"FREE","level":15,"index":0,"contentId":"eternia:prop/potion_shelf","kind":"QUANTITY","quantity":1},
-    {"track":"FREE","level":30,"index":0,"contentId":"eternia:plot_move_credit","kind":"QUANTITY","quantity":1},
-    {"track":"PAID","level":1,"index":0,"contentId":"eternia:prop/cacti","kind":"QUANTITY","quantity":1},
-    {"track":"PAID","level":10,"index":0,"contentId":"eternia:title/of_the_hearth","kind":"UNLOCK","quantity":1},
-    {"track":"PAID","level":30,"index":0,"contentId":"eternia:plot_move_credit","kind":"QUANTITY","quantity":1}
+  "id": "eternia:foundations",
+  "name": "Foundations",
+  "thresholds": [
+    2000,
+    4000,
+    6000,
+    8000,
+    10000,
+    12000,
+    14000,
+    16000,
+    18000,
+    20000,
+    22000,
+    24000,
+    26000,
+    28000,
+    30000,
+    32000,
+    34000,
+    36000,
+    38000,
+    40000,
+    42000,
+    44000,
+    46000,
+    48000,
+    50000,
+    52000,
+    54000,
+    56000,
+    58000,
+    60000
   ],
-  "quests":[
-    {"id":"eternia:quest/hunt","activity":"KILL","kind":"COUNT","targets":[],"required":50,"bonusXp":8000,"coins":100},
-    {"id":"eternia:quest/miner","activity":"MINE","kind":"DISTINCT","targets":[],"required":12,"bonusXp":8000,"coins":100},
-    {"id":"eternia:quest/harvest","activity":"HARVEST","kind":"COUNT","targets":[],"required":100,"bonusXp":8000,"coins":100}
+  "rewards": [
+    {
+      "track": "FREE",
+      "level": 1,
+      "index": 0,
+      "contentId": "eternia:prop/aqua_lamp",
+      "kind": "QUANTITY",
+      "quantity": 1
+    },
+    {
+      "track": "FREE",
+      "level": 5,
+      "index": 0,
+      "contentId": "eternia:title/wayfarer",
+      "kind": "UNLOCK",
+      "quantity": 1
+    },
+    {
+      "track": "FREE",
+      "level": 15,
+      "index": 0,
+      "contentId": "eternia:prop/potion_shelf",
+      "kind": "QUANTITY",
+      "quantity": 1
+    },
+    {
+      "track": "FREE",
+      "level": 30,
+      "index": 0,
+      "contentId": "eternia:plot_move_credit",
+      "kind": "QUANTITY",
+      "quantity": 1
+    },
+    {
+      "track": "PAID",
+      "level": 1,
+      "index": 0,
+      "contentId": "eternia:prop/cacti",
+      "kind": "QUANTITY",
+      "quantity": 1
+    },
+    {
+      "track": "PAID",
+      "level": 10,
+      "index": 0,
+      "contentId": "eternia:title/of_the_hearth",
+      "kind": "UNLOCK",
+      "quantity": 1
+    },
+    {
+      "track": "PAID",
+      "level": 30,
+      "index": 0,
+      "contentId": "eternia:plot_move_credit",
+      "kind": "QUANTITY",
+      "quantity": 1
+    },
+    {
+      "track": "PAID",
+      "level": 1,
+      "index": 1,
+      "contentId": "eternia:wearable/prowl_shirt",
+      "kind": "UNLOCK",
+      "quantity": 1
+    }
+  ],
+  "quests": [
+    {
+      "id": "eternia:quest/daily_undead",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "group:undead"
+      ],
+      "required": 8,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Keep the peace",
+      "goal": "Defeat 8 undead."
+    },
+    {
+      "id": "eternia:quest/daily_skeletons",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "npc:Skeleton"
+      ],
+      "required": 8,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Rattling bones",
+      "goal": "Defeat 8 skeletons."
+    },
+    {
+      "id": "eternia:quest/daily_trorks",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "group:trorks"
+      ],
+      "required": 8,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Trork trouble",
+      "goal": "Defeat 8 Trorks."
+    },
+    {
+      "id": "eternia:quest/daily_goblins",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "npc:Goblin"
+      ],
+      "required": 8,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Goblin patrol",
+      "goal": "Defeat 8 goblins."
+    },
+    {
+      "id": "eternia:quest/daily_outlanders",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "npc:Outlander"
+      ],
+      "required": 6,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Watch the frontier",
+      "goal": "Defeat 6 Outlanders."
+    },
+    {
+      "id": "eternia:quest/daily_zombies",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "npc:Zombie"
+      ],
+      "required": 8,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Restless wanderers",
+      "goal": "Defeat 8 zombies."
+    },
+    {
+      "id": "eternia:quest/daily_ghouls",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "npc:Ghoul"
+      ],
+      "required": 5,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Ghoul watch",
+      "goal": "Defeat 5 ghouls."
+    },
+    {
+      "id": "eternia:quest/daily_archers",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "npc:Skeleton_Archer"
+      ],
+      "required": 6,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Silence the arrows",
+      "goal": "Defeat 6 skeleton archers."
+    },
+    {
+      "id": "eternia:quest/daily_fighters",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "npc:Skeleton_Fighter"
+      ],
+      "required": 6,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Bone breakers",
+      "goal": "Defeat 6 skeleton fighters."
+    },
+    {
+      "id": "eternia:quest/daily_warriors",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "npc:Trork_Warrior"
+      ],
+      "required": 6,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Hold the line",
+      "goal": "Defeat 6 Trork warriors."
+    },
+    {
+      "id": "eternia:quest/daily_wheat",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "crop:wheat"
+      ],
+      "required": 12,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Fresh bread",
+      "goal": "Harvest 12 wheat."
+    },
+    {
+      "id": "eternia:quest/daily_corn",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "crop:corn"
+      ],
+      "required": 12,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Fill the pantry",
+      "goal": "Harvest 12 corn."
+    },
+    {
+      "id": "eternia:quest/daily_carrot",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "crop:carrot"
+      ],
+      "required": 12,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Carrots for supper",
+      "goal": "Harvest 12 carrots."
+    },
+    {
+      "id": "eternia:quest/daily_potato",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "crop:potato"
+      ],
+      "required": 12,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "A hearty meal",
+      "goal": "Harvest 12 potatoes."
+    },
+    {
+      "id": "eternia:quest/daily_pumpkin",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "crop:pumpkin"
+      ],
+      "required": 12,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Pumpkin patch",
+      "goal": "Harvest 12 pumpkins."
+    },
+    {
+      "id": "eternia:quest/daily_tomato",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "crop:tomato"
+      ],
+      "required": 12,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Garden reds",
+      "goal": "Harvest 12 tomatoes."
+    },
+    {
+      "id": "eternia:quest/daily_onion",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "crop:onion"
+      ],
+      "required": 12,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Kitchen staples",
+      "goal": "Harvest 12 onions."
+    },
+    {
+      "id": "eternia:quest/daily_rice",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "crop:rice"
+      ],
+      "required": 12,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Rice for the table",
+      "goal": "Harvest 12 rice."
+    },
+    {
+      "id": "eternia:quest/daily_lettuce",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "crop:lettuce"
+      ],
+      "required": 12,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Fresh greens",
+      "goal": "Harvest 12 lettuce."
+    },
+    {
+      "id": "eternia:quest/daily_cotton",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "crop:cotton"
+      ],
+      "required": 12,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Cloth for the village",
+      "goal": "Harvest 12 cotton."
+    },
+    {
+      "id": "eternia:quest/daily_copper",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "ore:copper"
+      ],
+      "required": 12,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Copper for the workshop",
+      "goal": "Mine 12 copper ore."
+    },
+    {
+      "id": "eternia:quest/daily_iron",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "ore:iron"
+      ],
+      "required": 10,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Iron for the forge",
+      "goal": "Mine 10 iron ore."
+    },
+    {
+      "id": "eternia:quest/daily_silver",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "ore:silver"
+      ],
+      "required": 6,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Silver lining",
+      "goal": "Mine 6 silver ore."
+    },
+    {
+      "id": "eternia:quest/daily_gold",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "ore:gold"
+      ],
+      "required": 6,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "A golden find",
+      "goal": "Mine 6 gold ore."
+    },
+    {
+      "id": "eternia:quest/daily_thorium",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "ore:thorium"
+      ],
+      "required": 6,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Green glimmer",
+      "goal": "Mine 6 thorium ore."
+    },
+    {
+      "id": "eternia:quest/daily_cobalt",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "ore:cobalt"
+      ],
+      "required": 6,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Blue veins",
+      "goal": "Mine 6 cobalt ore."
+    },
+    {
+      "id": "eternia:quest/daily_adamantite",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "ore:adamantite"
+      ],
+      "required": 4,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Deep red riches",
+      "goal": "Mine 4 adamantite ore."
+    },
+    {
+      "id": "eternia:quest/daily_iron_stone",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "Ore_Iron_Stone"
+      ],
+      "required": 8,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Stonebound iron",
+      "goal": "Mine 8 iron ore in stone."
+    },
+    {
+      "id": "eternia:quest/daily_copper_stone",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "Ore_Copper_Stone"
+      ],
+      "required": 8,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Copper in the rock",
+      "goal": "Mine 8 copper ore in stone."
+    },
+    {
+      "id": "eternia:quest/daily_iron_sandstone",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "Ore_Iron_Sandstone"
+      ],
+      "required": 8,
+      "bonusXp": 1500,
+      "coins": 80,
+      "cadence": "DAILY",
+      "name": "Desert iron",
+      "goal": "Mine 8 iron ore in sandstone."
+    },
+    {
+      "id": "eternia:quest/weekly_patrol",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "group:enemies"
+      ],
+      "required": 75,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "A safer neighborhood",
+      "goal": "Defeat 75 undead, Trorks, goblins or Outlanders."
+    },
+    {
+      "id": "eternia:quest/weekly_undead",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "group:undead"
+      ],
+      "required": 60,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "Lay them to rest",
+      "goal": "Defeat 60 undead."
+    },
+    {
+      "id": "eternia:quest/weekly_raiders",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "npc:Trork",
+        "npc:Goblin",
+        "npc:Outlander"
+      ],
+      "required": 50,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "Protect the roads",
+      "goal": "Defeat 50 Trorks, goblins or Outlanders."
+    },
+    {
+      "id": "eternia:quest/weekly_skeletons",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "npc:Skeleton"
+      ],
+      "required": 60,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "A mountain of bones",
+      "goal": "Defeat 60 skeletons."
+    },
+    {
+      "id": "eternia:quest/weekly_ranged",
+      "activity": "KILL",
+      "kind": "COUNT",
+      "targets": [
+        "npc:Skeleton_Archer",
+        "npc:Skeleton_Ranger",
+        "npc:Skeleton_Frost_Archer",
+        "npc:Skeleton_Sand_Archer",
+        "npc:Trork_Hunter",
+        "npc:Outlander_Hunter"
+      ],
+      "required": 35,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "Watch the horizon",
+      "goal": "Defeat 35 skeleton archers or rangers, Trork hunters or Outlander hunters."
+    },
+    {
+      "id": "eternia:quest/weekly_resources",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "group:ores"
+      ],
+      "required": 150,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "Stock the workshop",
+      "goal": "Mine 150 ore."
+    },
+    {
+      "id": "eternia:quest/weekly_metals",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "ore:copper",
+        "ore:iron"
+      ],
+      "required": 120,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "Working metal",
+      "goal": "Mine 120 copper or iron ore."
+    },
+    {
+      "id": "eternia:quest/weekly_precious",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "ore:gold",
+        "ore:silver"
+      ],
+      "required": 50,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "Treasures below",
+      "goal": "Mine 50 gold or silver ore."
+    },
+    {
+      "id": "eternia:quest/weekly_frontier",
+      "activity": "MINE",
+      "kind": "COUNT",
+      "targets": [
+        "ore:cobalt",
+        "ore:thorium",
+        "ore:adamantite"
+      ],
+      "required": 40,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "Frontier prospecting",
+      "goal": "Mine 40 cobalt, thorium or adamantite ore."
+    },
+    {
+      "id": "eternia:quest/weekly_ore_variety",
+      "activity": "MINE",
+      "kind": "DISTINCT",
+      "targets": [
+        "group:ores"
+      ],
+      "required": 6,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "Rock collection",
+      "goal": "Mine 6 different ore varieties. Ores in different rocks count."
+    },
+    {
+      "id": "eternia:quest/weekly_crops",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "group:crops"
+      ],
+      "required": 120,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "A plentiful harvest",
+      "goal": "Harvest 120 crops."
+    },
+    {
+      "id": "eternia:quest/weekly_vegetables",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "crop:carrot",
+        "crop:potato",
+        "crop:pumpkin",
+        "crop:tomato",
+        "crop:onion",
+        "crop:turnip"
+      ],
+      "required": 90,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "A village feast",
+      "goal": "Harvest 90 carrots, potatoes, pumpkins, tomatoes, onions or turnips."
+    },
+    {
+      "id": "eternia:quest/weekly_grains",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "crop:wheat",
+        "crop:corn",
+        "crop:rice"
+      ],
+      "required": 100,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "Fill the granary",
+      "goal": "Harvest 100 wheat, corn or rice."
+    },
+    {
+      "id": "eternia:quest/weekly_greens",
+      "activity": "HARVEST",
+      "kind": "COUNT",
+      "targets": [
+        "crop:lettuce",
+        "crop:cauliflower",
+        "crop:aubergine"
+      ],
+      "required": 60,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "Garden gathering",
+      "goal": "Harvest 60 lettuce, cauliflower or aubergines."
+    },
+    {
+      "id": "eternia:quest/weekly_crop_variety",
+      "activity": "HARVEST",
+      "kind": "DISTINCT",
+      "targets": [
+        "group:crops"
+      ],
+      "required": 6,
+      "bonusXp": 8000,
+      "coins": 300,
+      "cadence": "WEEKLY",
+      "name": "A colorful garden",
+      "goal": "Harvest 6 different crops."
+    }
   ]
 }

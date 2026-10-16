@@ -92,7 +92,7 @@ public final class PropPlacementOpenHelper {
             anchor = BuildingPlacementAnchorUtil.pickAnchor(world, tb);
         }
         if (anchor == null) {
-            anchor = BuildingPlacementSnapUtil.anchorAtPlayerFeet(ref, store);
+            anchor = BuildingPlacementSnapUtil.anchorInFrontOfPlayer(ref, store);
         }
         if (anchor == null) {
             playerRef.sendMessage(Message.translation("eterniamod_common.eterniamod.common.lookAtBlock"));

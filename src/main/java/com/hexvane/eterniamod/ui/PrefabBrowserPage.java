@@ -71,7 +71,7 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
     private String previewedFileName;
     @Nullable
     private String previewedVirtualPath;
-    private boolean previewHasManagementBlock;
+    private boolean previewHasBuildingBlocks;
     @Nullable
     private String statusMessageKey;
 
@@ -206,8 +206,8 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
     }
 
     private void handleCreateBuilding(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
-        if (previewedPath == null || previewedVirtualPath == null || !previewHasManagementBlock) {
-            setStatus("eterniamod_common.eterniamod.common.missingManagementBlock");
+        if (previewedPath == null || previewedVirtualPath == null || !previewHasBuildingBlocks) {
+            setStatus("eterniamod_common.eterniamod.common.prefabNotLoadable");
             sendActionUpdate();
             return;
         }
@@ -226,7 +226,7 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
         BuildingDefinition def =
             PrefabDefinitionFactory.buildBuildingDefinition(previewedVirtualPath, previewedPath, buffer);
         if (def == null) {
-            setStatus("eterniamod_common.eterniamod.common.missingManagementBlock");
+            setStatus("eterniamod_common.eterniamod.common.prefabNotLoadable");
             sendActionUpdate();
             return;
         }
@@ -280,9 +280,9 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
         statusMessageKey = null;
         IPrefabBuffer buffer =
             PrefabResolveUtil.resolvePrefabBuffer(PrefabDefinitionFactory.prefabPathKeyFromResolved(resolvedFile));
-        previewHasManagementBlock = buffer != null && PrefabDefinitionFactory.findManagementBlockLocalPos(buffer) != null;
-        if (!previewHasManagementBlock) {
-            statusMessageKey = "eterniamod_common.eterniamod.common.missingManagementBlock";
+        previewHasBuildingBlocks = buffer != null && PrefabDefinitionFactory.validatePropPrefab(buffer);
+        if (!previewHasBuildingBlocks) {
+            statusMessageKey = "eterniamod_common.eterniamod.common.prefabNotLoadable";
         } else {
             statusMessageKey = null;
         }
@@ -333,7 +333,7 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
         previewedPath = null;
         previewedFileName = null;
         previewedVirtualPath = null;
-        previewHasManagementBlock = false;
+        previewHasBuildingBlocks = false;
         statusMessageKey = null;
         sendPreviewPacket(null);
     }
@@ -378,7 +378,7 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
             commandBuilder.append("#FileList", "EterniaMod/PrefabFileButton.ui");
             boolean isFile = !entry.isDirectory();
             boolean isActive=isFile&&entry.name().equals(previewedFileName);
-            String caption=(isActive?"• ":"")+displayText;
+            String caption=(isActive?"â€¢ ":"")+displayText;
             commandBuilder.set(selector + ".Text", caption);
             commandBuilder.setObject(selector+".Anchor",UiAnchors.heightWithBottom(Math.max(44,UiPresentation.wrappedHeight(caption,520,24)+20),6));
             String fileEventKey =
@@ -407,7 +407,7 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
         boolean hasPreview = previewedPath != null;
         commandBuilder.set("#CreatePropButton.Visible", hasPreview);
         commandBuilder.set("#CreateBuildingButton.Visible", hasPreview);
-        commandBuilder.set("#CreateBuildingButton.Disabled", !previewHasManagementBlock);
+        commandBuilder.set("#CreateBuildingButton.Disabled", !previewHasBuildingBlocks);
         eventBuilder.addEventBinding(
             CustomUIEventBindingType.Activating,
             "#CreatePropButton",
@@ -517,7 +517,7 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
         previewedPath = null;
         previewedFileName = null;
         previewedVirtualPath = null;
-        previewHasManagementBlock = false;
+        previewHasBuildingBlocks = false;
         sendPreviewPacket(null);
     }
 

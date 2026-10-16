@@ -35,6 +35,7 @@ public final class PropPackagingOverlay {
     private static final float OPACITY_NORMAL = 0.35f;
     private static final float OPACITY_HIGHLIGHT = 0.5f;
 
+    private record OverlayKey(java.util.UUID property,java.util.UUID actor,com.hexvane.eterniamod.domain.Owner owner,java.util.UUID attached) {}
     private PropPackagingOverlay() {}
 
     public static void clearFor(@Nullable PlayerRef player) {
@@ -59,16 +60,22 @@ public final class PropPackagingOverlay {
         HubPlotManager plotManager = EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin);
         HubPlotRecord plot = PropBoundsUtil.findAimedPlot(plotManager.listPlots(), ref, store, plugin, 64.0);
         if (plot == null) plot = plotManager.findPlotAtPlayerOrTarget(ref, store);
-        if (plot == null || !com.hexvane.eterniamod.housing.HousingAccess.can(plugin,plot,uc.getUuid(),com.hexvane.eterniamod.housing.HousingCustody.PACK)) {
+        if (plot == null || !com.hexvane.eterniamod.housing.HousingAccess.previewCan(plugin,plot,uc.getUuid(),com.hexvane.eterniamod.housing.HousingCustody.PACK)) {
             clearFor(playerRef);
             return;
         }
         PropLookupUtil.PropMatch highlightMatch = PropBoundsUtil.findPropAlongLookRay(plot, ref, store, plugin, 64.0);
         HubPlotProp highlighted = highlightMatch != null ? highlightMatch.prop() : null;
         clearFor(playerRef);
+        var property=plot.getPlotId();var actor=uc.getUuid();var owner=com.hexvane.eterniamod.housing.HousingAccess.owner(plot);var attached=plot.getAttachedGuildUuid();
+        var services=plugin.getServices();
+        var allowed=services.readView(new OverlayKey(property,actor,owner,attached),java.time.Duration.ofSeconds(5),()->{
+            var guild=services.guilds().membership(actor).map(m->m.guildId()).orElse(null);
+            boolean reserve=guild!=null&&services.guilds().can(actor,guild,com.hexvane.eterniamod.housing.HousingCustody.RESERVE);
+            return services.provenance().instances(property).stream().filter(instance->com.hexvane.eterniamod.housing.HousingCustody.allows(owner,attached,instance.owner(),true,guild,reserve)).map(instance->instance.id()).collect(java.util.stream.Collectors.toUnmodifiableSet());
+        });
         for (HubPlotProp prop : plot.getProps()) {
-            var instance=plugin.getServices().provenance().find(prop.getInstanceId()).orElse(null);
-            if(instance==null||!com.hexvane.eterniamod.housing.HousingCustody.can(plugin,plot,uc.getUuid(),instance.owner(),com.hexvane.eterniamod.housing.HousingCustody.PACK))continue;
+            if(!allowed.contains(prop.getInstanceId()))continue;
             PropDefinition def = plugin.getPropCatalog().get(prop.getPropId());
             if (def == null) {
                 continue;
