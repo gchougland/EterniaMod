@@ -1,7 +1,7 @@
 {
   "Parent": "Default",
   "World": {
-    "AllowBlockBreaking": true,
+    "AllowBlockBreaking": false,
     "AllowBlockGathering": false,
     "AllowBlockPlacement": false
   }

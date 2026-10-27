@@ -9,6 +9,83 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BatchedStoreTest {
+    @Test void delayedCommitPublicationCannotOverwriteANewerReservation()throws Exception {
+        var durable=new InMemoryStore();
+        var committed=new java.util.concurrent.CountDownLatch(1);var release=new java.util.concurrent.CountDownLatch(1);
+        var delay=new java.util.concurrent.atomic.AtomicBoolean(false);
+        var store=new BatchedStore(new TransactionalStore(){
+            public <T>T transaction(Function<Transaction,T> work){
+                T result=durable.transaction(work);
+                if(delay.compareAndSet(true,false)) {
+                    committed.countDown();
+                    try{if(!release.await(10,java.util.concurrent.TimeUnit.SECONDS))throw new AssertionError("Timed out");}
+                    catch(InterruptedException e){Thread.currentThread().interrupt();throw new AssertionError(e);}
+                }
+                return result;
+            }
+        });
+        var rows=store.committedRows("test");delay.set(true);
+        var first=java.util.concurrent.CompletableFuture.runAsync(()->store.transaction(tx->tx.save("test","a",0,Map.of("state","PACKED"))));
+        try {
+            assertTrue(committed.await(10,java.util.concurrent.TimeUnit.SECONDS));
+            store.transaction(tx->tx.save("test","a",1,Map.of("state","RESTORING")));
+            assertEquals("RESTORING",rows.get().getFirst().value("state"));
+        } finally {release.countDown();first.get(10,java.util.concurrent.TimeUnit.SECONDS);}
+        assertEquals("RESTORING",rows.get().getFirst().value("state"));
+        assertEquals(2,rows.get().getFirst().revision());
+    }
+
+    @Test void protectionIndexPublishesOnlyCommittedRowsAndNeverReadsOnHits() {
+        var counted=new CountingStore();var store=new BatchedStore(counted);
+        store.transaction(tx->tx.save("test","a",0,Map.of("state","ACTIVE")));
+        var rows=store.committedRows("test");
+        assertEquals("ACTIVE",rows.get().getFirst().value("state"));
+        store.batch(()->{
+            store.transaction(tx->tx.save("test","a",1,Map.of("state","PACKED")));
+            assertEquals("ACTIVE",rows.get().getFirst().value("state"),"Uncommitted changes must not unlock terrain");
+            return null;
+        });
+        assertEquals("PACKED",rows.get().getFirst().value("state"));
+        assertThrows(IllegalArgumentException.class,()->store.batch(()->{
+            store.transaction(tx->tx.save("test","a",2,Map.of("state","RESTORING")));
+            throw new IllegalArgumentException("rollback");
+        }));
+        assertEquals("PACKED",rows.get().getFirst().value("state"));
+        int reads=counted.transactions;
+        for(int i=0;i<1000;i++)assertEquals(2,rows.get().getFirst().revision());
+        assertEquals(reads,counted.transactions);
+    }
+
+    @Test void reservedTerrainSurvivesRestartAndTracksClaimPackAndRestoreWithoutDatabaseReads() {
+        var counted=new CountingStore();var services=new EterniaServices(counted);
+        var owner=Owner.player(UUID.randomUUID());var claim=UUID.randomUUID();
+        services.housing().beginClaim(owner,UUID.randomUUID(),claim,null,
+            new HousingService.ClaimLocation("Hub",10,20,8,9,HousingService.ClaimScope.PUBLIC,null,false));
+        assertTrue(services.housing().hasReservedGround("Hub",10,20),"Interrupted claim must protect before a native plot exists");
+        var restarted=new EterniaServices(counted);
+        int reads=counted.transactions;
+        for(int i=0;i<1000;i++) {
+            assertTrue(restarted.housing().hasReservedGround("Hub",17,28));
+            assertFalse(restarted.housing().hasReservedGround("Hub",18,28));
+            assertFalse(restarted.housing().hasReservedGround("Other",10,20));
+        }
+        assertEquals(reads,counted.transactions);
+        var claimJournal=restarted.journal().find(claim).orElseThrow();
+        restarted.journal().advance(claim,claimJournal.revision(),JournalService.State.WORLD_APPLIED);
+        restarted.housing().activate(owner,claim);
+        var move=UUID.randomUUID();restarted.housing().beginRelocation(owner,move,true);
+        assertTrue(restarted.housing().hasReservedGround("Hub",10,20));
+        var operation=restarted.journal().find(move).orElseThrow();
+        operation=restarted.journal().attachVerifiedSnapshot(move,operation.revision(),"snapshot","a".repeat(64));
+        restarted.journal().advance(move,operation.revision(),JournalService.State.WORLD_APPLIED);
+        restarted.housing().acknowledgePacked(owner,move);
+        assertFalse(restarted.housing().hasReservedGround("Hub",10,20));
+        restarted.housing().beginRestore(owner,move);
+        restarted.housing().updateRestoreLocation(owner,move,
+            new HousingService.ClaimLocation("Hub",100,200,8,9,HousingService.ClaimScope.PUBLIC,null,false));
+        assertFalse(restarted.housing().hasReservedGround("Hub",10,20));
+        assertTrue(restarted.housing().hasReservedGround("Hub",100,200));
+    }
     @Test void crownCatalogUsesOneTransactionAndOneOwnershipScanRegardlessOfItemCount() {
         var counted=new CountingStore();var services=new EterniaServices(counted);var actor=UUID.randomUUID();
         services.accounts().recordAuthenticatedLogin(actor,"Collector");

@@ -66,9 +66,9 @@ class HousingGameplaySyncTest {
             check(sent.equals(List.of(HousingWorldPolicy.BUILD_GAMEPLAY)),
                 "Connected clients must receive the new rules after the server config changes");
             HousingWorldPolicy.changeGameplayConfig(config,HousingWorldPolicy.BUILD_GAMEPLAY,resend);
-            check(sent.size()==1,"An unchanged refresh must not resend the same rules");
+            check(sent.size()==2,"A second builder toggling must receive their own rules even when the shared config is unchanged");
             HousingWorldPolicy.changeGameplayConfig(config,HousingWorldPolicy.GAMEPLAY,resend);
-            check(sent.equals(List.of(HousingWorldPolicy.BUILD_GAMEPLAY,HousingWorldPolicy.GAMEPLAY)),
+            check(sent.equals(List.of(HousingWorldPolicy.BUILD_GAMEPLAY,HousingWorldPolicy.BUILD_GAMEPLAY,HousingWorldPolicy.GAMEPLAY)),
                 "Disabling the last builder must restore the client's placement lock");
 
             var before=new HousingWorldPolicy.Previous("Hub","CustomGameplay",Set.of());

@@ -1,7 +1,6 @@
 package com.hexvane.eterniamod.customization;
 
 import com.hexvane.eterniamod.EterniaModPlugin;
-import com.hexvane.eterniamod.domain.HousingService;
 import com.hexvane.eterniamod.housing.PlotRect;
 import com.hexvane.eterniamod.hub.EterniaWorldRegistries;
 import com.hexvane.eterniamod.setup.ManagedHubServices;
@@ -80,13 +79,7 @@ public final class HubBuildMode {
                 || com.hexvane.eterniamod.pathtool.SplineRoadTool.pendingColumn(world.getName(), x, z)
                 || ManagedHubServices.intersectsManaged(world.getName(), cell)) return false;
         if (EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin).findPlotContainingHorizontal(x, z) != null) return false;
-        for (var property : plugin.getServices().housing().properties()) {
-            if (property.slot().state() == HousingService.State.PACKED) continue;
-            var location = property.location();
-            if (location != null && location.worldId().equals(world.getName())
-                    && new PlotRect(location.minX(), location.minZ(), location.width(), location.depth()).contains(x, z)) return false;
-        }
-        return true;
+        return !plugin.getServices().housing().hasReservedGround(world.getName(),x,z);
     }
 
     /** Runs only inside the disposable native acceptance server, on its world thread. */
@@ -103,6 +96,12 @@ public final class HubBuildMode {
             permissions.addUserPermission(actor,permission);SESSIONS.enable(actor,world.getWorldConfig().getUuid());
             HousingWorldPolicy.refresh(world);
             check(world.getGameplayConfig().getWorldConfig().isBlockPlacementAllowed(),"Admin placement remains disabled");
+            check(world.getGameplayConfig().getWorldConfig().isBlockBreakingAllowed(null),"Admin breaking remains disabled");
+            var builderRules=HousingWorldPolicy.clientRules(world.getGameplayConfig().toPacket(),enabled(plugin,actor,world));
+            var visitorRules=HousingWorldPolicy.clientRules(world.getGameplayConfig().toPacket(),enabled(plugin,UUID.randomUUID(),world));
+            check(builderRules.worldConfig.allowBlockBreaking&&builderRules.worldConfig.allowBlockPlacement,"Builder native rules remained locked");
+            check(!visitorRules.worldConfig.allowBlockBreaking&&!visitorRules.worldConfig.allowBlockPlacement,"Visitor inherited a builder's native rules");
+            check(!builderRules.worldConfig.allowBlockGathering&&!visitorRules.worldConfig.allowBlockGathering,"Client gathering was unlocked");
             check(!world.getGameplayConfig().getWorldConfig().isBlockGatheringAllowed(),"Gathering was unlocked");
             check(world.getWorldConfig().getDisabledFluidTickers().contains("Fluid") && HousingInteractionGuard.blocked(world),"Fluid protection was unlocked");
             check(canEdit(plugin,actor,world,40,80),"Unclaimed terrain must be editable");
@@ -124,6 +123,7 @@ public final class HubBuildMode {
             check(!canEdit(plugin,actor,world,40,80),"Revoked permission retained build access");
             HousingWorldPolicy.refresh(world);
             check(!world.getGameplayConfig().getWorldConfig().isBlockPlacementAllowed(),"Last builder leaving did not restore world lock");
+            check(!world.getGameplayConfig().getWorldConfig().isBlockBreakingAllowed(null),"Last builder leaving did not restore breaking lock");
             plugin.getLogger().atInfo().log("ETERNIA_NATIVE_HUB_BUILD_PASS: scoped admin access, plaza edits, road protection, permission revocation, native fluid guards and policy restoration");
         } finally {
             SESSIONS.forget(actor);permissions.removeUserPermission(actor,permission);

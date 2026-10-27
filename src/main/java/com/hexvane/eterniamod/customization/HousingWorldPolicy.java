@@ -2,6 +2,13 @@ package com.hexvane.eterniamod.customization;
 
 import com.google.gson.*;
 import com.hexvane.eterniamod.EterniaModPlugin;
+import com.hypixel.hytale.component.*;
+import com.hypixel.hytale.component.query.Query;
+import com.hypixel.hytale.component.system.RefSystem;
+import com.hypixel.hytale.protocol.packets.world.WorldGameplayConfig;
+import com.hypixel.hytale.server.core.event.events.permissions.*;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.asset.type.fluid.Fluid;
 import com.hypixel.hytale.server.core.asset.type.gameplay.GameplayConfig;
 import com.hypixel.hytale.server.core.universe.Universe;
@@ -13,7 +20,7 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-/** Housing permits checked Eternia edits only. Native hand placement and all fluid simulation stop. */
+/** Native build rules per player, with server-side plot checks and frozen housing fluids. */
 public final class HousingWorldPolicy {
     public static final String GAMEPLAY="Eternia_Housing", BUILD_GAMEPLAY="Eternia_Housing_Build",FLUID_TAG="Fluid";
     record Previous(String world,String gameplay,Set<String> disabled) {
@@ -40,6 +47,23 @@ public final class HousingWorldPolicy {
     static void register(EterniaModPlugin plugin) {
         active=new HousingWorldPolicy(plugin);
         plugin.getEventRegistry().registerGlobal(StartWorldEvent.class,event->{var policy=active;if(policy!=null)policy.apply(event.getWorld());});
+        // Native joining sends world defaults before adding the player entity. Apply the player's
+        // own rules afterward, including when another administrator already has building enabled.
+        plugin.getEntityStoreRegistry().registerSystem(new RefSystem<EntityStore>() {
+            @Override public Query<EntityStore> getQuery(){return PlayerRef.getComponentType();}
+            @Override public void onEntityAdded(Ref<EntityStore> ref,AddReason reason,Store<EntityStore> store,CommandBuffer<EntityStore> commands){
+                var policy=active;var world=store.getExternalData().getWorld();
+                if(policy!=null&&plugin.getInfrastructure().isHousing(world.getName()))policy.sendRules(world,store.getComponent(ref,PlayerRef.getComponentType()));
+            }
+            @Override public void onEntityRemove(Ref<EntityStore> ref,RemoveReason reason,Store<EntityStore> store,CommandBuffer<EntityStore> commands){}
+        });
+        var events=plugin.getEventRegistry();
+        events.register(PlayerPermissionChangeEvent.PermissionsRemoved.class,event->refreshAll());
+        events.register(PlayerPermissionChangeEvent.PermissionsAdded.class,event->refreshAll());
+        events.register(PlayerGroupEvent.Removed.class,event->refreshAll());
+        events.register(PlayerGroupEvent.Added.class,event->refreshAll());
+        events.register(GroupPermissionChangeEvent.Removed.class,event->refreshAll());
+        events.register(GroupPermissionChangeEvent.Added.class,event->refreshAll());
     }
     /** Call after asset startup and after infrastructure reload; every mutation runs on its own world. */
     public static CompletableFuture<Void> refreshAll() {
@@ -59,7 +83,7 @@ public final class HousingWorldPolicy {
         String id=world.getWorldConfig().getUuid().toString();var config=world.getWorldConfig();var saved=previous.get(id);
         if(plugin.getInfrastructure().isHousing(world.getName())) {
             var gameplay=GameplayConfig.getAssetMap().getAsset(GAMEPLAY);
-            if(gameplay==null||gameplay.getWorldConfig().isBlockPlacementAllowed())throw new IllegalStateException("Eternia_Housing must disable native block placement");
+            if(gameplay==null||gameplay.getWorldConfig().isBlockPlacementAllowed()||gameplay.getWorldConfig().isBlockBreakingAllowed(null))throw new IllegalStateException("Eternia_Housing must disable native block placement and breaking");
             // Every bundled fluid, including Fire and child variants, has this inherited tag.
             // Reject a newly introduced ticking fluid without it instead of silently permitting spread.
             for(var fluid:Fluid.getAssetMap().getAssetMap().values()) {
@@ -76,7 +100,7 @@ public final class HousingWorldPolicy {
             String selected=HubBuildMode.any(plugin,world)?BUILD_GAMEPLAY:GAMEPLAY;
             if(GameplayConfig.getAssetMap().getAsset(selected)==null)throw new IllegalStateException("Missing housing gameplay asset: "+selected);
             config.setDisabledFluidTickers(Set.copyOf(disabled));config.markChanged();
-            changeGameplayConfig(config,selected,world::resendGameplayConfig);
+            changeGameplayConfig(config,selected,()->{for(var player:world.getPlayerRefs())sendRules(world,player);});
         }else if(saved!=null) {
             var restored=restore(saved,config.getGameplayConfig(),config.getDisabledFluidTickers());
             config.setDisabledFluidTickers(restored.disabled);config.markChanged();
@@ -84,12 +108,24 @@ public final class HousingWorldPolicy {
             previous.remove(id);persist();
         }
     }
+    private void sendRules(World world,PlayerRef player) {
+        player.getPacketHandler().write(clientRules(world.getGameplayConfig().toPacket(),HubBuildMode.enabled(plugin,player.getUuid(),world)));
+    }
+    /** The asset creates a fresh packet per player; never mutate or share its cached configuration. */
+    static WorldGameplayConfig clientRules(WorldGameplayConfig packet,boolean building) {
+        packet.worldConfig.allowBlockBreaking=building;
+        packet.worldConfig.allowBlockPlacement=building;
+        packet.worldConfig.blockBreakingBypassTagIndex=com.hypixel.hytale.assetstore.AssetRegistry.TAG_NOT_FOUND;
+        return packet;
+    }
     /** Changing WorldConfig alone does not update connected clients' placement rules. */
     static void changeGameplayConfig(com.hypixel.hytale.server.core.universe.world.WorldConfig config,
                                      String gameplay,Runnable resend) {
-        if(gameplay.equals(config.getGameplayConfig()))return;
-        config.setGameplayConfig(gameplay);
-        config.markChanged();
+        if(!gameplay.equals(config.getGameplayConfig())) {
+            config.setGameplayConfig(gameplay);
+            config.markChanged();
+        }
+        // A second builder can toggle without changing the shared server config.
         resend.run();
     }
     /** Restore each independent field only while it still equals the value this policy installed. */

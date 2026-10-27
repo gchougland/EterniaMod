@@ -18,6 +18,27 @@ public final class BatchedStore implements TransactionalStore {
     private final LinkedHashMap<Object,Cached> views=new LinkedHashMap<>(16,.75f,true);
     private final ConcurrentHashMap<Object,CompletableFuture<Object>> pending=new ConcurrentHashMap<>();
     private long generation;
+    private final Map<String,CommittedRows> committed = new ConcurrentHashMap<>();
+
+    /** Single-authority world protection index. Seed at startup, then publish only committed writes.
+     * Unlike display read views, this has no TTL, background refresh, or database access on a hit.
+     * External writers to eternia_records are unsupported by the store's single-server contract. */
+    public synchronized Supplier<List<Row>> committedRows(String namespace) {
+        if(current.get()!=null)throw new IllegalStateException("Protection indexes must initialize outside a transaction");
+        var existing=committed.get(namespace);if(existing!=null)return existing::snapshot;
+        var index=new CommittedRows();committed.put(namespace,index);
+        try { index.merge(transaction(tx->tx.scan(namespace)));return index::snapshot; }
+        catch(RuntimeException|Error failure){committed.remove(namespace,index);throw failure;}
+    }
+    private static final class CommittedRows {
+        private final Map<String,Row> byKey=new TreeMap<>();
+        private volatile List<Row> rows=List.of();
+        synchronized void merge(Collection<Row> updates) {
+            for(var row:updates)byKey.merge(row.key(),row,(before,next)->before.revision()>next.revision()?before:next);
+            rows=List.copyOf(byKey.values());
+        }
+        List<Row> snapshot(){return rows;}
+    }
 
     /** Display projections only. Writes are forbidden; authoritative actions use batch/transaction.
      * Relevant local writes invalidate immediately; bounded TTL also refreshes external changes and expiry. */
@@ -63,6 +84,7 @@ public final class BatchedStore implements TransactionalStore {
         });
         var scope=completed[0];var capture=reading.get();if(capture!=null)capture.namespaces.addAll(scope.reads);
         if(!scope.writes.isEmpty())synchronized(views){generation++;scope.writes.forEach(ns->versions.merge(ns,1L,Long::sum));}
+        scope.savedRows.forEach((namespace,rows)->{var index=committed.get(namespace);if(index!=null)index.merge(rows.values());});
         return result;
     }
 
@@ -94,6 +116,7 @@ public final class BatchedStore implements TransactionalStore {
         private final Map<String,Map<String,Optional<Row>>> finds = new HashMap<>();
         private final Map<String,SortedMap<String,Row>> scans = new HashMap<>();
         final Set<String> reads=new HashSet<>(),writes=new HashSet<>();final boolean readOnly;
+        final Map<String,Map<String,Row>> savedRows=new HashMap<>();
         boolean inCallback, failed;
         Scope(Transaction tx,boolean readOnly) { this.tx = tx;this.readOnly=readOnly; }
         Optional<Row> find(String ns,String key) {
@@ -127,6 +150,7 @@ public final class BatchedStore implements TransactionalStore {
         Row save(String ns,String key,long revision,Map<String,String> fields) {
             if(readOnly)throw new IllegalStateException("Cached read views cannot write records");
             Row saved = tx.save(ns,key,revision,fields);
+            savedRows.computeIfAbsent(ns,ignored->new HashMap<>()).put(key,saved);
             writes.add(ns);finds.computeIfAbsent(ns,n -> new HashMap<>()).put(key,Optional.of(saved));
             if (scans.containsKey(ns)) scans.get(ns).put(key,saved);
             return saved;

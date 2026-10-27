@@ -23,5 +23,31 @@ class HousingWorldPolicyTest {
         var policy=com.google.gson.JsonParser.parseString(java.nio.file.Files.readString(java.nio.file.Path.of("src/main/resources/Server/GameplayConfigs/Eternia_Housing.json"))).getAsJsonObject();
         assertFalse(policy.getAsJsonObject("World").get("AllowBlockPlacement").getAsBoolean());
         assertFalse(policy.getAsJsonObject("World").get("AllowBlockGathering").getAsBoolean());
+        assertFalse(policy.getAsJsonObject("World").get("AllowBlockBreaking").getAsBoolean());
+        var build=com.google.gson.JsonParser.parseString(java.nio.file.Files.readString(java.nio.file.Path.of("src/main/resources/Server/GameplayConfigs/Eternia_Housing_Build.json"))).getAsJsonObject().getAsJsonObject("World");
+        assertTrue(build.get("AllowBlockBreaking").getAsBoolean());
+        assertTrue(build.get("AllowBlockPlacement").getAsBoolean());
+        assertFalse(build.get("AllowBlockGathering").getAsBoolean());
+    }
+    @Test void nativeRulesAreScopedToEachBuilderAndPreserveOtherGameplaySettings() {
+        var builder=packet();var visitor=packet();
+        HousingWorldPolicy.clientRules(builder,true);
+        HousingWorldPolicy.clientRules(visitor,false);
+        assertTrue(builder.worldConfig.allowBlockBreaking);assertTrue(builder.worldConfig.allowBlockPlacement);
+        assertFalse(visitor.worldConfig.allowBlockBreaking);assertFalse(visitor.worldConfig.allowBlockPlacement);
+        assertFalse(builder.worldConfig.allowBlockGathering);
+        assertArrayEquals(new int[]{17},builder.worldConfig.blockedRootInteractionTagIndexes);
+        assertEquals(com.hypixel.hytale.assetstore.AssetRegistry.TAG_NOT_FOUND,visitor.worldConfig.blockBreakingBypassTagIndex);
+        HousingWorldPolicy.clientRules(builder,false);
+        assertFalse(builder.worldConfig.allowBlockBreaking);assertFalse(builder.worldConfig.allowBlockPlacement);
+        HousingWorldPolicy.clientRules(visitor,true);
+        assertTrue(visitor.worldConfig.allowBlockBreaking);assertTrue(visitor.worldConfig.allowBlockPlacement);
+    }
+    private static com.hypixel.hytale.protocol.packets.world.WorldGameplayConfig packet() {
+        var packet=new com.hypixel.hytale.protocol.packets.world.WorldGameplayConfig();
+        packet.worldConfig=new com.hypixel.hytale.protocol.packets.world.WorldConfig();
+        packet.worldConfig.blockedRootInteractionTagIndexes=new int[]{17};
+        packet.worldConfig.blockBreakingBypassTagIndex=99;
+        return packet;
     }
 }

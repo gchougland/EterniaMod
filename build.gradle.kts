@@ -35,6 +35,8 @@ tasks.named<Jar>("jar") {
     from(sourceSets.main.get().output.resourcesDir)
     from(embeddedLibraries.map { zipTree(it) })
     exclude("META-INF/*.SF", "META-INF/*.RSA", "META-INF/*.DSA")
+    // A cached prefab in a jar overrides its JSON regardless of which file is newer.
+    exclude("**/*.lpf")
 }
 
 tasks.register("verifyReleaseJar") {

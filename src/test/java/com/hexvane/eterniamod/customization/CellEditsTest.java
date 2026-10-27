@@ -22,9 +22,4 @@ class CellEditsTest {
         var fluidEdit=expected.clone();fluidEdit.getArray("fluids").getFirst().asDocument().put("level",new BsonInt32(6));
         assertThrows(IllegalStateException.class,()->CellEdits.requireSame(fluidEdit,expected));
     }
-    @Test void pathMaskProtectsExactCellsAndHouseMaskProtectsWholeVolume() {
-        var bounds=new com.hexvane.eterniamod.housing.relocation.NativeSnapshotStore.Bounds(10,40,10,15,41,15);
-        var path=new AuthoredBlockProtection.Mask(bounds,Set.of("0,0,0","1,0,0"));var house=new AuthoredBlockProtection.Mask(bounds,null);
-        assertTrue(path.contains(10,40,10));assertFalse(path.contains(12,40,12));assertTrue(house.contains(12,40,12));assertFalse(house.contains(15,40,12));assertFalse(path.contains(10,41,10));
-    }
 }

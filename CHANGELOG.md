@@ -12,6 +12,7 @@
 - Admins can grant Crowns and Coins to players by name, with each grant recorded.
 
 - Admins can turn Hub building on and off for themselves while homes, roads and service areas stay protected.
+- The Gilded Gull, a furnished harbour tavern for the Hub, is ready to place from the prefab browser. Its hearth warms visitors and its tower has a lookout over the town.
 
 - Guild Waygates include an optional glowing portal for the guild estate, placed and packed like a decoration. Step inside to choose a destination. Public and guild portals share teal arches, translucent facets, gold gems and turning runes.
 

@@ -15,7 +15,19 @@ public final class HousingService extends DomainSupport {
     }
     public record Slot(Owner owner,UUID propertyId,State state,UUID operationId,long revision,String snapshotRef,UUID attachedGuild) {}
     private final OwnershipService ownership;private final JournalService journal;
-    HousingService(TransactionalStore s,Clock c,Supplier<UUID> i,OwnershipService ownership,JournalService journal) { super(s,c,i);this.ownership=ownership;this.journal=journal; }
+    private final Supplier<List<TransactionalStore.Row>> reservedGround;
+    HousingService(com.hexvane.eterniamod.persistence.BatchedStore s,Clock c,Supplier<UUID> i,OwnershipService ownership,JournalService journal) {
+        super(s,c,i);this.ownership=ownership;this.journal=journal;reservedGround=s.committedRows("housing_slot");
+    }
+    /** World-thread protection check, including interrupted claims that have no native plot yet. No I/O. */
+    public boolean hasReservedGround(String world,int x,int z) {
+        for(var row:reservedGround.get())if(!row.value("state").equals("PACKED")&&row.value("world").equals(world)) {
+            var location=location(row);
+            if(x>=location.minX()&&z>=location.minZ()&&(long)x< (long)location.minX()+location.width()
+                &&(long)z< (long)location.minZ()+location.depth())return true;
+        }
+        return false;
+    }
     public Optional<Slot> find(Owner owner) { return store.transaction(tx->tx.find("housing_slot",owner.key()).map(HousingService::slot)); }
     public List<Slot> allSlots() { return store.transaction(tx->tx.scan("housing_slot").stream().map(HousingService::slot).toList()); }
     public record Property(Slot slot,ClaimLocation location) {}

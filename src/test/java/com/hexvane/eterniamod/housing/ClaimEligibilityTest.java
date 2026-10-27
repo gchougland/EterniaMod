@@ -10,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class ClaimEligibilityTest {
     @Test void movingPreviewReusesAnImmutableSnapshotWithoutMoreDatabaseWork(){
         var store=new CountingStore();var services=new EterniaServices(store);var actor=UUID.randomUUID();
+        // Service startup seeds the committed protection index once; measure preview work separately.
+        store.transactions=0;store.reads.clear();
         var snapshot=ClaimEligibility.load(services,actor,HousingRules.Scope.PUBLIC,false);
         assertEquals(1,store.transactions);assertEquals(List.of("housing_slot"),store.reads);
         for(int x=0;x<100;x++)assertNull(snapshot.check(new PlotRect(x,0,24,24)));
