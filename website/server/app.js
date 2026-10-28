@@ -1,5 +1,5 @@
 import express from 'express';import session from 'express-session';import connectPg from 'connect-pg-simple';import crypto from 'node:crypto';import path from 'node:path';
-import {root} from './config.js';import {createOidc,regenerate,saveSession,UUID} from './auth.js';import {createBridge,FIXTURE_UUID} from './bridge.js';import {createCatalog} from './catalog.js';import {createRenderQueue} from './render-queue.js';import {route,requireUser,requireAdmin,HttpError} from './errors.js';
+import {root} from './config.js';import {createOidc,isAdmin,regenerate,saveSession,UUID} from './auth.js';import {createBridge,FIXTURE_UUID} from './bridge.js';import {createCatalog} from './catalog.js';import {createRenderQueue} from './render-queue.js';import {route,requireUser,requireAdmin,HttpError} from './errors.js';
 import {mountTebexRelay} from './tebex-relay.js';import {exportNativeBundle} from './native-export.js';
 import {createHeadless} from './tebex-headless.js';import {mountTebexCheckout} from './tebex-checkout.js';
 export function createApp(cfg,repo){
@@ -14,7 +14,7 @@ export function createApp(cfg,repo){
  app.get('/api/v1/health',(req,res)=>res.json({status:'ok'}));
 
  const Store=connectPg(session);app.use(session({name:'eternia.sid',secret:cfg.secret,resave:false,saveUninitialized:false,store:cfg.fixtures?undefined:new Store({pool:repo.pool,schemaName:'eternia_web',tableName:'sessions',createTableIfMissing:false}),cookie:{httpOnly:true,sameSite:'lax',secure:cfg.production,maxAge:7*86400000}}));
- app.use((req,res,next)=>{if(req.session.user)req.session.user.admin=(cfg.fixtures&&req.session.user.fixture===true)||cfg.admins.has(req.session.user.uuid);next();});
+ app.use((req,res,next)=>{if(req.session.user)req.session.user.admin=(cfg.fixtures&&req.session.user.fixture===true)||isAdmin(cfg,req.session.user);next();});
  app.use(express.json({limit:'12mb'}));
  app.use((req,res,next)=>{if(['GET','HEAD','OPTIONS'].includes(req.method))return next();if(req.get('Origin')&&req.get('Origin')!==cfg.baseUrl)return res.status(403).json({error:'Unexpected request origin'});
  const token=req.get('X-CSRF-Token');if(!token||!req.session.csrf||token!==req.session.csrf)return res.status(403).json({error:'Invalid form token. Reload the page.'});next();});

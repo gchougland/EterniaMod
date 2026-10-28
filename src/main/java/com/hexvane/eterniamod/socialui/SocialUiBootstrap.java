@@ -30,6 +30,7 @@ public final class SocialUiBootstrap {
     public static Registration register(EterniaModPlugin plugin, EterniaServices services, SocialUiActions actions) {
         Registration registration = new Registration(services, actions);
         active = registration;
+        registration.journalKey = new JournalKey();
         OpenCustomUIInteraction.registerCustomPageSupplier(plugin, ServicesPageSupplier.class, "EterniaServices", new ServicesPageSupplier());
         NPCPlugin npc = NPCPlugin.get();
         if (npc != null) npc.registerCoreComponentType("OpenEterniaServices", BuilderActionOpenEterniaServices::new);
@@ -46,7 +47,20 @@ public final class SocialUiBootstrap {
 
     static void openNpc(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServicesPage.Section section) {
         Registration registration = active;
-        if (registration != null && !registration.closed) registration.open(ref, store, player, section);
+        if (registration != null && !registration.closed) registration.openNpc(ref, store, player, section);
+    }
+
+    /** The game mode key: opens the Journal, or closes it when it is already open. */
+    static void toggleJournal(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player) {
+        Player component = store.getComponent(ref, Player.getComponentType());
+        if (component != null && component.getPageManager().getCustomPage() instanceof EterniaServicesPage page && page.isJournal()) { page.closeJournal(); return; }
+        openJournal(ref, store, player);
+    }
+
+    /** The Journal: personal sections that work anywhere, opened by the game mode key. */
+    public static void openJournal(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player) {
+        Registration registration = active;
+        if (registration != null && !registration.closed) registration.show(ref, store, player, EterniaServicesPage.Desk.JOURNAL, EterniaServicesPage.Section.COLLECTION, false, false);
     }
 
     public static final class Registration implements AutoCloseable {
@@ -56,23 +70,34 @@ public final class SocialUiBootstrap {
             Thread thread = new Thread(task, "Eternia-services-menu"); thread.setDaemon(true); return thread;
         });
         volatile boolean closed;
+        JournalKey journalKey;
         Registration(EterniaServices services, SocialUiActions actions) { this.services = services; this.actions = actions; }
         public void open(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServicesPage.Section section) {
             if (closed || !ref.isValid()) return;
             if(section==EterniaServicesPage.Section.WORLDS){actions.perform(SocialUiActions.Action.WORLD_SELECT,ref,store,player);return;}
             if(section==EterniaServicesPage.Section.STORE){var result=actions.perform(SocialUiActions.Action.STORE_OPEN,ref,store,player);if(!result.opened())player.sendMessage(com.hypixel.hytale.server.core.Message.raw(result.message()));return;}
+            show(ref, store, player, EterniaServicesPage.Desk.forShortcut(section), section, false, section != EterniaServicesPage.Section.GREETER);
+        }
+        /** A Hub NPC opens only its own desk; the Crown Store keeps its own page. */
+        void openNpc(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServicesPage.Section section) {
+            if (closed || !ref.isValid()) return;
+            if (section == EterniaServicesPage.Section.STORE) { open(ref, store, player, section); return; }
+            var desk = EterniaServicesPage.Desk.forNpc(section);
+            show(ref, store, player, desk, section, true, false);
+        }
+        void show(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServicesPage.Desk desk, EterniaServicesPage.Section section, boolean deskHome, boolean returnable) {
+            if (closed || !ref.isValid()) return;
             Player component = store.getComponent(ref, Player.getComponentType());
-            if (component != null) {
-                var page = new EterniaServicesPage(player, this, section);
-                if (section != EterniaServicesPage.Section.GREETER) page.withReturnFrom(component.getPageManager().getCustomPage());
-                component.getPageManager().openCustomPage(ref, store, page);
-            }
+            if (component == null) return;
+            var page = new EterniaServicesPage(player, this, desk, section, deskHome);
+            if (returnable) page.withReturnFrom(component.getPageManager().getCustomPage());
+            component.getPageManager().openCustomPage(ref, store, page);
         }
         void openBoard(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player){
             if(closed||!ref.isValid())return;Player component=store.getComponent(ref,Player.getComponentType());
             if(component!=null)component.getPageManager().openCustomPage(ref,store,new GuildBoardPage(player,this));
         }
-        @Override public void close() { closed = true; if (active == this) active = null; executor.shutdownNow(); }
+        @Override public void close() { closed = true; if (active == this) active = null; if (journalKey != null) journalKey.close(); executor.shutdownNow(); }
     }
 
     public static final class ServicesPageSupplier implements OpenCustomUIInteraction.CustomPageSupplier {
@@ -80,7 +105,7 @@ public final class SocialUiBootstrap {
         @Override @Nullable public CustomUIPage tryCreate(@Nonnull Ref<EntityStore> ref, @Nonnull ComponentAccessor<EntityStore> accessor,
             @Nonnull PlayerRef player, @Nonnull InteractionContext context) {
             Registration registration = active;
-            return registration == null || registration.closed ? null : new EterniaServicesPage(player, registration, EterniaServicesPage.Section.GREETER);
+            return registration == null || registration.closed ? null : new EterniaServicesPage(player, registration, EterniaServicesPage.Desk.JOURNAL, EterniaServicesPage.Section.COLLECTION, false);
         }
     }
 }

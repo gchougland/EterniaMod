@@ -24,7 +24,7 @@ public final class ArchitectLedgerPage extends EterniaInteractiveCustomUIPage<Ch
     }
     @Override public void build(Ref<EntityStore> ref,UICommandBuilder c,UIEventBuilder e,Store<EntityStore> store){
         c.append("EterniaMod/ArchitectLedgerPage.ui");bindHome(e);showWallet(c,ref,store);
-        c.set("#Note.Text",plugin.getRuntimeConfig().local()?"Local playground: solo guilds can claim an estate. Roads, borders and guild permissions still apply.":"Make a place your own. Use the house icon above to return to Eternia's main menu.");
+        c.set("#Note.Text",plugin.getRuntimeConfig().local()?"Local playground: solo guilds can claim an estate. Roads, borders and guild permissions still apply.":"Make a place your own. The house button above opens your Journal.");
         for(String action:ACTIONS)e.addEventBinding(CustomUIEventBindingType.Activating,"#"+action+" #Open",new EventData().append("Action",action),false);
         e.addEventBinding(CustomUIEventBindingType.Activating,"#Close",new EventData().append("Action","Close"),false);
     }

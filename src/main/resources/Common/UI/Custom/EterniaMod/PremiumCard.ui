@@ -1,13 +1,20 @@
 $T = "Theme/Citadel.ui";
-Group { Anchor: (Height: 136, Bottom: 8); Background: $T.@SecondarySurface; Padding: (Full: 14); LayoutMode: Left;
-  Group #ItemImage { Anchor: (Width: 100, Height: 100, Right: 14); }
-  Group { FlexWeight: 1; Anchor: (Right: 18); LayoutMode: Top;
-    Label #ItemCategory { Anchor: (Height: 21); Style: $T.@MutedStyle; }
-    Label #ItemName { Anchor: (Height: 28); Style: $T.@SubtitleStyle; }
-    Label #ItemDescription { Anchor: (Height: 40); Style: $T.@MutedStyle; }
+@Card = Group {
+  Anchor: (Full: 0); Background: $T.@CodexCardSurface; Padding: (Full: 14); LayoutMode: Top;
+  Group { Anchor: (Height: 150, Bottom: 10); Background: $T.@JournalInsetSurface; LayoutMode: Middle;
+    Group #ItemImage { Anchor: (Width: 136, Height: 136); }
   }
-  Group { Anchor: (Width: 188); LayoutMode: Top;
-    Group { Anchor: (Height: 34); LayoutMode: Left; Group { Anchor: (Width: 28, Height: 28, Right: 6); Background: "Icons/crown.png"; } Label #Price { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 15, VerticalAlignment: Center); } }
-    $T.@TextButton #Review { Anchor: (Width: 188, Height: 44); Text: "View item"; }
+  Label #ItemCategory { Anchor: (Height: 20); Style: (...$T.@CodexKickerStyle, FontSize: 12); }
+  Label #ItemName { Anchor: (Height: 28); Style: (...$T.@SubtitleStyle, FontSize: 19, Wrap: false); }
+  Label #ItemDescription { FlexWeight: 1; Style: (...$T.@MutedStyle, FontSize: 14); }
+  Group { Anchor: (Height: 44, Top: 6); LayoutMode: Left;
+    Group { Anchor: (Width: 26, Height: 26, Top: 9, Right: 8); Background: "Icons/crown.png"; }
+    Label #Price { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 16, RenderBold: true, VerticalAlignment: Center); }
+    $T.@TextButton #Review { Anchor: (Width: 120, Height: 44); Text: "View"; }
   }
+};
+Group { Anchor: (Height: 338, Bottom: 14); LayoutMode: Left;
+  Group { FlexWeight: 1; Anchor: (Right: 14); @Card #Card0 {} }
+  Group { FlexWeight: 1; Anchor: (Right: 14); @Card #Card1 {} }
+  Group { FlexWeight: 1; @Card #Card2 {} }
 }

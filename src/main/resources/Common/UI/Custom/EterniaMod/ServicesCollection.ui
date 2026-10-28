@@ -1,21 +1,8 @@
 $T = "Theme/Citadel.ui";
 $C = "../Common.ui";
-Group { FlexWeight: 1; LayoutMode: Top;
+Group { FlexWeight: 1; LayoutMode: Top; Background: $T.@JournalPanelSurface; Padding: (Full: 28);
 Label #SectionTitle { Anchor: (Height: 34, Bottom: 6); Style: $T.@TitleStyle; }
 Label #Description { Anchor: (Height: 50, Bottom: 8); Style: $T.@DefaultLabelStyle; }
-Group { Anchor: (Height: 32, Bottom: 4); LayoutMode: Left;
-$T.@SecondaryTextButton #Category0 { FlexWeight: 1; Anchor: (Right: 6); }
-$T.@SecondaryTextButton #Category1 { FlexWeight: 1; Anchor: (Right: 6); }
-$T.@SecondaryTextButton #Category2 { FlexWeight: 1; Anchor: (Right: 6); }
-$T.@SecondaryTextButton #Category3 { FlexWeight: 1; Anchor: (Right: 6); }
-}
-Group { Anchor: (Height: 32, Bottom: 4); LayoutMode: Left;
-$T.@SecondaryTextButton #Category4 { FlexWeight: 1; Anchor: (Right: 6); }
-$T.@SecondaryTextButton #Category5 { FlexWeight: 1; Anchor: (Right: 6); }
-$T.@SecondaryTextButton #Category6 { FlexWeight: 1; Anchor: (Right: 6); }
-$T.@SecondaryTextButton #Category7 { FlexWeight: 1; Anchor: (Right: 6); }
-}
-Group #Tabs { Anchor: (Height: 48, Bottom: 8); LayoutMode: Left; }
 Group #Fields { Anchor: (Height: 156, Bottom: 10); LayoutMode: Top;
 Group #FieldOneGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldOneLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldOne { FlexWeight: 1; } }
 Group #FieldTwoGroup { LayoutMode: Left; Anchor: (Height: 44, Bottom: 6); Label #FieldTwoLabel { Anchor: (Width: 160, Right: 12); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); } $T.@TextField #FieldTwo { FlexWeight: 1; } }

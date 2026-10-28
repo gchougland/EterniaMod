@@ -1,0 +1,10 @@
+$T = "Theme/Citadel.ui";
+Button #DeskTile { Anchor: (Width: 312, Height: 112, Right: 14, Bottom: 14); Padding: (Full: 18); LayoutMode: Left; Style: $T.@DeskTilePrimaryStyle;
+Group #TileArt { Anchor: (Width: 68, Height: 68, Top: 4, Right: 16); Background: $T.@IconTilePrimarySurface;
+Group #TileIcon { Anchor: (Width: 42, Height: 42); }
+}
+Group { FlexWeight: 1; LayoutMode: Middle;
+Label #TileTitle { Anchor: (Height: 26, Bottom: 2); Style: (FontSize: 18, TextColor: #e8ca87, RenderBold: true, VerticalAlignment: Center); }
+Label #TileDetail { Anchor: (Height: 44); Style: (FontSize: 14, TextColor: $T.@Muted, Wrap: true); }
+}
+}

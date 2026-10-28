@@ -1,57 +1,58 @@
 $T = "Theme/Citadel.ui";
 $C = "../Common.ui";
-$T.@PageOverlay {
-  Anchor: (Full: 0); LayoutMode: Middle;
-  $T.@Container {
-    Anchor: (Width: 1000, Height: 720);
-    #Title { Label #BoardTitle { Anchor: (Right: 56); Style: (...$T.@TitleStyle); Text: "Guild notice board"; } $T.@HomeButton #MenuHome { Anchor: (Right: 0, Top: 2, Width: 44, Height: 44); } }
-    #Content {
-      Anchor: (Top: 48, Bottom: 0); LayoutMode: Top;
-      Label #Status { Anchor: (Height: 44, Bottom: 8); Style: (...$T.@MutedStyle); }
-      Group { LayoutMode: Left; Anchor: (Height: 552);
-        Group { LayoutMode: Top; Anchor: (Width: 245, Right: 18);
-          Group #PostList { LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; Anchor: (Height: 396, Bottom: 8); }
-          Group #PageControls { LayoutMode: Left; Anchor: (Height: 44, Bottom: 8);
-            $T.@SecondaryTextButton #Previous { FlexWeight: 1; Anchor: (Right: 6); }
-            $T.@SecondaryTextButton #Next { FlexWeight: 1; }
-          }
-          $T.@SecondaryTextButton #Refresh { Anchor: (Height: 44, Bottom: 8); }
-          $T.@SecondaryTextButton #Back { Anchor: (Height: 44); }
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    $T.@CodexEmblem { Group { Anchor: (Width: 44, Height: 44); Background: "Icons/board.png"; } }
+    Group { FlexWeight: 1; LayoutMode: Middle;
+      Label #BoardTitle { Anchor: (Height: 34); Style: $T.@CodexTitleStyle; Text: "Guild notice board"; }
+      Label { Anchor: (Height: 22); Text: "Notices and plans for your guild"; Style: $T.@CodexKickerStyle; }
+    }
+    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+  }
+  $T.@CodexBody {
+    $T.@CodexPanel { Anchor: (Width: 380, Right: 24); Padding: (Full: 20);
+      Label #Status { Anchor: (Height: 52, Bottom: 10); Style: (...$T.@MutedStyle); }
+      Group #PostList { LayoutMode: TopScrolling; FlexWeight: 1; Anchor: (Bottom: 10); ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+      Group #PageControls { LayoutMode: Left; Anchor: (Height: 44, Bottom: 8);
+        $T.@SecondaryTextButton #Previous { FlexWeight: 1; Anchor: (Right: 6); }
+        $T.@SecondaryTextButton #Next { FlexWeight: 1; }
+      }
+      $T.@SecondaryTextButton #Refresh { Anchor: (Height: 44, Bottom: 8); }
+      $T.@SecondaryTextButton #Back { Anchor: (Height: 44); }
+    }
+    $T.@CodexPanel { FlexWeight: 1;
+      Group #Reader { FlexWeight: 1; LayoutMode: Top; Anchor: (Bottom: 12);
+        Label #PostTitle { Anchor: (Height: 58, Bottom: 6); Style: (...$T.@TitleStyle, FontSize: 28, Wrap: true); }
+        Label #PostAuthor { Anchor: (Height: 32, Bottom: 14); Style: (...$T.@CodexKickerStyle); }
+        Group { FlexWeight: 1; LayoutMode: TopScrolling; Background: $T.@JournalInsetSurface; Padding: (Full: 18); ScrollbarStyle: $C.@DefaultScrollbarStyle;
+          Label #ReadBody { Anchor: (Height: 80, Right: 12); Style: (...$T.@DefaultLabelStyle, FontSize: 17); }
         }
-        Group { FlexWeight: 1; LayoutMode: Top;
-          Group #Reader { LayoutMode: Top; Anchor: (Height: 446, Bottom: 10);
-            Label #PostTitle { Anchor: (Height: 58, Bottom: 6); Style: (...$T.@SubtitleStyle); }
-            Label #PostAuthor { Anchor: (Height: 40, Bottom: 10); Style: (...$T.@MutedStyle); }
-            Group { LayoutMode: TopScrolling; Anchor: (Height: 328); ScrollbarStyle: $C.@DefaultScrollbarStyle;
-              Label #ReadBody { Anchor: (Height: 80, Right: 12); Style: (...$T.@DefaultLabelStyle); }
-            }
-          }
-          Group #Editor { LayoutMode: Top; Anchor: (Height: 446, Bottom: 10);
-            Label { Anchor: (Height: 26); Style: (...$T.@MutedStyle); Text: "Title (80 characters)"; }
-            $T.@TextField #DraftTitle { Anchor: (Height: 44, Bottom: 10); MaxLength: 80; }
-            Label { Anchor: (Height: 26); Style: (...$T.@MutedStyle); Text: "Notice (2,000 characters)"; }
-            MultilineTextField #DraftBody {
-              Anchor: (Height: 340); AutoGrow: false; MaxLength: 2000;
-              Background: #101e22; Padding: (Full: 10);
-              Style: (FontSize: 16, TextColor: #f0e8d5);
-              PlaceholderStyle: (FontSize: 16, TextColor: #b5c3b8);
-              ScrollbarStyle: $C.@DefaultScrollbarStyle;
-            }
-          }
-          Group { LayoutMode: Left; Anchor: (Height: 44, Bottom: 8);
-            $T.@TextButton #New { FlexWeight: 1; Anchor: (Right: 6); }
-            $T.@SecondaryTextButton #Edit { FlexWeight: 1; }
-            $T.@TextButton #Save { FlexWeight: 1; Anchor: (Right: 6); }
-            $T.@SecondaryTextButton #CancelEdit { FlexWeight: 1; }
-            $T.@TextButton #Confirm { FlexWeight: 1; Anchor: (Right: 6); }
-            $T.@SecondaryTextButton #Cancel { FlexWeight: 1; }
-          }
-          Group { LayoutMode: Left; Anchor: (Height: 44);
-            $T.@SecondaryTextButton #Pin { FlexWeight: 1; Anchor: (Right: 6); }
-            $T.@SecondaryTextButton #Remove { FlexWeight: 1; }
-          }
+      }
+      Group #Editor { FlexWeight: 1; LayoutMode: Top; Anchor: (Bottom: 12);
+        Label { Anchor: (Height: 26); Style: (...$T.@MutedStyle); Text: "Title (80 characters)"; }
+        $T.@TextField #DraftTitle { Anchor: (Height: 44, Bottom: 12); MaxLength: 80; }
+        Label { Anchor: (Height: 26); Style: (...$T.@MutedStyle); Text: "Notice (2,000 characters)"; }
+        MultilineTextField #DraftBody {
+          FlexWeight: 1; AutoGrow: false; MaxLength: 2000;
+          Background: $T.@JournalInsetSurface; Padding: (Full: 14);
+          Style: (FontSize: 16, TextColor: #f0e8d5);
+          PlaceholderStyle: (FontSize: 16, TextColor: #b5c3b8);
+          ScrollbarStyle: $C.@DefaultScrollbarStyle;
         }
+      }
+      Group { LayoutMode: Left; Anchor: (Height: 48, Bottom: 10);
+        $T.@TextButton #New { FlexWeight: 1; Anchor: (Right: 8); }
+        $T.@SecondaryTextButton #Edit { FlexWeight: 1; }
+        $T.@TextButton #Save { FlexWeight: 1; Anchor: (Right: 8); }
+        $T.@SecondaryTextButton #CancelEdit { FlexWeight: 1; }
+        $T.@TextButton #Confirm { FlexWeight: 1; Anchor: (Right: 8); }
+        $T.@SecondaryTextButton #Cancel { FlexWeight: 1; }
+      }
+      Group { LayoutMode: Left; Anchor: (Height: 48);
+        $T.@SecondaryTextButton #Pin { FlexWeight: 1; Anchor: (Right: 8); }
+        $T.@SecondaryTextButton #Remove { FlexWeight: 1; }
       }
     }
   }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
 }

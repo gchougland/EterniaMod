@@ -34,7 +34,7 @@ public final class IllustratedMenuPage extends EterniaInteractiveCustomUIPage<Ch
     }
     @Override public void build(Ref<EntityStore> ref,UICommandBuilder c,UIEventBuilder e,Store<EntityStore> store){
         c.append("EterniaMod/IllustratedMenuPage.ui");bindHome(e);showWallet(c,ref,store);
-        c.set("#Title.Text",title);c.set("#Subtitle.Text",subtitle);c.set("#Description.Text",description);
+        c.set("#Title.Text",title);JournalChrome.icon(c,"#PageIcon",title.equals("Travel")?"worlds":"storage");c.set("#Subtitle.Text",subtitle);c.set("#Description.Text",description);
         c.set("#Notice.Text",cards.isEmpty()?"No destinations or items are available yet.":"");
         c.set("#Back.Visible",back!=null);MenuPagination.show(c,cards.size(),6);
         c.set("#Previous.Disabled",page==0);c.set("#Next.Disabled",(page+1)*6>=cards.size());

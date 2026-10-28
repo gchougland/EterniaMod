@@ -7,6 +7,8 @@ import com.hexvane.eterniamod.ui.UiPresentation;
 import com.hexvane.eterniamod.ui.UiAnchors;
 import com.hexvane.eterniamod.ui.ContentImages;
 import com.hexvane.eterniamod.ui.CurrencyUi;
+import com.hexvane.eterniamod.ui.JournalChrome;
+import com.hexvane.eterniamod.setup.HubNpcIdentity;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -34,7 +36,31 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         final String title;
         Section(String title) { this.title = title; }
     }
+    /** Where the page was opened: the Journal (personal sections, anywhere) or one Hub NPC's own desk. */
+    public enum Desk {
+        JOURNAL(null, null, List.of(Section.COLLECTION, Section.QUESTS, Section.SEASON, Section.MAIL, Section.GUILD, Section.HOUSING),
+            Set.of(SocialUiActions.Action.HOUSING_INVENTORY, SocialUiActions.Action.ITEM_DESK)),
+        GUIDE(HubNpcIdentity.GREETER, "worlds", List.of(Section.GREETER), Set.of(SocialUiActions.Action.WORLD_SELECT, SocialUiActions.Action.HUB_TRAVEL)),
+        STEWARD(HubNpcIdentity.HOUSING, "housing", List.of(Section.HOUSING), Set.of(SocialUiActions.Action.HOUSING_CLAIM, SocialUiActions.Action.HOUSING_MANAGE,
+            SocialUiActions.Action.HOUSING_INVENTORY, SocialUiActions.Action.ARCHITECT_LEDGER)),
+        MARSHAL(HubNpcIdentity.GUILD, "guild", List.of(Section.GUILD), Set.of(SocialUiActions.Action.GUILD_HOUSING)),
+        BROKER(HubNpcIdentity.SHOP, "market", List.of(Section.SHOP), Set.of(SocialUiActions.Action.SHOP_MANAGE, SocialUiActions.Action.ITEM_DESK, SocialUiActions.Action.TRADE_DESK)),
+        GAMES(HubNpcIdentity.MINIGAME, "games", List.of(Section.COMING_SOON), Set.of());
+        final HubNpcIdentity identity; final String emblem; final List<Section> sections; final Set<SocialUiActions.Action> actions;
+        Desk(HubNpcIdentity identity, String emblem, List<Section> sections, Set<SocialUiActions.Action> actions) {
+            this.identity = identity; this.emblem = emblem; this.sections = sections; this.actions = actions;
+        }
+        /** The desk a Hub NPC's role opens; sections without an NPC of their own belong to the Journal. */
+        public static Desk forNpc(Section section) {
+            return switch (section) { case GREETER, WORLDS -> GUIDE; case HOUSING -> STEWARD; case GUILD -> MARSHAL; case SHOP -> BROKER; case COMING_SOON -> GAMES; default -> JOURNAL; };
+        }
+        /** The desk a menu shortcut in code reaches: personal sections open the Journal, trades open their NPC's desk. */
+        public static Desk forShortcut(Section section) {
+            return switch (section) { case SHOP -> BROKER; case COMING_SOON -> GAMES; default -> JOURNAL; };
+        }
+    }
     private static final int PAGE_SIZE = 6;
+    private static final int CARDS_PER_ROW = 6;
     private static final List<String> EDITABLE_CAPABILITIES = List.of(
         "guild.view", "guild.chat", "board.read", "board.post", "board.moderate", "party.create", "member.invite", "member.remove", "member.role.assign",
         "housing.structure", "housing.palette", "housing.addition", "housing.prop.place", "housing.prop.move", "housing.prop.pack",
@@ -47,7 +73,9 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private final Map<String, String> allowedActions = new HashMap<>();
     private final String pageReceipt = UUID.randomUUID().toString();
     private long operationNumber;
+    private final Desk desk;
     private Section section;
+    private boolean deskHome;
     private String mode = "";
     private String focus = "";
     private String one = "", two = "", three = "";
@@ -60,56 +88,57 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private View view = View.empty("Loading", "Retrieving current account records.");
     private Pending pending;
 
-    EterniaServicesPage(PlayerRef player, SocialUiBootstrap.Registration registration, Section section) {
+    EterniaServicesPage(PlayerRef player, SocialUiBootstrap.Registration registration, Desk desk, Section section, boolean deskHome) {
         super(player, CustomPageLifetime.CanDismissOrCloseThroughInteraction, Data.CODEC);
-        this.registration = registration; this.services = registration.services; this.actor = player.getUuid(); this.section = section;
+        this.registration = registration; this.services = registration.services; this.actor = player.getUuid();
+        this.desk = desk; this.section = desk.sections.contains(section) ? section : desk.sections.getFirst(); this.deskHome = deskHome && desk != Desk.JOURNAL;
     }
+
+    boolean isJournal() { return desk == Desk.JOURNAL; }
+    void closeJournal() { close(); }
 
     @Override public void build(@Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder commands,
         @Nonnull UIEventBuilder events, @Nonnull Store<EntityStore> store) {
-        commands.append("EterniaMod/ServicesPage.ui");bindHome(events);showWallet(commands,ref,store);commands.set("#Return.Visible",hasReturnPage());
-        commands.append("#ServicesBody", "EterniaMod/" + layout() + ".ui");
-        commands.set("#ServicesTitle.TextSpans", Message.raw(playerRef.getUsername()));
-        allowedActions.clear();bind(events,"#Return","return_parent");
-        bind(events,"#ArchitectLedger","external:ARCHITECT_LEDGER");
-        commands.set("#ArchitectLedger.Visible",true);
-        commands.set("#ArchitectLedger.Disabled",busy);
-        int nav = 0;
-        for (Section entry : Section.values()) {
-            if (entry == Section.WORLDS) continue;
-            appendNav(commands, events, nav++, entry.title, entry==Section.STORE?"external:STORE_OPEN":"nav:" + entry.name(), !busy, entry == section);
+        commands.append("EterniaMod/ServicesPage.ui");bindHome(events);showWallet(commands,ref,store);
+        allowedActions.clear();
+        boolean journal = desk == Desk.JOURNAL;
+        if (journal) JournalChrome.header(commands, "Journal", "Journal", null);
+        else JournalChrome.header(commands, desk.identity.characterName(), desk.identity.profession(), desk.emblem);
+        commands.set("#JournalShortcut.Visible", !journal);
+        commands.set("#HintJournal.Visible", !journal);
+        commands.set("#HintCloseText.TextSpans", Message.raw(journal ? "Close" : "Goodbye"));
+        boolean backToDesk = !journal && !deskHome;
+        commands.set("#Return.Visible", backToDesk || hasReturnPage());
+        bind(events, "#Return", backToDesk ? "desk_home" : "return_parent");
+        bind(events, "#Close", "close");
+        if (journal) for (int i = 0; i < desk.sections.size(); i++) {
+            Section entry = desk.sections.get(i);
+            bind(events, JournalChrome.navTab(commands, i, tabLabel(entry), sectionIcon(entry), entry == section, busy), "nav:" + entry.name());
         }
+        if (deskHome) { buildDeskHome(commands, events, ref, store); return; }
+        commands.append("#ServicesBody", "EterniaMod/" + layout() + ".ui");
+        JournalChrome.section(commands, sectionName(section), sectionIcon(section), sectionNote(section));
         com.hexvane.eterniamod.ui.MenuPagination.sidebar(commands, pending == null ? view.rows.size() : 0, visiblePageSize());commands.set("#Previous.Disabled", busy || pending!=null || page == 0);commands.set("#Next.Disabled",busy || pending!=null || (page+1)*PAGE_SIZE>=view.rows.size());
         commands.set("#Pagination.Text", "Page " + (page+1) + " / " + Math.max(1,(view.rows.size()+PAGE_SIZE-1)/PAGE_SIZE));
-        bind(events,"#Previous","previous");bind(events,"#Next","next");bind(events,"#Close","close");
-        if(section==Section.COLLECTION){
-            String[] categories={"Houses","Decorations","Materials","Titles","Wardrobe","Pets","Mounts","Upgrades"};
-            for(int i=0;i<categories.length;i++){
-                String category=categories[i].toLowerCase(java.util.Locale.ROOT);
-                String selector="#Category"+i;
-                commands.set(selector+".Text",categories[i]);
-                commands.set(selector+".Disabled",busy||category.equals(mode.isEmpty()?"houses":mode));
-                bind(events,selector,"collection_view:"+category);
-            }
-        }
-        var tabs=tabs();commands.set("#Tabs.Visible",pending==null&&!tabs.isEmpty());
-        for(int i=0;i<tabs.size();i++){var tab=tabs.get(i);commands.append("#Tabs","EterniaMod/ServiceTab.ui");commands.set("#Tabs["+i+"].Text",tab.label);commands.set("#Tabs["+i+"].Disabled",busy);bind(events,"#Tabs["+i+"]",tab.route);}
+        bind(events,"#Previous","previous");bind(events,"#Next","next");
+        var tabs=tabs().stream().filter(tab->allowed(tab.route)).toList();commands.set("#Tabs.Visible",pending==null&&!tabs.isEmpty());
+        for(int i=0;i<tabs.size();i++){var tab=tabs.get(i);bind(events,JournalChrome.sideTab(commands,i,tab.label,tab.icon,tab.selected,busy),tab.route);}
         commands.set("#SectionTitle.TextSpans", Message.raw(pending == null ? view.title : "Confirm action"));
         commands.set("#Description.TextSpans", Message.raw(pending == null ? view.description : pending.explanation));
-        commands.setObject("#Description.Anchor",UiAnchors.heightWithBottom(Math.max(50,UiPresentation.wrappedHeight(pending==null?view.description:pending.explanation,786,24)),8));
+        commands.setObject("#Description.Anchor",UiAnchors.heightWithBottom(Math.max(50,UiPresentation.wrappedHeight(pending==null?view.description:pending.explanation,1400,24)),8));
         commands.set("#Status.TextSpans", Message.raw(busy ? "Working…" : status));
         List<Row> rows = pending == null ? view.rows : List.of();
         int start = Math.min(page * visiblePageSize(), rows.size());
         for (int i = start; i < Math.min(rows.size(), start + visiblePageSize()); i++) {
             Row row = rows.get(i);
             if(collectionGrid()&&!row.contentId.isEmpty()) {
-                int card=(i-start)%4;String grid="#Rows["+((i-start)/4)+"]";
-                if(card==0){commands.append("#Rows","EterniaMod/CollectionCardRow.ui");for(int slot=0;slot<4;slot++)commands.set(grid+" #Card"+slot+".Visible",i+slot<rows.size());}
+                int card=(i-start)%CARDS_PER_ROW;String grid="#Rows["+((i-start)/CARDS_PER_ROW)+"]";
+                if(card==0){commands.append("#Rows","EterniaMod/CollectionCardRow.ui");for(int slot=0;slot<CARDS_PER_ROW;slot++)commands.set(grid+" #Card"+slot+".Visible",i+slot<rows.size());}
                 String tile=grid+" #Card"+card;ContentImages.row(commands,tile,row.contentId);
                 commands.set(tile+" #CardName.Text",row.text);commands.set(tile+" #CardDetail.Text",row.goal);
-                commands.set(tile+" #RowAction.Text",row.label);commands.set(tile+" #RowAction.Visible",!row.label.isEmpty());
+                boolean cardAction=!row.label.isEmpty()&&(row.route.isEmpty()||allowed(row.route));commands.set(tile+" #RowAction.Text",row.label);commands.set(tile+" #RowAction.Visible",cardAction);
                 commands.set(tile+" #RowAction.Disabled",busy||row.route.isEmpty());
-                if(!row.route.isEmpty())bind(events,tile+" #RowAction",row.route);
+                if(cardAction&&!row.route.isEmpty())bind(events,tile+" #RowAction",row.route);
                 continue;
             }
             String selector = "#Rows[" + (i - start) + "]";
@@ -120,16 +149,17 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             if(section!=Section.MAIL){ContentImages.row(commands,selector,row.contentId);CurrencyUi.price(commands,selector,row.coins," each");}
             commands.set(selector + " #RowText.TextSpans", Message.raw(row.text));
             commands.set(selector + " #RowAction.TextSpans", Message.raw(row.label));
-            commands.set(selector + " #RowAction.Visible", !row.label.isEmpty());
+            boolean rowAction = !row.label.isEmpty() && (row.route.isEmpty() || allowed(row.route));
+            commands.set(selector + " #RowAction.Visible", rowAction);
             commands.set(selector + " #RowAction.Disabled", busy || row.route.isEmpty());
-            if(section!=Section.MAIL){int width=UiPresentation.buttonWidth(row.label);int body=layout().equals("ServicesOverview")?600:layout().equals("ServicesRoster")&&Arrays.stream(view.fields).anyMatch(label->!label.isEmpty())?554:822;commands.setObject(selector+" #RowAction.Anchor",UiAnchors.serviceAction(width));commands.setObject(selector+".Anchor",UiAnchors.heightWithBottom(Math.max(76,UiPresentation.wrappedHeight(row.text,body-40-(row.coins>=0?176:0)-(row.contentId.isEmpty()?0:78)-(row.label.isEmpty()?0:width),23)+24),8));}
-            else{int textHeight=Math.max(56,UiPresentation.wrappedHeight(row.text,294,23));commands.setObject(selector+" #RowText.Anchor",UiAnchors.heightWithBottom(textHeight,8));commands.setObject(selector+".Anchor",UiAnchors.heightWithBottom(textHeight+64,10));}
-            if (!row.route.isEmpty()) bind(events, selector + " #RowAction", row.route);
+            if(section!=Section.MAIL){int width=UiPresentation.buttonWidth(row.label);int body=layout().equals("ServicesOverview")?1160:layout().equals("ServicesRoster")&&Arrays.stream(view.fields).anyMatch(label->!label.isEmpty())?1080:1400;commands.setObject(selector+" #RowAction.Anchor",UiAnchors.serviceAction(width));commands.setObject(selector+".Anchor",UiAnchors.heightWithBottom(Math.max(76,UiPresentation.wrappedHeight(row.text,body-40-(row.coins>=0?176:0)-(row.contentId.isEmpty()?0:78)-(row.label.isEmpty()?0:width),23)+24),8));}
+            else{int textHeight=Math.max(56,UiPresentation.wrappedHeight(row.text,436,23));commands.setObject(selector+" #RowText.Anchor",UiAnchors.heightWithBottom(textHeight,8));commands.setObject(selector+".Anchor",UiAnchors.heightWithBottom(textHeight+64,10));}
+            if (rowAction && !row.route.isEmpty()) bind(events, selector + " #RowAction", row.route);
         }
         String[] labels = pending == null ? view.fields : new String[] {"", "", ""};
         boolean hasFields=Arrays.stream(labels).anyMatch(label->!label.isEmpty());commands.set("#Fields.Visible",hasFields);
         if(!Set.of("ServicesMail","ServicesRoster").contains(layout()))commands.setObject("#Fields.Anchor",UiAnchors.heightWithBottom(hasFields?(int)Arrays.stream(labels).filter(label->!label.isEmpty()).count()*50:0,10));
-        if(section==Section.MAIL){commands.set("#Reader.Visible",!hasFields);commands.set("#Document.Text",pending==null?view.document:pending.explanation);commands.setObject("#Document.Anchor",UiAnchors.heightWithRight(Math.max(250,UiPresentation.wrappedHeight(view.document,390,25)),12));}
+        if(section==Section.MAIL){commands.set("#Reader.Visible",!hasFields);commands.set("#Document.Text",pending==null?view.document:pending.explanation);commands.setObject("#Document.Anchor",UiAnchors.heightWithRight(Math.max(250,UiPresentation.wrappedHeight(view.document,820,25)),12));}
         if(layout().equals("ServicesOverview")){String feature=switch(section){case HOUSING->"Your own corner";case WORLDS->"The road awaits";case COMING_SOON->"More adventures ahead";default->"Welcome, adventurer";};commands.set("#FeatureTitle.Text",feature);commands.set("#FeatureText.Text",switch(section){case HOUSING->"A free plot, a home to personalize, and a place to return to after your adventures.";case WORLDS->"Public portals connect the Hub to the worlds beyond.";case COMING_SOON->"Minigames are coming soon. Your housing and season journeys are ready now.";default->"Prowl\nEternia Guide\n\nSettle in, find your guild, and start exploring.";});commands.setObject("#SectionArt.Background", new com.hypixel.hytale.server.core.ui.PatchStyle(com.hypixel.hytale.server.core.ui.Value.of("EterniaMod/Icons/"+(section==Section.WORLDS?"worlds":"housing")+".png")));}
         if(section==Section.SEASON){commands.set("#SeasonProgress.Visible",!focus.isEmpty()&&pending==null);commands.set("#ProgressLabel.Text",view.progressLabel);bar(commands,"#ProgressFill","#ProgressRest",view.progress,view.progressTotal);}
         if(section==Section.COLLECTION){commands.set("#CollectionBanner.Visible",false);commands.set("#CollectionSummary.Text",view.document);}
@@ -146,9 +176,10 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         String[] buttonIds = {"#Primary", "#Secondary", "#Tertiary"};
         for (int i = 0; i < buttons.length; i++) {
             commands.set(buttonIds[i] + ".TextSpans", Message.raw(buttons[i].label));
-            commands.set(buttonIds[i] + ".Visible", !buttons[i].label.isEmpty());
+            boolean shown = !buttons[i].label.isEmpty() && (buttons[i].route.isEmpty() || allowed(buttons[i].route));
+            commands.set(buttonIds[i] + ".Visible", shown);
             commands.set(buttonIds[i] + ".Disabled", busy || buttons[i].route.isEmpty());
-            if (!buttons[i].route.isEmpty()) bind(events, buttonIds[i], buttons[i].route);
+            if (shown && !buttons[i].route.isEmpty()) bind(events, buttonIds[i], buttons[i].route);
         }
         if (initialLoad) { initialLoad = false; store.getExternalData().getWorld().execute(()->{if(!isDismissed()&&ref.isValid())refresh(ref, store, "");}); }
     }
@@ -157,29 +188,69 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private int visiblePageSize(){return section==Section.COLLECTION&&(mode.equals("inventory")||collectionGrid())?Math.max(PAGE_SIZE,view.rows.size()):PAGE_SIZE;}
 
     private String layout(){return switch(section){case GREETER,HOUSING,WORLDS,COMING_SOON->"ServicesOverview";case GUILD->"ServicesRoster";case MAIL->"ServicesMail";case SEASON->"ServicesSeason";case COLLECTION->"ServicesCollection";default->"ServicesDirectory";};}
-    private List<Button> tabs(){return switch(section){
-        case GUILD->view.title.equals("Find your guild")||view.title.equals("Loading")?List.of():List.of(new Button("Members","back"),new Button("Roles","guild_roles"),new Button("Notice board","guild_board"),new Button("Guild house","external:GUILD_HOUSING"));
-        case MAIL->List.of(new Button("Inbox","back"),new Button("Write a letter","mail_compose"),new Button("Deliveries","external:ITEM_DESK"));
-        case SEASON->focus.isEmpty()?List.of():List.of(new Button("Rewards","season_rewards"),new Button("Quests","season_quests"),new Button("All passes","back"));
-        case COLLECTION->List.of();
-        case SHOP->List.of(new Button("Browse","back"),new Button("My shop","external:SHOP_MANAGE"),new Button("Trade","external:TRADE_DESK"));
+    private List<Tab> tabs(){return switch(section){
+        case GUILD->view.title.equals("Find your guild")||view.title.equals("Loading")?List.of():List.of(new Tab("Members","back","members",mode.isEmpty()||mode.equals("member")),new Tab("Roles","guild_roles","title",mode.startsWith("role")),new Tab("Notice board","guild_board","board",false),new Tab("Guild estate","external:GUILD_HOUSING","charter",false));
+        case MAIL->List.of(new Tab("Inbox","back","mail",!mode.equals("compose")),new Tab("Write a letter","mail_compose","quests",mode.equals("compose")),new Tab("Deliveries","external:ITEM_DESK","parcel",false));
+        case SEASON->focus.isEmpty()?List.of():List.of(new Tab("Rewards","season_rewards","season",!mode.equals("quests")),new Tab("Quests","season_quests","quests",mode.equals("quests")),new Tab("All passes","back","back",false));
+        case COLLECTION->{
+            String current=mode.isEmpty()?"houses":mode.equals("pet")?"pets":mode;
+            String[][] categories={{"Houses","housing"},{"Decorations","furnishing"},{"Materials","palette"},{"Titles","title"},{"Wardrobe","wardrobe"},{"Pets","pet"},{"Mounts","mount"},{"Upgrades","addition"}};
+            List<Tab> list=new ArrayList<>();
+            for(String[] category:categories){String id=category[0].toLowerCase(java.util.Locale.ROOT);list.add(new Tab(category[0],"collection_view:"+id,category[1],id.equals(current)));}
+            yield list;
+        }
+        case SHOP->List.of(new Tab("Browse","back","market",true),new Tab("My shop","external:SHOP_MANAGE","storage",false),new Tab("Trade","external:TRADE_DESK","trade",false));
         default->List.of();};}
-    private static void bar(UICommandBuilder commands,String fill,String rest,long value,long total){int amount=total<=0?0:(int)Math.max(0,Math.min(1000,(double)value/total*1000));commands.set(fill+".Visible",amount>0);commands.set(rest+".Visible",amount<1000);commands.set(fill+".FlexWeight",Math.max(1,amount));commands.set(rest+".FlexWeight",Math.max(1,1000-amount));}
+    private record Tab(String label,String route,String icon,boolean selected) {}
 
-    private void appendNav(UICommandBuilder commands, UIEventBuilder events, int index, String text, String route, boolean enabled, boolean selected) {
-        commands.append("#Navigation", "EterniaMod/ServiceNav.ui");
-        String selector = "#Navigation[" + index + "]";
-        commands.set(selector + " #Selected.Visible", selected);
-        commands.set(selector + " #NavButton.TextSpans", Message.raw(text));
-        commands.set(selector + " #NavButton.Disabled", !enabled);
-        bind(events, selector + " #NavButton", route);
+    /** A route may lead only to this desk's own sections and trades; everything else belongs to another NPC or the Journal. */
+    private boolean allowed(String route){
+        if(route.startsWith("nav:")){try{return desk.sections.contains(Section.valueOf(route.substring(4)));}catch(IllegalArgumentException unknown){return false;}}
+        if(route.startsWith("external:")){try{return desk.actions.contains(SocialUiActions.Action.valueOf(route.substring(9)));}catch(IllegalArgumentException unknown){return false;}}
+        if(route.startsWith("shop_visit:"))return desk==Desk.BROKER;
+        if(route.equals("intro_toolkit"))return desk==Desk.GUIDE;
+        return true;
     }
+
+    private void buildDeskHome(UICommandBuilder commands, UIEventBuilder events, Ref<EntityStore> ref, Store<EntityStore> store) {
+        commands.set("#SideBar.Visible", false);
+        commands.append("#ServicesBody", "EterniaMod/ServicesDesk.ui");
+        commands.set("#DeskGreeting.TextSpans", Message.raw(view.description));
+        commands.set("#DeskStatus.TextSpans", Message.raw(busy ? "Working…" : status));
+        for (int i = 0; i < view.tiles.size(); i++) {
+            Tile tile = view.tiles.get(i);
+            boolean usable = !tile.route.isEmpty() && allowed(tile.route);
+            String selector = JournalChrome.tile(commands, i, tile.title, tile.detail, tile.icon, tile.primary, busy || !usable);
+            if (usable) bind(events, selector, tile.route);
+        }
+        if (initialLoad) { initialLoad = false; store.getExternalData().getWorld().execute(()->{if(!isDismissed()&&ref.isValid())refresh(ref, store, "");}); }
+    }
+
+    private String tabLabel(Section entry){return switch(entry){case HOUSING->"Home";case MAIL->"Mail";case SEASON->"Seasons";default->entry.title;};}
+    private String sectionName(Section entry){return desk==Desk.JOURNAL?tabLabel(entry):entry.title;}
+    private static String sectionIcon(Section entry){return switch(entry){case GREETER,WORLDS->"worlds";case HOUSING->"housing";case GUILD->"guild";case MAIL->"mail";case SHOP->"market";case QUESTS->"quests";case SEASON->"season";case COLLECTION->"collection";case STORE->"crown";case COMING_SOON->"games";};}
+    private String sectionNote(Section entry){return switch(entry){
+        case GREETER->"How life in Eternia works.";
+        case HOUSING->desk==Desk.JOURNAL?"Your plot and home at a glance.":"Your plot, moves and building rules.";
+        case GUILD->"Your guild, its members and roles.";
+        case MAIL->"Letters and parcels from other players.";
+        case SHOP->"Real listings from players across Eternia.";
+        case QUESTS->"Goals that earn season points and coins.";
+        case SEASON->"Every pass stays yours forever.";
+        case COLLECTION->"Everything you have earned, bought or unlocked.";
+        case STORE->"Styles, decorations, titles and pets.";
+        case WORLDS->"The worlds beyond the Hub.";
+        case COMING_SOON->"Something fun is on the way.";
+    };}
+    private static void bar(UICommandBuilder commands,String fill,String rest,long value,long total){int amount=total<=0?0:(int)Math.max(0,Math.min(1000,(double)value/total*1000));commands.set(fill+".Visible",amount>0);commands.set(rest+".Visible",amount<1000);commands.set(fill+".FlexWeight",Math.max(1,amount));commands.set(rest+".FlexWeight",Math.max(1,1000-amount));}
 
     private void bind(UIEventBuilder events, String selector, String route) {
         String token = generation + ":" + allowedActions.size();
         allowedActions.put(token, route);
-        events.addEventBinding(CustomUIEventBindingType.Activating, selector, new EventData().append("Action", token)
-            .append("@One", "#FieldOne.Value").append("@Two", "#FieldTwo.Value").append("@Three", "#FieldThree.Value"), false);
+        EventData data = new EventData().append("Action", token);
+        // The desk home has no text fields; asking the client for their values disconnects the player.
+        if (!deskHome) data.append("@One", "#FieldOne.Value").append("@Two", "#FieldTwo.Value").append("@Three", "#FieldThree.Value");
+        events.addEventBinding(CustomUIEventBindingType.Activating, selector, data, false);
     }
 
     @Override public void handleDataEvent(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull Data data) {
@@ -193,10 +264,12 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (route == null) return;
         if (route.equals("close")) { close(); return; }
         if (busy) return;
+        if(!allowed(route))return;
+        if(route.equals("desk_home")&&desk!=Desk.JOURNAL){deskHome=true;section=desk.sections.getFirst();mode="";focus="";page=0;one=two=three="";draftCapabilities=null;pending=null;refresh(ref,store,"");return;}
         if(route.equals("return_parent")){store.getExternalData().getWorld().execute(()->{if(ref.isValid()&&!isDismissed())returnOrClose(ref,store);});return;}
         if (route.startsWith("nav:")) {
             if(route.equals("nav:WORLDS")){registration.actions.perform(SocialUiActions.Action.WORLD_SELECT,ref,store,playerRef);return;}
-            section = Section.valueOf(route.substring(4)); mode = ""; focus = ""; page = 0; one = two = three = ""; draftCapabilities = null; pending = null;
+            section = Section.valueOf(route.substring(4)); deskHome = false; mode = ""; focus = ""; page = 0; one = two = three = ""; draftCapabilities = null; pending = null;
             refresh(ref, store, ""); return;
         }
         if (route.equals("next") || route.equals("previous")) { page = Math.max(0, page + (route.equals("next") ? 1 : -1)); generation++; rebuild(); return; }
@@ -252,7 +325,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     }
 
     private Input input() { return new Input(one, two, three, mode, focus, draftCapabilities == null ? Set.of() : Set.copyOf(draftCapabilities)); }
-    private Request request() { return new Request(section, input()); }
+    private Request request() { return new Request(section, input(), desk, deskHome); }
 
     private void refresh(Ref<EntityStore> ref, Store<EntityStore> store, String notice) {
         Request request = request();
@@ -261,7 +334,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     }
 
     private void runDomain(Ref<EntityStore> ref, Store<EntityStore> store, String route, Input input) {
-        Request request = new Request(section, input);
+        Request request = new Request(section, input, desk, deskHome);
         String receipt = "native:" + pageReceipt + ":" + operationNumber;
         work(ref, store, () -> {
             String notice = mutate(route, input, receipt);
@@ -283,7 +356,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 if (mutation) operationNumber++;
                 if(!Arrays.equals(view.fields,loaded.view.fields))one=two=three="";
                 view = loaded.view;
-                status = loaded.notice.isEmpty() ? "Your latest account information. Entries " + (view.rows.isEmpty() ? "0" : Math.min(page * visiblePageSize() + 1, view.rows.size()) + "–" + Math.min((page + 1) * visiblePageSize(), view.rows.size())) + " of " + view.rows.size() : loaded.notice;
+                status = loaded.notice.isEmpty() ? deskHome ? "" : "Your latest account information. Entries " + (view.rows.isEmpty() ? "0" : Math.min(page * visiblePageSize() + 1, view.rows.size()) + "–" + Math.min((page + 1) * visiblePageSize(), view.rows.size())) + " of " + view.rows.size() : loaded.notice;
                 if (view.role != null && draftCapabilities == null) {
                     GuildService.Role role = view.role;
                     boolean builtIn = Set.of("leader", "officer", "architect", "quartermaster", "member").contains(role.id());
@@ -360,6 +433,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     }
     private View load(Request request) {
         Input input = request.input;
+        if (request.home) return deskView(request.desk);
         return switch (request.section) {
             case GREETER -> new View("Welcome to Eternia", "I'm Prowl. Build a home, find your people, and explore at your own pace.", List.of(
                 Row.info("Your first 24 × 24 plot, starter house, mailbox and one plot move are free."),
@@ -367,8 +441,9 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 Row.info("Walk near a plot edge to see its low, glowing boundary. Claim previews show placement reasons."),
                 Row.info("Guilds share a house and can grow a neighborhood of member plots."),
                 Row.info("Select a season pass and earn progress through normal play. Old seasons never expire."),
-                Row.info("The hub's merchants connect you to mail, player shops, collections and optional store items.")),
-                noFields(), buttons("Get starter toolkit", "intro_toolkit", "Claim a plot", "external:HOUSING_CLAIM", "Quest journal", "nav:QUESTS"), null);
+                Row.info("Bramble Hearthleaf helps with plots and homes. Torren Ironbough handles guilds. Nima Quicktail runs the market."),
+                Row.info("Press O any time to open your Journal: mail, guild, quests, seasons and your collection.")),
+                noFields(), buttons("Starter toolkit", "intro_toolkit", "Travel", "external:WORLD_SELECT", "", ""), null);
             case HOUSING -> {
                 var housing = services.housing().find(Owner.player(actor)).orElse(null);
                 List<Row> rows = new ArrayList<>();
@@ -376,8 +451,11 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 services.housing().location(Owner.player(actor)).ifPresent(location -> rows.add(Row.info(location.width() + " × " + location.depth() + " plot in " + UiPresentation.friendlyId(location.worldId()) + (location.guildId()==null?"":" · Guild neighbourhood"))));
                 rows.add(Row.info("Move credits available: " + services.ownership().available(Owner.player(actor), HousingService.MOVE_CREDIT)));
                 rows.add(Row.info("Keep structures and additions five blocks inside the plot and five blocks away from roads."));
+                if (request.desk == Desk.JOURNAL && housing == null) rows.add(Row.info("Visit Bramble Hearthleaf in the Hub to claim your free plot."));
                 yield new View("Housing Ledger", "Build and personalize your home. Purchases and placement tokens stay linked to your account.", rows, noFields(),
-                    buttons(housing == null ? "Claim a plot" : "Manage house", housing == null ? "external:HOUSING_CLAIM" : "external:HOUSING_MANAGE", "My plots", "external:HOUSING_MANAGE", "Refresh", "refresh"), null);
+                    request.desk == Desk.JOURNAL
+                        ? buttons("Housing inventory", "external:HOUSING_INVENTORY", "Refresh", "refresh", "", "")
+                        : buttons(housing == null ? "Claim a plot" : "Furnish my home", housing == null ? "external:HOUSING_CLAIM" : "external:HOUSING_MANAGE", "Architect's Ledger", "external:ARCHITECT_LEDGER", "Refresh", "refresh"), null);
             }
             case GUILD -> guildView(input);
             case MAIL -> mailView(input);
@@ -398,6 +476,42 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 noFields(), buttons("Select a world", "external:WORLD_SELECT", "Return to hub", "external:HUB_TRAVEL", "", ""), null);
             case COMING_SOON -> new View("Minigames — Coming Soon", "Minigames are being prepared for Eternia. There is no queue or entry fee yet.",
                 List.of(Row.info("Explore, settle into your home, and earn season progress through normal activities while you wait.")), noFields(), buttons("Quest journal", "nav:QUESTS", "", "", "", ""), null);
+        };
+    }
+
+    private View deskView(Desk desk) {
+        return switch (desk) {
+            case GUIDE -> View.desk("Welcome to Eternia! I'm Prowl. Build a home, find your people and explore at your own pace.", List.of(
+                new Tile("Getting started", "How plots, guilds and seasons work.", "charter", "nav:GREETER", true),
+                new Tile("Starter toolkit", "Your housing deed and packing wand.", "toolkit", "intro_toolkit", false),
+                new Tile("Travel", "Visit the worlds beyond the Hub.", "worlds", "external:WORLD_SELECT", false)));
+            case STEWARD -> {
+                boolean home = services.housing().find(Owner.player(actor)).isPresent();
+                yield View.desk(home ? "Welcome back! Want to change something about your home, or find a new view?"
+                        : "Welcome! Every adventurer gets a free plot, a starter house and one free move. Shall we find you a spot?", List.of(
+                    home ? new Tile("Furnish my home", "Place your house, decorations and additions.", "housing", "external:HOUSING_MANAGE", true)
+                        : new Tile("Claim a plot", "Choose a spot near a road or portal.", "plot", "external:HOUSING_CLAIM", true),
+                    new Tile("Architect's Ledger", "Your plots, palettes, paths and waygate.", "ledger", "external:ARCHITECT_LEDGER", false),
+                    new Tile("Housing storage", "Browse your house styles and decorations.", "storage", "external:HOUSING_INVENTORY", false),
+                    new Tile("Home details", "Your plot, move credits and building rules.", "plot", "nav:HOUSING", false)));
+            }
+            case MARSHAL -> {
+                boolean member = services.guilds().membership(actor).isPresent();
+                List<Tile> tiles = new ArrayList<>();
+                tiles.add(member ? new Tile("Your guild", "Members, roles and invitations.", "guild", "nav:GUILD", true)
+                    : new Tile("Find a guild", "Start a guild or accept an invitation.", "guild", "nav:GUILD", true));
+                tiles.add(new Tile("Guild estate", "Claim and furnish your guild's estate, roads and waygate.", "charter", "external:GUILD_HOUSING", false));
+                if (member) tiles.add(new Tile("Notice board", "Guild notices and pinned plans.", "board", "guild_board", false));
+                yield View.desk("Strength in numbers. Five members can claim a guild estate together.", tiles);
+            }
+            case BROKER -> View.desk("Buying, selling or trading? Everything in the market goes through me.", List.of(
+                new Tile("Browse player shops", "Find items listed by players across Eternia.", "market", "nav:SHOP", true),
+                new Tile("My shop", "Stock your shelves and set your prices.", "storage", "external:SHOP_MANAGE", false),
+                new Tile("Item desk", "Collect deliveries and stored items.", "parcel", "external:ITEM_DESK", false),
+                new Tile("Trade with a player", "Swap items and coins safely.", "trade", "external:TRADE_DESK", false)));
+            case GAMES -> View.desk("Minigames are on their way! Until then, your home and season pass are ready for you.", List.of(
+                new Tile("Minigames", "Coming soon.", "games", "", true)));
+            case JOURNAL -> throw new IllegalStateException("The Journal has no desk home.");
         };
     }
 
@@ -602,11 +716,13 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         static Row rewards(String level,Row free,Row paid){return new Row(level,"","",List.of(free,paid),"",0,0,0,"",-1);}
     }
     private record Input(String one, String two, String three, String mode, String focus, Set<String> capabilities) {}
-    private record Request(Section section, Input input) {}
-    private record View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role,String document,long progress,long progressTotal,String progressLabel) {
-        View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role){this(title,description,rows,fields,buttons,role,"",0,0,"");}
-        View document(String value){return new View(title,description,rows,fields,buttons,role,value,progress,progressTotal,progressLabel);}
-        View progress(SeasonService.Progress value){return new View(title,description,rows,fields,buttons,role,document,value.xp(),value.totalXp(),"Level "+value.level()+"  ·  "+value.xp()+" / "+value.totalXp()+" XP"+(value.active()?"  ·  Active pass":""));}
+    private record Request(Section section, Input input, Desk desk, boolean home) {}
+    private record Tile(String title,String detail,String icon,String route,boolean primary) {}
+    private record View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role,String document,long progress,long progressTotal,String progressLabel,List<Tile> tiles) {
+        View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role){this(title,description,rows,fields,buttons,role,"",0,0,"",List.of());}
+        View document(String value){return new View(title,description,rows,fields,buttons,role,value,progress,progressTotal,progressLabel,tiles);}
+        static View desk(String greeting,List<Tile> tiles){return new View("",greeting,List.of(),noFields(),EterniaServicesPage.buttons("","","","","",""),null,"",0,0,"",tiles);}
+        View progress(SeasonService.Progress value){return new View(title,description,rows,fields,buttons,role,document,value.xp(),value.totalXp(),"Level "+value.level()+"  ·  "+value.xp()+" / "+value.totalXp()+" XP"+(value.active()?"  ·  Active pass":""),tiles);}
         static View empty(String title, String description) { return new View(title, description, List.of(), noFields(), EterniaServicesPage.buttons("Retry", "refresh", "", "", "", ""), null); }
     }
     private record Loaded(View view, String notice) {}

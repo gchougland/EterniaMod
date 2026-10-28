@@ -1,0 +1,5 @@
+$T = "Theme/Citadel.ui";
+Button #SideTab { Anchor: (Height: 48, Bottom: 6); Padding: (Horizontal: 12); LayoutMode: Left; Style: $T.@SideTabStyle;
+Group #SideTabIcon { Anchor: (Width: 28, Height: 28, Top: 10, Right: 14); }
+Label #SideTabLabel { FlexWeight: 1; Style: $T.@SideLabelStyle; }
+}

@@ -1,5 +1,5 @@
 $T = "Theme/Citadel.ui";
-Group { Anchor: (Height: 186, Bottom: 12); Background: $T.@HeaderSurface; Padding: (Full: 14); LayoutMode: Top;
+Group { Anchor: (Height: 186, Bottom: 12); Background: $T.@CodexCardSurface; Padding: (Full: 14); LayoutMode: Top;
 Group { Anchor: (Height: 28); LayoutMode: Left; Label #RowText { FlexWeight: 1; Style: $T.@SubtitleStyle; } Label #QuestReward { Anchor: (Width: 150); Style: (...$T.@SubtitleStyle, HorizontalAlignment: End); } }
 Group { Anchor: (Height: 26, Bottom: 4); LayoutMode: Left; Group { Anchor: (Width: 24, Height: 24, Right: 6); Background: "Icons/coins.png"; } Label #QuestCoins { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, TextColor: $T.@Primary); } }
 Label #QuestGoal { Anchor: (Height: 48); Style: $T.@DefaultLabelStyle; }

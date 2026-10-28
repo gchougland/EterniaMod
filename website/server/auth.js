@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { HttpError } from './errors.js';
 const encode = value=>Buffer.from(value).toString('base64url');
+export const isAdmin = (cfg,user)=>cfg.admins.has(user.uuid)||cfg.adminNames.has(String(user.name||'').toLowerCase());
 export const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export function createOidc(cfg,fetcher=fetch){
  let discovery,keys;
@@ -35,7 +36,8 @@ export function createOidc(cfg,fetcher=fetch){
   if(info.sub!==payload.sub)throw new HttpError(401,'Profile subject does not match login.');
   const profile=info.profile||{}, uuid=String(profile.uuid||'').toLowerCase();
   if(!UUID.test(uuid))throw new HttpError(401,'No verified Hytale game profile UUID.');
-  return {uuid,name:String(profile.username||'Player').slice(0,64),subject:payload.sub,admin:cfg.admins.has(uuid)};
+  const user={uuid,name:String(profile.username||'Player').slice(0,64),subject:payload.sub};
+  return {...user,admin:isAdmin(cfg,user)};
  }};
 }
 export const regenerate = req=>new Promise((resolve,reject)=>req.session.regenerate(err=>err?reject(err):resolve()));

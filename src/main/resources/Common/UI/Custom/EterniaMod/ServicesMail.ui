@@ -1,11 +1,10 @@
 $T = "Theme/Citadel.ui";
 $C = "../Common.ui";
-Group { FlexWeight: 1; LayoutMode: Top;
+Group { FlexWeight: 1; LayoutMode: Top; Background: $T.@JournalPanelSurface; Padding: (Full: 28);
 Label #SectionTitle { Anchor: (Height: 58, Bottom: 6); Style: (...$T.@TitleStyle, Wrap: true); }
 Label #Description { Anchor: (Height: 50, Bottom: 8); Style: $T.@DefaultLabelStyle; }
-Group #Tabs { Anchor: (Height: 48, Bottom: 8); LayoutMode: Left; }
 Group { FlexWeight: 1; LayoutMode: Left;
-Group #Rows { Anchor: (Width: 318, Right: 16); LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+Group #Rows { Anchor: (Width: 460, Right: 16); LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
 Group { FlexWeight: 1; LayoutMode: Top; Background: $T.@InsetSurface; Padding: (Full: 16);
 Group #Reader { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; Label #Document { Anchor: (Height: 300, Right: 12); Style: (...$T.@DefaultLabelStyle, FontSize: 17); } }
 Group #Fields { FlexWeight: 1; LayoutMode: Top;

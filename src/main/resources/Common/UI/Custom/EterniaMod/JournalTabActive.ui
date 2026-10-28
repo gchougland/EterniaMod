@@ -1,0 +1,5 @@
+$T = "Theme/Citadel.ui";
+Button #NavTab { Anchor: (Width: 124, Height: 104); Padding: (Top: 20); LayoutMode: Top; Style: $T.@NavTabActiveStyle;
+Group #NavIcon { Anchor: (Width: 36, Height: 36, Bottom: 10); }
+Label #NavLabel { Anchor: (Height: 20); Style: $T.@NavLabelActiveStyle; }
+}

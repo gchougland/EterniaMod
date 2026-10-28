@@ -91,12 +91,16 @@ class CitadelPresentationTest {
     }
 
     @Test void everyServiceBodyProvidesTheSharedBindingsAndItsPurposeSpecificSurface() throws Exception {
-        var common=List.of("SectionTitle","Description","Tabs","Rows","Status","Actions","Primary","Secondary","Tertiary","Fields","FieldOne","FieldTwo","FieldThree","FieldOneGroup","FieldTwoGroup","FieldThreeGroup");
+        var common=List.of("SectionTitle","Description","Rows","Status","Actions","Primary","Secondary","Tertiary","Fields","FieldOne","FieldTwo","FieldThree","FieldOneGroup","FieldTwoGroup","FieldThreeGroup");
         for(String layout:List.of("Directory","Overview","Roster","Mail","Season","Trade","Collection")) {
             String source=Files.readString(UI.resolve("Services"+layout+".ui"));
             for(String id:common)assertTrue(Pattern.compile("#"+id+"\\s*\\{").matcher(source).find(),layout+" is missing "+id);
             assertTrue(source.contains("TopScrolling"),layout+" must scroll overflowing content");
+            // Section tabs live once, in the frame's sidebar; a second #Tabs would take the frame's selectors.
+            assertFalse(Pattern.compile("#Tabs\\s*\\{").matcher(source).find(),layout+" must leave #Tabs to the frame");
         }
+        String frame=Files.readString(UI.resolve("ServicesPage.ui"));
+        for(String id:List.of("Tabs","Navigation","SideBar","DeskEmblem","SectionIcon","JournalShortcut","HintJournal"))assertTrue(Pattern.compile("#"+id+"\\s*\\{").matcher(frame).find(),"frame is missing "+id);
         assertTrue(Files.readString(UI.resolve("ServicesMail.ui")).contains("MultilineTextField #FieldThree"));
         assertTrue(Files.readString(UI.resolve("ServicesTrade.ui")).contains("#TheirOffer"));
         assertTrue(Files.readString(UI.resolve("RewardLevel.ui")).contains("FREE TRACK"));
@@ -159,7 +163,7 @@ class CitadelPresentationTest {
         assertTrue(UiPresentation.textWidth("Edit own notice")+32<=340);
         assertTrue(UiPresentation.textWidth("Collect attachments")+32<=278);
         String claim=Files.readString(UI.resolve("PlotClaimPage.ui"));
-        assertTrue(claim.contains("Height: 720"));assertTrue(28+54+30+56+56+26+52+60+98+54+44<=720-44,"All plot controls must fit inside the padded panel");
+        assertTrue(claim.contains("Height: 620"));assertTrue(28+54+30+56+56+26+52+60+98+54+44<=620-44,"All plot controls must fit inside the padded panel");
         assertTrue(Files.readString(UI.resolve("GuildBoardPage.ui")).contains("#PostList { LayoutMode: TopScrolling"));
         assertTrue(Files.readString(UI.resolve("GuildPostNav.ui")).contains("WrappedSecondaryButtonStyle"));
         assertTrue(Files.readString(UI.resolve("PrefabFileButton.ui")).contains("WrappedSecondaryButtonStyle"));

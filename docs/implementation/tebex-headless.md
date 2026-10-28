@@ -29,7 +29,7 @@ TEBEX_CHECKOUT_ADMIN_ONLY=true
 
 The public token is intentionally shareable. The catalog should appear at `/store` while payment buttons remain closed. `TEBEX_PRIVATE_KEY` is optional for the currently used Headless endpoints; if Tebex requires Basic authentication for your account, set that key only on Railway. Never put it in browser scripts. The Headless private key, game server key, and webhook signing secret are three different credentials.
 
-Hytale OAuth must work before checkout. `PUBLIC_BASE_URL` should be `https://eternia-hytale.com`, with the approved callback `https://eternia-hytale.com/auth/callback`. Sign in through Hytale, and join the live game server once to create your game account. The UUID in `ADMIN_HYTALE_UUIDS` allows that profile to open `/admin/commerce`. This page shows package IDs, amounts and connection checks. Its status is not proof of successful payment delivery.
+Hytale OAuth must work before checkout. `PUBLIC_BASE_URL` should be `https://eternia-hytale.com`, with the approved callback `https://eternia-hytale.com/auth/callback`. Sign in through Hytale, and join the live game server once to create your game account. A username in `ADMIN_HYTALE_USERNAMES` (or a UUID in `ADMIN_HYTALE_UUIDS`) allows that profile to open `/admin/commerce`. This page shows package IDs, amounts and connection checks. Its status is not proof of successful payment delivery.
 
 Use one website replica for now. Session state persists in PostgreSQL, while checkout preparation locks are process local. A timeout retries the same stored basket and inspects its packages before adding again. Do not scale checkout across multiple replicas until basket preparation has a shared lock.
 

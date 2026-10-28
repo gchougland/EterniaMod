@@ -1,7 +1,7 @@
 deed.name=Housing Deed
 deed.description=Open the plot planner. Your account holds the plot rights; copying this tool grants no additional plot.
 ledger.name=Architect's Ledger
-ledger.description=Open housing, customization, mailbox and player shop services.
+ledger.description=Open your housing dashboard. Your mail, guild and collection are in your Journal.
 
 portal.name = Eternia World Portal
 portal.description = Choose an Eternia destination. Public travel requires a registered portal location.

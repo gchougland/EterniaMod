@@ -1,0 +1,11 @@
+$T = "Theme/Citadel.ui";
+Group { FlexWeight: 1; LayoutMode: Left;
+Group { Anchor: (Width: 726); LayoutMode: Middle;
+Group { Background: $T.@JournalPanelSurface; Padding: (Full: 36); LayoutMode: Top;
+Label #DeskGreeting { Anchor: (Height: 104, Bottom: 24); Background: $T.@JournalInsetSurface; Padding: (Full: 20); Style: (FontSize: 19, TextColor: $T.@Text, Wrap: true, VerticalAlignment: Center); }
+Group #DeskTiles { LayoutMode: LeftWrap; }
+Label #DeskStatus { Anchor: (Height: 40, Top: 4); Style: (...$T.@MutedStyle, FontSize: 15); }
+}
+}
+Group { FlexWeight: 1; }
+}

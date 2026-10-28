@@ -1,7 +1,7 @@
 $T = "Theme/Citadel.ui";
 $T.@PageOverlay {}
 Group {
- Anchor: (Width: 940, Height: 760); Background: $T.@PanelSurface; Padding: (Full: 24); LayoutMode: Top;
+ Anchor: (Width: 940, Height: 760); Background: $T.@JournalPanelSurface; Padding: (Full: 24); LayoutMode: Top;
  Label { Text: "ROAD STYLE WORKSHOP"; Anchor: (Height: 36, Bottom: 8); Style: $T.@TitleStyle; }
  Group { Anchor: (Height: 44, Bottom: 12); LayoutMode: Left;
   Label { Text: "Style name"; Anchor: (Width: 112); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); }

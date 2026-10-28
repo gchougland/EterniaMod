@@ -32,6 +32,8 @@ public final class PremiumShopPage extends EterniaInteractiveCustomUIPage<Premiu
     private boolean busy,initial=true;
     private PremiumService.Item selected;
 
+    private static final int PAGE_SIZE=6,CARDS_PER_ROW=3;
+    private static String categoryIcon(String category){return switch(category){case "All"->"crown";case "Companions"->"pet";case "Furnishings"->"furnishing";case "Guild charters"->"charter";case "Housing"->"housing";case "Season passes"->"season";case "Titles"->"title";case "Wardrobe"->"wardrobe";default->"collection";};}
     private PremiumShopPage(EterniaModPlugin plugin,PlayerRef player){super(player,CustomPageLifetime.CanDismissOrCloseThroughInteraction,Data.CODEC);this.plugin=plugin;actor=player.getUuid();}
     public static void open(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player){
         if(!SocialUiBootstrap.isOpen(plugin.getServices())||!ref.isValid())return;
@@ -44,28 +46,28 @@ public final class PremiumShopPage extends EterniaInteractiveCustomUIPage<Premiu
         c.set("#Notice.Text",busy?"Working…":balance.owed()>0?"A refunded Crown purchase left "+balance.owed()+" Crowns to restore before further purchases.":notice);
         var cats=new ArrayList<String>();cats.add("All");snapshot.items().stream().map(PremiumService.Item::category).filter(name->!name.equals("All")).distinct().sorted().forEach(cats::add);categories=List.copyOf(cats);
         for(int n=0;n<categories.size();n++){
-            String s="#Categories["+n+"]";c.append("#Categories","EterniaMod/PremiumCategory.ui");
-            String caption=(category.equals(categories.get(n))?"• ":"")+categories.get(n);int height=Math.max(44,UiPresentation.wrappedHeight(caption,148,22)+20);
-            c.set(s+" #Category.Text",caption);c.setObject(s+" #Category.Anchor",UiAnchors.size(184,height));c.setObject(s+".Anchor",UiAnchors.height(height+8));c.set(s+" #Category.Disabled",busy);bind(e,s+" #Category","Category:"+n);
+            String name=categories.get(n);
+            bind(e,com.hexvane.eterniamod.ui.JournalChrome.sideTab(c,"#Categories",n,name,categoryIcon(name),category.equals(name),busy),"Category:"+n);
         }
         c.set("#Catalog.Visible",selected==null);c.set("#ConfirmView.Visible",selected!=null);
         if(selected==null){
-            visible=snapshot.items().stream().filter(item->category.equals("All")||item.category().equals(category)).toList();page=Math.min(page,Math.max(0,(visible.size()-1)/4));
-            for(int n=page*4;n<Math.min(visible.size(),page*4+4);n++){
-                var item=visible.get(n);String s="#Cards["+(n-page*4)+"]";c.append("#Cards","EterniaMod/PremiumCard.ui");
+            visible=snapshot.items().stream().filter(item->category.equals("All")||item.category().equals(category)).toList();page=Math.min(page,Math.max(0,(visible.size()-1)/PAGE_SIZE));
+            int first=page*PAGE_SIZE,last=Math.min(visible.size(),first+PAGE_SIZE);
+            for(int n=first;n<last;n++){
+                var item=visible.get(n);int slot=n-first;String row="#Cards["+(slot/CARDS_PER_ROW)+"]";
+                if(slot%CARDS_PER_ROW==0){c.append("#Cards","EterniaMod/PremiumCard.ui");for(int card=0;card<CARDS_PER_ROW;card++)c.set(row+" #Card"+card+".Visible",n+card<last);}
+                String s=row+" #Card"+(slot%CARDS_PER_ROW);
                 com.hexvane.eterniamod.ui.ContentImages.show(c,s+" #ItemImage",item.benefits().getFirst().contentId(),false);
                 c.set(s+" #ItemName.Text",item.name());c.set(s+" #ItemDescription.Text",item.description());c.set(s+" #ItemCategory.Text",item.category());
-                int titleHeight=Math.max(28,UiPresentation.wrappedHeight(item.name(),360,25)),descriptionHeight=Math.max(40,UiPresentation.wrappedHeight(item.description(),360,21));
-                c.setObject(s+" #ItemName.Anchor",UiAnchors.height(titleHeight));c.setObject(s+" #ItemDescription.Anchor",UiAnchors.height(descriptionHeight));c.setObject(s+".Anchor",UiAnchors.heightWithBottom(Math.max(136,28+21+titleHeight+descriptionHeight),8));
-                c.set(s+" #Price.Text",String.format(Locale.US,"%,d Crowns",item.price()));boolean owned=snapshot.owned().contains(item.id());
-                c.set(s+" #Review.Text",owned?"View owned item":"View item");c.set(s+" #Review.Disabled",busy);bind(e,s+" #Review","Select:"+n);
+                c.set(s+" #Price.Text",String.format(Locale.US,"%,d",item.price()));boolean owned=snapshot.owned().contains(item.id());
+                c.set(s+" #Review.Text",owned?"Owned":"View");c.set(s+" #Review.Disabled",busy);bind(e,s+" #Review","Select:"+n);
             }
-            c.set("#PageControls.Visible",visible.size() > 4);com.hexvane.eterniamod.ui.MenuPagination.show(c, visible.size(), 4);c.set("#Pagination.Text",(page+1)+" / "+Math.max(1,(visible.size()+3)/4));c.set("#Previous.Disabled",busy||page==0);c.set("#Next.Disabled",busy||(page+1)*4>=visible.size());
+            c.set("#PageControls.Visible",visible.size() > PAGE_SIZE);com.hexvane.eterniamod.ui.MenuPagination.show(c, visible.size(), PAGE_SIZE);c.set("#Pagination.Text",(page+1)+" / "+Math.max(1,(visible.size()+PAGE_SIZE-1)/PAGE_SIZE));c.set("#Previous.Disabled",busy||page==0);c.set("#Next.Disabled",busy||(page+1)*PAGE_SIZE>=visible.size());
         }else{
             com.hexvane.eterniamod.ui.ContentImages.show(c,"#SelectedImage",selected.benefits().getFirst().contentId(),true);
-            var imageAnchor=UiAnchors.size(com.hexvane.eterniamod.ui.ContentImages.path(selected.benefits().getFirst().contentId(),true).endsWith("screenshot.png")?384:240,240);imageAnchor.setBottom(com.hypixel.hytale.server.core.ui.Value.of(16));c.setObject("#SelectedImage.Anchor",imageAnchor);
+            boolean screenshot=com.hexvane.eterniamod.ui.ContentImages.path(selected.benefits().getFirst().contentId(),true).endsWith("screenshot.png");c.setObject("#SelectedImage.Anchor",UiAnchors.size(screenshot?560:320,screenshot?350:320));
             c.set("#SelectedName.Text",selected.name());c.set("#SelectedDescription.Text",selected.description());
-            c.setObject("#SelectedDescription.Anchor",UiAnchors.height(Math.max(100,UiPresentation.wrappedHeight(selected.description(),770,24))));c.setObject("#SelectedName.Anchor",UiAnchors.height(Math.max(58,UiPresentation.wrappedHeight(selected.name(),550,30))));
+            c.setObject("#SelectedDescription.Anchor",UiAnchors.height(Math.max(100,UiPresentation.wrappedHeight(selected.description(),540,25))));c.setObject("#SelectedName.Anchor",UiAnchors.height(Math.max(58,UiPresentation.wrappedHeight(selected.name(),540,36))));
             c.set("#SelectedPrice.Text",snapshot.owned().contains(selected.id())?String.format(Locale.US,"Already yours.\nYour balance: %,d Crowns",balance.available()):String.format(Locale.US,"Price: %,d Crowns\nYour balance: %,d Crowns\nAfter purchase: %,d Crowns",selected.price(),balance.available(),Math.max(0,balance.available()-selected.price())));
             c.set("#Purchase.Text",snapshot.owned().contains(selected.id())?"Owned":"Confirm purchase");
             c.set("#Purchase.Disabled",busy||balance.available()<selected.price()||snapshot.owned().contains(selected.id()));
@@ -95,9 +97,9 @@ public final class PremiumShopPage extends EterniaInteractiveCustomUIPage<Premiu
             }else if(action.startsWith("Category:")){
                 int index=Integer.parseInt(action.substring(9));if(index>=0&&index<categories.size()){category=categories.get(index);selected=null;requestId=null;page=0;}
             }else if(action.startsWith("Select:")&&selected==null){
-                int index=Integer.parseInt(action.substring(7));if(index>=page*4&&index<Math.min(visible.size(),page*4+4)){selected=visible.get(index);requestId=snapshot.owned().contains(selected.id())?null:UUID.randomUUID().toString();}
+                int index=Integer.parseInt(action.substring(7));if(index>=page*PAGE_SIZE&&index<Math.min(visible.size(),page*PAGE_SIZE+PAGE_SIZE)){selected=visible.get(index);requestId=snapshot.owned().contains(selected.id())?null:UUID.randomUUID().toString();}
             }else if(action.equals("Back")){selected=null;requestId=null;}
-            else if(action.equals("Next")&&selected==null&&(page+1)*4<visible.size())page++;
+            else if(action.equals("Next")&&selected==null&&(page+1)*PAGE_SIZE<visible.size())page++;
             else if(action.equals("Previous")&&selected==null)page=Math.max(0,page-1);
             else if(action.equals("Purchase")&&selected!=null&&requestId!=null){
                 var reviewed=selected;String receipt=requestId;

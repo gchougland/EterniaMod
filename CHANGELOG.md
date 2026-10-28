@@ -16,17 +16,20 @@
 
 - Guild Waygates include an optional glowing portal for the guild estate, placed and packed like a decoration. Step inside to choose a destination. Public and guild portals share teal arches, translucent facets, gold gems and turning runes.
 
+- Press the game mode key (O by default) to open your Journal anywhere: collection, quests, seasons, mail, guild and home, in a full screen view that keeps the world visible behind it.
+- Each Hub character now runs only their own trade: Bramble Hearthleaf for homes, Torren Ironbough for guilds, Nima Quicktail for the market, Prowl for getting started and travel, and Pip Coppercap for minigames.
+
 - Illustrated menus for the Architect's Ledger, travel, and housing inventory, with decorations you can browse anywhere.
 
 - Framed menu balances and price icons make Coins and Crowns easy to tell apart.
 - Season quests include 30 daily and 15 weekly goals, with fresh choices on real time resets. Completion awards Coins and XP with a toast and sound.
 
-- Distinct category icons and item previews in the Crown Store, Collection, and season rewards. Collections have compact four column cards with separate categories for houses, decorations, materials, titles, wardrobe, pets, mounts and upgrades.
+- Distinct category icons and item previews in the Crown Store, Collection, and season rewards. Collections have compact six column cards with separate categories for houses, decorations, materials, titles, wardrobe, pets, mounts and upgrades.
 
 - Prowl Shirt is the first paid Foundations reward and can be worn from your Wardrobe.
 - Everyone receives a Horse in their Mounts collection. Summon it to ride and dismount to send it away.
 
-- Prowl offers a free housing toolkit with a deed, ledger, and packaging wand.
+- Prowl offers a free housing toolkit with a deed and packaging wand.
 - Eternia Guild Hall is available for guilds and in the example village.
 - Illustrated website welcome page with a guild hall that builds as you scroll and a new Eternia icon.
 

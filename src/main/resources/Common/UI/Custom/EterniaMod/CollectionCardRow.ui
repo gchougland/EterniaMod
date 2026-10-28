@@ -1,6 +1,6 @@
 $T = "Theme/Citadel.ui";
 @Card = Group {
-  Anchor: (Full: 0); Background: $T.@HeaderSurface; Padding: (Full: 6); LayoutMode: Top;
+  Anchor: (Full: 0); Background: $T.@CodexCardSurface; Padding: (Full: 6); LayoutMode: Top;
   Group { Anchor: (Height: 144, Bottom: 4); LayoutMode: Middle;
     Group #RowImage { Anchor: (Width: 144, Height: 144); }
     ItemIcon #RowItem { Visible: false; Anchor: (Width: 144, Height: 144); }
@@ -9,9 +9,11 @@ $T = "Theme/Citadel.ui";
   Label #CardDetail { Anchor: (Height: 22); Style: (...$T.@MutedStyle, FontSize: 12, HorizontalAlignment: Center, VerticalAlignment: Center); }
   $T.@SecondaryTextButton #RowAction { Anchor: (Height: 26); }
 };
-Group { Anchor: (Height: 234, Bottom: 6); LayoutMode: Left;
-  Group { FlexWeight: 1; Anchor: (Right: 6); @Card #Card0 {} }
-  Group { FlexWeight: 1; Anchor: (Right: 6); @Card #Card1 {} }
-  Group { FlexWeight: 1; Anchor: (Right: 6); @Card #Card2 {} }
-  Group { FlexWeight: 1; @Card #Card3 {} }
+Group { Anchor: (Height: 234, Bottom: 10); LayoutMode: Left;
+  Group { FlexWeight: 1; Anchor: (Right: 10); @Card #Card0 {} }
+  Group { FlexWeight: 1; Anchor: (Right: 10); @Card #Card1 {} }
+  Group { FlexWeight: 1; Anchor: (Right: 10); @Card #Card2 {} }
+  Group { FlexWeight: 1; Anchor: (Right: 10); @Card #Card3 {} }
+  Group { FlexWeight: 1; Anchor: (Right: 10); @Card #Card4 {} }
+  Group { FlexWeight: 1; @Card #Card5 {} }
 }

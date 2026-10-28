@@ -31,3 +31,4 @@ test('HTTP boundaries: identity headers rejected, CSRF required, admin private, 
  assert.equal((await request('/api/admin/content',{method:'POST',headers:{Origin:'https://evil.example'},body:JSON.stringify(payload())})).status,403);
  }finally{await queue.close();await new Promise(r=>server.close(r));await repo.close();await fs.rm(temp,{recursive:true});}
 });
+test('admin access matches listed usernames without case and still accepts UUIDs',async()=>{const {isAdmin}=await import('../server/auth.js');const cfg=config({LOCAL_FIXTURES:'true',ADMIN_HYTALE_USERNAMES:' Hexvane , Other',ADMIN_HYTALE_UUIDS:'11111111-1111-4111-8111-111111111111'});assert.equal(isAdmin(cfg,{uuid:'x',name:'hexvane'}),true);assert.equal(isAdmin(cfg,{uuid:'x',name:'Hexvane2'}),false);assert.equal(isAdmin(cfg,{uuid:'11111111-1111-4111-8111-111111111111',name:'Someone'}),true);assert.equal(isAdmin(cfg,{uuid:'x'}),false);});

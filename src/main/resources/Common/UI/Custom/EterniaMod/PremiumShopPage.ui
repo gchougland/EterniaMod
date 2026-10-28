@@ -1,53 +1,63 @@
 $T = "Theme/Citadel.ui";
 $C = "../Common.ui";
-Group {
-  Anchor: (Top: 0, Bottom: 0, Left: 0, Right: 0); LayoutMode: Middle; Background: #101e22(0.7);
-  Group { Anchor: (Width: 1120, Height: 760); Background: $T.@PanelSurface; Padding: (Full: 24); LayoutMode: Top;
-    Group { Anchor: (Height: 64, Bottom: 16); LayoutMode: Left;
-      Group { Anchor: (Width: 52, Height: 52, Right: 16); Background: (TexturePath: "Icons/crown.png"); }
-      Group { FlexWeight: 1; LayoutMode: Top;
-        Label { Anchor: (Height: 32); Text: "The Crown Store"; Style: $T.@TitleStyle; }
-        Label { Anchor: (Height: 26); Text: "A little more you."; Style: $T.@MutedStyle; }
-      }
-      Group #CurrencyWallet { Anchor: (Width: 220, Height: 64); LayoutMode: Left; }
-      $T.@SecondaryTextButton #Refresh { Anchor: (Width: 112, Right: 12); Text: "Refresh"; }
-      $T.@TextButton #GetCrowns { Anchor: (Width: 180, Right: 12); Text: "Get Crowns"; }
-      $T.@HomeButton #MenuHome {}
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    $T.@CodexEmblem { Group { Anchor: (Width: 44, Height: 44); Background: "Icons/crown.png"; } }
+    Group { FlexWeight: 1; LayoutMode: Middle;
+      Label { Anchor: (Height: 34); Text: "The Crown Store"; Style: $T.@CodexTitleStyle; }
+      Label { Anchor: (Height: 22); Text: "Lyra Starweave, Royal Quartermaster"; Style: $T.@CodexKickerStyle; }
     }
-    Group { Anchor: (Height: 3, Bottom: 12); Background: #d8b66b; }
-    Label #Notice { Anchor: (Height: 58); Style: $T.@DefaultLabelStyle; }
-    Group { FlexWeight: 1; LayoutMode: Left;
-      Group #Categories { Anchor: (Width: 184, Right: 20); LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
-      Group { FlexWeight: 1;
-        Group #Catalog { Anchor: (Top: 0, Bottom: 0, Left: 0, Right: 0); LayoutMode: Top;
-          Group #Cards { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
-          Group #PageControls { Anchor: (Height: 44); LayoutMode: Left;
-            $T.@SecondaryTextButton #Previous { Anchor: (Width: 168); Text: "Previous"; }
-            Label #Pagination { FlexWeight: 1; Style: (...$T.@MutedStyle, HorizontalAlignment: Center, VerticalAlignment: Center); }
-            $T.@SecondaryTextButton #Next { Anchor: (Width: 168); Text: "Next"; }
-          }
+    Group #CurrencyWallet { Anchor: (Width: 220, Height: 64, Top: 20, Right: 12); LayoutMode: Left; }
+    $T.@TextButton #GetCrowns { Anchor: (Width: 168, Height: 44, Top: 30, Right: 10); Text: "Get Crowns"; }
+    $T.@SecondaryTextButton #Refresh { Anchor: (Width: 108, Height: 44, Top: 30, Right: 10); Text: "Refresh"; }
+    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30, Right: 10); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+    $T.@CodexClose #Close {}
+  }
+  $T.@CodexBody {
+    $T.@CodexPanel { Anchor: (Width: 300, Right: 24); Padding: (Full: 18);
+      Group { Anchor: (Height: 52, Bottom: 6); LayoutMode: Left;
+        Group { Anchor: (Width: 44, Height: 44, Top: 4, Right: 12); Background: "Icons/crown.png"; }
+        Label { FlexWeight: 1; Text: "Browse"; Style: (...$T.@TitleStyle, FontSize: 22); }
+      }
+      Label { Anchor: (Height: 46, Bottom: 12); Text: "Styles, decorations, titles, pets and passes."; Style: (...$T.@MutedStyle, FontSize: 15); }
+      Group #Categories { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: (Spacing: 0, Size: 0); }
+      Group { Anchor: (Height: 112); Background: $T.@JournalInsetSurface; Padding: (Full: 14); LayoutMode: Left;
+        Group { Anchor: (Width: 32, Height: 32, Right: 12); Background: "Icons/crown.png"; }
+        Label { FlexWeight: 1; Text: "Crowns are separate from the Coins you earn and spend in player shops."; Style: (...$T.@MutedStyle, FontSize: 14); }
+      }
+    }
+    Group { FlexWeight: 1;
+      $T.@CodexPanel #Catalog { Anchor: (Full: 0);
+        Label #Notice { Anchor: (Height: 30, Bottom: 14); Style: (...$T.@MutedStyle, FontSize: 16); }
+        Group #Cards { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+        Group #PageControls { Anchor: (Height: 44); LayoutMode: Left;
+          $T.@SecondaryTextButton #Previous { Anchor: (Width: 168); Text: "Previous"; }
+          Label #Pagination { FlexWeight: 1; Style: (...$T.@MutedStyle, HorizontalAlignment: Center, VerticalAlignment: Center); }
+          $T.@SecondaryTextButton #Next { Anchor: (Width: 168); Text: "Next"; }
         }
-        Group #ConfirmView { Anchor: (Top: 0, Bottom: 0, Left: 0, Right: 0); Background: $T.@SecondarySurface; Padding: (Full: 28); LayoutMode: Top;
+      }
+      $T.@CodexPanel #ConfirmView { Anchor: (Full: 0); Padding: (Full: 32); LayoutMode: Left;
+        Group { Anchor: (Width: 640, Right: 36); Background: $T.@JournalInsetSurface; LayoutMode: Middle;
+          Group #SelectedImage { Anchor: (Width: 560, Height: 350); }
+        }
+        Group { FlexWeight: 1; LayoutMode: Top;
           Group #PurchaseDetails { FlexWeight: 1; Anchor: (Bottom: 12); LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle;
-          Label { Anchor: (Height: 36); Text: "YOUR NEXT FIND"; Style: $T.@SubtitleStyle; }
-          Label #SelectedName { Anchor: (Height: 58); Style: (...$T.@TitleStyle, Wrap: true); }
-          Group #SelectedImage { Anchor: (Width: 384, Height: 240, Bottom: 16); }
-          Label #SelectedDescription { Anchor: (Height: 100); Style: $T.@DefaultLabelStyle; }
-          Label { Anchor: (Height: 70); Text: "Your item is delivered immediately. Crowns are separate from the coins used in player shops."; Style: $T.@MutedStyle; }
+            Label { Anchor: (Height: 30); Text: "YOUR NEXT FIND"; Style: $T.@CodexKickerStyle; }
+            Label #SelectedName { Anchor: (Height: 58); Style: (...$T.@TitleStyle, FontSize: 30, Wrap: true); }
+            Label #SelectedDescription { Anchor: (Height: 100); Style: (...$T.@DefaultLabelStyle, FontSize: 17); }
+            Label { Anchor: (Height: 70); Text: "Your item is delivered right away. Crowns are separate from the Coins used in player shops."; Style: $T.@MutedStyle; }
           }
-          Group #PriceSummary { Anchor: (Height: 92, Bottom: 12); Padding: (Full: 10); Background: $T.@HeaderSurface; LayoutMode: Left;
-            Group { Anchor: (Width: 28, Height: 28, Right: 12); Background: "Icons/crown.png"; }
-            Label #SelectedPrice { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 18, VerticalAlignment: Center); }
+          Group #PriceSummary { Anchor: (Height: 104, Bottom: 14); Padding: (Full: 16); Background: $T.@JournalInsetSurface; LayoutMode: Left;
+            Group { Anchor: (Width: 40, Height: 40, Top: 16, Right: 14); Background: "Icons/crown.png"; }
+            Label #SelectedPrice { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 17, VerticalAlignment: Center); }
           }
           Group { Anchor: (Height: 48); LayoutMode: Left;
-            $T.@SecondaryTextButton #Back { Anchor: (Width: 200, Right: 16); Text: "Keep browsing"; }
-            $T.@TextButton #Purchase { Anchor: (Width: 220); Text: "Confirm purchase"; }
+            $T.@SecondaryTextButton #Back { FlexWeight: 1; Anchor: (Right: 12); Text: "Keep browsing"; }
+            $T.@TextButton #Purchase { FlexWeight: 1; Text: "Confirm purchase"; }
           }
         }
       }
     }
-    Group { Anchor: (Height: 44); LayoutMode: Right;
-      $T.@SecondaryTextButton #Close { Anchor: (Width: 168); Text: "Close"; }
-    }
   }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
 }

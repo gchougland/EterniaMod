@@ -1,9 +1,8 @@
 $T = "Theme/Citadel.ui";
 $C = "../Common.ui";
-Group { FlexWeight: 1; LayoutMode: Top;
+Group { FlexWeight: 1; LayoutMode: Top; Background: $T.@JournalPanelSurface; Padding: (Full: 28);
 Label #SectionTitle { Anchor: (Height: 34, Bottom: 6); Style: $T.@TitleStyle; }
 Label #Description { Anchor: (Height: 50, Bottom: 8); Style: $T.@DefaultLabelStyle; }
-Group #Tabs { Anchor: (Height: 48, Bottom: 8); LayoutMode: Left; }
 Group #SeasonProgress { Anchor: (Height: 56, Bottom: 12); LayoutMode: Top;
 Label #ProgressLabel { Anchor: (Height: 28, Bottom: 8); Style: $T.@SubtitleStyle; }
 Group { Anchor: (Height: 10); Padding: (Full: 1); LayoutMode: Left; Background: #45615d; Group #ProgressFill { FlexWeight: 1; Background: $T.@Accent; } Group #ProgressRest { FlexWeight: 1; Background: #101e22; } }

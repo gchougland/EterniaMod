@@ -1,7 +1,7 @@
 $T = "Theme/Citadel.ui";
 Group {
   Anchor: (Top: 30, Right: 30, Width: 480, Height: 260);
-  Background: $T.@PanelSurface;
+  Background: $T.@JournalPanelSurface;
   Padding: (Full: 24);
   LayoutMode: Top;
   Group { LayoutMode: Left; Anchor: (Height: 36, Bottom: 12);

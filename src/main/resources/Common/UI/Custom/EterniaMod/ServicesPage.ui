@@ -1,26 +1,50 @@
 $T = "Theme/Citadel.ui";
-$T.@PageOverlay { Anchor: (Full: 0); LayoutMode: Middle;
-Group { Anchor: (Width: 1120, Height: 760); Background: $T.@InsetSurface; Padding: (Full: 16); LayoutMode: Top;
-Group { Anchor: (Height: 64, Bottom: 12); LayoutMode: Left;
-Group { Anchor: (Width: 180, Height: 40, Right: 18); Background: "Theme/Surfaces/EterniaWordmark.png"; }
-Label #ServicesTitle { FlexWeight: 1; Style: $T.@TitleStyle; Text: "ETERNIA"; }
-$T.@SecondaryTextButton #ArchitectLedger { Anchor: (Width: 202, Height: 44, Right: 12); Text: "Architect's Ledger"; Visible: false; }
-Group #CurrencyWallet { Anchor: (Width: 220, Height: 64); LayoutMode: Left; }
-$T.@SecondaryTextButton #Return { Anchor: (Width: 96, Right: 10); Text: "Back"; Visible: false; }
-$T.@SecondaryTextButton #Close { Anchor: (Width: 96, Right: 10); Text: "Close"; }
-$T.@HomeButton #MenuHome {}
+Group #Journal { Anchor: (Full: 0); LayoutMode: Top; Background: "Theme/Surfaces/JournalVignette.png";
+Group #TopBar { Anchor: (Height: 104); Background: $T.@JournalTopBarSurface; Padding: (Horizontal: 40); LayoutMode: Left;
+Group #Brand { Anchor: (Width: 420); LayoutMode: Left;
+Group #DeskEmblem { Visible: false; Anchor: (Width: 76, Height: 76, Top: 14, Right: 18); Background: "Theme/Surfaces/Emblem.png";
+Group #DeskIcon { Anchor: (Width: 42, Height: 42); }
 }
-Group { FlexWeight: 1; LayoutMode: Left;
-Group { Anchor: (Width: 218, Right: 16); LayoutMode: Top; Background: $T.@PanelSurface; Padding: (Full: 10);
-Label { Anchor: (Height: 26, Bottom: 6); Style: $T.@MutedStyle; Text: "YOUR ETERNIA"; }
-Group #Navigation { FlexWeight: 1; LayoutMode: Top; }
+Group { FlexWeight: 1; LayoutMode: Middle;
+Group #Wordmark { Anchor: (Width: 180, Height: 40, Left: 0); Background: "Theme/Surfaces/EterniaWordmark.png"; }
+Label #ServicesTitle { Visible: false; Anchor: (Height: 34); Style: (...$T.@TitleStyle, FontSize: 26); }
+Label #ServicesSubtitle { Anchor: (Height: 22); Style: (FontSize: 14, TextColor: $T.@Accent, RenderBold: true, RenderUppercase: true, VerticalAlignment: Center); }
+}
+}
+Group #Navigation { FlexWeight: 1; LayoutMode: Center; }
+Group { Anchor: (Width: 420); LayoutMode: Right;
+Group #CurrencyWallet { Anchor: (Width: 220, Height: 64, Top: 20); LayoutMode: Left; }
+$T.@SecondaryTextButton #Return { Anchor: (Width: 96, Height: 44, Top: 30, Right: 10); Text: "Back"; Visible: false; }
+Group #JournalShortcut { Anchor: (Width: 54, Height: 104); Padding: (Top: 30, Right: 10); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+Button #Close { Anchor: (Width: 44, Height: 44, Top: 30); Style: $T.@IconButtonStyle; TooltipText: "Close"; TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+Group { Anchor: (Width: 18, Height: 18); Background: "Icons/close.png"; }
+}
+}
+}
+Group #Body { FlexWeight: 1; LayoutMode: Left; Padding: (Horizontal: 40, Top: 28, Bottom: 24);
+Group #SideBar { Anchor: (Width: 300, Right: 24); Background: $T.@JournalPanelSurface; Padding: (Full: 18); LayoutMode: Top;
+Group { Anchor: (Height: 52, Bottom: 6); LayoutMode: Left;
+Group #SectionIcon { Anchor: (Width: 44, Height: 44, Top: 4, Right: 12); }
+Label #SectionName { FlexWeight: 1; Style: (...$T.@TitleStyle, FontSize: 22); }
+}
+Label #SideNote { Anchor: (Height: 46, Bottom: 12); Style: (...$T.@MutedStyle, FontSize: 15); }
+Group #Tabs { FlexWeight: 1; LayoutMode: Top; }
 Label #Pagination { Anchor: (Height: 24, Bottom: 6); Style: (...$T.@MutedStyle, HorizontalAlignment: Center); }
 Group #PageControls { Anchor: (Height: 44); LayoutMode: Left;
-$T.@SecondaryTextButton #Previous { FlexWeight: 1; Anchor: (Right: 6); Text: "Prev"; }
+$T.@SecondaryTextButton #Previous { FlexWeight: 1; Anchor: (Right: 6); Text: "Previous"; }
 $T.@SecondaryTextButton #Next { FlexWeight: 1; Text: "Next"; }
 }
 }
-Group #ServicesBody { FlexWeight: 1; LayoutMode: Top; Background: $T.@PanelSurface; Padding: (Full: 16); }
+Group #ServicesBody { FlexWeight: 1; LayoutMode: Top; }
+}
+Group #Footer { Anchor: (Height: 56); Background: $T.@JournalFootBarSurface; LayoutMode: Center;
+Group #HintClose { LayoutMode: Left; Anchor: (Right: 36);
+Group { Anchor: (Height: 30, Top: 13, Right: 10); Background: $T.@KeycapSurface; Padding: (Horizontal: 9); Label { Style: $T.@KeyLabelStyle; Text: "Esc"; } }
+Label #HintCloseText { Anchor: (Height: 56); Style: $T.@HintLabelStyle; Text: "Close"; }
+}
+Group #HintJournal { LayoutMode: Left; Visible: false;
+Group { Anchor: (Height: 30, Top: 13, Right: 10); Background: $T.@KeycapSurface; Padding: (Horizontal: 11); Label { Style: $T.@KeyLabelStyle; Text: "O"; } }
+Label { Anchor: (Height: 56); Style: $T.@HintLabelStyle; Text: "Your Journal: mail, guild, quests and collection"; }
 }
 }
 }

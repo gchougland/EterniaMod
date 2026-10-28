@@ -1,21 +1,31 @@
 $T = "Theme/Citadel.ui";
 $C = "../Common.ui";
-$T.@PageOverlay { Anchor: (Full: 0); LayoutMode: Middle;
-Group { Anchor: (Width: 920, Height: 720); Padding: (Full: 24); Background: $T.@PanelSurface; LayoutMode: Top;
-Group { Anchor: (Height: 64, Bottom: 12); LayoutMode: Left;
-Label #Title { FlexWeight: 1; Style: $T.@TitleStyle; }
-Group #CurrencyWallet { Anchor: (Width: 220, Height: 64); LayoutMode: Left; }
-$T.@HomeButton #MenuHome {}
-}
-Label #Description { Anchor: (Height: 76, Bottom: 12); Style: $T.@DefaultLabelStyle; }
-Group #Rows { FlexWeight: 1; Anchor: (Bottom: 12); LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
-Group { LayoutMode: Left; Anchor: (Height: 48);
-$T.@SecondaryTextButton #Back { Anchor: (Width: 110, Right: 10); Text: "Back"; Visible: false; }
-$T.@SecondaryTextButton #Previous { Anchor: (Width: 130, Right: 10); Text: "Previous"; }
-Label #Pagination { FlexWeight: 1; Style: (...$T.@MutedStyle, HorizontalAlignment: Center, VerticalAlignment: Center); }
-$T.@SecondaryTextButton #Next { Anchor: (Width: 130, Right: 10); Text: "Next"; }
-Group #SinglePageSpacer { FlexWeight: 1; }
-$T.@TextButton #Close { Anchor: (Width: 130); Text: "Close"; }
-}
-}
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    Group { Anchor: (Width: 420); LayoutMode: Middle;
+      Group { Anchor: (Width: 180, Height: 40, Left: 0); Background: "Theme/Surfaces/EterniaWordmark.png"; }
+    }
+    Group { FlexWeight: 1; }
+    Group #CurrencyWallet { Anchor: (Width: 220, Height: 64, Top: 20, Right: 12); LayoutMode: Left; }
+    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30, Right: 10); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+    $T.@CodexClose #Close {}
+  }
+  $T.@CodexBody {
+    $T.@CodexPanel { Anchor: (Width: 380, Right: 24); Padding: (Full: 24);
+      Group #PageIcon { Anchor: (Width: 64, Height: 64, Left: 0, Bottom: 16); Background: "Icons/ledger.png"; }
+      Label #Title { Anchor: (Height: 72, Bottom: 10); Style: (...$T.@TitleStyle, FontSize: 26, Wrap: true, VerticalAlignment: Start); }
+      Label #Description { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 16, TextColor: $T.@Muted); }
+      $T.@SecondaryTextButton #Back { Anchor: (Height: 48); Text: "Back"; Visible: false; }
+    }
+    $T.@CodexPanel { FlexWeight: 1;
+      Group #Rows { FlexWeight: 1; Anchor: (Bottom: 12); LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+      Group { LayoutMode: Left; Anchor: (Height: 48);
+        $T.@SecondaryTextButton #Previous { Anchor: (Width: 160); Text: "Previous"; }
+        Label #Pagination { FlexWeight: 1; Style: (...$T.@MutedStyle, HorizontalAlignment: Center, VerticalAlignment: Center); }
+        $T.@SecondaryTextButton #Next { Anchor: (Width: 160); Text: "Next"; }
+        Group #SinglePageSpacer { FlexWeight: 1; }
+      }
+    }
+  }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
 }

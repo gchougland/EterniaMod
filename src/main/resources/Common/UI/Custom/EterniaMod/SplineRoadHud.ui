@@ -1,7 +1,7 @@
 $T = "Theme/Citadel.ui";
 Group {
   Anchor: (Top: 64, Right: 24, Width: 360, Height: 412);
-  Background: $T.@PanelSurface;
+  Background: $T.@JournalPanelSurface;
   Padding: (Full: 20);
   LayoutMode: Top;
   Label #Mode { Text: "ROAD DESIGNER"; Anchor: (Height: 30, Bottom: 10); Style: (FontSize: 18, TextColor: #d8b66b, RenderBold: true); }
@@ -12,7 +12,7 @@ Group {
 }
 Group {
   Anchor: (Left: 24, Top: 110, Width: 336, Height: 500);
-  Background: $T.@PanelSurface;
+  Background: $T.@JournalPanelSurface;
   Padding: (Full: 18);
   LayoutMode: Top;
   Label { Anchor: (Height: 30, Bottom: 10); Text: "ROAD CONTROLS"; Style: $T.@SubtitleStyle; }

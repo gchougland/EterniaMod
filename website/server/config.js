@@ -29,6 +29,6 @@ export function config(env = process.env) {
  assetsDir:path.resolve(root,env.HYTALE_ASSETS_DIR || 'web/hytale-assets'), chromiumPath:env.CHROMIUM_PATH || undefined,
  issuer,clientId:env.HYTALE_OIDC_CLIENT_ID || '',clientSecret:env.HYTALE_OIDC_CLIENT_SECRET || '',
  redirectUri,
- admins:new Set((env.ADMIN_HYTALE_UUIDS || '').toLowerCase().split(',').map(x=>x.trim()).filter(Boolean)),bridgeUrl,bridgeToken:env.GAME_BRIDGE_TOKEN || '',
+ admins:new Set((env.ADMIN_HYTALE_UUIDS || '').toLowerCase().split(',').map(x=>x.trim()).filter(Boolean)),adminNames:new Set((env.ADMIN_HYTALE_USERNAMES || '').toLowerCase().split(',').map(x=>x.trim()).filter(Boolean)),bridgeUrl,bridgeToken:env.GAME_BRIDGE_TOKEN || '',
  tebexPublicToken,tebexPrivateKey:env.TEBEX_PRIVATE_KEY||'',tebexCheckoutEnabled:env.TEBEX_CHECKOUT_ENABLED==='true',tebexAdminOnly:env.TEBEX_CHECKOUT_ADMIN_ONLY!=='false',tebexPackages};
 }

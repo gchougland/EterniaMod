@@ -58,8 +58,8 @@ $C = "../../Common.ui";
   PlaceholderStyle: (FontSize: 16, TextColor: @Muted);
 };
 @Container = Group {
-  Group #Title { Anchor: (Top: 0, Height: @TitleHeight); Background: @HeaderSurface; Padding: (Horizontal: 16); }
-  Group #Content { Anchor: (Top: @TitleHeight); LayoutMode: Top; Padding: (Full: 16); Background: @PanelSurface; }
+  Group #Title { Anchor: (Top: 0, Height: @TitleHeight); Background: PatchStyle(TexturePath: "Surfaces/JournalCardPrimary.png", Border: 12); Padding: (Horizontal: 16); }
+  Group #Content { Anchor: (Top: @TitleHeight); LayoutMode: Top; Padding: (Full: 16); Background: PatchStyle(TexturePath: "Surfaces/JournalPanel.png", Border: 12); }
 };
 @PageOverlay = Group { Background: #101e22(0.45); };
 @CheckBox = CheckBox {
@@ -99,3 +99,75 @@ $C = "../../Common.ui";
     SelectedEntryLabelStyle: (FontSize: 16, TextColor: #d8b66b), FocusOutlineColor: #85c5b3
   );
 };
+
+@JournalPanelSurface = PatchStyle(TexturePath: "Surfaces/JournalPanel.png", Border: 12);
+@JournalInsetSurface = PatchStyle(TexturePath: "Surfaces/JournalInset.png", Border: 12);
+@JournalTopBarSurface = PatchStyle(TexturePath: "Surfaces/JournalTopBar.png", Border: 2);
+@JournalFootBarSurface = PatchStyle(TexturePath: "Surfaces/JournalFootBar.png", Border: 2);
+@KeycapSurface = PatchStyle(TexturePath: "Surfaces/Keycap.png", Border: 6);
+@IconTileSurface = PatchStyle(TexturePath: "Surfaces/IconTile.png", Border: 6);
+@IconTilePrimarySurface = PatchStyle(TexturePath: "Surfaces/IconTilePrimary.png", Border: 6);
+@NavTabStyle = ButtonStyle(
+  Hovered: (Background: "Surfaces/TabHover.png"),
+  Pressed: (Background: "Surfaces/TabActive.png"),
+  Sounds: $Sounds.@ButtonsLight
+);
+@NavTabActiveStyle = ButtonStyle(
+  Default: (Background: "Surfaces/TabActive.png"),
+  Hovered: (Background: "Surfaces/TabActive.png"),
+  Pressed: (Background: "Surfaces/TabActive.png"),
+  Sounds: $Sounds.@ButtonsLight
+);
+@SideTabStyle = ButtonStyle(
+  Hovered: (Background: PatchStyle(TexturePath: "Surfaces/SideItemHover.png", Border: 12)),
+  Pressed: (Background: PatchStyle(TexturePath: "Surfaces/SideItemSelected.png", Border: 12)),
+  Sounds: $Sounds.@ButtonsLight
+);
+@SideTabSelectedStyle = ButtonStyle(
+  Default: (Background: PatchStyle(TexturePath: "Surfaces/SideItemSelected.png", Border: 12)),
+  Hovered: (Background: PatchStyle(TexturePath: "Surfaces/SideItemSelected.png", Border: 12)),
+  Pressed: (Background: PatchStyle(TexturePath: "Surfaces/SideItemSelected.png", Border: 12)),
+  Sounds: $Sounds.@ButtonsLight
+);
+@DeskTileStyle = ButtonStyle(
+  Default: (Background: PatchStyle(TexturePath: "Surfaces/JournalCard.png", Border: 12)),
+  Hovered: (Background: PatchStyle(TexturePath: "Surfaces/JournalCardHover.png", Border: 12)),
+  Pressed: (Background: PatchStyle(TexturePath: "Surfaces/JournalCardPrimary.png", Border: 12)),
+  Disabled: (Background: PatchStyle(TexturePath: "Surfaces/Disabled.png", Border: 12)),
+  Sounds: $Sounds.@ButtonsLight
+);
+@DeskTilePrimaryStyle = ButtonStyle(
+  Default: (Background: PatchStyle(TexturePath: "Surfaces/JournalCardPrimary.png", Border: 12)),
+  Hovered: (Background: PatchStyle(TexturePath: "Surfaces/JournalCardPrimaryHover.png", Border: 12)),
+  Pressed: (Background: PatchStyle(TexturePath: "Surfaces/JournalCard.png", Border: 12)),
+  Disabled: (Background: PatchStyle(TexturePath: "Surfaces/Disabled.png", Border: 12)),
+  Sounds: $Sounds.@ButtonsLight
+);
+@IconButtonStyle = ButtonStyle(
+  Default: (Background: PatchStyle(TexturePath: "Surfaces/Chip.png", Border: 6)),
+  Hovered: (Background: PatchStyle(TexturePath: "Surfaces/SecondaryHover.png", Border: 12)),
+  Pressed: (Background: PatchStyle(TexturePath: "Surfaces/SecondaryPressed.png", Border: 12)),
+  Sounds: $Sounds.@ButtonsLight
+);
+@NavLabelStyle = LabelStyle(FontSize: 13, TextColor: @Muted, RenderBold: true, RenderUppercase: true, HorizontalAlignment: Center, VerticalAlignment: Center);
+@NavLabelActiveStyle = LabelStyle(FontSize: 13, TextColor: @Primary, RenderBold: true, RenderUppercase: true, HorizontalAlignment: Center, VerticalAlignment: Center);
+@SideLabelStyle = LabelStyle(FontSize: 17, TextColor: @Text, RenderBold: true, VerticalAlignment: Center);
+@SideLabelSelectedStyle = LabelStyle(FontSize: 17, TextColor: @Primary, RenderBold: true, VerticalAlignment: Center);
+@KeyLabelStyle = LabelStyle(FontSize: 14, TextColor: @Text, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center);
+@HintLabelStyle = LabelStyle(FontSize: 15, TextColor: @Muted, VerticalAlignment: Center);
+@CodexScreen = Group { Anchor: (Full: 0); LayoutMode: Top; Background: "Surfaces/JournalVignette.png"; };
+@CodexTopBar = Group { Anchor: (Height: 104); Background: @JournalTopBarSurface; Padding: (Horizontal: 40); LayoutMode: Left; };
+@CodexBody = Group { FlexWeight: 1; LayoutMode: Left; Padding: (Horizontal: 40, Top: 28, Bottom: 24); };
+@CodexPanel = Group { Background: @JournalPanelSurface; Padding: (Full: 28); LayoutMode: Top; };
+@CodexFooter = Group { Anchor: (Height: 56); Background: @JournalFootBarSurface; LayoutMode: Center; };
+@CodexEmblem = Group { Anchor: (Width: 76, Height: 76, Top: 14, Right: 18); Background: "Surfaces/Emblem.png"; };
+@CodexClose = Button { Anchor: (Width: 44, Height: 44, Top: 30); Style: @IconButtonStyle; TooltipText: "Close"; TextTooltipStyle: @DefaultTextTooltipStyle;
+  Group { Anchor: (Width: 18, Height: 18); Background: "../Icons/close.png"; }
+};
+@KeyHint = Group { @Key = "Esc"; @Hint = "Close"; LayoutMode: Left; Anchor: (Left: 18, Right: 18);
+  Group { Anchor: (Height: 30, Top: 13, Right: 10); Background: @KeycapSurface; Padding: (Horizontal: 9); Label { Style: @KeyLabelStyle; Text: @Key; } }
+  Label { Anchor: (Height: 56); Style: @HintLabelStyle; Text: @Hint; }
+};
+@CodexTitleStyle = LabelStyle(FontName: "Secondary", FontSize: 26, TextColor: @Text, RenderBold: true, VerticalAlignment: Center);
+@CodexKickerStyle = LabelStyle(FontSize: 14, TextColor: @Accent, RenderBold: true, RenderUppercase: true, VerticalAlignment: Center);
+@CodexCardSurface = PatchStyle(TexturePath: "Surfaces/JournalCard.png", Border: 12);
