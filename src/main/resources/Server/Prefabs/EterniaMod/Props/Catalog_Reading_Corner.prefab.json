@@ -1,0 +1,193 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Royal_Magic_Couch",
+      "support": 15,
+      "filler": 31
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Royal_Magic_Couch",
+      "support": 15
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Village_Shelf_Full",
+      "support": 15
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": 1.75,
+            "Y": 1.25,
+            "Z": 0.25
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 3.141592653589793,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Tavern_Candle"
+        },
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Tavern_Candle",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "25Ds95YWQZiXBSZkSiJqWA==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": 1.35,
+            "Y": 1.225,
+            "Z": 0.3
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 3.5779249665883754,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Book_Pile_Small"
+        },
+        "EntityScale": {
+          "Scale": 0.45
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Book_Pile_Small",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "uhJ/5xZwRaSYikEhO1Q3kA==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": 1.5,
+            "Y": 0.30000000000000004,
+            "Z": 0.25
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 2.9670597283903604,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Book_Pile_Small"
+        },
+        "EntityScale": {
+          "Scale": 0.4
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Book_Pile_Small",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "gVSm0IlwRHapQFA28QS47g==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -1.5,
+            "Y": 0.275,
+            "Z": 0.5
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 4.363323129985824,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Book_Pile_Large"
+        },
+        "EntityScale": {
+          "Scale": 0.55
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Book_Pile_Large",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "Wqh8MP76S3yhZp5QKyfXsQ==",
+            "$type": "04"
+          }
+        }
+      }
+    }
+  ]
+}

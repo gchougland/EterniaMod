@@ -1,0 +1,1 @@
+{"id":"eternia:store/woodpile","revision":1,"name":"Woodpile","description":"A neat stack of logs under a little roof, with a chopping block ready by the side.","category":"Furnishings","price":110,"benefits":[{"contentId":"eternia:prop/woodpile","kind":"QUANTITY","quantity":1,"expiresWithSubscription":false}]}

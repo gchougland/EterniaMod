@@ -1,0 +1,11 @@
+{
+  "id": "picnic_table",
+  "displayName": "Picnic Table",
+  "prefabPath": "EterniaMod/Props/Catalog_Picnic_Table.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

@@ -34,7 +34,7 @@ public final class PremiumShopPage extends EterniaInteractiveCustomUIPage<Premiu
 
     private static final int PAGE_SIZE=6,CARDS_PER_ROW=3;
     private static String categoryIcon(String category){return switch(category){case "All"->"crown";case "Companions"->"pet";case "Furnishings"->"furnishing";case "Guild charters"->"charter";case "Housing"->"housing";case "Season passes"->"season";case "Titles"->"title";case "Wardrobe"->"wardrobe";default->"collection";};}
-    private PremiumShopPage(EterniaModPlugin plugin,PlayerRef player){super(player,CustomPageLifetime.CanDismissOrCloseThroughInteraction,Data.CODEC);this.plugin=plugin;actor=player.getUuid();}
+    private PremiumShopPage(EterniaModPlugin plugin,PlayerRef player){super(player,CustomPageLifetime.CanDismissOrCloseThroughInteraction,Data.CODEC);this.plugin=plugin;actor=player.getUuid();preview=new com.hexvane.eterniamod.ui.PrefabCardPreview(player);}
     public static void open(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player){
         if(!SocialUiBootstrap.isOpen(plugin.getServices())||!ref.isValid())return;
         var component=store.getComponent(ref,Player.getComponentType());
@@ -66,6 +66,8 @@ public final class PremiumShopPage extends EterniaInteractiveCustomUIPage<Premiu
         }else{
             com.hexvane.eterniamod.ui.ContentImages.show(c,"#SelectedImage",selected.benefits().getFirst().contentId(),true);
             boolean screenshot=com.hexvane.eterniamod.ui.ContentImages.path(selected.benefits().getFirst().contentId(),true).endsWith("screenshot.png");c.setObject("#SelectedImage.Anchor",UiAnchors.size(screenshot?560:320,screenshot?350:320));
+            boolean model=com.hexvane.eterniamod.ui.PrefabCardPreview.supports(selected.benefits().getFirst().contentId());
+            c.set("#PrefabPreview.Visible",model);c.set("#PreviewHint.Visible",model);if(model)c.set("#SelectedImage.Visible",false);
             c.set("#SelectedName.Text",selected.name());c.set("#SelectedDescription.Text",selected.description());
             c.setObject("#SelectedDescription.Anchor",UiAnchors.height(Math.max(100,UiPresentation.wrappedHeight(selected.description(),540,25))));c.setObject("#SelectedName.Anchor",UiAnchors.height(Math.max(58,UiPresentation.wrappedHeight(selected.name(),540,36))));
             c.set("#SelectedPrice.Text",snapshot.owned().contains(selected.id())?String.format(Locale.US,"Already yours.\nYour balance: %,d Crowns",balance.available()):String.format(Locale.US,"Price: %,d Crowns\nYour balance: %,d Crowns\nAfter purchase: %,d Crowns",selected.price(),balance.available(),Math.max(0,balance.available()-selected.price())));
@@ -76,6 +78,10 @@ public final class PremiumShopPage extends EterniaInteractiveCustomUIPage<Premiu
         for(String action:List.of("GetCrowns","Refresh","Back"))c.set("#"+action+".Disabled",busy);
         if(initial){initial=false;store.getExternalData().getWorld().execute(()->refresh(ref,store));}
     }
+    private final com.hexvane.eterniamod.ui.PrefabCardPreview preview;
+    /** Every rebuild recreates the viewer, so the open item's model follows each rebuild; no item clears it. */
+    @Override protected void rebuild(){super.rebuild();if(isDismissed())return;var item=selected;preview.show(item==null?null:item.benefits().getFirst().contentId());}
+    @Override public void onDismiss(Ref<EntityStore> ref,Store<EntityStore> store){preview.clear();super.onDismiss(ref,store);}
     private void bind(UIEventBuilder events,String selector,String action){String token=generation+":"+routes.size();routes.put(token,action);events.addEventBinding(CustomUIEventBindingType.Activating,selector,new EventData().append("Action",token),false);}
     @Override public void handleDataEvent(Ref<EntityStore> ref,Store<EntityStore> store,Data data){
         if(data.action==null||isDismissed())return;

@@ -8,6 +8,7 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.RemoveReason;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.Axis;
+import com.hypixel.hytale.server.core.entity.UUIDComponent;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.Rotation;
 import com.hypixel.hytale.server.core.modules.entity.component.FromPrefab;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
@@ -135,6 +136,8 @@ public final class PrefabEntityOps {
             return;
         }
 
+        // The prefab's stored ID is shared by every paste of it; each placed copy needs its own.
+        entityToAdd.putComponent(UUIDComponent.getComponentType(), new UUIDComponent(UUID.randomUUID()));
         entityToAdd.addComponent(FromPrefab.getComponentType(), FromPrefab.INSTANCE);
         entityToAdd.addComponent(
             EterniaPlacedInstance.getComponentType(),

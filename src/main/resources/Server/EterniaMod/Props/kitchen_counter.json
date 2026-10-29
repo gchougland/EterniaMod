@@ -1,0 +1,11 @@
+{
+  "id": "kitchen_counter",
+  "displayName": "Kitchen Counter",
+  "prefabPath": "EterniaMod/Props/Catalog_Kitchen_Counter.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

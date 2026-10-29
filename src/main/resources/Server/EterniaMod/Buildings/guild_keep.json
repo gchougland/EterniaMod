@@ -1,0 +1,17 @@
+{
+  "id": "guild_keep",
+  "displayName": "Guild Keep",
+  "prefabPath": "EterniaMod/Houses/House_Guild_Keep.prefab.json",
+  "plotAnchorOffset": [
+    17,
+    0,
+    17
+  ],
+  "spawnLocalPos": [
+    0,
+    1,
+    11
+  ],
+  "rotationYaw": "None",
+  "housingKind": "guild"
+}

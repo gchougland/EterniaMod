@@ -1,0 +1,317 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": -2,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -2,
+      "y": 2,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": -1,
+      "name": "Wood_Fir_Trunk_Full",
+      "support": 15
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": 0,
+      "name": "Wood_Darkwood_Beam",
+      "rotation": 4
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": 1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -2,
+      "y": 2,
+      "z": 1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": 1,
+      "name": "Wood_Fir_Trunk_Full",
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": -1,
+      "name": "Plant_Vine_Red_Hanging",
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam",
+      "rotation": 5
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": 0,
+      "name": "Plant_Vine_Red_Hanging",
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": 0,
+      "name": "Plant_Leaves_Oak",
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": 1,
+      "name": "Plant_Vine_Red_Hanging",
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": 1,
+      "name": "Wood_Darkwood_Beam",
+      "rotation": 5
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -1,
+      "name": "Furniture_Tavern_Bench",
+      "rotation": 2
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": -1,
+      "name": "Plant_Vine_Red_Hanging",
+      "support": 15
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam",
+      "rotation": 5
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "name": "Plant_Vine_Red_Hanging",
+      "support": 15
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": 0,
+      "name": "Plant_Leaves_Oak",
+      "support": 15
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "name": "Furniture_Tavern_Bench",
+      "filler": 31
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 1,
+      "name": "Plant_Vine_Red_Hanging",
+      "support": 15
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": 1,
+      "name": "Wood_Darkwood_Beam",
+      "rotation": 5
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -1,
+      "name": "Furniture_Tavern_Bench",
+      "filler": 1,
+      "rotation": 2
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": -1,
+      "name": "Plant_Vine_Red_Hanging",
+      "support": 15
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam",
+      "rotation": 5
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "name": "Plant_Vine_Red_Hanging",
+      "support": 15
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": 0,
+      "name": "Plant_Leaves_Oak",
+      "support": 15
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "name": "Furniture_Tavern_Bench"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 1,
+      "name": "Plant_Vine_Red_Hanging",
+      "support": 15
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": 1,
+      "name": "Wood_Darkwood_Beam",
+      "rotation": 5
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": -1,
+      "name": "Plant_Vine_Red_Hanging",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam",
+      "rotation": 5
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "name": "Plant_Vine_Red_Hanging",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 0,
+      "name": "Plant_Leaves_Oak",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 1,
+      "name": "Plant_Vine_Red_Hanging",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 1,
+      "name": "Wood_Darkwood_Beam",
+      "rotation": 5
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": -1,
+      "name": "Wood_Fir_Trunk_Full"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 0,
+      "name": "Wood_Darkwood_Beam",
+      "rotation": 4
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 1,
+      "name": "Wood_Fir_Trunk_Full"
+    }
+  ]
+}

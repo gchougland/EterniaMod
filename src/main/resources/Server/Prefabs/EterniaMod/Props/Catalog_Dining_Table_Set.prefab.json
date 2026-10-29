@@ -1,0 +1,622 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": -2,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Tavern_Chair",
+      "support": 15,
+      "rotation": 1
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -2,
+      "name": "Furniture_Tavern_Chair",
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -1,
+      "name": "Furniture_Tavern_Table",
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Tavern_Table",
+      "filler": 32
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -1,
+      "name": "Furniture_Tavern_Table",
+      "filler": 1
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Tavern_Table",
+      "filler": 33
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "name": "Furniture_Tavern_Chair",
+      "support": 15,
+      "rotation": 2
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -1,
+      "name": "Furniture_Tavern_Chair",
+      "support": 15,
+      "rotation": 3
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Mug"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.7999999999999972,
+            "Y": 1.25,
+            "Z": 0.04999999999999982
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 5.235987663269043,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "V0OBlmVoOq2aJE0paT9cVw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Mug",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Plate"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.7000000000000028,
+            "Y": 1.25,
+            "Z": 0.5
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.577924966812134,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "tmADM9FlMFmH37wNooTCgQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Plate",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Plate"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.5,
+            "Y": 1.25,
+            "Z": -0.7
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.3161256313323975,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "taWM7vGxMKCK6aek63BMEw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Plate",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Pie_Apple"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.30120086669921875,
+            "Y": 1.2871322631835938,
+            "Z": 0.13553357124328613
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -2.792526960372925,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "uK9B2ZkXOauwGWQFgADS1w==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Pie_Apple",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Cheese"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.29999999999999716,
+            "Y": 1.1749999999999972,
+            "Z": -0.30000000000000004
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.6179938316345215,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "vxq5scBAOa+4j0QCOgYNjg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3499999940395355
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Cheese",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Mug"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.04999999999999716,
+            "Y": 1.25,
+            "Z": -0.8
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.83972430229187,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "o2iDIZQWOt2epkyJ4GltMw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Mug",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Tavern_Candle"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.04999999999999716,
+            "Y": 1.25,
+            "Z": -0.050000000000000044
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.1415927410125732,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "vlUEYVVoOSq6Q1ciFUKObQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Tavern_Candle",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Tankard"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.04999999999999716,
+            "Y": 1.375,
+            "Z": 0.7999999999999998
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 6.632251262664795,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Q15HP28zO8qmMIbogQ31jA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.75
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Tankard",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Bread"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3500000000000014,
+            "Y": 1.2250000000000014,
+            "Z": 0.2999999999999998
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 4.188790321350098,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "C0Dbbxe1MECgF9joREHkpQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.44999998807907104
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Bread",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Plate"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5,
+            "Y": 1.25,
+            "Z": 0.7000000000000002
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.879793167114258,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "RhNZrYA9NtmFY/+jcSiEFw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Plate",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Plate"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.7000000000000028,
+            "Y": 1.25,
+            "Z": -0.5
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.054326295852661,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "A5A3E3erP82szrlyJheyuA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Plate",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Tankard"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.7999999999999972,
+            "Y": 1.375,
+            "Z": -0.050000000000000044
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.919862151145935,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Kew2pl2YN7+P4ZF38dX25g==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.75
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Tankard",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

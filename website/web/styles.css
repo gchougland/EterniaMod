@@ -44,3 +44,75 @@ button:active,.button:active{box-shadow:inset 0 2px 4px #00000044}
 .adventure-art img{width:180%;height:180%;max-width:none;transform:translate(-39%,-13%)}.guild-story{height:230svh;position:relative;--build-progress:0;background:radial-gradient(ellipse at 70% 30%,#28463b66,transparent 60%);border-top:1px solid #d8b66b33;margin-bottom:80px}.guild-sticky{position:sticky;top:0;min-height:620px;height:100svh;max-width:1260px;margin:auto;display:grid;grid-template-columns:.9fr 1.1fr;gap:16px;align-items:center;padding:40px}.guild-build-copy h2{font-size:clamp(32px,4vw,54px);line-height:1.25}.guild-build-copy h2 em{font-style:normal;color:#d8b66b}.guild-build-copy>p:not(.eyebrow){color:#b1c3b7;line-height:1.8}.guild-build-copy .guild-scroll-hint{font-size:13px;color:#d8b66b;letter-spacing:.4px;margin-top:28px}.guild-scroll-hint span{margin-left:20px}.guild-build-copy .realm-link{display:inline-block;font-size:12px;margin-top:8px}.guild-build-figure{margin:0;min-width:0}.guild-build-stage{position:relative;aspect-ratio:1;isolation:isolate}.guild-build-stage>img,.guild-build-stage>canvas{width:100%;height:100%;position:absolute;inset:0;object-fit:contain;pointer-events:none}.guild-build-stage>canvas{opacity:0}.guild-story[data-ready=true] canvas{opacity:1}.guild-story[data-ready=true] .build-poster{opacity:0}.build-orbit{position:absolute;inset:48% 4% 3%;border:1px solid #b5ba8655;border-radius:50%;transform:rotate(-8deg);z-index:-1;background:radial-gradient(ellipse,#76aa8226,transparent 65%)}.build-orbit:before,.build-orbit:after{content:'';position:absolute;border:1px dashed #85c5b333;border-radius:50%;inset:12px}.build-orbit:after{inset:26px}.guild-build-figure figcaption{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;padding:12px;font-size:11px;letter-spacing:1px;color:#cfbb88}.build-track{height:2px;width:90px;background:#45615d}.build-track span{display:block;height:100%;background:#d8b66b;transform:scaleX(var(--build-progress));transform-origin:left}.guild-build-figure button{font-size:11px;min-height:32px;padding:5px 12px}.guild-build-figure button[hidden]{display:none}.guild-story[data-fallback=true]{height:auto}.guild-story[data-fallback=true] .guild-sticky{position:relative;height:auto}.guild-story[data-fallback=true] .guild-scroll-hint,.guild-story[data-fallback=true] .build-track{display:none}
 @media(max-width:700px){.guild-story{height:220svh;margin-bottom:40px}.guild-sticky{padding:26px 20px;grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:5px;min-height:0;align-content:center}.guild-build-copy h2{font-size:29px;margin-bottom:12px}.guild-build-copy>p:not(.eyebrow){font-size:14px;margin-block:8px}.guild-build-copy .eyebrow{font-size:10px;margin-top:0}.guild-build-copy .guild-scroll-hint{margin-top:14px;font-size:11px}.guild-build-copy .realm-link{margin-top:0;font-size:11px}.guild-build-figure{align-self:center;width:100%;max-width:min(420px,48svh);justify-self:center}.guild-build-figure figcaption{padding:0;font-size:9px;gap:10px}.guild-build-figure button{font-size:10px;min-height:30px}.build-track{width:50px}.guild-build-copy{max-width:400px}.guild-build-stage{max-height:48svh}}
 @media(prefers-reduced-motion:reduce){.guild-story{height:auto}.guild-sticky{position:relative;height:auto;padding-block:55px}.guild-scroll-hint,.build-track,.guild-build-figure button{display:none!important}.guild-story canvas{display:none}.guild-story .build-poster{opacity:1!important}}
+/* Season passes: the in-game Codex Journal layout. See-through panels, clipped corners, brass for Premium, sage for Free. */
+.codex{display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;margin:28px 0 56px;align-items:start}
+.codex-panel{background:#101e22e6;border:1px solid var(--et-border);padding:24px;clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px),0 6px)}
+.codex-side{position:sticky;top:24px}
+.side-note{display:flex;align-items:center;gap:12px;padding:14px;background:#0a1619d9;border:1px solid #3c5953;color:var(--et-muted);font-size:14px}
+.side-note img{flex:none}
+.pass-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:22px;align-items:center}
+.pass-head h2{margin:2px 0 4px;font-size:34px}.pass-head p{margin:0}
+.emblem{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#233c3e;border:3px solid var(--et-primary);box-shadow:0 0 0 6px #d8b66b26}
+.pass-level{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}
+.pass-level .number{font-family:Cinzel,serif;font-size:48px;color:var(--et-primary)}
+.pass-progress{margin:22px 0 4px}
+.pass-bar{height:14px;background:#0a1619;border:1px solid #45615d;overflow:hidden}
+.pass-bar span{display:block;height:100%;background:linear-gradient(90deg,#b8954e,#d8b66b)}
+.pass-bar-text{display:flex;justify-content:space-between;gap:12px;margin-top:8px;color:var(--et-muted);font-size:14px}
+.pass-progress p{margin:10px 0 0;font-size:15px}
+.pass-signin{margin:20px 0 4px;padding:14px 16px;background:#0a1619d9;border:1px solid #3c5953;color:var(--et-muted)}
+.track-head,.reward-row{display:grid;grid-template-columns:104px minmax(0,1fr) minmax(0,1fr);gap:14px}
+.track-head{margin:26px 0 10px;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--et-muted)}
+.track-head .free{color:var(--et-accent)}.track-head .paid{color:var(--et-primary)}
+.reward-rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.reward-level{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0a1619d9;border:1px solid #3c5953;color:var(--et-muted);font-size:12px;letter-spacing:1px;text-transform:uppercase}
+.reward-level strong{font-family:Cinzel,serif;font-size:30px;line-height:1.1;color:var(--et-text);letter-spacing:0}
+.reward-row.reached .reward-level{border-color:var(--et-primary)}.reward-row.reached .reward-level strong{color:var(--et-primary)}
+.reward-card{display:flex;align-items:center;gap:16px;min-height:112px;padding:12px 14px;background:#192d31f0;border:1px solid #45615d}
+.reward-card.paid{background:linear-gradient(155deg,#2c3c33,#192d31 70%);border-color:#6b6448}
+.reward-card.reached{border-color:var(--et-accent)}.reward-card.paid.reached{border-color:var(--et-primary)}
+.reward-card.locked .reward-art img{opacity:.55}
+.reward-art{flex:none;width:88px;height:88px;display:grid;place-items:center;background:#0a1619;border:1px solid #3c5953}
+.reward-art img{width:72px;height:72px;object-fit:contain}
+.reward-text{display:flex;flex-direction:column;gap:6px;min-width:0}
+.reward-text strong{font-size:17px;font-weight:600}
+.reward-state{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--et-muted)}
+.reward-state.reached{color:var(--et-success)}.reward-state.locked{color:#c9a96a}
+.reward-card.empty-slot{justify-content:center;background:#101e2299;border-style:dashed}
+.pass-footnote{margin:22px 0 0;color:var(--et-muted);font-size:14px}
+.reward-track{display:none;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--et-accent)}.reward-card.paid .reward-track{color:var(--et-primary)}
+.reward-row.repeat .reward-level{opacity:.45}
+@media(max-width:900px){.codex{grid-template-columns:1fr}.codex-side{position:static}}
+@media(max-width:600px){.codex-panel{padding:18px}.pass-head{grid-template-columns:auto minmax(0,1fr)}.pass-level{grid-column:1/-1;flex-direction:row;align-items:baseline;gap:8px}.pass-head h2{font-size:28px}.track-head{display:none}.reward-row{grid-template-columns:1fr;gap:8px}.reward-level{flex-direction:row;justify-content:flex-start;gap:10px;padding:8px 12px}.reward-level strong{font-size:22px}.reward-card{min-height:96px}.reward-card.empty-slot{min-height:48px}.reward-track{display:block}.reward-row.repeat .reward-level{display:none}}
+/* Pass banners: hanging pennants on a brass rod, one cloth colour per chapter. Click a banner to open its pass. */
+.banner-row{display:flex;flex-wrap:wrap;gap:48px 64px;margin:44px 0 40px;padding-inline:22px}
+.pass-banner{--cloth:linear-gradient(180deg,#24504c,#173634 62%,#10272a);position:relative;display:block;width:264px;padding-top:9px;color:var(--et-text);text-decoration:none;filter:drop-shadow(0 14px 18px #00000059);transition:transform .2s ease,filter .2s ease}
+.pass-banner.cloth-wine{--cloth:linear-gradient(180deg,#6e2a24,#4a1c18 62%,#2f1210)}
+.pass-banner.cloth-night{--cloth:linear-gradient(180deg,#2e4170,#1d2a4b 62%,#121a30)}
+.pass-banner.cloth-moss{--cloth:linear-gradient(180deg,#4f5c2c,#343e1c 62%,#1f2611)}
+a.pass-banner:hover{transform:translateY(-6px);filter:drop-shadow(0 22px 22px #00000073)}
+a.pass-banner:focus-visible{outline:2px solid var(--et-primary);outline-offset:8px}
+.banner-rod{position:absolute;z-index:1;top:0;left:-14px;right:-14px;height:14px;border-radius:7px;background:linear-gradient(#f0d394,#b89855 55%,#7d6233);box-shadow:0 2px 0 #4a3a1e}
+.banner-rod:before,.banner-rod:after{content:'';position:absolute;top:-4px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f8e5b5,#c9a45e 55%,#7d6233)}
+.banner-rod:before{left:-8px}.banner-rod:after{right:-8px}
+.banner-cloth{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;gap:10px;min-height:452px;padding:34px 26px 92px;text-align:center;background:linear-gradient(#e8ca87,#a8823f);clip-path:polygon(0 0,100% 0,100% 84%,50% 100%,0 84%)}
+.banner-cloth:before{content:'';position:absolute;z-index:-1;inset:0 5px 6px;background:repeating-linear-gradient(90deg,#ffffff06 0 2px,transparent 2px 6px),var(--cloth);clip-path:polygon(0 0,100% 0,100% 84%,50% 100%,0 84%)}
+.banner-cloth:after{content:'';position:absolute;z-index:-1;inset:14px 18px 22px;border:1px solid #d8b66b55;clip-path:polygon(0 0,100% 0,100% 84%,50% 100%,0 84%)}
+.banner-kicker{font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--et-primary)}
+.banner-seal{display:grid;place-items:center;width:104px;height:104px;margin:6px 0 4px;border-radius:50%;background:#101e22;border:3px solid var(--et-primary);box-shadow:0 0 0 6px #d8b66b2e,inset 0 0 18px #00000080}
+.pass-banner h2{margin:0;font-size:30px;line-height:1.15}
+.banner-level{font-size:15px;font-weight:600;color:var(--et-text)}
+.banner-bar{width:82%;height:8px;background:#0a1619b3;border:1px solid #d8b66b55}
+.banner-bar span{display:block;height:100%;background:linear-gradient(90deg,#b8954e,#e8ca87)}
+.banner-tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.banner-tag{padding:2px 9px;border:1px solid var(--et-accent);color:var(--et-accent);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:#0a161980}
+.banner-tag.gold{border-color:var(--et-primary);color:var(--et-primary)}
+.banner-cta{margin-top:auto;padding:8px 18px;border:1px solid #eed79e;background:linear-gradient(#e0bf79,#b89855);color:#142528;font-weight:700;font-size:14px}
+a.pass-banner:hover .banner-cta{background:linear-gradient(#f0d394,#cbae6d)}
+.banner-row~.pass-signin{max-width:620px}
+.pass-side{display:flex;flex-direction:column;gap:30px;position:sticky;top:24px}
+.pass-side .pass-banner{width:auto;margin:6px 14px 0}.pass-side .banner-cloth{min-height:380px;padding-bottom:70px}
+.pass-back{align-self:flex-start;gap:10px}
+@media(prefers-reduced-motion:reduce){.pass-banner{transition:none}a.pass-banner:hover{transform:none}}
+@media(max-width:900px){.pass-side{position:static}.pass-side .pass-banner{display:none}}
+@media(max-width:600px){.banner-row{justify-content:center;padding-inline:14px}.pass-banner{width:min(264px,100%)}}

@@ -123,7 +123,15 @@ Keep the Tebex store private during testing, as Tebex requires for Test Mode. Tu
 
 **Use Test Mode checkout, not Manual Payments, for the full test.** Tebex documents that Test Mode payments send webhooks, while Manual Payments do not. A manual payment can test console dispatch but cannot satisfy Eternia's two-part verification. [Tebex package testing](https://docs.tebex.io/creators/tebex-control-panel/how-to-create-packages/how-to-test-a-package)
 
-For Hytale, confirm the signed webhook product's `username.id` and the console `{id}` both contain the real game UUID. The existing fulfillment adapter intentionally rejects numeric platform IDs. Never bypass that check with the browser's supplied username or basket custom data.
+Tebex's webhook `products[].username.id` can be a provider identifier even when it looks like a UUID. For website purchases, the adapter reads `subject.custom.eternia_profile_uuid` from the signature-verified webhook. The website sets this value from the authenticated Hytale session. The product's provider ID must match the customer's provider ID, so the buyer's profile cannot redirect a gifted product. Delivery still requires the independently recorded console command to agree on transaction, package, Hytale UUID, quantity and product revision. An unsigned browser callback or custom field alone cannot grant Crowns. Older receipts without the profile field retain the direct game UUID path.
+
+### Recover a purchase recorded with the old provider identity
+
+After installing the updated Eternia jar and restarting the game server, open the completed test payment in Tebex, open its **Payment Completed** webhook, and select **Retry Webhook**. Use the existing payment; no new purchase or command resend is required when its console command has already been recorded.
+
+On this signed replay, the adapter can repair an old pending receipt only when its previous recipient equals the provider ID in that same webhook, every other receipt field is unchanged, and the saved console command agrees with the corrected receipt. The old recipient must not be an existing game account. A receipt with any purchase record, completion, review, refund or prior identity repair cannot be redirected. The repair is recorded in `tebex_identity_repair` and normal delivery remains idempotent. If these checks fail, the webhook returns a review response instead of changing the purchase. Repeating a successful replay cannot grant more Crowns.
+
+The October 29 test purchase reached both the webhook and console, but the old parser recorded the provider ID as the game UUID. Its 500 Crowns require the signed replay above after deployment; `tebex forcecheck` alone cannot repair the stored receipt.
 
 Local tests and preview commands:
 

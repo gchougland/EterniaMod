@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/washstand",
+  "revision": 1,
+  "name": "Washstand",
+  "description": "A washstand with a basin, a jug and a little mirror.",
+  "category": "Furnishings",
+  "price": 90,
+  "benefits": [
+    {
+      "contentId": "eternia:prop/washstand",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

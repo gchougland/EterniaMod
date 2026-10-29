@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/guild_lodge",
+  "revision": 1,
+  "name": "Guild Lodge",
+  "description": "A long timber and stone lodge with a great hall, a roaring hearth and bunk rooms for the whole guild.",
+  "category": "Housing",
+  "price": 1500,
+  "benefits": [
+    {
+      "contentId": "eternia:house/guild_lodge",
+      "kind": "UNLOCK",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

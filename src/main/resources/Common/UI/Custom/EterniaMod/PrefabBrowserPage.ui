@@ -62,6 +62,12 @@ Group #PrefabGroup {
           Visible: false;
         }
       }
+
+      $T.@SecondaryTextButton #SetUpEntryButton {
+        Text: "Set up for website";
+        Anchor: (Top: 8, Height: 36);
+        Visible: false;
+      }
     }
   }
 

@@ -1,0 +1,11 @@
+{
+  "id": "woodpile",
+  "displayName": "Woodpile",
+  "prefabPath": "EterniaMod/Props/Catalog_Woodpile.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

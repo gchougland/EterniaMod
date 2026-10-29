@@ -126,6 +126,7 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
             switch (data.action) {
                 case "CreateProp" -> handleCreateProp(ref, store);
                 case "CreateBuilding" -> handleCreateBuilding(ref, store);
+                case "SetUpEntry" -> handleSetUpEntry(ref, store);
             }
             return;
         }
@@ -203,6 +204,17 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
         );
         statusMessageKey = null;
         close();
+    }
+
+    private void handleSetUpEntry(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
+        if (previewedPath == null || previewedVirtualPath == null) {
+            return;
+        }
+        Player player = store.getComponent(ref, Player.getComponentType());
+        if (player == null) {
+            return;
+        }
+        player.getPageManager().openCustomPage(ref, store, new ContentEntryPage(playerRef, previewedPath, previewedVirtualPath));
     }
 
     private void handleCreateBuilding(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
@@ -408,6 +420,13 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
         commandBuilder.set("#CreatePropButton.Visible", hasPreview);
         commandBuilder.set("#CreateBuildingButton.Visible", hasPreview);
         commandBuilder.set("#CreateBuildingButton.Disabled", !previewHasBuildingBlocks);
+        commandBuilder.set("#SetUpEntryButton.Visible", hasPreview);
+        eventBuilder.addEventBinding(
+            CustomUIEventBindingType.Activating,
+            "#SetUpEntryButton",
+            new EventData().append("Action", "SetUpEntry"),
+            false
+        );
         eventBuilder.addEventBinding(
             CustomUIEventBindingType.Activating,
             "#CreatePropButton",
@@ -474,7 +493,7 @@ public final class PrefabBrowserPage extends EterniaInteractiveCustomUIPage<Pref
             var editorPacket = selection.toPacket();
             packet.blocksChange = editorPacket.blocksChange;
             packet.fluidsChange = editorPacket.fluidsChange;
-            packet.entityChanges = editorPacket.entityChanges;
+            packet.entityChanges = PrefabCardPreview.alignEntities(editorPacket.entityChanges);
             applyTintFromPlayerPosition(packet);
         }
         playerRef.getPacketHandler().write(packet);

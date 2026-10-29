@@ -1,0 +1,317 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": -2,
+      "y": 0,
+      "z": -2,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": -2,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -2,
+      "y": 2,
+      "z": -2,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -2,
+      "y": 2,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -2,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": -2,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": -2,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": -1,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 1,
+      "name": "Bench_Lumbermill",
+      "filler": 31
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -2,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": -2,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": -2,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": -1,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "name": "Bench_Lumbermill"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -2,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": -2,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": -2,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": -1,
+      "name": "Wood_Fir_Trunk",
+      "support": 15,
+      "rotation": 4
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": -2,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": -2,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": -2,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": -1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof"
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Campfire_Off"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.5,
+            "Y": 1.2749999999999986,
+            "Z": 1.5
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.83972430229187,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "xuQGqyIqNCKVtvGFyeSbIQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.550000011920929
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Campfire_Off",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

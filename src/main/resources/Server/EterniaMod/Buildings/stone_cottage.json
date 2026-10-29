@@ -1,0 +1,17 @@
+{
+  "id": "stone_cottage",
+  "displayName": "Stone Cottage",
+  "prefabPath": "EterniaMod/Houses/House_Stone_Cottage.prefab.json",
+  "plotAnchorOffset": [
+    5,
+    0,
+    6
+  ],
+  "spawnLocalPos": [
+    0,
+    1,
+    2
+  ],
+  "rotationYaw": "None",
+  "housingKind": "personal"
+}

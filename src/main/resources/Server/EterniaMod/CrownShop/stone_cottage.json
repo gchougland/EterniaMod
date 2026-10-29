@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/stone_cottage",
+  "revision": 1,
+  "name": "Stone Cottage",
+  "description": "A snug grey stone cottage with a warm hearth and a cosy loft under the roof.",
+  "category": "Housing",
+  "price": 450,
+  "benefits": [
+    {
+      "contentId": "eternia:house/stone_cottage",
+      "kind": "UNLOCK",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

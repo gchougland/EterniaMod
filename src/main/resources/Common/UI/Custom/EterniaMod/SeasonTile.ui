@@ -1,0 +1,13 @@
+$T = "Theme/Citadel.ui";
+@TileStyle = ButtonStyle(Default: (Background: PatchStyle(TexturePath: "Theme/Surfaces/JournalInset.png", Border: 12)), Hovered: (Background: PatchStyle(TexturePath: "Theme/Surfaces/JournalCard.png", Border: 12)), Pressed: (Background: PatchStyle(TexturePath: "Theme/Surfaces/JournalInset.png", Border: 12)));
+Group { Anchor: (Left: 0, Top: 0, Width: 84, Height: 96);
+Group #TileGlow { Visible: false; Anchor: (Full: -3); Background: PatchStyle(TexturePath: "Theme/Surfaces/Primary.png", Border: 12); }
+Button #TileButton { Anchor: (Full: 0); Style: @TileStyle; Padding: (Full: 6); LayoutMode: Top;
+Group #TileArt { Anchor: (Height: 40, Bottom: 2); HitTestVisible: false; LayoutMode: Center;
+Group #RowImage { Visible: false; Anchor: (Width: 40, Height: 40); HitTestVisible: false; }
+ItemIcon #RowItem { Visible: false; Anchor: (Width: 40, Height: 40); HitTestVisible: false; }
+}
+Label #TileName { Anchor: (Height: 26); HitTestVisible: false; Style: (FontSize: 10, Wrap: true, WrapMaxLines: 2, TextColor: $T.@Text, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+Label #TileTag { Anchor: (Height: 14); HitTestVisible: false; Style: (FontSize: 10, TextColor: $T.@Muted, RenderBold: true, RenderUppercase: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+}
+}

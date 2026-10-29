@@ -1,0 +1,17 @@
+{
+  "id": "tower_house",
+  "displayName": "Tower House",
+  "prefabPath": "EterniaMod/Houses/House_Tower_House.prefab.json",
+  "plotAnchorOffset": [
+    9,
+    0,
+    9
+  ],
+  "spawnLocalPos": [
+    -3,
+    1,
+    0
+  ],
+  "rotationYaw": "None",
+  "housingKind": "personal"
+}

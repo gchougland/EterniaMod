@@ -1,0 +1,605 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Village_Shelf_Full",
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 0,
+      "name": "Furniture_Village_Shelf_Full",
+      "support": 15
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Village_Shelf_Full",
+      "support": 15
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "name": "Furniture_Village_Shelf_Full",
+      "support": 15
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Village_Shelf_Full",
+      "support": 15
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 0,
+      "name": "Furniture_Village_Shelf_Full",
+      "support": 15
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Ancient_Sack"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.609039306640625,
+            "Y": 0.34999847412109375,
+            "Z": 0.806140661239624
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.7925267219543457,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "B7SIgh/pNlOyFrXi0E79dw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.699999988079071
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Ancient_Sack",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Cheese"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.5,
+            "Y": 0.29999999999999716,
+            "Z": 0.25
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.3161256313323975,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "EOSaTxpmNhOuakTmo+YYtg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.4000000059604645
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Cheese",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Ancient_Pot"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.5,
+            "Y": 1.3250000000000028,
+            "Z": 0.25
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.879793167114258,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "wTSI+INZPuucLQtG8XoFEw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.44999998807907104
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Ancient_Pot",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Pot"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.5,
+            "Y": 2.2250000000000014,
+            "Z": 0.25
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.4906585216522217,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Q3SslP6MNsmEJnzlsyoYPg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.44999998807907104
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Pot",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Fruit_Apple"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3499999999999943,
+            "Y": 1.240000000000002,
+            "Z": 0.25
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.4906585216522217,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "7Mv5Q1byNW2NN6oPdNlDww==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2800000011920929
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Fruit_Apple",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Human_Ruins_Pot_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5,
+            "Y": 0.32500000000000284,
+            "Z": 0.25
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.665191411972046,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "y43i+nzTMdOYVrqeT0PP6Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.44999998807907104
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Human_Ruins_Pot_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Human_Ruins_Pot_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5,
+            "Y": 2.200000000000003,
+            "Z": 0.25
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.96705961227417,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "RI9QzKCfMH2ITYqC6LMjwA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.4000000059604645
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Human_Ruins_Pot_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Fruit_Apple"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.6500000000000057,
+            "Y": 1.2299999999999969,
+            "Z": 0.3
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.268928050994873,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "SaScFtawP5GHO8akDL/syw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.25999999046325684
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Fruit_Apple",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Bread"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.3499999999999943,
+            "Y": 2.1799999999999997,
+            "Z": 0.25
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 4.450589656829834,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "lO8NU5b4Okif0hCayMNVMw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.36000001430511475
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Bread",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Bread"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.5,
+            "Y": 0.29999999999999716,
+            "Z": 0.25
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.7925267219543457,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "88M4TEplNwazfvu53/pV3Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.4000000059604645
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Bread",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Cheese"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.5,
+            "Y": 1.2899999999999991,
+            "Z": 0.25
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.83972430229187,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "5tlY7trLP4ukOJ5MDrZa1A==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3799999952316284
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Cheese",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Tavern_Candle"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.75,
+            "Y": 2.200000000000003,
+            "Z": 0.25
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.1415927410125732,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "IB+90gpkODipfrmR0Gp54Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.4000000059604645
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Tavern_Candle",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

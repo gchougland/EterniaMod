@@ -1,0 +1,276 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": -1,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": -1,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": -1,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": -1,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 0,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 1,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": 0,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "name": "Deco_Rope",
+      "support": 15
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 0,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof",
+      "rotation": 2
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof",
+      "rotation": 2
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof",
+      "rotation": 2
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof",
+      "rotation": 2
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof",
+      "rotation": 2
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof"
+    }
+  ],
+  "fluids": [
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "name": "Water_Source",
+      "level": 1
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": 1.5,
+            "Y": 2.3,
+            "Z": 1.5
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 3.5779249665883754,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Bucket"
+        },
+        "EntityScale": {
+          "Scale": 0.6
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Bucket",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "ZzEQ8ke3Q0aSq7DaGe0RiA==",
+            "$type": "04"
+          }
+        }
+      }
+    }
+  ]
+}

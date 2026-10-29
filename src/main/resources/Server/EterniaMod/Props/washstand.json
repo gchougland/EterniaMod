@@ -1,0 +1,11 @@
+{
+  "id": "washstand",
+  "displayName": "Washstand",
+  "prefabPath": "EterniaMod/Props/Catalog_Washstand.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "stone_hearth",
+  "displayName": "Stone Hearth",
+  "prefabPath": "EterniaMod/Props/Catalog_Stone_Hearth.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

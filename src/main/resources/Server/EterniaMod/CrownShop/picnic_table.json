@@ -1,0 +1,1 @@
+{"id":"eternia:store/picnic_table","revision":1,"name":"Picnic Table","description":"A picnic table with two benches, laid with pie, salad, apples and mugs under a little lantern.","category":"Furnishings","price":180,"benefits":[{"contentId":"eternia:prop/picnic_table","kind":"QUANTITY","quantity":1,"expiresWithSubscription":false}]}

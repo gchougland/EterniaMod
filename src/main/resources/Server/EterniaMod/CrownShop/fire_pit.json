@@ -1,0 +1,1 @@
+{"id":"eternia:store/fire_pit","revision":1,"name":"Fire Pit","description":"A crackling fire in a stone ring with log seats for friends to gather round.","category":"Furnishings","price":160,"benefits":[{"contentId":"eternia:prop/fire_pit","kind":"QUANTITY","quantity":1,"expiresWithSubscription":false}]}

@@ -1,0 +1,26 @@
+$T = "Theme/Citadel.ui";
+@BannerButton = ButtonStyle(Default: (Background: #000000(0)), Hovered: (Background: #f0e8d5(0.04)), Pressed: (Background: #000000(0.12)));
+Button { Anchor: (Width: 280, Height: 560, Top: 4, Right: 24); Style: @BannerButton;
+Group #BanArt { Anchor: (Full: 0); HitTestVisible: false; Background: "SeasonArt/BannerHearth.png"; }
+Label #BanStatus { Anchor: (Left: 65, Top: 44, Width: 150, Height: 26); HitTestVisible: false; Style: (FontSize: 12, TextColor: $T.@Text, RenderBold: true, RenderUppercase: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+Label #BanName { Anchor: (Left: 36, Top: 212, Width: 208, Height: 56); HitTestVisible: false; Style: (FontName: "Secondary", FontSize: 19, Wrap: true, WrapMaxLines: 2, TextColor: $T.@Text, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+Group #BanLevelRow { Anchor: (Left: 24, Top: 266, Width: 232, Height: 44); HitTestVisible: false; LayoutMode: Center;
+Label { Anchor: (Right: 8); HitTestVisible: false; Text: "Level"; Style: (FontSize: 13, TextColor: $T.@Muted, RenderBold: true, RenderUppercase: true, VerticalAlignment: Center); }
+Label #BanLevel { HitTestVisible: false; Style: (FontName: "Secondary", FontSize: 38, TextColor: $T.@Primary, RenderBold: true, VerticalAlignment: Center); }
+Label #BanMax { Anchor: (Left: 6); HitTestVisible: false; Style: (FontSize: 18, TextColor: $T.@Muted, VerticalAlignment: Center); }
+}
+Group #BanBar { Anchor: (Left: 40, Top: 314, Width: 200, Height: 10); HitTestVisible: false; Padding: (Full: 1); LayoutMode: Left; Background: #45615d;
+Group #BanFill { FlexWeight: 1; HitTestVisible: false; Background: $T.@Primary; }
+Group #BanRest { FlexWeight: 1; HitTestVisible: false; Background: #101e22; }
+}
+Label #BanLine { Anchor: (Left: 24, Top: 328, Width: 232, Height: 24); HitTestVisible: false; Style: (FontSize: 14, TextColor: $T.@Muted, HorizontalAlignment: Center, VerticalAlignment: Center); }
+Group #BanNext { Anchor: (Left: 40, Top: 372, Width: 200, Height: 52); HitTestVisible: false; LayoutMode: Left;
+Group #RowImage { Visible: false; Anchor: (Width: 48, Height: 48, Top: 2, Right: 10); HitTestVisible: false; }
+ItemIcon #RowItem { Visible: false; Anchor: (Width: 48, Height: 48, Top: 2, Right: 10); HitTestVisible: false; }
+Group { FlexWeight: 1; HitTestVisible: false; LayoutMode: Middle;
+Label #BanNextLabel { Anchor: (Height: 18); HitTestVisible: false; Style: (FontSize: 12, TextColor: $T.@Muted, RenderBold: true, RenderUppercase: true); }
+Label #BanNextName { Anchor: (Height: 24); HitTestVisible: false; Style: (FontSize: 15, TextColor: $T.@Text, RenderBold: true); }
+}
+}
+Label #BanBadge { Visible: false; Anchor: (Left: 65, Top: 438, Width: 150, Height: 30); HitTestVisible: false; Background: PatchStyle(TexturePath: "Theme/Surfaces/Primary.png", Border: 12); Style: (FontSize: 13, TextColor: #101e22, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+}

@@ -1,0 +1,1116 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": -4,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": 1,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": 1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -4,
+      "y": 1,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": -1,
+      "name": "Halloween_Wagon",
+      "rotation": 2,
+      "support": 15,
+      "filler": 1023
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": -1,
+      "name": "Halloween_Wagon",
+      "rotation": 2,
+      "support": 15,
+      "filler": 992
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 1,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": 0,
+      "name": "Halloween_Wagon",
+      "rotation": 2,
+      "support": 15,
+      "filler": 31
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": 0,
+      "name": "Halloween_Wagon",
+      "rotation": 2,
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 1,
+      "z": 1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": 1,
+      "name": "Furniture_Tavern_Barrel",
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 2,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": -1,
+      "name": "Ingredient_Hay"
+    },
+    {
+      "x": -2,
+      "y": 2,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 2,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -2,
+      "y": 2,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 2,
+      "z": 1,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -2,
+      "y": 2,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 3,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -3,
+      "y": 3,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 3,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -3,
+      "y": 3,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 3,
+      "z": 1,
+      "name": "Deco_Lantern",
+      "support": 15
+    },
+    {
+      "x": -3,
+      "y": 3,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 4,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -3,
+      "y": 4,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -1,
+      "y": 4,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "z": -1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 4,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -3,
+      "y": 4,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -1,
+      "y": 4,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "z": 0,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 4,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -3,
+      "y": 4,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": -1,
+      "y": 4,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "z": 1,
+      "name": "Empty",
+      "rotation": 1
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -2.5,
+            "Y": 2.45,
+            "Z": 0.5
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 4.886921905584122,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Crate"
+        },
+        "EntityScale": {
+          "Scale": 0.9
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Crate",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "Invulnerable": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "gRr7ipy1Se2QfxjGps5W1g==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -2.55,
+            "Y": 3.2375,
+            "Z": 0.44999999999999996
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 5.323254218582705,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Crate"
+        },
+        "EntityScale": {
+          "Scale": 0.675
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Crate",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "Invulnerable": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "xMVgFvleSYWw089v2oDz/w==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -1.45,
+            "Y": 2.4,
+            "Z": 0.5
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 4.4505895925855405,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Crate"
+        },
+        "EntityScale": {
+          "Scale": 0.8
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Crate",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "Invulnerable": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "fABMTqX7QLu+v+Vo6HuyuA==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -1.45,
+            "Y": 2.8,
+            "Z": 0.5
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 5.235987755982988,
+            "Roll": 0
+          }
+        },
+        "EntityScale": {
+          "Scale": 0.9
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Crop_Pumpkin_Item",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "Invulnerable": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "Z/mTKuU5SaiynKOY3Srv3g==",
+            "$type": "04"
+          }
+        },
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 5.235987755982988,
+            "Roll": 0
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -1.5,
+            "Y": 2.4,
+            "Z": -0.5
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 5.410520681182422,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Ancient_Sack"
+        },
+        "EntityScale": {
+          "Scale": 0.8
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Ancient_Sack",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "Invulnerable": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "zdZZM/cWSACUnH3cMoNdFg==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -2.6,
+            "Y": 1.4,
+            "Z": 1.5
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 4.363323129985824,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Ancient_Sack"
+        },
+        "EntityScale": {
+          "Scale": 0.8
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Ancient_Sack",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "Invulnerable": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "yIjUEsYURJyYsgpZyjxtlw==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -0.6000000000000001,
+            "Y": 1.3,
+            "Z": 1.55
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 4.974188368183839,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Bucket"
+        },
+        "EntityScale": {
+          "Scale": 0.6
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Bucket",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "Invulnerable": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "Jo1LVnczQxqepgtaHaLVhw==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -3.5,
+            "Y": 1.45,
+            "Z": 0.5
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 4.572762640225143,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Crate"
+        },
+        "EntityScale": {
+          "Scale": 0.9
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Crate",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "Invulnerable": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "r2PE5MtET0mbTq2osx6VUw==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -3.55,
+            "Y": 2.2375,
+            "Z": 0.44999999999999996
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 5.009094953223726,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Crate"
+        },
+        "EntityScale": {
+          "Scale": 0.675
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Crate",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "Invulnerable": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "JS4gxBHjRByCUVa7MQvWzQ==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -3.5,
+            "Y": 1.4,
+            "Z": -0.5
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 5.061454830783555,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Crate"
+        },
+        "EntityScale": {
+          "Scale": 0.8
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Crate",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "Invulnerable": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "71w0HcRUR0yMkT+2AqeJqw==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -3.45,
+            "Y": 1.8,
+            "Z": -0.3999999999999999
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 5.235987755982988,
+            "Roll": 0
+          }
+        },
+        "EntityScale": {
+          "Scale": 0.9
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Crop_Carrot_Item",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "Invulnerable": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "DioAYKMCTNClshW0MlXUig==",
+            "$type": "04"
+          }
+        },
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 5.235987755982988,
+            "Roll": 0
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -3.5999999999999996,
+            "Y": 1.8,
+            "Z": -0.6000000000000001
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 4.014257279586958,
+            "Roll": 0
+          }
+        },
+        "EntityScale": {
+          "Scale": 0.9
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Crop_Carrot_Item",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "Invulnerable": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "NdFTeQtYR8asrgHwrJMJnQ==",
+            "$type": "04"
+          }
+        },
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 4.014257279586958,
+            "Roll": 0
+          }
+        }
+      }
+    }
+  ]
+}

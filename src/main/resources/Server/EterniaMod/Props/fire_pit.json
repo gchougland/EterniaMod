@@ -1,0 +1,11 @@
+{
+  "id": "fire_pit",
+  "displayName": "Fire Pit",
+  "prefabPath": "EterniaMod/Props/Catalog_Fire_Pit.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/scholars_desk",
+  "revision": 1,
+  "name": "Scholar's Desk",
+  "description": "A writing desk with maps, ink and books on the shelves behind it.",
+  "category": "Furnishings",
+  "price": 180,
+  "benefits": [
+    {
+      "contentId": "eternia:prop/scholars_desk",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

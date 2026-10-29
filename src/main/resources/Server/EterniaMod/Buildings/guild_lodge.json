@@ -1,0 +1,17 @@
+{
+  "id": "guild_lodge",
+  "displayName": "Guild Lodge",
+  "prefabPath": "EterniaMod/Houses/House_Guild_Lodge.prefab.json",
+  "plotAnchorOffset": [
+    13,
+    0,
+    11
+  ],
+  "spawnLocalPos": [
+    0,
+    1,
+    6
+  ],
+  "rotationYaw": "None",
+  "housingKind": "guild"
+}

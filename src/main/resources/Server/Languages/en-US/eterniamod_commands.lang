@@ -56,5 +56,6 @@ commands.eternia.args.propId.name=Prop id
 commands.eternia.args.propId.usage=aqua_lamp
 commands.eternia.prefab.desc=Browse server prefabs
 commands.eternia.prefab.browse.desc=Open the prefab browser
+commands.eternia.season.desc=Design and edit season passes
 commands.eternia.prefab.createProp.success=Created prop {prop} and added it to your inventory
 commands.eternia.prefab.createBuilding.success=Created building {building} and added it to your inventory

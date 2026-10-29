@@ -1,0 +1,17 @@
+{
+  "id": "timber_townhouse",
+  "displayName": "Timber Townhouse",
+  "prefabPath": "EterniaMod/Houses/House_Timber_Townhouse.prefab.json",
+  "plotAnchorOffset": [
+    6,
+    0,
+    7
+  ],
+  "spawnLocalPos": [
+    0,
+    1,
+    2
+  ],
+  "rotationYaw": "None",
+  "housingKind": "personal"
+}

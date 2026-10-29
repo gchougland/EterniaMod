@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/breakfast_nook",
+  "revision": 1,
+  "name": "Breakfast Nook",
+  "description": "A little table for two, set with eggs, fruit and a warm mug.",
+  "category": "Furnishings",
+  "price": 150,
+  "benefits": [
+    {
+      "contentId": "eternia:prop/breakfast_nook",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

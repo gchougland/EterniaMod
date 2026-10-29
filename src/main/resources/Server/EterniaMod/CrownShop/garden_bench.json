@@ -1,0 +1,1 @@
+{"id":"eternia:store/garden_bench","revision":1,"name":"Garden Bench","description":"A quiet wooden bench between two planters full of flowers.","category":"Furnishings","price":90,"benefits":[{"contentId":"eternia:prop/garden_bench","kind":"QUANTITY","quantity":1,"expiresWithSubscription":false}]}

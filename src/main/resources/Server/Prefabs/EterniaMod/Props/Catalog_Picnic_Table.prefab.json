@@ -1,0 +1,483 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": -1,
+      "y": 0,
+      "z": -2,
+      "name": "Furniture_Tavern_Bench",
+      "filler": 31
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -1,
+      "name": "Furniture_Tavern_Table",
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Tavern_Table",
+      "filler": 32
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 1,
+      "name": "Furniture_Tavern_Bench",
+      "support": 15,
+      "rotation": 2
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -2,
+      "name": "Furniture_Tavern_Bench",
+      "support": 15
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -1,
+      "name": "Furniture_Tavern_Table",
+      "filler": 1
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Tavern_Table",
+      "filler": 33
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "name": "Furniture_Tavern_Bench",
+      "filler": 1,
+      "rotation": 2
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Plate"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.6500000000000057,
+            "Y": 1.25,
+            "Z": 0.6499999999999999
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.3161256313323975,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "KopVSmWXMwOvZtlg7umBKw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Plate",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Pie_Apple"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.5999999999999943,
+            "Y": 1.2749999999999986,
+            "Z": -0.55
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.4906585216522217,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "GoJizH7IMDGHYm6N9n1X2Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.550000011920929
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Pie_Apple",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Mug"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.15000000000000568,
+            "Y": 1.25,
+            "Z": 0.7000000000000002
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.752457857131958,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "nzIJCk74P1aIwsX1AudKgg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Mug",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Lantern"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.05000000000001137,
+            "Y": 1.2999999999999972,
+            "Z": -0.050000000000000044
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.4033920764923096,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "YfgpFiphPYqYbeeA32uW1w==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6000000238418579
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Lantern",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Mug"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.0353546142578125,
+            "Y": 1.25,
+            "Z": -0.5630068778991699
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.268928050994873,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "44rpx7GtOiO0iQ6wWrsCcA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Mug",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Fruit_Apple"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3499999999999943,
+            "Y": 1.1400000000000006,
+            "Z": -0.75
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.96705961227417,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "dpzBEMALMBKzmeqLg5YIPw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2800000011920929
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Fruit_Apple",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Plate"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4000000000000057,
+            "Y": 1.2250000000000014,
+            "Z": -0.75
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.7925267219543457,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "vTi91dypN7yqBEFvgaFoaQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.44999998807907104
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Plate",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Salad_Berry"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5500000000000114,
+            "Y": 1.25,
+            "Z": 0.5
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.7052602767944336,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "QH5ku7NkNCKRbm8Lb2itcw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Salad_Berry",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Fruit_Apple"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5999999999999943,
+            "Y": 1.1499999999999986,
+            "Z": -0.6000000000000001
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.83972430229187,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "EHPB4tG4PrKA7PmMfbaMgw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.30000001192092896
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Fruit_Apple",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

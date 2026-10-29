@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/kitchen_counter",
+  "revision": 1,
+  "name": "Kitchen Counter",
+  "description": "A stocked counter and stove, ready for supper.",
+  "category": "Furnishings",
+  "price": 160,
+  "benefits": [
+    {
+      "contentId": "eternia:prop/kitchen_counter",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

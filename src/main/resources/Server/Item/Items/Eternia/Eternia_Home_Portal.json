@@ -1,0 +1,84 @@
+{
+  "TranslationProperties": {
+    "Name": "eternia_customization.home_portal.name",
+    "Description": "eternia_customization.home_portal.description"
+  },
+  "Icon": "Icons/ItemsGenerated/Portal_Return.png",
+  "Categories": [
+    "Blocks.Portals"
+  ],
+  "PlayerAnimationsId": "Block",
+  "Quality": "Technical",
+  "MaxStack": 1,
+  "Interactions": {
+    "Primary": "Block_Primary",
+    "Secondary": "Block_Secondary"
+  },
+  "BlockType": {
+    "DrawType": "Model",
+    "Material": "Solid",
+    "Opacity": "Transparent",
+    "CustomModel": "Blocks/Miscellaneous/Platform_Magic_Exit.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/Miscellaneous/Platform_Magic_Blue2.png",
+        "Weight": 1
+      }
+    ],
+    "HitboxType": "Pad_Portal",
+    "VariantRotation": "NESW",
+    "Flags": {
+      "IsUsable": true
+    },
+    "AmbientSoundEventId": "SFX_Portal_Neutral",
+    "BlockParticleSetId": "Stone",
+    "BlockSoundSetId": "Stone",
+    "PhysicalMaterialId": "Stone",
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Unbreakable"
+      }
+    },
+    "Particles": [
+      {
+        "SystemId": "Eternia_Waygate",
+        "PositionOffset": {
+          "Y": 2.0
+        }
+      }
+    ],
+    "Interactions": {
+      "Use": {
+        "Interactions": [
+          {
+            "Type": "EterniaHousingTool",
+            "Route": "HOME"
+          }
+        ]
+      }
+    },
+    "InteractionHint": "eternia_customization.home_portal.hint",
+    "TextureComputedColor": "#736940"
+  },
+  "Tags": {
+    "Type": [
+      "Portal"
+    ],
+    "Family": [
+      "Eternia"
+    ]
+  },
+  "IconProperties": {
+    "Scale": 0.35,
+    "Rotation": [
+      22.5,
+      45,
+      22.5
+    ],
+    "Translation": [
+      0,
+      -13.5
+    ]
+  },
+  "ItemSoundSetId": "ISS_Blocks_Stone"
+}

@@ -28,7 +28,7 @@ final class HousingUseCapabilities {
             var collector=new Behaviors();InteractionManager.walkChain(collector,event.getInteractionType(),event.getContext(),root);
             if("Eternia_Guild_Waygate".equals(block.getId())&&!container&&collector.types.equals(Set.of(EterniaHousingTool.class.getSimpleName())))return Set.of("convenience.use");
             return required(container,block.getBench() instanceof com.hypixel.hytale.server.core.asset.type.blocktype.config.bench.ProcessingBench,
-                "Eternia_Management_Block".equals(block.getId()),"Eternia_World_Portal".equals(block.getId()),door(store.getExternalData().getWorld(),p.x,p.y,p.z),block.getBeds()!=null,block.getBench()!=null,collector.types);
+                "Eternia_Management_Block".equals(block.getId()),Set.of("Eternia_World_Portal","Eternia_Home_Portal").contains(block.getId()),door(store.getExternalData().getWorld(),p.x,p.y,p.z),block.getBeds()!=null,block.getBench()!=null,collector.types);
         }catch(RuntimeException invalid){return Set.of("housing.container.open");}
     }
     /** The engine's own door lookup for the block in use; the per-block-type door flag is deprecated. */

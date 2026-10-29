@@ -5,6 +5,9 @@ ledger.description=Open your housing dashboard. Your mail, guild and collection 
 
 portal.name = Eternia World Portal
 portal.description = Choose an Eternia destination. Public travel requires a registered portal location.
+home_portal.name = Eternia Home Portal
+home_portal.description = Use it to return to your house.
+home_portal.hint = Press [{key}] to go home
 guildWaygate.name = Guild Waygate Portal
 guildWaygate.description = Place from your guild build inventory. Guild members can choose a destination here.
 guildWaygate.hint = Press [{key}] to use Guild Waygate

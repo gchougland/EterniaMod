@@ -1,0 +1,11 @@
+{
+  "id": "flower_bed",
+  "displayName": "Flower Bed",
+  "prefabPath": "EterniaMod/Props/Catalog_Flower_Bed.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

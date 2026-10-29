@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/stone_hearth",
+  "revision": 1,
+  "name": "Stone Hearth",
+  "description": "A crackling stone fireplace with candles along its mantel.",
+  "category": "Furnishings",
+  "price": 200,
+  "benefits": [
+    {
+      "contentId": "eternia:prop/stone_hearth",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

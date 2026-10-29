@@ -1,0 +1,5763 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": -5,
+      "y": -1,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -5,
+      "y": 0,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -5,
+      "y": -1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -5,
+      "y": 0,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -5,
+      "y": 4,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": 5,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": -1,
+      "z": -4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -5,
+      "y": 0,
+      "z": -4,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -5,
+      "y": 4,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": 5,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": -1,
+      "z": -3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -5,
+      "y": 0,
+      "z": -3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -5,
+      "y": 4,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": 5,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": -1,
+      "z": -2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -5,
+      "y": 0,
+      "z": -2,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -5,
+      "y": 4,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": 5,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -5,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -5,
+      "y": 4,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": 5,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -5,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -5,
+      "y": 4,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": 5,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -5,
+      "y": 0,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -5,
+      "y": 4,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": 5,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": -1,
+      "z": 2,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -5,
+      "y": 0,
+      "z": 2,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -5,
+      "y": 4,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": 5,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": -1,
+      "z": 3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -5,
+      "y": 0,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -5,
+      "y": 4,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": 5,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": -1,
+      "z": 4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -5,
+      "y": 4,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": 5,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -5,
+      "y": -1,
+      "z": 5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 1,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 2,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 3,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 4,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 5,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 6,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": 7,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": -4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": -4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 1,
+      "z": -4,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 2,
+      "z": -4,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -4,
+      "y": 3,
+      "z": -4,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 4,
+      "z": -4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 5,
+      "z": -4,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 6,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": 7,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": -3,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": -3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 1,
+      "z": -3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 2,
+      "z": -3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 3,
+      "z": -3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -4,
+      "y": 4,
+      "z": -3,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -4,
+      "y": 5,
+      "z": -3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 6,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": 7,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": -2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": -2,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 1,
+      "z": -2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 2,
+      "z": -2,
+      "name": "Furniture_Village_Window",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 3,
+      "z": -2,
+      "name": "Furniture_Village_Window",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 4,
+      "z": -2,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 5,
+      "z": -2,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 6,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": 7,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 2,
+      "z": -1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 3,
+      "z": -1,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -4,
+      "y": 4,
+      "z": -1,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -4,
+      "y": 5,
+      "z": -1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 6,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": 7,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -4,
+      "y": 2,
+      "z": 0,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -4,
+      "y": 3,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 4,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 5,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 6,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": 7,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": 1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 1,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 2,
+      "z": 1,
+      "name": "Furniture_Village_Window",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 3,
+      "z": 1,
+      "name": "Furniture_Village_Window",
+      "rotation": 1
+    },
+    {
+      "x": -4,
+      "y": 4,
+      "z": 1,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 5,
+      "z": 1,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -4,
+      "y": 6,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": 7,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": 2,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": 2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 1,
+      "z": 2,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 2,
+      "z": 2,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -4,
+      "y": 3,
+      "z": 2,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 4,
+      "z": 2,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -4,
+      "y": 5,
+      "z": 2,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 6,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": 7,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": 3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 1,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 2,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 3,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 4,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 5,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -4,
+      "y": 6,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": 7,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": 4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": 4,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -4,
+      "y": 5,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": -4,
+      "y": 6,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": 7,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -4,
+      "y": -1,
+      "z": 5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -4,
+      "y": 0,
+      "z": 5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -4,
+      "y": 1,
+      "z": 5,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -4,
+      "y": 2,
+      "z": 5,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -4,
+      "y": 3,
+      "z": 5,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": -4,
+      "y": 4,
+      "z": 5,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": -5,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -3,
+      "y": 3,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -3,
+      "y": 4,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -3,
+      "y": 5,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -3,
+      "y": 6,
+      "z": -5,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -3,
+      "y": 7,
+      "z": -5,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -3,
+      "y": 8,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": 9,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": -4,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": -4,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 5,
+      "z": -4,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 6,
+      "z": -4,
+      "name": "Deco_SpiderWeb",
+      "support": 15
+    },
+    {
+      "x": -3,
+      "y": 8,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": 9,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": -3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": -3,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 5,
+      "z": -3,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 8,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": 9,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": -2,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": -2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 5,
+      "z": -2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 8,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": 9,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": -1,
+      "name": "Furniture_Village_Bookcase",
+      "support": 15,
+      "rotation": 1
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": -1,
+      "name": "Furniture_Village_Bookcase",
+      "support": 15,
+      "rotation": 1
+    },
+    {
+      "x": -3,
+      "y": 5,
+      "z": -1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 8,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": 9,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": 0,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": 0,
+      "name": "Furniture_Village_Bookcase",
+      "support": 15,
+      "rotation": 1
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": 0,
+      "name": "Furniture_Village_Bookcase",
+      "support": 15,
+      "rotation": 1
+    },
+    {
+      "x": -3,
+      "y": 5,
+      "z": 0,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 8,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": 9,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": 1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 5,
+      "z": 1,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 8,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": 9,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": 2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": 2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 5,
+      "z": 2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -3,
+      "y": 8,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": 9,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -3,
+      "y": 3,
+      "z": 3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -3,
+      "y": 4,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -3,
+      "y": 5,
+      "z": 3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -3,
+      "y": 6,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -3,
+      "y": 7,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -3,
+      "y": 8,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": 9,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": 4,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": 4,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": 4,
+      "name": "Deco_Shutter",
+      "support": 15
+    },
+    {
+      "x": -3,
+      "y": 3,
+      "z": 4,
+      "name": "Deco_Shutter",
+      "support": 15
+    },
+    {
+      "x": -3,
+      "y": 5,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": -3,
+      "y": 7,
+      "z": 4,
+      "name": "Wood_Darkwood_Stairs",
+      "rotation": 11
+    },
+    {
+      "x": -3,
+      "y": 8,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": 9,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -3,
+      "y": -1,
+      "z": 5,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -3,
+      "y": 0,
+      "z": 5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -3,
+      "y": 1,
+      "z": 5,
+      "name": "Furniture_Tavern_Planter"
+    },
+    {
+      "x": -3,
+      "y": 2,
+      "z": 5,
+      "name": "Plant_Flower_Common_Yellow"
+    },
+    {
+      "x": -3,
+      "y": 4,
+      "z": 5,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": -6,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 2,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": -5,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -2,
+      "y": 5,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -2,
+      "y": 6,
+      "z": -5,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": -2,
+      "y": 7,
+      "z": -5,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": -2,
+      "y": 8,
+      "z": -5,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": -2,
+      "y": 9,
+      "z": -5,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": -2,
+      "y": 10,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": 11,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": -4,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": -4,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 5,
+      "z": -4,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 10,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": 11,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": -3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": -3,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 5,
+      "z": -3,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 10,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": 11,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": -2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": -2,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 5,
+      "z": -2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 10,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": 11,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": -1,
+      "name": "Deco_Lantern_Ceiling"
+    },
+    {
+      "x": -2,
+      "y": 5,
+      "z": -1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 10,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": 11,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 0,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 5,
+      "z": 0,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 10,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": 11,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 5,
+      "z": 1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 10,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": 11,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": 2,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 5,
+      "z": 2,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": -2,
+      "y": 7,
+      "z": 2,
+      "name": "Furniture_Tavern_Shelf",
+      "support": 15,
+      "rotation": 2
+    },
+    {
+      "x": -2,
+      "y": 10,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": 11,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 2,
+      "z": 3,
+      "name": "Furniture_Village_Window"
+    },
+    {
+      "x": -2,
+      "y": 3,
+      "z": 3,
+      "name": "Furniture_Village_Window"
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": -2,
+      "y": 5,
+      "z": 3,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -2,
+      "y": 6,
+      "z": 3,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": -2,
+      "y": 7,
+      "z": 3,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": -2,
+      "y": 8,
+      "z": 3,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": -2,
+      "y": 9,
+      "z": 3,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": -2,
+      "y": 10,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": 11,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": 4,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": 4,
+      "name": "Deco_Lantern_Ceiling",
+      "support": 15
+    },
+    {
+      "x": -2,
+      "y": 5,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": -2,
+      "y": 9,
+      "z": 4,
+      "name": "Wood_Darkwood_Stairs",
+      "rotation": 11
+    },
+    {
+      "x": -2,
+      "y": 10,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": 11,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -2,
+      "y": -1,
+      "z": 5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -2,
+      "y": 0,
+      "z": 5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -2,
+      "y": 4,
+      "z": 5,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": -6,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -1,
+      "y": 4,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 6,
+      "z": -6,
+      "name": "Rock_Stone_Brick_Stairs",
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -1,
+      "y": 4,
+      "z": -5,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -1,
+      "y": 6,
+      "z": -5,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -1,
+      "y": 7,
+      "z": -5,
+      "name": "Furniture_Village_Window"
+    },
+    {
+      "x": -1,
+      "y": 8,
+      "z": -5,
+      "name": "Furniture_Village_Window"
+    },
+    {
+      "x": -1,
+      "y": 9,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 10,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 11,
+      "z": -5,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -1,
+      "y": 12,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": 13,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": -4,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -4,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": -4,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": -4,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": -4,
+      "name": "Wood_Darkwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": -4,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 12,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": 13,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": -3,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -3,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": -3,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 12,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": 13,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": -2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": -2,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 12,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": 13,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": -1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 12,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": 13,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": 0,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 12,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": 13,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": 1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 12,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": 13,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 2,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": 2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": -1,
+      "y": 7,
+      "z": 2,
+      "name": "Furniture_Tavern_Shelf",
+      "support": 15,
+      "rotation": 2
+    },
+    {
+      "x": -1,
+      "y": 12,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": 13,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": 3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -1,
+      "y": 4,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": 3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": -1,
+      "y": 6,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 7,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 8,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 9,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 10,
+      "z": 3,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -1,
+      "y": 11,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 12,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": 13,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 4,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 4,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": 4,
+      "name": "Deco_Shutter",
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 3,
+      "z": 4,
+      "name": "Deco_Shutter",
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": -1,
+      "y": 11,
+      "z": 4,
+      "name": "Wood_Darkwood_Stairs",
+      "rotation": 11
+    },
+    {
+      "x": -1,
+      "y": 12,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": 13,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 3
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": -1,
+      "y": 4,
+      "z": 5,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": -1,
+      "y": -1,
+      "z": 6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 6,
+      "name": "Rock_Stone_Brick_Stairs"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": -6,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 0,
+      "y": 6,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 7,
+      "z": -6,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 8,
+      "z": -6,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 9,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 10,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 11,
+      "z": -6,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 0,
+      "y": 12,
+      "z": -6,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 13,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "z": -6,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 0,
+      "y": 15,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 16,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 17,
+      "z": -6,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": -5,
+      "name": "Deco_Fire"
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 6,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 7,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 8,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 9,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 10,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 11,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 12,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 13,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": -4,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -4,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": -4,
+      "name": "Deco_Iron_Bars"
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": -4,
+      "name": "Wood_Darkwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": -4,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": -3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -3,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": -3,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": -2,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -2,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": -2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": -1,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 9,
+      "z": -1,
+      "name": "Deco_Lantern_Ceiling"
+    },
+    {
+      "x": 0,
+      "y": 10,
+      "z": -1,
+      "name": "Deco_Rope"
+    },
+    {
+      "x": 0,
+      "y": 11,
+      "z": -1,
+      "name": "Deco_Rope"
+    },
+    {
+      "x": 0,
+      "y": 12,
+      "z": -1,
+      "name": "Deco_Rope"
+    },
+    {
+      "x": 0,
+      "y": 13,
+      "z": -1,
+      "name": "Deco_Rope"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": 0,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": 1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 2,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": 2,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 3,
+      "name": "Furniture_Tavern_Door"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 3,
+      "name": "Furniture_Tavern_Door",
+      "filler": 1024
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "z": 3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": 3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 6,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 7,
+      "z": 3,
+      "name": "Furniture_Village_Window"
+    },
+    {
+      "x": 0,
+      "y": 8,
+      "z": 3,
+      "name": "Furniture_Village_Window"
+    },
+    {
+      "x": 0,
+      "y": 9,
+      "z": 3,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 0,
+      "y": 10,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 11,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 12,
+      "z": 3,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 0,
+      "y": 13,
+      "z": 3,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 4,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 4,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": 0,
+      "y": 13,
+      "z": 4,
+      "name": "Wood_Darkwood_Planks"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Flat"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "z": 5,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": 0,
+      "y": -1,
+      "z": 6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 6,
+      "name": "Rock_Stone_Brick_Stairs"
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": -6,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "z": -6,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": -6,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 6,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 7,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 8,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 9,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 10,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 11,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 12,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 13,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 14,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 15,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 16,
+      "z": -6,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 17,
+      "z": -6,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 1,
+      "y": 18,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": -5,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": -5,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 1,
+      "y": 6,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 7,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 8,
+      "z": -5,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 1,
+      "y": 9,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 10,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 11,
+      "z": -5,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 1,
+      "y": 12,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": 13,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": -4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -4,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": -4,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": -4,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": -4,
+      "name": "Wood_Darkwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": -4,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 12,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": 13,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": -3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -3,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": -3,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 12,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": 13,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": -2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": -2,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 12,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": 13,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": -1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 12,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": 13,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": 0,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 12,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": 13,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": 1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 12,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": 13,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": 2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": 2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 1,
+      "y": 12,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": 13,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": 3,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 6,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 7,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 8,
+      "z": 3,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 1,
+      "y": 9,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 10,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 11,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 12,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": 13,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": 4,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 4,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "z": 4,
+      "name": "Deco_Shutter",
+      "support": 15
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "z": 4,
+      "name": "Deco_Shutter",
+      "support": 15
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": 1,
+      "y": 11,
+      "z": 4,
+      "name": "Wood_Darkwood_Stairs",
+      "rotation": 9
+    },
+    {
+      "x": 1,
+      "y": 12,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": 13,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": 5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "z": 5,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": 1,
+      "y": -1,
+      "z": 6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 6,
+      "name": "Rock_Stone_Brick_Stairs"
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": -5,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "z": -5,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 7,
+      "z": -5,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 8,
+      "z": -5,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 9,
+      "z": -5,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": -4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": -4,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": -4,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": -3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": -3,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": -3,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": -2,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": -2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": -2,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": -1,
+      "name": "Deco_Lantern_Ceiling",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": -1,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 0,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": 0,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": 1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": 2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 2,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": 2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 3,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "z": 3,
+      "name": "Furniture_Village_Window"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "z": 3,
+      "name": "Furniture_Village_Window"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": 3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "z": 3,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 7,
+      "z": 3,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 8,
+      "z": 3,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 9,
+      "z": 3,
+      "name": "Wood_Fir_Trunk",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": 4,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 4,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": 4,
+      "name": "Deco_Lantern_Ceiling",
+      "support": 15
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": 2,
+      "y": 9,
+      "z": 4,
+      "name": "Wood_Darkwood_Stairs",
+      "rotation": 9
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": 11,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 2,
+      "y": -1,
+      "z": 5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "z": 5,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": -6,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": -5,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 3,
+      "y": 6,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "z": -5,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": -4,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": -4,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": -4,
+      "name": "Furniture_Tavern_Ladder",
+      "rotation": 3
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": -4,
+      "name": "Furniture_Tavern_Ladder",
+      "rotation": 3
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": -4,
+      "name": "Furniture_Tavern_Ladder",
+      "rotation": 3
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": -4,
+      "name": "Furniture_Tavern_Ladder",
+      "rotation": 3
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": -4,
+      "name": "Furniture_Tavern_Ladder",
+      "rotation": 3
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": -3,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": -3,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": -3,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": -2,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": -2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": -2,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": -1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": -1,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 0,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": 0,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": 1,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 2,
+      "name": "Wood_Softwood_Planks"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": 2,
+      "name": "Wood_Hardwood_Planks"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 3,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": 3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 3,
+      "y": 6,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 4,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 4,
+      "name": "Deco_Shutter",
+      "support": 15
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "z": 4,
+      "name": "Deco_Shutter",
+      "support": 15
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "z": 4,
+      "name": "Wood_Darkwood_Stairs",
+      "rotation": 9
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 3,
+      "y": -1,
+      "z": 5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "z": 5,
+      "name": "Furniture_Tavern_Planter"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "z": 5,
+      "name": "Plant_Flower_Common_Blue"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "z": 5,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": 4,
+      "y": -1,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": -6,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 4,
+      "y": -1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": -5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": -5,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": -1,
+      "z": -4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": -4,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": -4,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": -4,
+      "name": "Rock_Stone"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": -4,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": -4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": -4,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": -1,
+      "z": -3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": -3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": -3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": -3,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": -3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": -3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": -3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": -1,
+      "z": -2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": -2,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": -2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": -2,
+      "name": "Furniture_Village_Window",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": -2,
+      "name": "Furniture_Village_Window",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": -2,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": -2,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": -1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": -1,
+      "name": "Rock_Stone_Brick_Smooth"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": -1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": -1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": -1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 1,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 1,
+      "name": "Furniture_Village_Window",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 1,
+      "name": "Furniture_Village_Window",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 1,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": 1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": -1,
+      "z": 2,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 2,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 2,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 2,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 2,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": 2,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": -1,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": 3,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": -1,
+      "z": 4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Hollow"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 4,
+      "y": -1,
+      "z": 5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "z": 5,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "z": 5,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "z": 5,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "z": 5,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "z": 5,
+      "name": "Wood_Darkwood_Roof"
+    },
+    {
+      "x": 5,
+      "y": -1,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": -6,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 5,
+      "y": -1,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": -5,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "z": -5,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": -1,
+      "z": -4,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": -4,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "z": -4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": -1,
+      "z": -3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": -3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "z": -3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": -1,
+      "z": -2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": -2,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "z": -2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": -1,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "z": -1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "z": 0,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": -1,
+      "z": 1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 1,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "z": 1,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": -1,
+      "z": 2,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 2,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "z": 2,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": -1,
+      "z": 3,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "z": 3,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "z": 3,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": -1,
+      "z": 4,
+      "name": "Rock_Stone_Brick"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "z": 4,
+      "name": "Wood_Darkwood_Roof_Steep",
+      "filler": 1024,
+      "rotation": 1
+    },
+    {
+      "x": 5,
+      "y": -1,
+      "z": 5,
+      "name": "Rock_Stone_Cobble"
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Book_Pile_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": -1.5,
+            "Y": 8.25,
+            "Z": 2.6999999999999993
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.1415927410125732,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "RGwx5QwzMJCCeyN8QGm60g==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6000000238418579
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Book_Pile_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Tavern_Candle"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.5999999999999943,
+            "Y": 4.25,
+            "Z": -3.5
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.1415927410125732,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "SE+cfR/pOtelusA4Se31og==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Tavern_Candle",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Campfire_Off"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5,
+            "Y": 1.3999999999999986,
+            "Z": -4.5
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.752457857131958,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "nc1Bu+X7P0ib7A5Q5QdTCA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.800000011920929
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Campfire_Off",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Mug"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5,
+            "Y": 4.25,
+            "Z": -3.4
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.665191411972046,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "3+7vvypAORyMtDaXqfpoWQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Mug",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Tavern_Candle"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.5,
+            "Y": 4.25,
+            "Z": -3.5
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.1415927410125732,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "OdP/jjN0NWCWW1JVnjyopA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Tavern_Candle",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

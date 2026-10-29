@@ -1,0 +1,11 @@
+{
+  "id": "dining_table_set",
+  "displayName": "Family Dining Table",
+  "prefabPath": "EterniaMod/Props/Catalog_Dining_Table_Set.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

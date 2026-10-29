@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/dining_table_set",
+  "revision": 1,
+  "name": "Family Dining Table",
+  "description": "A table for four, laid with pie, bread and cheese by candlelight.",
+  "category": "Furnishings",
+  "price": 220,
+  "benefits": [
+    {
+      "contentId": "eternia:prop/dining_table_set",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

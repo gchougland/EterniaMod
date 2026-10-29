@@ -1,5 +1,6 @@
 $T = "Theme/Citadel.ui";
 $C = "../Common.ui";
+Group { FlexWeight: 1; LayoutMode: Left;
 Group { FlexWeight: 1; LayoutMode: Top; Background: $T.@JournalPanelSurface; Padding: (Full: 28);
 Label #SectionTitle { Anchor: (Height: 34, Bottom: 6); Style: $T.@TitleStyle; }
 Label #Description { Anchor: (Height: 50, Bottom: 8); Style: $T.@DefaultLabelStyle; }
@@ -15,5 +16,15 @@ Group #Actions { LayoutMode: Left; Anchor: (Height: 48);
 $T.@TextButton #Primary { FlexWeight: 1; Anchor: (Height: 48, Right: 10); }
 $T.@SecondaryTextButton #Secondary { FlexWeight: 1; Anchor: (Height: 48, Right: 10); }
 $T.@SecondaryTextButton #Tertiary { FlexWeight: 1; Anchor: (Height: 48); }
+}
+}
+Group #CollectionPreview { Visible: false; Anchor: (Width: 560, Left: 24); Background: $T.@JournalPanelSurface; Padding: (Full: 24); LayoutMode: Top;
+Label { Anchor: (Height: 22); Text: "3D preview"; Style: $T.@CodexKickerStyle; }
+Label #PreviewName { Anchor: (Height: 40, Bottom: 10); Style: (...$T.@TitleStyle, FontSize: 26); }
+Group { FlexWeight: 1; Background: $T.@JournalInsetSurface; Anchor: (Bottom: 10);
+PrefabPreviewComponent #PrefabPreview { Anchor: (Full: 10); AllowDragYaw: true; AllowDragPitch: true; AllowZoom: true; AllowPan: true; ShowAnchor: false; }
+}
+Label { Anchor: (Height: 26, Bottom: 10); Text: "Drag to turn. Scroll to zoom."; Style: (...$T.@MutedStyle, FontSize: 14, HorizontalAlignment: Center); }
+$T.@SecondaryTextButton #ClosePreview { Anchor: (Height: 44); Text: "Close preview"; }
 }
 }

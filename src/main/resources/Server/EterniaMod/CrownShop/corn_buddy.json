@@ -1,0 +1,1 @@
+{"id":"eternia:store/corn_buddy","revision":1,"name":"Corn Buddy","description":"A cheerful little ear of corn that toddles along behind you. Equip it in your Collection.","category":"Companions","price":500,"benefits":[{"contentId":"eternia:pet/corn_buddy","kind":"QUANTITY","quantity":1,"expiresWithSubscription":false}]}

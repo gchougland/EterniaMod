@@ -1,0 +1,11 @@
+{
+  "id": "cosy_bed",
+  "displayName": "Cosy Bed",
+  "prefabPath": "EterniaMod/Props/Catalog_Cosy_Bed.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

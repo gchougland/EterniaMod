@@ -73,6 +73,17 @@ public final class ManagedHubServices implements AutoCloseable {
         if(existing!=null){if(existing.state()!=State.ACTIVE)service.finish(world,existing,actor);var current=service.registry.find(existing.id()).orElseThrow();if(current.live()){service.refreshIdentity(world,service.ownedNpc(world,current,true));return current.id();}}
         return service.add(world,actor,Kind.NPC,identity.role(),new Pose(x,y,z,yaw)).id();
     }
+    /** The live managed service in this world with this role (an NPC role, or null for the portal), if any. */
+    public static Optional<UUID> live(World world,String role){
+        var service=active;if(service==null)return Optional.empty();
+        return service.registry.entries().stream().filter(e->e.live()&&e.world().equals(world.getName())&&(role==null?e.kind()==Kind.PORTAL:e.kind()==Kind.NPC&&e.role().equals(role))).map(Entry::id).findFirst();
+    }
+    /** Removes a managed service by id, as Hub services, Manage, Remove does. Used to undo a town placement. */
+    public static void removeById(EterniaModPlugin plugin,World world,UUID actor,UUID id)throws Exception{
+        SetupAccess.require(actor);world.getEntityStore().getStore().assertThread();var service=require(plugin);
+        var entry=service.registry.find(id).orElseThrow(()->new IllegalStateException("That managed service no longer exists"));
+        if(entry.live())service.remove(world,actor,entry);
+    }
     /** Reuses an existing managed portal in this world; never adopts arbitrary portal blocks. */
     public static UUID ensurePortal(EterniaModPlugin plugin,World world,UUID actor,int x,int y,int z,float yaw)throws Exception {
         SetupAccess.require(actor);world.getEntityStore().getStore().assertThread();var service=require(plugin);

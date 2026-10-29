@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/tower_house",
+  "revision": 1,
+  "name": "Tower House",
+  "description": "A stone and timber home with a tall round tower and a quiet study under its spire.",
+  "category": "Housing",
+  "price": 1000,
+  "benefits": [
+    {
+      "contentId": "eternia:house/tower_house",
+      "kind": "UNLOCK",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

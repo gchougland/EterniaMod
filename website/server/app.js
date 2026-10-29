@@ -1,12 +1,12 @@
 import express from 'express';import session from 'express-session';import connectPg from 'connect-pg-simple';import crypto from 'node:crypto';import path from 'node:path';
 import {root} from './config.js';import {createOidc,isAdmin,regenerate,saveSession,UUID} from './auth.js';import {createBridge,FIXTURE_UUID} from './bridge.js';import {createCatalog} from './catalog.js';import {createRenderQueue} from './render-queue.js';import {route,requireUser,requireAdmin,HttpError,errorHandler} from './errors.js';
-import {mountTebexRelay} from './tebex-relay.js';import {exportNativeBundle} from './native-export.js';
+import {mountTebexRelay} from './tebex-relay.js';import {mountGameSync} from './game-sync.js';import {exportNativeBundle} from './native-export.js';
 import {createHeadless} from './tebex-headless.js';import {mountTebexCheckout} from './tebex-checkout.js';
 export function createApp(cfg,repo){
  const app=express(),oidc=createOidc(cfg),bridge=createBridge(cfg),catalog=createCatalog(repo),queue=createRenderQueue(cfg,repo,catalog);
  app.disable('x-powered-by');if(cfg.production)app.set('trust proxy',1);
  app.use((req,res,next)=>{res.set({'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY','Content-Security-Policy':"default-src 'self'; script-src 'self' 'unsafe-inline' https://js.tebex.io; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.tebex.io; connect-src 'self' https://*.tebex.io; frame-src https://*.tebex.io; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"});next();});
- mountTebexRelay(app,cfg);
+ mountTebexRelay(app,cfg);mountGameSync(app,cfg,catalog);
  // Public artwork, fonts and page shells never need a session database lookup.
  for(const folder of ['assets','fonts','icons','js','media'])app.use('/'+folder,express.static(path.join(root,'web',folder),{dotfiles:'deny'}));
  for(const file of ['styles.css','theme.css'])app.get('/'+file,(req,res)=>res.sendFile(path.join(root,'web',file)));

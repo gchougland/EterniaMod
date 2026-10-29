@@ -30,6 +30,7 @@ public final class EterniaModPlugin extends JavaPlugin {
     private BuildingCatalog buildingCatalog;
     private PropCatalog propCatalog;
     private com.hexvane.eterniamod.housing.HousingInfrastructure infrastructure;
+    private com.hexvane.eterniamod.runtime.JoinSpawns joinSpawns;
     private com.hexvane.eterniamod.boundary.BoundaryFogSystem boundaryFog;
     private com.hexvane.eterniamod.runtime.EterniaRuntime runtime;
     private com.hexvane.eterniamod.housing.NativeClaimCoordinator claims;
@@ -53,6 +54,7 @@ public final class EterniaModPlugin extends JavaPlugin {
     public com.hexvane.eterniamod.runtime.EterniaRuntime getRuntime() { return runtime; }
     public com.hexvane.eterniamod.housing.NativeClaimCoordinator getClaims() { return claims; }
     public com.hexvane.eterniamod.runtime.NativeTravelService getTravel() { return travel; }
+    public com.hexvane.eterniamod.runtime.JoinSpawns getJoinSpawns() { return joinSpawns; }
     public com.hexvane.eterniamod.runtime.NativeMenuActions getMenuActions() { return menuActions; }
     public com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator getRelocation() { return relocation; }
     public com.hexvane.eterniamod.inventory.NativeItemEscrow getItemEscrow() { return itemEscrow; }
@@ -91,6 +93,8 @@ public final class EterniaModPlugin extends JavaPlugin {
         infrastructure = new com.hexvane.eterniamod.housing.HousingInfrastructure(dataDirectory.resolve("housing-infrastructure.json"));
         try { infrastructure.load(); } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
         claims = new com.hexvane.eterniamod.housing.NativeClaimCoordinator(this);
+        joinSpawns = new com.hexvane.eterniamod.runtime.JoinSpawns(dataDirectory.resolve("join-spots.json"));
+        try { joinSpawns.load(); } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
         travel = new com.hexvane.eterniamod.runtime.NativeTravelService(this);
         relocation = new com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator(this);
         plotMover = new com.hexvane.eterniamod.housing.VoluntaryPlotMover(this);

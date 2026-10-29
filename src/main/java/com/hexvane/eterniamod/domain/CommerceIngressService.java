@@ -19,11 +19,30 @@ public final class CommerceIngressService extends DomainSupport {
         stageVerifiedLines(List.of(purchase));
     }
     public void stageVerifiedLines(List<CommerceService.VerifiedPurchase> purchases){
+        stageVerifiedLines(purchases,Map.of());
+    }
+    /** Only the signature-verified adapter may supply provider IDs from the same replayed payment.
+     * Repairs the old recipient parser before any fulfillment, with the independently recorded console as proof. */
+    public void stageVerifiedLines(List<CommerceService.VerifiedPurchase> purchases,Map<String,UUID> legacyRecipients){
         purchases=List.copyOf(purchases);require(purchases.size()<=100,CAPACITY,"Too many payment lines");var staged=new LinkedHashMap<String,Map<String,String>>();
         for(var purchase:purchases){require(purchase.provider().equals("tebex"),INVALID_INPUT,"Wrong provider");String id=key(purchase.transactionId(),purchase.packageId());
             require(!staged.containsKey(id),CONFLICT,"Duplicate package lines require review");
             staged.put(id,fields("transaction",purchase.transactionId(),"line",purchase.lineId(),"package",purchase.packageId(),"recipient",purchase.recipient().key(),"quantity",purchase.quantity(),"revision",purchase.productRevision(),"subscription",purchase.subscriptionId(),"start",purchase.periodStart(),"end",purchase.paidUntil()));}
-        store.transaction(tx->{staged.forEach((id,data)->receipt(tx,"tebex_verified",id,data));return null;});
+        store.transaction(tx->{staged.forEach((id,data)->{
+            String rowKey=key(id);var previous=tx.find("tebex_verified",rowKey);
+            UUID legacy=legacyRecipients.get(data.get("package"));
+            if(previous.isPresent()&&!previous.get().fields().equals(data)&&legacy!=null){
+                var old=previous.get();var expected=tx.find("tebex_console",rowKey);
+                require(old.value("recipient").equals(Owner.player(legacy).key())&&changed(old,"recipient",data.get("recipient")).equals(data),CONFLICT,"Only the legacy provider recipient may be repaired");
+                require(tx.find("account",legacy.toString()).isEmpty()&&tx.find("tebex_done",rowKey).isEmpty()&&tx.find("tebex_review",rowKey).isEmpty()
+                    &&tx.find("tebex_identity_repair",rowKey).isEmpty()&&tx.find("tebex_reversal",data.get("transaction")).isEmpty()
+                    &&tx.find("commerce_purchase",key("tebex",data.get("transaction"),data.get("line"))).isEmpty(),CONFLICT,"Purchase requires manual review");
+                require(expected.isPresent(),CONFLICT,"Recipient repair requires the console receipt");
+                for(String field:List.of("transaction","package","recipient","quantity","revision"))require(expected.get().value(field).equals(data.get(field)),CONFLICT,"Repaired receipt must match the console");
+                tx.save("tebex_identity_repair",rowKey,0,fields("transaction",data.get("transaction"),"package",data.get("package"),"previousRecipient",old.value("recipient"),"recipient",data.get("recipient")));
+                tx.save("tebex_verified",rowKey,old.revision(),data);
+            }else receipt(tx,"tebex_verified",id,data);
+        });return null;});
     }
     /** May be retried after a crash between grant commit and queue acknowledgement. */
     public int reconcile(int limit){

@@ -14,6 +14,7 @@ import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelAsset;
 import com.hypixel.hytale.server.core.cosmetics.CosmeticsModule;
+import com.hypixel.hytale.server.core.entity.AnimationUtils;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.player.RemovedPlayerFromWorldEvent;
 import com.hypixel.hytale.server.core.modules.entity.component.*;
@@ -119,7 +120,25 @@ public final class CollectionRuntime implements AutoCloseable {
                 var transform=store.getComponent(ref,TransformComponent.getComponentType());if(transform==null)continue;
                 var last=visible.get(plan.pet.id());var lastTransform=last!=null&&last.ref.isValid()?store.getComponent(last.ref,TransformComponent.getComponentType()):null;
                 var position=transform.getPosition();var point=lastTransform==null?PetMotion.behind(position.x,position.z,transform.getRotation().yaw()):PetMotion.follow(lastTransform.getPosition().x,lastTransform.getPosition().z,position.x,position.z,transform.getRotation().yaw());
-                target=new Vector3d(point.x(),position.y+.85,point.z());
+                target=walker(plan)?ground(world,point.x(),point.z(),position.y):new Vector3d(point.x(),position.y+.85,point.z());
+            }else if(walker(plan)) {
+                var location=plan.property.location;if(!location.worldId().equals(world.getName()))continue;
+                if(residents.merge(plan.property.id,1,Integer::sum)>12)continue;
+                bounds=new PetMotion.Bounds(location.minX(),location.minZ(),(double)location.minX()+location.width(),(double)location.minZ()+location.depth());
+                double x=(bounds.minX()+bounds.maxX())*.5,z=(bounds.minZ()+bounds.maxZ())*.5;
+                boolean near=false;for(var player:players.values()) {var transform=store.getComponent(player.getReference(),TransformComponent.getComponentType());if(transform!=null&&Math.hypot(transform.getPosition().x-x,transform.getPosition().z-z)<96){near=true;break;}}
+                if(!near)continue;
+                var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).getPlot(plan.property.id);
+                if(plot==null||plot.getFootprint()==null)continue;
+                // Resident walkers stroll to a spot, stay a while, then pick another, instead of drifting without pause.
+                var current=visible.get(plan.pet.id());long now=System.nanoTime();
+                if(current!=null&&current.target!=null&&(now<current.nextWander||current.ref.isValid()&&distanceXZ(store,current)>.4))target=current.target;
+                else {
+                    var random=ThreadLocalRandom.current();
+                    target=surface(world,bounds.x(x+(random.nextDouble()*2-1)*location.width()*.32),bounds.z(z+(random.nextDouble()*2-1)*location.depth()*.32),plot.getFootprint().resolveVisualCenterY(),1);
+                    if(target==null)continue;
+                    if(current!=null)current.nextWander=now+(long)((6+random.nextDouble()*10)*1e9);
+                }
             }else {
                 var location=plan.property.location;if(!location.worldId().equals(world.getName()))continue;
                 if(residents.merge(plan.property.id,1,Integer::sum)>12)continue;
@@ -132,7 +151,7 @@ public final class CollectionRuntime implements AutoCloseable {
                 double seed=(plan.pet.id().getLeastSignificantBits()&0xffff)*.001;
                 x=bounds.x(x+Math.sin(seed+System.nanoTime()/1e10)*(location.width()*.32));
                 z=bounds.z(z+Math.cos(seed+System.nanoTime()/1.3e10)*(location.depth()*.32));
-                target=hoverSurface(world,x,z,plot.getFootprint().resolveVisualCenterY());if(target==null)continue;
+                target=surface(world,x,z,plot.getFootprint().resolveVisualCenterY(),1.4);if(target==null)continue;
             }
             if(!clear(world,target))continue;
             VisiblePet existing=visible.get(plan.pet.id());
@@ -157,6 +176,7 @@ public final class CollectionRuntime implements AutoCloseable {
                 // ModelSpawned installs a server collider. Purely cosmetic followers must not absorb projectiles or block movement.
                 if(store.getComponent(ref,BoundingBox.getComponentType())!=null)store.removeComponent(ref,BoundingBox.getComponentType());
                 existing=new VisiblePet(ref,plan,target,bounds);visible.put(plan.pet.id(),existing);
+                if(walker(plan)){existing.behavior=new PetBehavior();existing.nextWander=System.nanoTime()+6_000_000_000L;}
             }else {existing.plan=plan;existing.target=target;existing.bounds=bounds;}
             desired.add(plan.pet.id());
         }
@@ -188,6 +208,7 @@ public final class CollectionRuntime implements AutoCloseable {
         for(VisiblePet pet:visible.values()) {
             if(!pet.ref.isValid())continue;
             var transform=store.getComponent(pet.ref,TransformComponent.getComponentType());if(transform==null)continue;
+            if(pet.behavior!=null){walk(world,store,pet,transform,dt);continue;}
             Vector3d target=new Vector3d(pet.target),lookAt=null;
             if(pet.plan.property==null) {
                 PlayerRef owner=null;for(var player:world.getPlayerRefs())if(player.getUuid().equals(pet.plan.pet.owner().id())){owner=player;break;}
@@ -213,13 +234,74 @@ public final class CollectionRuntime implements AutoCloseable {
         }
     }
 
-    private Vector3d hoverSurface(World world,double x,double z,int baseline) {
+    /** Walking pets: steady pace over the ground, stepping up single blocks, facing where they go and playing their mood. */
+    private void walk(World world,Store<EntityStore> store,VisiblePet pet,TransformComponent transform,float dt) {
+        Vector3d current=new Vector3d(transform.getPosition()),target=new Vector3d(pet.target),owner=null;
+        if(pet.plan.property==null) {
+            PlayerRef player=null;for(var candidate:world.getPlayerRefs())if(candidate.getUuid().equals(pet.plan.pet.owner().id())){player=candidate;break;}
+            if(player==null||player.getReference()==null||!player.getReference().isValid())return;
+            if(store.getComponent(player.getReference(),DeathComponent.getComponentType())!=null)return;
+            var position=store.getComponent(player.getReference(),TransformComponent.getComponentType());if(position==null)return;
+            owner=new Vector3d(position.getPosition());
+            var point=PetMotion.follow(current.x,current.z,owner.x,owner.z,position.getRotation().yaw());
+            target=ground(world,point.x(),point.z(),owner.y);
+        }
+        boolean ownerMoves=owner!=null&&pet.lastOwner!=null&&owner.distanceSquared(pet.lastOwner)>1e-4;
+        if(owner!=null)pet.lastOwner=owner;
+        boolean recover=current.distanceSquared(target)>144;
+        if(owner!=null&&Math.hypot(owner.x-current.x,owner.z-current.z)>4&&(pet.hold||pet.behavior.asleep())) {
+            pet.behavior.interrupt();pet.hold=false;AnimationUtils.stopAnimation(pet.ref,AnimationSlot.Action,store);
+        }
+        Vector3d next=current;
+        if(recover)next=target;
+        else if(!pet.hold) {
+            var point=PetMotion.walk(current.x,current.z,target.x,target.z,dt);
+            double x=pet.bounds==null?point.x():pet.bounds.x(point.x()),z=pet.bounds==null?point.z():pet.bounds.z(point.z());
+            // Hop straight up a single block; settle down slopes and ledges a little at a time.
+            double rise=ground(world,x,z,current.y).y-current.y;
+            next=new Vector3d(x,current.y+(rise>0?rise:Math.max(rise,-8*Math.min(dt,.1))),z);
+            if(rise>1.01||!clear(world,next))next=current;
+        }
+        double moved=Math.hypot(next.x-current.x,next.z-current.z);
+        if(next!=current)transform.setPosition(next);
+        var step=pet.behavior.update(dt,recover?0:moved/dt,recover,ownerMoves,ThreadLocalRandom.current().nextDouble());
+        pet.hold=step.hold();
+        float yaw=transform.getRotation().yaw();
+        if(moved>1e-3)yaw=(float)Math.atan2(-(next.x-current.x),-(next.z-current.z));
+        else if(owner!=null&&!pet.behavior.asleep())yaw=(float)Math.atan2(-(owner.x-next.x),-(owner.z-next.z));
+        transform.setRotation(new Rotation3f(0,yaw,0));
+        var head=store.getComponent(pet.ref,HeadRotation.getComponentType());if(head!=null)head.setRotation(new Rotation3f(0,yaw,0));
+        if(!step.movement().equals(pet.movement)) {
+            pet.movement=step.movement();
+            AnimationUtils.playAnimation(pet.ref,AnimationSlot.Movement,pet.movement,store);
+            var animations=store.getComponent(pet.ref,ActiveAnimationComponent.getComponentType());if(animations!=null)animations.setPlayingAnimation(AnimationSlot.Movement,pet.movement);
+        }
+        if(step.emote()!=null)AnimationUtils.playAnimation(pet.ref,AnimationSlot.Action,step.emote().clip,store);
+    }
+    private static boolean walker(PetPlan plan) {
+        var asset=ModelAsset.getAssetMap().getAsset(plan.definition.assetId());
+        return asset!=null&&asset.getAnimationSetMap()!=null&&asset.getAnimationSetMap().containsKey(PetBehavior.WALK);
+    }
+    /** Standing spot at x,z: the top of the first solid block from a little above y downwards, else y itself. */
+    private static Vector3d ground(World world,double x,double z,double y) {
+        int bx=(int)Math.floor(x),bz=(int)Math.floor(z),top=(int)Math.floor(y+1.5);
+        if(ChunkSectionBlockUtil.isChunkInMemory(world,bx,bz))for(int by=top;by>=top-6&&by>0;by--) {
+            var block=ChunkSectionBlockUtil.blockType(world,bx,by,bz);
+            if(block!=null&&block!=BlockType.EMPTY&&block.getMaterial()!=BlockMaterial.Empty)return new Vector3d(x,by+1,z);
+        }
+        return new Vector3d(x,y,z);
+    }
+    private static double distanceXZ(Store<EntityStore> store,VisiblePet pet) {
+        var transform=store.getComponent(pet.ref,TransformComponent.getComponentType());if(transform==null||pet.target==null)return 0;
+        return Math.hypot(transform.getPosition().x-pet.target.x,transform.getPosition().z-pet.target.z);
+    }
+    private Vector3d surface(World world,double x,double z,int baseline,double lift) {
         if(!ChunkSectionBlockUtil.isChunkInMemory(world,(int)Math.floor(x),(int)Math.floor(z)))return null;
         for(int d=0;d<=8;d++)for(int sign:new int[]{-1,1}) {
             int y=baseline+d*sign;if(y<0||y>316)continue;
             var block=ChunkSectionBlockUtil.blockType(world,(int)Math.floor(x),y,(int)Math.floor(z));
             if(block!=null&&block!=BlockType.EMPTY&&block.getMaterial()!=BlockMaterial.Empty) {
-                var position=new Vector3d(x,y+1.4,z);if(clear(world,position))return position;
+                var position=new Vector3d(x,y+lift,z);if(clear(world,position))return position;
             }
         }
         return null;
@@ -260,5 +342,5 @@ public final class CollectionRuntime implements AutoCloseable {
     private record Property(UUID id,HousingService.ClaimLocation location){}
     private record PetPlan(CollectionService.Pet pet,CollectionService.Definition definition,Property property){}
     private static final class Appearance {PlayerSkin original,lastApplied;final DisplayNameComponent originalName;Appearance(PlayerSkin original,DisplayNameComponent name){this.original=original;this.originalName=name;}}
-    private static final class VisiblePet {final Ref<EntityStore> ref;PetPlan plan;Vector3d target;PetMotion.Bounds bounds;VisiblePet(Ref<EntityStore> ref,PetPlan plan,Vector3d target,PetMotion.Bounds bounds){this.ref=ref;this.plan=plan;this.target=target;this.bounds=bounds;}}
+    private static final class VisiblePet {final Ref<EntityStore> ref;PetPlan plan;Vector3d target;PetMotion.Bounds bounds;PetBehavior behavior;boolean hold;long nextWander;Vector3d lastOwner;String movement=PetBehavior.IDLE;VisiblePet(Ref<EntityStore> ref,PetPlan plan,Vector3d target,PetMotion.Bounds bounds){this.ref=ref;this.plan=plan;this.target=target;this.bounds=bounds;}}
 }

@@ -1,0 +1,1 @@
+{"id":"eternia:store/flower_bed","revision":1,"name":"Flower Bed","description":"A raised stone bed bursting with flowers and a leafy bush.","category":"Furnishings","price":100,"benefits":[{"contentId":"eternia:prop/flower_bed","kind":"QUANTITY","quantity":1,"expiresWithSubscription":false}]}

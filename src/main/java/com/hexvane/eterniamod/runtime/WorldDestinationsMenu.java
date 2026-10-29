@@ -28,7 +28,8 @@ public final class WorldDestinationsMenu {
         plugin.getInfrastructure().worlds().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
             String id = entry.getKey();
             var destination = entry.getValue();
-            if (id.equals(current) || destination.arrival() == null || Universe.get().getWorld(id) == null) return;
+            // Adventure worlds fall back to their own spawn, so they need no authored arrival.
+            if (id.equals(current) || destination.arrival() == null && !destination.role().equals("adventure") || Universe.get().getWorld(id) == null) return;
             choices.add(new IllustratedMenuPage.Card(UiPresentation.friendlyId(id), description(destination.role()), image(destination.role()), "Travel", (r, s) -> {
                 guard.accept(r,s);
                 // The travel service rechecks access and availability when the player clicks.

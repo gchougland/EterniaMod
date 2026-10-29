@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/reading_corner",
+  "revision": 1,
+  "name": "Reading Corner",
+  "description": "A soft couch with a candle and a stack of good books close at hand.",
+  "category": "Furnishings",
+  "price": 160,
+  "benefits": [
+    {
+      "contentId": "eternia:prop/reading_corner",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

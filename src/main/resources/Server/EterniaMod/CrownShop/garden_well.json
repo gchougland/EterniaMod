@@ -1,0 +1,1 @@
+{"id":"eternia:store/garden_well","revision":1,"name":"Garden Well","description":"A little stone well under a darkwood roof, with a rope and bucket.","category":"Furnishings","price":200,"benefits":[{"contentId":"eternia:prop/garden_well","kind":"QUANTITY","quantity":1,"expiresWithSubscription":false}]}

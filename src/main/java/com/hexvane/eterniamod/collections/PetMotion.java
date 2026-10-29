@@ -17,6 +17,13 @@ public final class PetMotion {
         public double z(double value) { return Math.clamp(value,minZ+1,maxZ-1); }
         public boolean contains(double x,double z) { return x>=minX+1 && x<=maxX-1 && z>=minZ+1 && z<=maxZ-1; }
     }
+    /** Walking pets cover ground at a steady pace that rises with distance, so they stroll near the owner and run to catch up. */
+    public static Point walk(double x,double z,double targetX,double targetZ,double dt) {
+        double dx=targetX-x,dz=targetZ-z,distance=Math.hypot(dx,dz);
+        if(!Double.isFinite(distance+dt)||dt<=0||distance<1e-6)return new Point(x,z);
+        double step=Math.min(distance,Math.clamp(distance*2.2,1.2,6.5)*Math.min(dt,.1));
+        return new Point(x+dx/distance*step,z+dz/distance*step);
+    }
     public static double blend(double from,double target,double dt) {
         if (!Double.isFinite(from+target+dt) || dt<=0) return from;
         return from+(target-from)*Math.min(1,Math.min(dt,.1)*3);

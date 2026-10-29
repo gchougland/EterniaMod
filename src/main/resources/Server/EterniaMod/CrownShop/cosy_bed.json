@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/cosy_bed",
+  "revision": 1,
+  "name": "Cosy Bed",
+  "description": "A snug bed with a candle and a book on the nightstand.",
+  "category": "Furnishings",
+  "price": 150,
+  "benefits": [
+    {
+      "contentId": "eternia:prop/cosy_bed",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

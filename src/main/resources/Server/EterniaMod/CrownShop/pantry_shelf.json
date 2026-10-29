@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/pantry_shelf",
+  "revision": 1,
+  "name": "Pantry Shelf",
+  "description": "Shelves stocked with cheese, bread, fruit and jars.",
+  "category": "Furnishings",
+  "price": 110,
+  "benefits": [
+    {
+      "contentId": "eternia:prop/pantry_shelf",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

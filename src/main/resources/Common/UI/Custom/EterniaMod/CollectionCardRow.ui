@@ -10,10 +10,10 @@ $T = "Theme/Citadel.ui";
   $T.@SecondaryTextButton #RowAction { Anchor: (Height: 26); }
 };
 Group { Anchor: (Height: 234, Bottom: 10); LayoutMode: Left;
-  Group { FlexWeight: 1; Anchor: (Right: 10); @Card #Card0 {} }
-  Group { FlexWeight: 1; Anchor: (Right: 10); @Card #Card1 {} }
-  Group { FlexWeight: 1; Anchor: (Right: 10); @Card #Card2 {} }
-  Group { FlexWeight: 1; Anchor: (Right: 10); @Card #Card3 {} }
-  Group { FlexWeight: 1; Anchor: (Right: 10); @Card #Card4 {} }
-  Group { FlexWeight: 1; @Card #Card5 {} }
+  Group #Slot0 { FlexWeight: 1; Anchor: (Right: 10); @Card #Card0 {} }
+  Group #Slot1 { FlexWeight: 1; Anchor: (Right: 10); @Card #Card1 {} }
+  Group #Slot2 { FlexWeight: 1; Anchor: (Right: 10); @Card #Card2 {} }
+  Group #Slot3 { FlexWeight: 1; Anchor: (Right: 10); @Card #Card3 {} }
+  Group #Slot4 { FlexWeight: 1; Anchor: (Right: 10); @Card #Card4 {} }
+  Group #Slot5 { FlexWeight: 1; @Card #Card5 {} }
 }

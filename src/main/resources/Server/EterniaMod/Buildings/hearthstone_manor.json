@@ -1,0 +1,17 @@
+{
+  "id": "hearthstone_manor",
+  "displayName": "Hearthstone Manor",
+  "prefabPath": "EterniaMod/Houses/House_Hearthstone_Manor.prefab.json",
+  "plotAnchorOffset": [
+    10,
+    0,
+    12
+  ],
+  "spawnLocalPos": [
+    0,
+    1,
+    -1
+  ],
+  "rotationYaw": "None",
+  "housingKind": "personal"
+}

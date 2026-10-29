@@ -76,6 +76,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private final Desk desk;
     private Section section;
     private boolean deskHome;
+    /** Collection content shown in the 3D viewer beside the cards; empty when the viewer is closed. */
+    private String previewContent = "";
     private String mode = "";
     private String focus = "";
     private String one = "", two = "", three = "";
@@ -92,6 +94,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         super(player, CustomPageLifetime.CanDismissOrCloseThroughInteraction, Data.CODEC);
         this.registration = registration; this.services = registration.services; this.actor = player.getUuid();
         this.desk = desk; this.section = desk.sections.contains(section) ? section : desk.sections.getFirst(); this.deskHome = deskHome && desk != Desk.JOURNAL;
+        this.preview = new com.hexvane.eterniamod.ui.PrefabCardPreview(player);
     }
 
     boolean isJournal() { return desk == Desk.JOURNAL; }
@@ -132,8 +135,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         for (int i = start; i < Math.min(rows.size(), start + visiblePageSize()); i++) {
             Row row = rows.get(i);
             if(collectionGrid()&&!row.contentId.isEmpty()) {
-                int card=(i-start)%CARDS_PER_ROW;String grid="#Rows["+((i-start)/CARDS_PER_ROW)+"]";
-                if(card==0){commands.append("#Rows","EterniaMod/CollectionCardRow.ui");for(int slot=0;slot<CARDS_PER_ROW;slot++)commands.set(grid+" #Card"+slot+".Visible",i+slot<rows.size());}
+                int perRow=cardsPerRow();int card=(i-start)%perRow;String grid="#Rows["+((i-start)/perRow)+"]";
+                if(card==0){commands.append("#Rows","EterniaMod/CollectionCardRow.ui");for(int slot=0;slot<CARDS_PER_ROW;slot++){commands.set(grid+" #Slot"+slot+".Visible",slot<perRow);commands.set(grid+" #Card"+slot+".Visible",slot<perRow&&i+slot<rows.size());}}
                 String tile=grid+" #Card"+card;ContentImages.row(commands,tile,row.contentId);
                 commands.set(tile+" #CardName.Text",row.text);commands.set(tile+" #CardDetail.Text",row.goal);
                 boolean cardAction=!row.label.isEmpty()&&(row.route.isEmpty()||allowed(row.route));commands.set(tile+" #RowAction.Text",row.label);commands.set(tile+" #RowAction.Visible",cardAction);
@@ -161,8 +164,11 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if(!Set.of("ServicesMail","ServicesRoster").contains(layout()))commands.setObject("#Fields.Anchor",UiAnchors.heightWithBottom(hasFields?(int)Arrays.stream(labels).filter(label->!label.isEmpty()).count()*50:0,10));
         if(section==Section.MAIL){commands.set("#Reader.Visible",!hasFields);commands.set("#Document.Text",pending==null?view.document:pending.explanation);commands.setObject("#Document.Anchor",UiAnchors.heightWithRight(Math.max(250,UiPresentation.wrappedHeight(view.document,820,25)),12));}
         if(layout().equals("ServicesOverview")){String feature=switch(section){case HOUSING->"Your own corner";case WORLDS->"The road awaits";case COMING_SOON->"More adventures ahead";default->"Welcome, adventurer";};commands.set("#FeatureTitle.Text",feature);commands.set("#FeatureText.Text",switch(section){case HOUSING->"A free plot, a home to personalize, and a place to return to after your adventures.";case WORLDS->"Public portals connect the Hub to the worlds beyond.";case COMING_SOON->"Minigames are coming soon. Your housing and season journeys are ready now.";default->"Prowl\nEternia Guide\n\nSettle in, find your guild, and start exploring.";});commands.setObject("#SectionArt.Background", new com.hypixel.hytale.server.core.ui.PatchStyle(com.hypixel.hytale.server.core.ui.Value.of("EterniaMod/Icons/"+(section==Section.WORLDS?"worlds":"housing")+".png")));}
-        if(section==Section.SEASON){commands.set("#SeasonProgress.Visible",!focus.isEmpty()&&pending==null);commands.set("#ProgressLabel.Text",view.progressLabel);bar(commands,"#ProgressFill","#ProgressRest",view.progress,view.progressTotal);}
-        if(section==Section.COLLECTION){commands.set("#CollectionBanner.Visible",false);commands.set("#CollectionSummary.Text",view.document);}
+        if(section==Section.SEASON){commands.set("#SeasonProgress.Visible",!focus.isEmpty()&&pending==null);commands.set("#ProgressLabel.Text",view.progressLabel);bar(commands,"#ProgressFill","#ProgressRest",view.progress,view.progressTotal);
+            if(pending==null&&view.season!=null)SeasonHall.render(commands,view.season,(selector,route)->bind(events,selector,route),busy);}
+        if(section==Section.COLLECTION){commands.set("#CollectionBanner.Visible",false);commands.set("#CollectionSummary.Text",view.document);
+            boolean viewer=!previewContent.isEmpty()&&pending==null;commands.set("#CollectionPreview.Visible",viewer);
+            if(viewer){commands.set("#PreviewName.TextSpans",Message.raw(view.rows.stream().filter(row->row.contentId.equals(previewContent)).map(Row::text).findFirst().orElse(UiPresentation.contentName(previewContent))));bind(events,"#ClosePreview","collection_preview_close");}}
         String[] values = {one, two, three};
         String[] ids = {"One", "Two", "Three"};
         for (int i = 0; i < 3; i++) {
@@ -181,9 +187,16 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             commands.set(buttonIds[i] + ".Disabled", busy || buttons[i].route.isEmpty());
             if (shown && !buttons[i].route.isEmpty()) bind(events, buttonIds[i], buttons[i].route);
         }
+        if(section==Section.SEASON)commands.set("#Status.Visible",!status.isEmpty());
+        if(section==Section.SEASON)commands.set("#Actions.Visible",Arrays.stream(buttons).anyMatch(button->!button.label.isEmpty()&&(button.route.isEmpty()||allowed(button.route))));
         if (initialLoad) { initialLoad = false; store.getExternalData().getWorld().execute(()->{if(!isDismissed()&&ref.isValid())refresh(ref, store, "");}); }
     }
 
+    private int cardsPerRow(){return previewContent.isEmpty()?CARDS_PER_ROW:4;}
+    /** Every rebuild recreates the viewer, so the open prefab is sent again after it. */
+    private final com.hexvane.eterniamod.ui.PrefabCardPreview preview;
+    @Override protected void rebuild(){super.rebuild();if(isDismissed())return;preview.show(section==Section.COLLECTION&&!deskHome&&!previewContent.isEmpty()?previewContent:null);}
+    @Override public void onDismiss(@Nonnull Ref<EntityStore> ref,@Nonnull Store<EntityStore> store){preview.clear();super.onDismiss(ref,store);}
     private boolean collectionGrid(){return section==Section.COLLECTION&&!mode.equals("pet");}
     private int visiblePageSize(){return section==Section.COLLECTION&&(mode.equals("inventory")||collectionGrid())?Math.max(PAGE_SIZE,view.rows.size()):PAGE_SIZE;}
 
@@ -269,7 +282,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if(route.equals("return_parent")){store.getExternalData().getWorld().execute(()->{if(ref.isValid()&&!isDismissed())returnOrClose(ref,store);});return;}
         if (route.startsWith("nav:")) {
             if(route.equals("nav:WORLDS")){registration.actions.perform(SocialUiActions.Action.WORLD_SELECT,ref,store,playerRef);return;}
-            section = Section.valueOf(route.substring(4)); deskHome = false; mode = ""; focus = ""; page = 0; one = two = three = ""; draftCapabilities = null; pending = null;
+            section = Section.valueOf(route.substring(4)); deskHome = false; previewContent = ""; mode = ""; focus = ""; page = 0; one = two = three = ""; draftCapabilities = null; pending = null;
             refresh(ref, store, ""); return;
         }
         if (route.equals("next") || route.equals("previous")) { page = Math.max(0, page + (route.equals("next") ? 1 : -1)); generation++; rebuild(); return; }
@@ -308,7 +321,9 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (route.startsWith("season_view:")) { mode = "rewards"; focus = route.substring(12); page = 0; refresh(ref, store, ""); return; }
         if (route.equals("season_quests")) { mode = "quests"; page = 0; refresh(ref, store, ""); return; }
         if (route.equals("season_rewards")) { mode = "rewards"; page = 0; refresh(ref, store, ""); return; }
-        if (route.startsWith("collection_view:")) { mode = route.substring(16); focus = ""; page = 0; refresh(ref, store, ""); return; }
+        if (route.startsWith("collection_view:")) { mode = route.substring(16); focus = ""; previewContent = ""; page = 0; refresh(ref, store, ""); return; }
+        if (route.startsWith("collection_preview:")) { previewContent = route.substring(19); generation++; rebuild(); return; }
+        if (route.equals("collection_preview_close")) { previewContent = ""; generation++; rebuild(); return; }
         if (route.startsWith("pet_view:")) { mode = "pet"; focus = route.substring(9); page = 0; refresh(ref, store, ""); return; }
         if (Set.of("guild_leave", "guild_assign", "guild_remove", "guild_transfer", "role_save", "mail_archive").contains(route)) {
             String explanation = switch (route) {
@@ -356,7 +371,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 if (mutation) operationNumber++;
                 if(!Arrays.equals(view.fields,loaded.view.fields))one=two=three="";
                 view = loaded.view;
-                status = loaded.notice.isEmpty() ? deskHome ? "" : "Your latest account information. Entries " + (view.rows.isEmpty() ? "0" : Math.min(page * visiblePageSize() + 1, view.rows.size()) + "–" + Math.min((page + 1) * visiblePageSize(), view.rows.size())) + " of " + view.rows.size() : loaded.notice;
+                status = loaded.notice.isEmpty() ? deskHome || view.season != null ? "" : "Your latest account information. Entries " + (view.rows.isEmpty() ? "0" : Math.min(page * visiblePageSize() + 1, view.rows.size()) + "–" + Math.min((page + 1) * visiblePageSize(), view.rows.size())) + " of " + view.rows.size() : loaded.notice;
                 if (view.role != null && draftCapabilities == null) {
                     GuildService.Role role = view.role;
                     boolean builtIn = Set.of("leader", "officer", "architect", "quartermaster", "member").contains(role.id());
@@ -529,7 +544,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 String detail=item.contentId().equals("eternia:convenience/teleporter")?"\nUse Home Waygate in the Architect's Ledger while on your plot. Nothing needs placing.":"";
                 String name=definition == null ? UiPresentation.contentName(item.contentId()) : definition.name();
                 String availability=item.status()+(item.earliestExpiry()==null?"":" • Some expire on "+item.earliestExpiry());
-                rows.add(Row.card(name,availability,"","",item.contentId()));
+                boolean model=com.hexvane.eterniamod.ui.PrefabCardPreview.supports(item.contentId());
+                rows.add(Row.card(name,availability,model?"Preview":"",model?"collection_preview:"+item.contentId():"",item.contentId()));
             }
             String category=input.mode.isEmpty()?"houses":input.mode;
             return new View("Your "+category, switch(category){
@@ -674,10 +690,15 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
 
     private View seasonView(Input input) {
         var progress = services.seasons().progress(actor);
+        var definitions = new HashMap<String,SeasonService.Definition>();
+        services.seasons().definitions().forEach(definition -> definitions.put(definition.id(), definition));
+        var names = new HashMap<String,String>();
+        services.collection().definitions().forEach(item -> names.put(item.id(), item.name()));
+        java.util.function.Function<String,String> name = id -> names.getOrDefault(id, UiPresentation.contentName(id));
         if (input.focus.isEmpty()) {
-            List<Row> rows = progress.stream().map(p -> new Row(p.name() + " • " + p.xp() + " / " + p.totalXp() + " XP • Level " + p.level() + (p.active() ? " • Active" : ""), "View pass", "season_view:" + p.id())).toList();
-            return new View("Permanent season passes", "Choose one active pass. Free and paid tracks share XP; all seasons remain available and switching preserves progress.", rows.isEmpty() ? List.of(Row.info("No season has been published yet.")) : rows,
-                noFields(), buttons("Refresh", "refresh", "", "", "", ""), null);
+            var banners = progress.stream().filter(p -> definitions.containsKey(p.id())).map(p -> SeasonHall.banner(definitions.get(p.id()), p, services.seasons().claimedRewards(actor, definitions.get(p.id())), name)).toList();
+            return new View("Season passes", "Choose a banner to see every reward. Your active pass earns XP while you play, and every pass stays yours forever.", banners.isEmpty() ? List.of(Row.info("No season has been published yet.")) : List.of(),
+                noFields(), buttons("", "", "", "", "", ""), null).season(banners.isEmpty() ? null : SeasonHall.Screen.hall(banners));
         }
         var current = progress.stream().filter(p -> p.id().equals(input.focus)).findFirst().orElseThrow(() -> new IllegalArgumentException("Season is not available."));
         if (input.mode.equals("quests")) {
@@ -685,21 +706,15 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             return new View(current.name() + " · Quests", "Complete these goals while you explore. Quest XP and Coins are awarded automatically.", quests.isEmpty() ? List.of(Row.info("No quests have been added to this pass yet.")) : quests,
                 noFields(), buttons(current.active()?"Active pass":"Activate pass",current.active()?"":"season_activate","","","",""),null).progress(current);
         }
-        var definition = services.seasons().definitions().stream().filter(d -> d.id().equals(input.focus)).findFirst().orElseThrow();
-        List<Row> rows = new ArrayList<>();
-        var tiers=new TreeMap<Integer,TreeMap<Integer,Map<SeasonService.Track,Row>>>();
-        var names=new HashMap<String,String>();services.collection().definitions().forEach(item->names.put(item.id(),item.name()));
-        var claimedRewards=services.seasons().claimedRewards(actor,definition);
-        for (var reward : definition.rewards()) {
-            boolean claimed = claimedRewards.contains(reward);
-            boolean ready = !claimed && current.level() >= reward.level() && (reward.track() == SeasonService.Track.FREE || current.paid());
-            String name=names.getOrDefault(reward.contentId(),UiPresentation.contentName(reward.contentId()));
-            var row=new Row(name+(reward.quantity()>1?" × "+reward.quantity():""),claimed?"Claimed":ready?"Claim":reward.track()==SeasonService.Track.PAID&&!current.paid()?"Paid pass required":"Reach level "+reward.level(),ready?"reward:"+reward.track()+":"+reward.level()+":"+reward.index():"").image(reward.contentId());
-            tiers.computeIfAbsent(reward.level(),ignored->new TreeMap<>()).computeIfAbsent(reward.track()==SeasonService.Track.PAID&&reward.level()==1&&definition.rewards().stream().anyMatch(r->r.contentId().equals("eternia:wearable/prowl_shirt"))?(reward.contentId().equals("eternia:wearable/prowl_shirt")?0:reward.index()+1):reward.index(),ignored->new EnumMap<>(SeasonService.Track.class)).put(reward.track(),row);
-        }
-        tiers.forEach((level,indices)->indices.forEach((index,tracks)->rows.add(Row.rewards("Level "+level+(indices.size()>1?" · Reward "+(index+1):""),tracks.getOrDefault(SeasonService.Track.FREE,Row.info("No free reward here")),tracks.getOrDefault(SeasonService.Track.PAID,Row.info("No paid reward here"))))));
-        return new View(current.name(),(current.paid()?"Both tracks are yours.":"The free track is yours. A paid pass unlocks the second track.")+" Every pass stays available forever.", rows,
-            noFields(), buttons(current.active() ? "Active pass" : "Activate pass", current.active() ? "" : "season_activate", "", "", "", ""), null).progress(current);
+        var definition = definitions.get(input.focus);
+        if (definition == null) throw new IllegalArgumentException("Season is not available.");
+        var claimed = services.seasons().claimedRewards(actor, definition);
+        var quests = services.seasons().quests(actor, input.focus).stream()
+            .sorted(Comparator.comparing(SeasonService.QuestProgress::completed))
+            .limit(4).map(q -> SeasonHall.quest(q, UiPresentation.questTitle(q.quest()), UiPresentation.questGoal(q.quest()))).toList();
+        var screen = new SeasonHall.Screen(List.of(), SeasonHall.banner(definition, current, claimed, name), SeasonHall.tiles(definition, current, claimed, name), quests);
+        return new View(current.name(), (current.active() ? "This is your active pass." : "Activate this pass to earn XP for it.") + (current.paid() ? " Both tracks are yours." : " The premium pass unlocks the second track."),
+            List.of(), noFields(), buttons(current.active() ? "" : "Activate pass", current.active() ? "" : "season_activate", "", "", "", ""), null).season(screen);
     }
 
     private static String bounded(String value, int length) { return value.length() <= length ? value : value.substring(0, length); }
@@ -718,11 +733,12 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private record Input(String one, String two, String three, String mode, String focus, Set<String> capabilities) {}
     private record Request(Section section, Input input, Desk desk, boolean home) {}
     private record Tile(String title,String detail,String icon,String route,boolean primary) {}
-    private record View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role,String document,long progress,long progressTotal,String progressLabel,List<Tile> tiles) {
-        View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role){this(title,description,rows,fields,buttons,role,"",0,0,"",List.of());}
-        View document(String value){return new View(title,description,rows,fields,buttons,role,value,progress,progressTotal,progressLabel,tiles);}
-        static View desk(String greeting,List<Tile> tiles){return new View("",greeting,List.of(),noFields(),EterniaServicesPage.buttons("","","","","",""),null,"",0,0,"",tiles);}
-        View progress(SeasonService.Progress value){return new View(title,description,rows,fields,buttons,role,document,value.xp(),value.totalXp(),"Level "+value.level()+"  ·  "+value.xp()+" / "+value.totalXp()+" XP"+(value.active()?"  ·  Active pass":""),tiles);}
+    private record View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role,String document,long progress,long progressTotal,String progressLabel,List<Tile> tiles,SeasonHall.Screen season) {
+        View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role){this(title,description,rows,fields,buttons,role,"",0,0,"",List.of(),null);}
+        View document(String value){return new View(title,description,rows,fields,buttons,role,value,progress,progressTotal,progressLabel,tiles,season);}
+        View season(SeasonHall.Screen value){return new View(title,description,rows,fields,buttons,role,document,progress,progressTotal,progressLabel,tiles,value);}
+        static View desk(String greeting,List<Tile> tiles){return new View("",greeting,List.of(),noFields(),EterniaServicesPage.buttons("","","","","",""),null,"",0,0,"",tiles,null);}
+        View progress(SeasonService.Progress value){return new View(title,description,rows,fields,buttons,role,document,value.xp(),value.totalXp(),"Level "+value.level()+"  ·  "+value.xp()+" / "+value.totalXp()+" XP"+(value.active()?"  ·  Active pass":""),tiles,season);}
         static View empty(String title, String description) { return new View(title, description, List.of(), noFields(), EterniaServicesPage.buttons("Retry", "refresh", "", "", "", ""), null); }
     }
     private record Loaded(View view, String notice) {}

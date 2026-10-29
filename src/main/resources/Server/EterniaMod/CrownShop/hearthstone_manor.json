@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/hearthstone_manor",
+  "revision": 1,
+  "name": "Hearthstone Manor",
+  "description": "A grand stone manor with a great hall, a roaring hearth and twin stairs to the rooms above.",
+  "category": "Housing",
+  "price": 1100,
+  "benefits": [
+    {
+      "contentId": "eternia:house/hearthstone_manor",
+      "kind": "UNLOCK",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

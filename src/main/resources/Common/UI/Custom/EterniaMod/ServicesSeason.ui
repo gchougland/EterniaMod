@@ -1,11 +1,53 @@
 $T = "Theme/Citadel.ui";
 $C = "../Common.ui";
+@CardTitle = LabelStyle(FontName: "Secondary", FontSize: 19, TextColor: $T.@Text, RenderBold: true, VerticalAlignment: Center);
 Group { FlexWeight: 1; LayoutMode: Top; Background: $T.@JournalPanelSurface; Padding: (Full: 28);
 Label #SectionTitle { Anchor: (Height: 34, Bottom: 6); Style: $T.@TitleStyle; }
 Label #Description { Anchor: (Height: 50, Bottom: 8); Style: $T.@DefaultLabelStyle; }
 Group #SeasonProgress { Anchor: (Height: 56, Bottom: 12); LayoutMode: Top;
 Label #ProgressLabel { Anchor: (Height: 28, Bottom: 8); Style: $T.@SubtitleStyle; }
 Group { Anchor: (Height: 10); Padding: (Full: 1); LayoutMode: Left; Background: #45615d; Group #ProgressFill { FlexWeight: 1; Background: $T.@Accent; } Group #ProgressRest { FlexWeight: 1; Background: #101e22; } }
+}
+Group #Hall { Visible: false; FlexWeight: 1; LayoutMode: LeftScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; Padding: (Top: 6); }
+Group #PassView { Visible: false; FlexWeight: 1; LayoutMode: Left;
+Group #PassBanner { Anchor: (Width: 304); LayoutMode: Top; }
+Group { FlexWeight: 1; LayoutMode: Top;
+Group #TrackCard { Anchor: (Height: 360, Bottom: 16); Background: $T.@CodexCardSurface; Padding: (Full: 18); LayoutMode: Top;
+Group { Anchor: (Height: 30, Bottom: 6); LayoutMode: Left;
+Label #TrackTitle { FlexWeight: 1; Style: @CardTitle; }
+Label #TrackHint { Anchor: (Width: 520); Style: (...$T.@MutedStyle, HorizontalAlignment: End, VerticalAlignment: Center); }
+}
+Group #TrackArea { FlexWeight: 1; Anchor: (Width: 900);
+Group #TrackMarks { Anchor: (Full: 0); }
+Group { Anchor: (Left: 0, Right: 0, Top: 132, Height: 14); Padding: (Full: 1); LayoutMode: Left; Background: #45615d;
+Group #TrackFill { FlexWeight: 1; Background: $T.@Primary; }
+Group #TrackRest { FlexWeight: 1; Background: #101e22; }
+}
+Group #TrackMarker { Anchor: (Left: 0, Top: 125, Width: 28, Height: 28); Background: "SeasonArt/Marker.png"; }
+Group #TrackTiles { Anchor: (Full: 0); }
+}
+}
+Group { FlexWeight: 1; LayoutMode: Left;
+Group #Spotlight { Anchor: (Width: 330, Right: 16); Background: $T.@CodexCardSurface; Padding: (Full: 18); LayoutMode: Top;
+Label #SpotKicker { Anchor: (Height: 20, Bottom: 8); Style: (FontSize: 12, TextColor: $T.@Primary, RenderBold: true, RenderUppercase: true, VerticalAlignment: Center); }
+Group #SpotReward { Anchor: (Height: 64, Bottom: 8); LayoutMode: Left;
+Group #RowImage { Visible: false; Anchor: (Width: 64, Height: 64, Right: 12); }
+ItemIcon #RowItem { Visible: false; Anchor: (Width: 64, Height: 64, Right: 12); }
+Label #SpotName { FlexWeight: 1; Style: (FontName: "Secondary", FontSize: 19, TextColor: $T.@Text, RenderBold: true, Wrap: true, VerticalAlignment: Center); }
+}
+Label #SpotDetail { Anchor: (Height: 44); Style: $T.@MutedStyle; }
+Group { FlexWeight: 1; }
+$T.@TextButton #SpotClaim { Anchor: (Height: 44); Text: "Claim reward"; }
+}
+Group #QuestCard { FlexWeight: 1; Background: $T.@CodexCardSurface; Padding: (Full: 18); LayoutMode: Top;
+Group { Anchor: (Height: 28, Bottom: 10); LayoutMode: Left;
+Label { FlexWeight: 1; Text: "Quests for this pass"; Style: @CardTitle; }
+Label #QuestReset { Anchor: (Width: 260); Style: (...$T.@MutedStyle, HorizontalAlignment: End, VerticalAlignment: Center); }
+}
+Group #QuestLines { FlexWeight: 1; LayoutMode: Top; }
+}
+}
+}
 }
 Group #Rows { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
 Group #Fields { Anchor: (Height: 156, Bottom: 10); LayoutMode: Top;

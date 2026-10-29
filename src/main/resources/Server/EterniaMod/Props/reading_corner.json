@@ -1,0 +1,11 @@
+{
+  "id": "reading_corner",
+  "displayName": "Reading Corner",
+  "prefabPath": "EterniaMod/Props/Catalog_Reading_Corner.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

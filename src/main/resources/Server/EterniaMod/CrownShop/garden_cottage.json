@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/garden_cottage",
+  "revision": 1,
+  "name": "Garden Cottage",
+  "description": "A cottage with a deep shady porch and a little flower garden by the gate.",
+  "category": "Housing",
+  "price": 500,
+  "benefits": [
+    {
+      "contentId": "eternia:house/garden_cottage",
+      "kind": "UNLOCK",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

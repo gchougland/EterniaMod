@@ -1,0 +1,42 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+$T.@PageOverlay {}
+Group {
+ Anchor: (Width: 980, Height: 740); Background: $T.@JournalPanelSurface; Padding: (Full: 24); LayoutMode: Top;
+ Label { Text: "WEBSITE CONTENT ENTRY"; Anchor: (Height: 36, Bottom: 4); Style: $T.@TitleStyle; }
+ Label #Prefab { Anchor: (Height: 24, Bottom: 12); Style: $T.@MutedStyle; }
+ Group { FlexWeight: 1; LayoutMode: Left;
+  Group { FlexWeight: 1; Anchor: (Right: 20); LayoutMode: Top; Background: $T.@InsetSurface; Padding: (Full: 16);
+   Label { Text: "ENTRY"; Anchor: (Height: 30, Bottom: 6); Style: $T.@SubtitleStyle; }
+   Label { Text: "Type"; Anchor: (Height: 24); Style: $T.@MutedStyle; }
+   $T.@SecondaryTextButton #Kind { Anchor: (Height: 42, Bottom: 10); }
+   Label { Text: "ID. Keep it the same once players own it."; Anchor: (Height: 24); Style: $T.@MutedStyle; }
+   $T.@TextField #EntryId { Anchor: (Height: 42, Bottom: 10); MaxLength: 64; }
+   Label { Text: "Name"; Anchor: (Height: 24); Style: $T.@MutedStyle; }
+   $T.@TextField #EntryName { Anchor: (Height: 42, Bottom: 10); MaxLength: 80; }
+   Label { Text: "Details"; Anchor: (Height: 24); Style: $T.@MutedStyle; }
+   MultilineTextField #Details { FlexWeight: 1; AutoGrow: false; MaxLength: 240; Background: $T.@HeaderSurface; Padding: (Full: 12); Style: (FontSize: 16, TextColor: $T.@Text); PlaceholderStyle: (FontSize: 16, TextColor: $T.@Muted); ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+  }
+  Group { FlexWeight: 1; LayoutMode: Top; Background: $T.@InsetSurface; Padding: (Full: 16);
+   Label { Text: "CROWN STORE"; Anchor: (Height: 30, Bottom: 6); Style: $T.@SubtitleStyle; }
+   $T.@SecondaryTextButton #Sold { Anchor: (Height: 42, Bottom: 10); }
+   Label { Text: "Price in Crowns"; Anchor: (Height: 24); Style: $T.@MutedStyle; }
+   $T.@TextField #Price { Anchor: (Height: 42, Bottom: 10); MaxLength: 7; }
+   Label { Text: "Store category"; Anchor: (Height: 24); Style: $T.@MutedStyle; }
+   $T.@SecondaryTextButton #Category { Anchor: (Height: 42, Bottom: 16); }
+   Label { Text: "SEASON PASS"; Anchor: (Height: 30, Bottom: 6); Style: $T.@SubtitleStyle; }
+   $T.@SecondaryTextButton #Pass { Anchor: (Height: 42, Bottom: 10); }
+   Group { Anchor: (Height: 42, Bottom: 10); LayoutMode: Left;
+    $T.@SecondaryTextButton #Track { FlexWeight: 1; Anchor: (Height: 42, Right: 12); }
+    Label { Text: "Level"; Anchor: (Width: 52); Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); }
+    $T.@TextField #Level { Anchor: (Width: 96, Height: 42); MaxLength: 4; }
+   }
+   Label #PassNote { FlexWeight: 1; Style: $T.@MutedStyle; }
+  }
+ }
+ Label #Status { Anchor: (Height: 44, Top: 10, Bottom: 8); Style: $T.@MutedStyle; }
+ Group { Anchor: (Height: 46); LayoutMode: Left;
+  $T.@SecondaryTextButton #Back { Text: "Back to prefabs"; FlexWeight: 1; Anchor: (Height: 46, Right: 12); }
+  $T.@TextButton #Save { Text: "Save and upload"; FlexWeight: 1; Anchor: (Height: 46); }
+ }
+}

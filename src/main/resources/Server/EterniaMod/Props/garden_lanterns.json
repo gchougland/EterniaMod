@@ -1,0 +1,11 @@
+{
+  "id": "garden_lanterns",
+  "displayName": "Garden Lanterns",
+  "prefabPath": "EterniaMod/Props/Catalog_Garden_Lanterns.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

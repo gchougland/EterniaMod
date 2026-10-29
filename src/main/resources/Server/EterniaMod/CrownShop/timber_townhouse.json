@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/timber_townhouse",
+  "revision": 1,
+  "name": "Timber Townhouse",
+  "description": "A tall town home of stone and timber, with flower boxes under the upstairs windows.",
+  "category": "Housing",
+  "price": 550,
+  "benefits": [
+    {
+      "contentId": "eternia:house/timber_townhouse",
+      "kind": "UNLOCK",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

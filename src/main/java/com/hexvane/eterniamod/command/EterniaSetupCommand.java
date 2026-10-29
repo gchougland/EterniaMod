@@ -17,7 +17,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 public final class EterniaSetupCommand extends AbstractPlayerCommand {
     public EterniaSetupCommand() {
         super("setup","Set up this world's housing, roads, portals and Hub services in game");setPermissionGroups("hytale:WorldEditor");
-        for(String name:new String[]{"world","arrival","corner","road","portal","remove","list","show","confirm"})addSubCommand(new Action(name));
+        for(String name:new String[]{"world","arrival","firstjoin","newcomer","corner","road","portal","remove","list","show","confirm"})addSubCommand(new Action(name));
     }
     @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world) {
         try{InfrastructureSetup.open(EterniaModPlugin.get(),ref,store,player);}catch(RuntimeException failure){context.sendMessage(Message.raw(failure.getMessage()));}
@@ -31,6 +31,8 @@ public final class EterniaSetupCommand extends AbstractPlayerCommand {
                 switch(action){
                     case "world"->InfrastructureSetup.role(plugin,ref,store,player,value.get(context));
                     case "arrival"->InfrastructureSetup.arrival(plugin,ref,store,player);
+                    case "firstjoin"->InfrastructureSetup.joinSpot(plugin,ref,store,player,com.hexvane.eterniamod.runtime.JoinSpawns.Kind.FIRST_JOIN);
+                    case "newcomer"->InfrastructureSetup.joinSpot(plugin,ref,store,player,com.hexvane.eterniamod.runtime.JoinSpawns.Kind.NEWCOMER);
                     case "corner"->InfrastructureSetup.corner(ref,store,player,Integer.parseInt(value.get(context)));
                     case "road"->InfrastructureSetup.area(plugin,ref,store,player,HousingInfrastructure.AreaKind.ROAD,value.get(context));
                     case "portal"->InfrastructureSetup.area(plugin,ref,store,player,HousingInfrastructure.AreaKind.PORTAL,value.get(context));

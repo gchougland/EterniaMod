@@ -1,0 +1,233 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": -1,
+      "y": 0,
+      "z": -1,
+      "name": "Furniture_Village_Shelf_Full",
+      "support": 15
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": -1,
+      "name": "Furniture_Village_Bed",
+      "support": 15
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -1,
+      "name": "Furniture_Village_Bed",
+      "support": 15,
+      "filler": 1
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Village_Bed",
+      "support": 15,
+      "filler": 32
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Village_Bed",
+      "support": 15,
+      "filler": 33
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "name": "Furniture_Village_Bed",
+      "support": 15,
+      "filler": 64
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "name": "Furniture_Village_Bed",
+      "support": 15,
+      "filler": 65
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": -1,
+      "name": "Furniture_Village_Bed",
+      "support": 15,
+      "filler": 1024
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": -1,
+      "name": "Furniture_Village_Bed",
+      "support": 15,
+      "filler": 1025
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "name": "Furniture_Village_Bed",
+      "support": 15,
+      "filler": 1056
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 0,
+      "name": "Furniture_Village_Bed",
+      "support": 15,
+      "filler": 1057
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "name": "Furniture_Village_Bed",
+      "support": 15,
+      "filler": 1088
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "name": "Furniture_Village_Bed",
+      "support": 15,
+      "filler": 1089
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -0.7,
+            "Y": 1.25,
+            "Z": -0.75
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 3.141592653589793,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Tavern_Candle"
+        },
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Tavern_Candle",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "tOi7eujyRbmDLg6OkDtSrA==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -0.35,
+            "Y": 1.2,
+            "Z": -0.8
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 3.665191429188092,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Book_Pile_Small"
+        },
+        "EntityScale": {
+          "Scale": 0.4
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Book_Pile_Small",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "/yUmEPz4SR6Tum9lInC3Rg==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -0.5,
+            "Y": 0.30000000000000004,
+            "Z": -0.75
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 2.8797932657906435,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Book_Pile_Small"
+        },
+        "EntityScale": {
+          "Scale": 0.4
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Book_Pile_Small",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "t8z0YA3cSten6Pp6T9EXfg==",
+            "$type": "04"
+          }
+        }
+      }
+    }
+  ]
+}

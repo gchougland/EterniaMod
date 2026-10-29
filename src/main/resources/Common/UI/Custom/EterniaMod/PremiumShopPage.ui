@@ -37,8 +37,10 @@ $T.@CodexScreen {
         }
       }
       $T.@CodexPanel #ConfirmView { Anchor: (Full: 0); Padding: (Full: 32); LayoutMode: Left;
-        Group { Anchor: (Width: 640, Right: 36); Background: $T.@JournalInsetSurface; LayoutMode: Middle;
+        Group { Anchor: (Width: 640, Right: 36); Background: $T.@JournalInsetSurface;
           Group #SelectedImage { Anchor: (Width: 560, Height: 350); }
+          PrefabPreviewComponent #PrefabPreview { Visible: false; Anchor: (Full: 12, Bottom: 44); AllowDragYaw: true; AllowDragPitch: true; AllowZoom: true; AllowPan: true; ShowAnchor: false; }
+          Label #PreviewHint { Visible: false; Anchor: (Bottom: 12, Height: 24); Text: "Drag to turn. Scroll to zoom."; Style: (...$T.@MutedStyle, FontSize: 14, HorizontalAlignment: Center); }
         }
         Group { FlexWeight: 1; LayoutMode: Top;
           Group #PurchaseDetails { FlexWeight: 1; Anchor: (Bottom: 12); LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle;

@@ -59,6 +59,19 @@ public final class PropDefinition {
         }
     }
 
+    /** A copy with a new label and category; placement fields and the prefab stay the same. */
+    @Nonnull
+    public PropDefinition withPresentation(@Nonnull String newDisplayName, @Nonnull String newCategory) {
+        PropDefinition def = new PropDefinition();
+        def.id = id;
+        def.displayName = newDisplayName;
+        def.prefabPath = prefabPath;
+        def.plotAnchorOffset = plotAnchorOffset == null ? new int[] {0, 0, 0} : plotAnchorOffset.clone();
+        def.rotationYaw = rotationYaw;
+        def.category = newCategory;
+        return def;
+    }
+
     @Nonnull
     public static PropDefinition create(
         @Nonnull String id,

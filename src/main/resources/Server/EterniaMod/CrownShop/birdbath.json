@@ -1,0 +1,1 @@
+{"id":"eternia:store/birdbath","revision":1,"name":"Birdbath","description":"A small stone birdbath with fresh water for visiting birds.","category":"Furnishings","price":70,"benefits":[{"contentId":"eternia:prop/birdbath","kind":"QUANTITY","quantity":1,"expiresWithSubscription":false}]}

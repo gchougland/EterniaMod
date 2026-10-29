@@ -1,0 +1,47 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": -2,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Tavern_Planter"
+    },
+    {
+      "x": -2,
+      "y": 1,
+      "z": 0,
+      "name": "Plant_Flower_Tall_Pink"
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Tavern_Bench",
+      "filler": 31
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Tavern_Bench",
+      "support": 15
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Tavern_Planter"
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 0,
+      "name": "Plant_Flower_Bushy_Yellow"
+    }
+  ]
+}

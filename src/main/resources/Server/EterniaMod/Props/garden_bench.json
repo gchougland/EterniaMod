@@ -1,0 +1,11 @@
+{
+  "id": "garden_bench",
+  "displayName": "Garden Bench",
+  "prefabPath": "EterniaMod/Props/Catalog_Garden_Bench.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

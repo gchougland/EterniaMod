@@ -1,0 +1,11 @@
+{
+  "id": "library_shelves",
+  "displayName": "Library Shelves",
+  "prefabPath": "EterniaMod/Props/Catalog_Library_Shelves.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

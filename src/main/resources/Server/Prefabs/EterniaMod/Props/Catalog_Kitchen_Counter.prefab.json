@@ -1,0 +1,432 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Village_Counter",
+      "support": 15,
+      "filler": 31
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Village_Counter",
+      "support": 15
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Brick_Smooth"
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": 1.5,
+            "Y": 1.35,
+            "Z": 0.5
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 3.4033920413889427,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Pot"
+        },
+        "EntityScale": {
+          "Scale": 0.7
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Pot",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "zhY3SU4sSfmsMx2tjevyTQ==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -0.6,
+            "Y": 1.225,
+            "Z": 0.45
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 3.665191429188092,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Bread"
+        },
+        "EntityScale": {
+          "Scale": 0.45
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Bread",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "NVCcucWkQGOiXMSYutrrFg==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -0.2,
+            "Y": 1.175,
+            "Z": 0.3
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 4.1887902047863905,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Crop_Carrot_Item"
+        },
+        "EntityScale": {
+          "Scale": 0.35
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Crop_Carrot_Item",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "LmkwCHogTsmVk43rab241w==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -0.25,
+            "Y": 1.15,
+            "Z": 0.7
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 2.792526803190927,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Crop_Onion_Item"
+        },
+        "EntityScale": {
+          "Scale": 0.3
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Crop_Onion_Item",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "wEjxZS6KTYOQATVZxGmSbw==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -0.75,
+            "Y": 1.175,
+            "Z": 0.8
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 3.316125578789226,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Crop_Cauliflower_Item"
+        },
+        "EntityScale": {
+          "Scale": 0.35
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Crop_Cauliflower_Item",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "n5SfhYIPT5e71mxVv3g40A==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": 0.5,
+            "Y": 1.25,
+            "Z": 0.5
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 3.2288591161895095,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Plate"
+        },
+        "EntityScale": {
+          "Scale": 0.5
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Plate",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "QVQQDOQfRgeCizr0AUT2mA==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": 0.45,
+            "Y": 1.2,
+            "Z": 0.4
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 4.537856055185257,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Kebab_Meat"
+        },
+        "EntityScale": {
+          "Scale": 0.4
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Kebab_Meat",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "eJjSys06Tmeli/KmGEGTQw==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": 0.6,
+            "Y": 1.2,
+            "Z": 0.65
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 4.799655442984406,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Kebab_Vegetable"
+        },
+        "EntityScale": {
+          "Scale": 0.4
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Kebab_Vegetable",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "1l0FbqPgTlOF9CXIi2w27g==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -0.8,
+            "Y": 1.225,
+            "Z": 0.2
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 3.141592653589793,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Tavern_Candle"
+        },
+        "EntityScale": {
+          "Scale": 0.45
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Tavern_Candle",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "3GooYc7ARFymtzpAADC4dQ==",
+            "$type": "04"
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "Transform": {
+          "Position": {
+            "X": -1.5,
+            "Y": 0.375,
+            "Z": 0.5
+          },
+          "Rotation": {
+            "Pitch": 0,
+            "Yaw": 3.5779249665883754,
+            "Roll": 0
+          }
+        },
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Ancient_Sack"
+        },
+        "EntityScale": {
+          "Scale": 0.75
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Ancient_Sack",
+            "Quantity": 1,
+            "OverrideDroppedItemAnimation": true
+          }
+        },
+        "Prop": {},
+        "PreventPickup": {},
+        "PreventItemMerging": {},
+        "PrefabCopyable": {},
+        "UUID": {
+          "UUID": {
+            "$binary": "Clxn6FIqSsOXzP69tMmKVw==",
+            "$type": "04"
+          }
+        }
+      }
+    }
+  ]
+}

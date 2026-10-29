@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/library_shelves",
+  "revision": 1,
+  "name": "Library Shelves",
+  "description": "Tall bookcases full of stories, lit by candles.",
+  "category": "Furnishings",
+  "price": 180,
+  "benefits": [
+    {
+      "contentId": "eternia:prop/library_shelves",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

@@ -38,6 +38,8 @@ public final class InfrastructureSetup {
         var choices=new ArrayList<ChoicePage.Choice>();
         choices.add(new ChoicePage.Choice("Choose this world's role","World role",(r,s)->roles(plugin,r,s,player)));
         choices.add(new ChoicePage.Choice("Use the safe position where you are standing","Set arrival",(r,s)->arrival(plugin,r,s,player)));
+        choices.add(new ChoicePage.Choice("Brand new players appear where you are standing","First join spot",(r,s)->joinSpot(plugin,r,s,player,com.hexvane.eterniamod.runtime.JoinSpawns.Kind.FIRST_JOIN)));
+        choices.add(new ChoicePage.Choice("Players who met the Hub NPCs but have no plot appear where you are standing","Newcomer spot",(r,s)->joinSpot(plugin,r,s,player,com.hexvane.eterniamod.runtime.JoinSpawns.Kind.NEWCOMER)));
         choices.add(new ChoicePage.Choice("Place, move or remove the Hub's service NPCs and portal","Hub services",(r,s)->ManagedHubServices.open(plugin,r,s,player)));
         choices.add(new ChoicePage.Choice("Equip a tool to shape roads with editable spline nodes","Road Designer",(r,s)->com.hexvane.eterniamod.pathtool.SplineRoadTool.give(r,s,player)));
         choices.add(new ChoicePage.Choice("Mark the first corner of a public services plaza","Plaza start",(r,s)->corner(r,s,player,1)));
@@ -63,6 +65,16 @@ public final class InfrastructureSetup {
     public static void arrival(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
         SetupAccess.require(player.getUuid());var pos=position(ref,store);var point=new HousingInfrastructure.Point(pos.x+.5,pos.y,pos.z+.5);var snapshot=plugin.getInfrastructure().snapshot();var old=requirePlan(snapshot,pos.world);
         review(plugin,ref,store,player,snapshot,old,old.withArrival(point),"Set "+pos.world+" arrival to "+point.x()+", "+point.y()+", "+point.z()+". All future public arrivals use this safe pad.",new PlotRect(pos.x,pos.z,1,1),pos.y);
+    }
+    /** Join spots face the way the administrator faces; the safe arrival search still runs for every player. */
+    public static void joinSpot(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,com.hexvane.eterniamod.runtime.JoinSpawns.Kind kind) {
+        SetupAccess.require(player.getUuid());var pos=position(ref,store);var plan=requirePlan(plugin.getInfrastructure().snapshot(),pos.world);
+        if(kind==com.hexvane.eterniamod.runtime.JoinSpawns.Kind.NEWCOMER&&!plan.supportsHousing())throw input("Stand in a world with housing to set the newcomer spot.");
+        var transform=store.getComponent(ref,TransformComponent.getComponentType());float yaw=transform==null?0:transform.getRotation().y;
+        var spot=new com.hexvane.eterniamod.runtime.JoinSpawns.Spot(pos.world,pos.x+.5,pos.y,pos.z+.5,yaw);
+        try{plugin.getJoinSpawns().set(kind,spot);}catch(IOException failure){throw input("The join spot could not be saved: "+failure.getMessage());}
+        var component=store.getComponent(ref,Player.getComponentType());if(component!=null)component.getPageManager().setPage(ref,store,Page.None);
+        player.sendMessage(Message.raw((kind==com.hexvane.eterniamod.runtime.JoinSpawns.Kind.FIRST_JOIN?"First join spot":"Newcomer spot")+" set to "+pos.x+", "+pos.y+", "+pos.z+" in "+pos.world+"."));
     }
     public static void corner(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,int number) {
         SetupAccess.require(player.getUuid());clean();var pos=position(ref,store);var prior=SELECTIONS.get(player.getUuid());

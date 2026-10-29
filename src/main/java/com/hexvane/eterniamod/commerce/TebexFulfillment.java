@@ -80,17 +80,33 @@ public final class TebexFulfillment {
         var registeredProducts=services.commerce().products();
         var seen=new HashSet<String>();
         var verifiedLines=new ArrayList<CommerceService.VerifiedPurchase>();
+        var legacyRecipients=new HashMap<String,UUID>();
+        JsonElement customValue=payment.get("custom");
+        JsonObject custom=customValue==null||customValue.isJsonNull()?null:customValue.getAsJsonObject();
+        UUID profile=custom!=null&&custom.has("eternia_profile_uuid")?gameUuid(required(custom,"eternia_profile_uuid")):null;
         for(JsonElement element:products){
             var product=element.getAsJsonObject();String packageId=required(product,"id");Integer revision=mappings.get(packageId);if(revision==null)continue;
             if(!seen.add(packageId))throw new IllegalArgumentException("Duplicate package lines require review");
             JsonObject username=product.getAsJsonObject("username");if(username==null)throw new IllegalArgumentException("Missing product recipient");
-            UUID recipient=gameUuid(required(username,"id"));long quantity=product.get("quantity").getAsBigDecimal().longValueExact();
+            String providerId=required(username,"id");
+            UUID recipient;
+            if(profile!=null){
+                // Headless custom data is signed by Tebex, but delivery still requires the independent console UUID.
+                // Do not apply the buyer's profile to a gifted product.
+                JsonObject customer=payment.getAsJsonObject("customer");
+                JsonObject buyer=customer==null?null:customer.getAsJsonObject("username");
+                if(buyer==null||!providerId.equals(required(buyer,"id")))throw new IllegalArgumentException("Product recipient differs from buyer");
+                recipient=profile;
+                // Old versions mistook a UUID-shaped provider ID for the Hytale UUID.
+                try{legacyRecipients.put(packageId,gameUuid(providerId));}catch(IllegalArgumentException ignored){/* Numeric provider IDs never staged in old versions. */}
+            }else recipient=gameUuid(providerId);
+            long quantity=product.get("quantity").getAsBigDecimal().longValueExact();
             String expiry=optional(product,"expires_at");Instant end=!expiry.isEmpty()?Instant.parse(expiry):nextPayment;
             boolean recurring=registeredProducts.stream().filter(p->p.packageId().equals(packageId)&&p.revision()==revision).findFirst().map(CommerceService.Product::subscription).orElse(false);
             if(recurring&&(subscription.isEmpty()||end==null))throw new IllegalArgumentException("Missing verified paid subscription period");
             verifiedLines.add(new CommerceService.VerifiedPurchase("tebex",transaction,packageId,packageId,revision,Owner.player(recipient),quantity,recurring?subscription:"",recurring?created:null,recurring?end:null));
         }
-        services.commerceIngress().stageVerifiedLines(verifiedLines);
+        services.commerceIngress().stageVerifiedLines(verifiedLines,legacyRecipients);
     }
     static boolean verifySignature(byte[] body,String signature,byte[] secret){
         if(signature==null||!signature.matches("[0-9a-fA-F]{64}"))return false;

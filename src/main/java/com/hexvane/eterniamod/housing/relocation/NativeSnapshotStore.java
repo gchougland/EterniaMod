@@ -33,6 +33,8 @@ public final class NativeSnapshotStore {
         public Vector3i origin(){return new Vector3i(minX,minY,minZ);}
     }
     public record Snapshot(SnapshotFiles.Saved file,Bounds bounds,BsonDocument document) {}
+    /** The world is writing an affected chunk, section or entity to disk; the same capture can be tried again later. */
+    public static final class StorageBusy extends IllegalStateException {StorageBusy(String message){super(message);}}
     private final SnapshotFiles files;
     public NativeSnapshotStore(Path directory){files=new SnapshotFiles(directory);}
     public SnapshotFiles files(){return files;}
@@ -46,11 +48,11 @@ public final class NativeSnapshotStore {
             if(EterniaModPlugin.get().getInfrastructure().protectedColumn(world.getName(),x,z)) continue;
             var chunk=ChunkSectionBlockUtil.worldChunkIfInMemory(world,x,z);
             if(chunk==null) throw new IllegalStateException("Every affected chunk must be loaded");
-            if(chunk.isSaving())throw new IllegalStateException("Affected chunk storage is in flight; retry after it completes");
+            if(chunk.isSaving())throw new StorageBusy("Affected chunk storage is in flight; retry after it completes");
             for(int y=bounds.minY();y<bounds.maxY();y++) {
                 var section=ChunkSectionBlockUtil.sectionRefAt(world,x,y,z);
                 if(section==null) throw new IllegalStateException("Every affected vertical section must be loaded");
-                if(y==bounds.minY()||(y&31)==0)requireStorageIdle(world,section);
+                if(y==bounds.minY()||(y&31)==0)requireStorageIdle(world,section,captureEntities);
                 var blocks=world.getChunkStore().getStore().getComponent(section,com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection.getComponentType());
                 if(blocks==null)throw new IllegalStateException("Loaded section has no block data");
                 var fluids=world.getChunkStore().getStore().getComponent(section,com.hypixel.hytale.server.core.universe.world.chunk.section.FluidSection.getComponentType());
@@ -73,7 +75,7 @@ public final class NativeSnapshotStore {
             if(store.getComponent(ref,Player.getComponentType())!=null) {if(rejectPlayers)throw new IllegalStateException("Players must leave the plot before packing");continue;}
             var link=store.getComponent(ref,EterniaPlacedInstance.getComponentType());
             if(link==null||!allowedInstances.contains(link.getInstanceId()))throw new IllegalStateException("Unproven entity in snapshot; relocate it or record its provenance first");
-            var dirty=store.getComponent(ref,com.hypixel.hytale.server.core.entity.Dirty.getComponentType());if(dirty!=null&&dirty.isSaving())throw new IllegalStateException("Decorative entity storage is in flight; retry after it completes");
+            var dirty=store.getComponent(ref,com.hypixel.hytale.server.core.entity.Dirty.getComponentType());if(dirty!=null&&dirty.isSaving())throw new StorageBusy("Decorative entity storage is in flight; retry after it completes");
             Holder<EntityStore> holder=NativeDecorativeEntities.capture(store.copyEntity(ref));selection.addEntityFromWorld(holder);
         }
         selection.sortEntitiesByPosition();
@@ -118,13 +120,14 @@ public final class NativeSnapshotStore {
             var dirty=world.getEntityStore().getStore().getComponent(ref,com.hypixel.hytale.server.core.entity.Dirty.getComponentType());if(dirty!=null)dirty.forceMarkDirty();
         }
     }
-    private static void requireStorageIdle(World world,Ref<ChunkStore> ref){
+    /** Entities still held by a section are only a concern when the capture takes custody of entities; block-only captures leave them in place. */
+    private static void requireStorageIdle(World world,Ref<ChunkStore> ref,boolean captureEntities){
         var store=world.getChunkStore().getStore();
         var chunk=store.getComponent(ref,com.hypixel.hytale.server.core.universe.world.chunk.section.ChunkSection.getComponentType());
         var entities=store.getComponent(ref,com.hypixel.hytale.server.core.universe.world.chunk.section.EntitySection.getComponentType());
         var blocks=store.getComponent(ref,com.hypixel.hytale.server.core.universe.world.chunk.section.BlockComponentSection.getComponentType());
-        if(chunk!=null&&chunk.isSaving()||entities!=null&&entities.isSaving()||blocks!=null&&blocks.isSaving())throw new IllegalStateException("Affected section storage is in flight; retry after it completes");
-        if(entities!=null&&!entities.getEntityHolders().isEmpty())throw new IllegalStateException("Affected section contains unloaded entities; fully load it before taking custody");
+        if(chunk!=null&&chunk.isSaving()||entities!=null&&entities.isSaving()||blocks!=null&&blocks.isSaving())throw new StorageBusy("Affected section storage is in flight; retry after it completes");
+        if(captureEntities&&entities!=null&&!entities.getEntityHolders().isEmpty())throw new IllegalStateException("Affected section contains unloaded entities; fully load it before taking custody");
     }
     /** Empty fluids at captured block cells are represented by the envelope's explicit clear-every-block contract. */
     static BsonDocument canonicalEmptyFluids(BsonDocument source){

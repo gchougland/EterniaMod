@@ -37,6 +37,8 @@ tasks.named<Jar>("jar") {
     exclude("META-INF/*.SF", "META-INF/*.RSA", "META-INF/*.DSA")
     // A cached prefab in a jar overrides its JSON regardless of which file is newer.
     exclude("**/*.lpf")
+    // Prefab tool backups (prefab_finalize writes .bak) never ship.
+    exclude("**/*.bak")
 }
 
 tasks.register("verifyReleaseJar") {

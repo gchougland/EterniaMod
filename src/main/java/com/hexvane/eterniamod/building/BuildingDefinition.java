@@ -71,6 +71,22 @@ public final class BuildingDefinition {
         }
     }
 
+    /** A copy with a new label; placement fields and the prefab stay the same. */
+    @Nonnull
+    public BuildingDefinition withDisplayName(@Nonnull String newDisplayName) {
+        BuildingDefinition def = new BuildingDefinition();
+        def.id = id;
+        def.displayName = newDisplayName;
+        def.prefabPath = prefabPath;
+        def.plotAnchorOffset = plotAnchorOffset == null ? new int[] {0, 0, 0} : plotAnchorOffset.clone();
+        def.managementBlockLocalPos = managementBlockLocalPos == null ? null : managementBlockLocalPos.clone();
+        def.rotationYaw = rotationYaw;
+        def.spawnLocalPos = spawnLocalPos == null ? null : spawnLocalPos.clone();
+        def.housingKind = housingKind;
+        def.retired = retired;
+        return def;
+    }
+
     @Nonnull
     public static BuildingDefinition create(
         @Nonnull String id,

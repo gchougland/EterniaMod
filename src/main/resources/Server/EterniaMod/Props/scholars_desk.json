@@ -1,0 +1,11 @@
+{
+  "id": "scholars_desk",
+  "displayName": "Scholar's Desk",
+  "prefabPath": "EterniaMod/Props/Catalog_Scholars_Desk.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

@@ -1,5 +1,8 @@
 import {api,el,link,notice} from './api.js';
 const money=(amount,currency)=>new Intl.NumberFormat(undefined,{style:'currency',currency}).format(amount);
+function purchaseNotice(){
+ const note=el('p');note.append(el('strong','All purchases are final.'),document.createTextNode(' Refunds are only available where required by law. '),link('Read Tebex terms','https://checkout.tebex.io/terms'));return note;
+}
 let sdk;
 function loadCheckout(){
  if(window.Tebex?.checkout)return Promise.resolve(window.Tebex);
@@ -10,7 +13,7 @@ function loadCheckout(){
   script.onerror=()=>{clearTimeout(timer);script.remove();sdk=null;reject(new Error('Checkout could not load. Please check your connection.'));};document.head.append(script);});return sdk;
 }
 export async function treasury(view,state){
- const intro=el('section',undefined,'treasury-intro');intro.append(el('div','The Crown treasury','eyebrow'),el('h1','A little more magic.'),el('p','Choose your Crowns, then find something you love in the Crown Store. Furnish your home, meet a companion, or create a new look.','muted'));view.append(intro);
+ const intro=el('section',undefined,'treasury-intro');intro.append(el('div','The Crown treasury','eyebrow'),el('h1','A little more magic.'),el('p','Choose your Crowns, then find something you love in the Crown Store. Furnish your home, meet a companion, or create a new look.','muted'),purchaseNotice());view.append(intro);
  const balance=el('div',undefined,'treasury-account');view.append(balance);
  async function refreshBalance(){if(!state.user)return;try{const account=await api('/api/account');balance.replaceChildren(el('span',state.user.name,'pill'),el('strong',new Intl.NumberFormat().format(account.crowns.available)+' Crowns'),el('span',account.crowns.owed?'Crowns owed after a refund: '+account.crowns.owed:'Your current in game balance','muted'));}catch{balance.replaceChildren(el('span','Your balance is temporarily unavailable.','muted'));}}
  await refreshBalance();
@@ -21,6 +24,7 @@ export async function treasury(view,state){
   if(result.status==='authorize'){panel.append(el('h2','Confirm your Hytale profile'),el('p','Tebex needs to confirm your profile before payment. Choose the same profile you used to sign in here.'),link('Continue with Hytale',result.authUrl,'button primary'));return;}
   const pack=data.offers.find(p=>p.id===result.packageId);
   panel.append(el('div','Review your purchase','eyebrow'),el('h2',pack?.name||'Your Crowns'),el('p',(pack?new Intl.NumberFormat().format(pack.crowns)+' Crowns for ':'Checkout for ')+state.user.name),el('div',money(result.price,result.currency),'number'),el('p','Tebex handles payment. Any final taxes and payment details are shown at checkout.','muted'));
+  panel.append(purchaseNotice());
   const pay=el('button','Loading secure checkout…','primary');pay.disabled=true;panel.append(pay);
   const fallback=link('Open secure checkout in a new tab',result.checkoutUrl);fallback.target='_blank';fallback.rel='noopener noreferrer';panel.append(fallback);
   const again=el('button','Choose another package');again.onclick=async()=>{try{await api('/api/store/checkout/reset',{method:'POST',body:'{}'});panel.hidden=true;}catch(e){notice(e.message,true);}};panel.append(again);

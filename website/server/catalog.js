@@ -31,13 +31,22 @@ export function validateContent(input){
  warnings.push('Import creates an admin authoring revision only; game publication and entitlement grants are separate.');
  return {valid:errors.length===0,errors:[...new Set(errors)],warnings:[...new Set(warnings)]};
 }
+// PostgreSQL jsonb does not keep key order, so comparisons sort keys first.
+const stable=v=>Array.isArray(v)?v.map(stable):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])])):v;
 export function createCatalog(repo){
  let importLock=Promise.resolve();
- return {list:()=>repo.list('content'),get:key=>repo.get('content',key),validate:validateContent,
- async import(input,actor){
-  const job=importLock.then(async()=>{const validation=validateContent(input);if(!validation.valid)throw new HttpError(400,validation.errors.join('; '));
-  const prior=await repo.list('content');if(prior.some(x=>x.definition.id===input.definition.id&&x.definition.revision===input.definition.revision))throw new HttpError(409,'That immutable content revision already exists. Increment revision.');
+ const locked=fn=>{const job=importLock.then(fn);importLock=job.catch(()=>{});return job;};
+ async function store(input,actor){const validation=validateContent(input);if(!validation.valid)throw new HttpError(400,validation.errors.join('; '));
   const record={key:crypto.randomUUID(),definition:input.definition,prefab:input.prefab||null,validation,sha256:crypto.createHash('sha256').update(JSON.stringify(input)).digest('hex'),createdAt:new Date().toISOString(),createdBy:actor};
-  await repo.put('content',record.key,record);return record;});importLock=job.catch(()=>{});return job;
- }};
+  await repo.put('content',record.key,record);return record;}
+ return {list:()=>repo.list('content'),get:key=>repo.get('content',key),validate:validateContent,
+ import(input,actor){return locked(async()=>{
+  const prior=await repo.list('content');if(prior.some(x=>x.definition.id===input?.definition?.id&&x.definition.revision===input.definition.revision))throw new HttpError(409,'That immutable content revision already exists. Increment revision.');
+  return store(input,actor);});},
+ /** Game uploads get the next revision of their ID; an upload identical to the latest revision is not stored again. */
+ importNext(input,actor){return locked(async()=>{
+  const same=(await repo.list('content')).filter(x=>x.definition.id===input.definition.id).sort((a,b)=>b.definition.revision-a.definition.revision),latest=same[0];
+  const fingerprint=x=>JSON.stringify(stable({definition:{...x.definition,revision:0},prefab:x.prefab||null}));
+  if(latest&&fingerprint(latest)===fingerprint(input))return {...latest,unchanged:true};
+  return store({...input,definition:{...input.definition,revision:(latest?.definition.revision||0)+1}},actor);});}};
 }

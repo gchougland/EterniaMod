@@ -1,0 +1,89 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": 0,
+      "y": -1,
+      "z": 0,
+      "name": "Rock_Stone_Cobble_Mossy"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Brick_Decorative"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "z": 0,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": 0,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "z": 1,
+      "name": "Prototype_Human_Ruins_Sign_Arrow",
+      "support": 15
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "z": -1,
+      "name": "Prototype_Human_Ruins_Sign_Arrow",
+      "rotation": 2,
+      "support": 15
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "z": 0,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "z": 0,
+      "name": "Prototype_Human_Ruins_Sign_Arrow",
+      "rotation": 1,
+      "support": 15
+    },
+    {
+      "x": -1,
+      "y": 5,
+      "z": 0,
+      "name": "Prototype_Human_Ruins_Sign_Arrow",
+      "rotation": 3,
+      "support": 15
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "z": 0,
+      "name": "Wood_Darkwood_Beam"
+    },
+    {
+      "x": 0,
+      "y": 6,
+      "z": 0,
+      "name": "Deco_Lantern",
+      "support": 15
+    }
+  ]
+}

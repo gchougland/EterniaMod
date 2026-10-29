@@ -13,6 +13,7 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.config.ser
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.NPCPlugin;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.annotation.Nonnull;
@@ -81,6 +82,8 @@ public final class SocialUiBootstrap {
         /** A Hub NPC opens only its own desk; the Crown Store keeps its own page. */
         void openNpc(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServicesPage.Section section) {
             if (closed || !ref.isValid()) return;
+            UUID id = player.getUuid();
+            executor.execute(() -> { try { services.accounts().markIntroduced(id); } catch (RuntimeException ignored) {} });
             if (section == EterniaServicesPage.Section.STORE) { open(ref, store, player, section); return; }
             var desk = EterniaServicesPage.Desk.forNpc(section);
             show(ref, store, player, desk, section, true, false);

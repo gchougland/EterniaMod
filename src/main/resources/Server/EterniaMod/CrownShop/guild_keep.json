@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/guild_keep",
+  "revision": 1,
+  "name": "Guild Keep",
+  "description": "A walled keep with a gated courtyard, towers with tall spires, a great hall and a war room for your guild.",
+  "category": "Housing",
+  "price": 2000,
+  "benefits": [
+    {
+      "contentId": "eternia:house/guild_keep",
+      "kind": "UNLOCK",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

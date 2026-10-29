@@ -1,0 +1,11 @@
+{
+  "id": "garden_well",
+  "displayName": "Garden Well",
+  "prefabPath": "EterniaMod/Props/Catalog_Garden_Well.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

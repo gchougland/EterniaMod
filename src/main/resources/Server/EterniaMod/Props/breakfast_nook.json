@@ -1,0 +1,11 @@
+{
+  "id": "breakfast_nook",
+  "displayName": "Breakfast Nook",
+  "prefabPath": "EterniaMod/Props/Catalog_Breakfast_Nook.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

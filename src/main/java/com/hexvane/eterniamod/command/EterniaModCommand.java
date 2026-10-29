@@ -11,6 +11,7 @@ public final class EterniaModCommand extends AbstractCommandCollection {
         this.addSubCommand(new EterniaBuildingCommand());
         this.addSubCommand(new EterniaPropCommand());
         this.addSubCommand(new EterniaPrefabCommand());
+        this.addSubCommand(new EterniaSeasonCommand());
         this.addSubCommand(new EterniaPlayCommand("menu"));
         this.addSubCommand(new EterniaPlayCommand("claim"));
         this.addSubCommand(new EterniaPlayCommand("housing"));

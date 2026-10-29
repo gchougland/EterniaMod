@@ -1,12 +1,13 @@
 package com.hexvane.eterniamod.runtime;
-import java.time.*;
+import com.hexvane.eterniamod.runtime.NativeTravelService.JoinTarget;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 class LoginRuleTest {
-    @Test void thirtyMinutesIsStrictAndRecentHeartbeatHandlesCrash() {
-        Instant now=Instant.parse("2026-01-01T01:00:00Z");
-        assertFalse(PlayerLifecycle.returnHomeAfter(now.minusSeconds(1800),null,now));
-        assertTrue(PlayerLifecycle.returnHomeAfter(now.minusSeconds(1801),null,now));
-        assertFalse(PlayerLifecycle.returnHomeAfter(now.minusSeconds(5000),now.minusSeconds(30),now));
+    @Test void newPlayersMeetTheHubThenWaitInHousingThenComeHome() {
+        assertEquals(JoinTarget.FIRST_JOIN,NativeTravelService.joinTarget(false,false));
+        assertEquals(JoinTarget.NEWCOMER,NativeTravelService.joinTarget(true,false));
+        assertEquals(JoinTarget.HOME,NativeTravelService.joinTarget(true,true));
+        // A plot always wins, even for accounts that predate the introduction flag.
+        assertEquals(JoinTarget.HOME,NativeTravelService.joinTarget(false,true));
     }
 }

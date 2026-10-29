@@ -1,0 +1,11 @@
+{
+  "id": "pantry_shelf",
+  "displayName": "Pantry Shelf",
+  "prefabPath": "EterniaMod/Props/Catalog_Pantry_Shelf.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

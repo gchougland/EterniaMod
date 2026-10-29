@@ -1,0 +1,58 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+$T.@PageOverlay {}
+Group {
+ Anchor: (Width: 1200, Height: 800); Background: $T.@JournalPanelSurface; Padding: (Full: 24); LayoutMode: Top;
+ Label { Text: "SEASON PASS DESIGNER"; Anchor: (Height: 36, Bottom: 12); Style: $T.@TitleStyle; }
+ Group { FlexWeight: 1; LayoutMode: Left;
+  Group { Anchor: (Width: 260, Right: 16); LayoutMode: Top; Background: $T.@InsetSurface; Padding: (Full: 12);
+   Label { Text: "PASSES"; Anchor: (Height: 30, Bottom: 6); Style: $T.@SubtitleStyle; }
+   Group #PassList { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+   $T.@SecondaryTextButton #NewPass { Text: "New pass"; Anchor: (Height: 42, Top: 8); }
+  }
+  Group { Anchor: (Width: 400, Right: 16); LayoutMode: Top; Background: $T.@InsetSurface; Padding: (Full: 16);
+   Label { Text: "DETAILS"; Anchor: (Height: 30, Bottom: 6); Style: $T.@SubtitleStyle; }
+   Label { Text: "Pass ID"; Anchor: (Height: 22); Style: $T.@MutedStyle; }
+   $T.@TextField #PassId { Anchor: (Height: 40, Bottom: 8); MaxLength: 72; PlaceholderText: "eternia:harvest"; }
+   Label { Text: "Name"; Anchor: (Height: 22); Style: $T.@MutedStyle; }
+   $T.@TextField #PassName { Anchor: (Height: 40, Bottom: 8); MaxLength: 100; }
+   Label { Text: "Description"; Anchor: (Height: 22); Style: $T.@MutedStyle; }
+   MultilineTextField #PassDescription { Anchor: (Height: 96, Bottom: 8); AutoGrow: false; MaxLength: 600; Background: $T.@HeaderSurface; Padding: (Full: 10); Style: (FontSize: 15, TextColor: $T.@Text); PlaceholderStyle: (FontSize: 15, TextColor: $T.@Muted); ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+   Group { Anchor: (Height: 22); LayoutMode: Left;
+    Label { Text: "Starts"; FlexWeight: 1; Anchor: (Right: 10); Style: $T.@MutedStyle; }
+    Label { Text: "Ends"; FlexWeight: 1; Style: $T.@MutedStyle; }
+   }
+   Group { Anchor: (Height: 40, Bottom: 8); LayoutMode: Left;
+    $T.@TextField #StartsOn { FlexWeight: 1; Anchor: (Height: 40, Right: 10); MaxLength: 10; PlaceholderText: "2026-11-01"; }
+    $T.@TextField #EndsOn { FlexWeight: 1; Anchor: (Height: 40); MaxLength: 10; PlaceholderText: "2027-01-31"; }
+   }
+   Group { Anchor: (Height: 22); LayoutMode: Left;
+    Label { Text: "Levels"; FlexWeight: 1; Anchor: (Right: 10); Style: $T.@MutedStyle; }
+    Label { Text: "XP per level"; FlexWeight: 1; Style: $T.@MutedStyle; }
+   }
+   Group { Anchor: (Height: 40, Bottom: 8); LayoutMode: Left;
+    $T.@TextField #Levels { FlexWeight: 1; Anchor: (Height: 40, Right: 10); MaxLength: 4; }
+    $T.@TextField #XpPerLevel { FlexWeight: 1; Anchor: (Height: 40); MaxLength: 7; }
+   }
+   Label #PassState { FlexWeight: 1; Style: $T.@MutedStyle; }
+  }
+  Group { FlexWeight: 1; LayoutMode: Top; Background: $T.@InsetSurface; Padding: (Full: 16);
+   Label { Text: "REWARDS"; Anchor: (Height: 30, Bottom: 6); Style: $T.@SubtitleStyle; }
+   Group #RewardList { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+   Label { Text: "Add a reward"; Anchor: (Height: 24, Top: 8); Style: $T.@MutedStyle; }
+   $T.@TextField #RewardContent { Anchor: (Height: 40, Bottom: 8); MaxLength: 160; PlaceholderText: "Content ID, like eternia:prop/aqua_lamp"; }
+   Group { Anchor: (Height: 40); LayoutMode: Left;
+    $T.@SecondaryTextButton #RewardTrack { Anchor: (Width: 130, Height: 40, Right: 8); }
+    $T.@TextField #RewardLevel { FlexWeight: 1; Anchor: (Height: 40, Right: 8); MaxLength: 4; PlaceholderText: "Level"; }
+    $T.@TextField #RewardQty { FlexWeight: 1; Anchor: (Height: 40, Right: 8); MaxLength: 6; PlaceholderText: "Amount"; }
+    $T.@SecondaryTextButton #AddReward { Text: "Add"; Anchor: (Width: 90, Height: 40); }
+   }
+  }
+ }
+ Label #Status { Anchor: (Height: 44, Top: 10, Bottom: 8); Style: $T.@MutedStyle; }
+ Group { Anchor: (Height: 46); LayoutMode: Left;
+  $T.@SecondaryTextButton #CloseDesigner { Text: "Close"; FlexWeight: 1; Anchor: (Height: 46, Right: 12); }
+  $T.@SecondaryTextButton #SaveDraft { Text: "Save and upload"; FlexWeight: 1; Anchor: (Height: 46, Right: 12); }
+  $T.@TextButton #GoLive { Text: "Go live"; FlexWeight: 1; Anchor: (Height: 46); }
+ }
+}

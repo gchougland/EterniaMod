@@ -36,7 +36,7 @@ class ContentImagesTest {
     }
 
     @Test void actualCollectionPreviewsTakePrecedenceAndKeepTheirFrameRatio() throws Exception {
-        for(String id:List.of("wearable/citadel_jacket","outfit/citadel_traveler","pet/rootling")) {
+        for(String id:List.of("wearable/citadel_jacket","outfit/citadel_traveler","pet/rootling","pet/corn_buddy")) {
             for(boolean screenshot:List.of(false,true)) {
                 String image=ContentImages.path("eternia:"+id,screenshot);
                 assertEquals("EterniaMod/Catalog/"+id+"/"+(screenshot?"screenshot":"icon")+".png",image);

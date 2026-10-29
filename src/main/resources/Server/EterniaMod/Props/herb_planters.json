@@ -1,0 +1,11 @@
+{
+  "id": "herb_planters",
+  "displayName": "Herb Planters",
+  "prefabPath": "EterniaMod/Props/Catalog_Herb_Planters.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "birdbath",
+  "displayName": "Birdbath",
+  "prefabPath": "EterniaMod/Props/Catalog_Birdbath.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

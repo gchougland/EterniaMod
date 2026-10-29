@@ -54,6 +54,14 @@ Set `GAME_BRIDGE_URL` and `GAME_BRIDGE_TOKEN` for authenticated server-to-server
 - `GET /v1/players/{uuid}/overview` returns `{updatedAt,account,stats,owned,seasons,housing}`.
 - `GET /v1/store/offers` returns `{offers:[{id,name,description,checkoutUrl}]}`.
 
+The game server also pushes admin content to the website with the same token:
+
+- `POST /api/server/content` takes a prefab entry from the in game entry page (`kind`, `id`, `displayName`, `description`, `native`, `store`, `season`, `prefab`, `author`) and stores it as the next revision of `eternia:<kind>/<id>`. An upload identical to the latest revision returns it with `unchanged: true`.
+- `POST /api/server/seasons` takes a season pass from `/eternia season` (`id`, `name`, `description`, `startsOn`, `endsOn`, `status`, `thresholds`, `rewards`, `author`) and stores it as content kind `season` with ID `eternia:season/<name>`.
+- `GET /api/v1/seasons` is public and lists the latest live revision of each uploaded pass.
+
+These routes are mounted before sessions and CSRF, accept no cookies, compare the bearer token in constant time and return 503 when `GAME_BRIDGE_TOKEN` is unset. The game decides who is an admin; the website records the uploading admin as `game:<uuid>`. Uploads appear in the Content workshop marked "from game". The public season page does not read `/api/v1/seasons` yet.
+
 Without a configured/reachable bridge, pages show an unavailable state. This website does not fake purchases, claim game rewards, or trust a browser checkout redirect. Store links are restricted to HTTPS Tebex domains. Game-side permission and recipient checks remain authoritative.
 
 The store page is now the **Crown treasury**: players buy configured Crown packages on Tebex and spend their balance in Lyra's in-game Crown Store. Account and treasury views show the premium balance separately from earned trade coins. See [Crowns and product authoring](../docs/implementation/crown-store.md). Local `/e playground` allowances exercise real in-game purchases without a provider charge.
