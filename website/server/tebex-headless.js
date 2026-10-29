@@ -23,6 +23,13 @@ function bodyStrings(value){
  if(typeof value==='string')return [value];
  return value&&typeof value==='object'?Object.values(value).flatMap(bodyStrings):[];
 }
+function basketField(value){
+ // Only known format values can reach logs, never arbitrary provider strings or objects.
+ const type=value===null?'null':typeof value;
+ if(typeof value==='number'&&Number.isFinite(value)||typeof value==='boolean'||value===null)return {type,value};
+ if(typeof value==='string'&&(/^[0-9]{1,20}$/.test(value)||['single','subscription','both','false','true',''].includes(value)))return {type,value};
+ return {type};
+}
 export function safeTebexUrl(value){
  try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&(u.hostname==='tebex.io'||u.hostname.endsWith('.tebex.io'))?u.href:null;}catch{return null;}
 }
@@ -82,8 +89,23 @@ export function checkoutView(basket,pending,user){
  if(basket.custom?.eternia_profile_uuid!==user.uuid)throw new HttpError(409,'This checkout belongs to another profile.');
  if(basket.complete)throw new HttpError(409,'This checkout is already complete. Check your balance before making another purchase.');
  const items=basket.packages;
- if(!Array.isArray(items)||items.length!==1||String(items[0].id)!==pending.packageId||Number(items[0].in_basket?.quantity)!==1||items[0].in_basket?.gift_username_id||items[0].is_recurring||items[0].type!=='single')
+ const item=Array.isArray(items)&&items.length===1?items[0]:null;
+ const reasons=[];
+ if(!Array.isArray(items)||items.length!==1)reasons.push('package_count');
+ else{
+  if(!item||String(item.id)!==pending.packageId)reasons.push('package_id');
+  if(Number(item?.in_basket?.quantity)!==1)reasons.push('quantity');
+  if(item?.in_basket?.gift_username_id)reasons.push('gift');
+  if(item?.is_recurring)reasons.push('recurring');
+  if(item?.type!=='single')reasons.push('purchase_type');
+ }
+ if(reasons.length){
+  console.warn('Tebex basket validation failed',JSON.stringify({reasons,packageCount:Array.isArray(items)?items.length:null,
+   packageIdMatches:!!item&&String(item.id)===pending.packageId,quantity:basketField(item?.in_basket?.quantity),
+   purchaseType:basketField(item?.type),recurring:basketField(item?.is_recurring),
+   gift:{present:Boolean(item?.in_basket?.gift_username_id),type:typeof item?.in_basket?.gift_username_id}}));
   throw new HttpError(409,'Your checkout changed. Please choose a Crown package again.');
+ }
  if(!Number.isFinite(basket.total_price)||basket.total_price<0||!/^[A-Z]{3}$/.test(basket.currency))throw new HttpError(502,'Checkout price could not be verified.');
  const checkoutUrl=safeTebexUrl(basket.links?.checkout);if(!checkoutUrl)throw new HttpError(502,'Checkout could not be opened.');
  return {status:'ready',ident:basket.ident,checkoutUrl,packageId:pending.packageId,price:basket.total_price,currency:basket.currency};

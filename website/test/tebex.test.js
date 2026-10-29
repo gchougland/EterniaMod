@@ -30,12 +30,38 @@ test('Headless uses documented paths, server identity, buyer address, and bounde
  const oversized=createHeadless(cfg,async()=>new Response(' '.repeat(1024*1024+1)));await assert.rejects(oversized.packages(),e=>e.status===503);
 });
 
-test('checkout rejects changed profiles, gifts, quantities, packages, completed baskets and unsafe links',()=>{
+test('checkout rejects changed profiles, gifts, quantities, packages, completed baskets and unsafe links',t=>{
+ t.mock.method(console,'warn',()=>{});
  assert.equal(checkoutView(basket(),pending,user).price,5.25);
  for(const change of [b=>b.username='SomeoneElse',b=>b.custom.eternia_profile_uuid='different',b=>b.complete=true,b=>b.packages.push(b.packages[0]),b=>b.packages[0].id=999,b=>b.packages[0].in_basket.quantity=2,b=>b.packages[0].in_basket.gift_username_id='other',b=>b.packages[0].is_recurring=true,b=>b.packages[0].type='subscription',b=>b.total_price=NaN,b=>b.currency='invalid',b=>b.links.checkout='https://tebex.io.evil.example']){
   const value=basket();change(value);assert.throws(()=>checkoutView(value,pending,user));
  }
  for(const url of ['http://pay.tebex.io','https://pay.tebex.io@evil.example','https://user:secret@pay.tebex.io','javascript:alert(1)'])assert.equal(safeTebexUrl(url),null);
+});
+
+test('basket conflicts identify each rejected field without logging buyer or basket data',t=>{
+ const warnings=t.mock.method(console,'warn',()=>{});
+ const cases=[
+  [b=>b.packages=[],['package_count']],
+  [b=>b.packages[0].id=999,['package_id']],
+  [b=>b.packages[0].in_basket.quantity=2,['quantity']],
+  [b=>b.packages[0].in_basket.gift_username_id='private-recipient',['gift']],
+  [b=>b.packages[0].is_recurring='false',['recurring']],
+  [b=>delete b.packages[0].type,['purchase_type']],
+  [b=>b.packages=[null],['package_id','quantity','purchase_type']],
+ ];
+ for(const [change,reasons] of cases){
+  const value=basket();change(value);value.email='private@example.com';
+  assert.throws(()=>checkoutView(value,pending,user),e=>e.status===409);
+  const [message,json]=warnings.mock.calls.at(-1).arguments;
+  assert.equal(message,'Tebex basket validation failed');assert.deepEqual(JSON.parse(json).reasons,reasons);
+  for(const secret of ['private-recipient','private@example.com',pending.ident,user.uuid,user.name])assert.ok(!json.includes(secret));
+ }
+ const value=basket();value.packages[0].type='private provider value';value.packages[0].in_basket.quantity={private:'data'};
+ assert.throws(()=>checkoutView(value,pending,user));
+ const logged=JSON.parse(warnings.mock.calls.at(-1).arguments[1]);
+ assert.deepEqual(logged.purchaseType,{type:'string'});assert.deepEqual(logged.quantity,{type:'object'});
+ const count=warnings.mock.calls.length;assert.equal(checkoutView(basket(),pending,user).packageId,mapping.id);assert.equal(warnings.mock.calls.length,count);
 });
 
 test('Hytale basket authorization accepts only a provider HTTPS URL and encodes the return state',async()=>{
