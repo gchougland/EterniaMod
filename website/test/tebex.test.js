@@ -111,7 +111,7 @@ test('checkout preserves safe provider errors and logs only the failing operatio
  const response=await request('/api/store/checkout',{packageId:mapping.id});
  assert.equal(response.status,503);
  assert.deepEqual(await response.json(),{error:'Tebex could not prepare your purchase. Please try again later.'});
- assert.deepEqual(warnings.mock.calls.map(call=>call.arguments),[['Tebex request failed',JSON.stringify({operation:'create_basket',status:403,failure:'http'})]]);
+ assert.deepEqual(warnings.mock.calls.map(call=>call.arguments),[['Tebex request failed',JSON.stringify({operation:'create_basket',status:403,failure:'http',authConfigured:true})]]);
 });
 
 test('unexpected checkout exceptions remain private through the production error handler',async t=>{
@@ -130,6 +130,37 @@ test('provider connection and response failures log no raw data',async t=>{
  ]){
   const client=createHeadless({tebexPublicToken:'private-catalog-token'},fetcher);
   await assert.rejects(client.get('private-basket-id'),e=>e.status===503&&!e.message.includes('private'));
-  assert.deepEqual(warnings.mock.calls.at(-1).arguments,['Tebex request failed',JSON.stringify({operation:'read_basket',status,failure})]);
+  assert.deepEqual(warnings.mock.calls.at(-1).arguments,['Tebex request failed',JSON.stringify({operation:'read_basket',status,failure,authConfigured:false})]);
  }
+});
+
+test('422 diagnostics distinguish missing authentication from provider rejection without exposing request values',async t=>{
+ const warnings=t.mock.method(console,'warn',()=>{});
+ const cfg={tebexPublicToken:'catalog-token',tebexPrivateKey:'secret/key+value',baseUrl:'https://eternia.example'};
+ const basic=Buffer.from(cfg.tebexPublicToken+':'+cfg.tebexPrivateKey).toString('base64');
+ const client=createHeadless(cfg,async(url,options)=>{
+  assert.equal(options.headers.Authorization,'Basic '+basic);
+  return Response.json({title:'Request payload error',detail:`Invalid username: ${user.name}. ${user.uuid} 203.0.113.12 ${cfg.tebexPublicToken} ${cfg.tebexPrivateKey} ${encodeURIComponent(cfg.tebexPrivateKey)} Basic ${basic}\nhttps://private.example/secret other@example.com`,error_code:'validation_failed',meta:{private:'do not log metadata'}},{status:422});
+ });
+ await assert.rejects(client.create(user,'203.0.113.12'),e=>e.status===503&&!e.message.includes('Invalid username'));
+ const logged=JSON.parse(warnings.mock.calls.at(-1).arguments[1]);
+ assert.equal(logged.authConfigured,true);assert.equal(logged.status,422);assert.equal(logged.failure,'http');
+ assert.equal(logged.title,'Request payload error');assert.equal(logged.code,'validation_failed');
+ assert.match(logged.detail,/^Invalid username: \[redacted\]/);
+ for(const secret of [user.name,user.uuid,'203.0.113.12',cfg.tebexPublicToken,cfg.tebexPrivateKey,encodeURIComponent(cfg.tebexPrivateKey),basic,'private.example','other@example.com','do not log metadata','\n'])assert.ok(!JSON.stringify(logged).includes(secret),secret);
+ const missing=createHeadless({tebexPublicToken:cfg.tebexPublicToken},async()=>Response.json({detail:'Basic auth credentials are required'},{status:422}));
+ await assert.rejects(missing.get(pending.ident));
+ assert.deepEqual(JSON.parse(warnings.mock.calls.at(-1).arguments[1]),{operation:'read_basket',status:422,failure:'http',authConfigured:false,detail:'Basic auth credentials are required'});
+});
+
+test('provider diagnostics bound error bodies and text while hiding non JSON responses',async t=>{
+ const warnings=t.mock.method(console,'warn',()=>{});
+ for(const response of [new Response('<html>private response</html>',{status:422}),new Response('x'.repeat(8193),{status:422})]){
+  const client=createHeadless({tebexPublicToken:'catalog-token'},async()=>response);
+  await assert.rejects(client.get(pending.ident));
+  assert.deepEqual(JSON.parse(warnings.mock.calls.at(-1).arguments[1]),{operation:'read_basket',status:422,failure:'http',authConfigured:false});
+ }
+ const client=createHeadless({tebexPublicToken:'catalog-token'},async()=>Response.json({detail:'x'.repeat(1000)+' '+pending.ident},{status:422}));
+ await assert.rejects(client.get(pending.ident));
+ assert.equal(JSON.parse(warnings.mock.calls.at(-1).arguments[1]).detail.length,500);
 });

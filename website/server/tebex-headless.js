@@ -3,6 +3,26 @@ import {HttpError} from './errors.js';
 
 const API='https://headless.tebex.io/api';
 const IDENT=/^[a-zA-Z0-9-]{8,160}$/;
+function providerDiagnostic(payload,sensitive){
+ if(!payload||typeof payload!=='object'||Array.isArray(payload))return {};
+ const values=sensitive.filter(value=>typeof value==='string'&&value.length)
+  .flatMap(value=>[value,encodeURIComponent(value),JSON.stringify(value).slice(1,-1)])
+  .sort((a,b)=>b.length-a.length);
+ const redact=value=>{
+  if(typeof value!=='string')return undefined;
+  for(const secret of values)value=value.split(secret).join('[redacted]');
+  return value.replace(/https?:\/\/[^\s"'<>]+/gi,'[url]')
+   .replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi,'[email]')
+   .replace(/\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi,'[profile]')
+   .replace(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g,'[ip]')
+   .replace(/[\u0000-\u001f\u007f]/g,' ').slice(0,500);
+ };
+ return {title:redact(payload.title),detail:redact(payload.detail),code:redact(payload.error_code)};
+}
+function bodyStrings(value){
+ if(typeof value==='string')return [value];
+ return value&&typeof value==='object'?Object.values(value).flatMap(bodyStrings):[];
+}
 export function safeTebexUrl(value){
  try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&(u.hostname==='tebex.io'||u.hostname.endsWith('.tebex.io'))?u.href:null;}catch{return null;}
 }
@@ -13,17 +33,23 @@ export function createHeadless(cfg,fetcher=fetch){
   const headers={Accept:'application/json'};
   if(cfg.tebexPrivateKey)headers.Authorization='Basic '+Buffer.from(token+':'+cfg.tebexPrivateKey).toString('base64');
   if(body)headers['Content-Type']='application/json';
-  let status=null,failure='connection';
+  const authConfigured=Boolean(headers.Authorization);
+  let status=null,failure='connection',provider={};
   try{
    const response=await fetcher(API+endpoint,{method:body?'POST':'GET',headers,body:body?JSON.stringify(body):undefined,redirect:'error',signal:AbortSignal.timeout(10000)});
    status=response.status;failure=response.ok?'response':'http';
-   if(!response.ok)throw new Error('Provider unavailable');
    const reader=response.body.getReader(),parts=[];let bytes=0;
-   for(;;){const part=await reader.read();if(part.done)break;bytes+=part.value.length;if(bytes>1024*1024){await reader.cancel();throw new Error('Response too large');}parts.push(part.value);}
-   return JSON.parse(Buffer.concat(parts).toString('utf8'));
+   const maxBytes=response.ok?1024*1024:8192;
+   for(;;){const part=await reader.read();if(part.done)break;bytes+=part.value.length;if(bytes>maxBytes){await reader.cancel();throw new Error('Response too large');}parts.push(part.value);}
+   const payload=JSON.parse(Buffer.concat(parts).toString('utf8'));
+   if(!response.ok){
+    provider=providerDiagnostic(payload,[token,cfg.tebexPrivateKey,headers.Authorization,headers.Authorization?.slice(6),endpoint,endpoint.match(/\/baskets\/([^/?]+)/)?.[1],...bodyStrings(body)]);
+    throw new Error('Provider rejected request');
+   }
+   return payload;
   }catch{
-   // Never log URLs, headers, bodies or raw errors: these may contain credentials or buyer data.
-   console.warn('Tebex request failed',JSON.stringify({operation,status,failure}));
+   // Log only bounded, redacted provider explanations. Never log request data or raw exceptions.
+   console.warn('Tebex request failed',JSON.stringify({operation,status,failure,authConfigured,...provider}));
    throw new HttpError(503,'Tebex could not prepare your purchase. Please try again later.');
   }
  }
