@@ -97,7 +97,8 @@ export function checkoutView(basket,pending,user){
   if(Number(item?.in_basket?.quantity)!==1)reasons.push('quantity');
   if(item?.in_basket?.gift_username_id)reasons.push('gift');
   if(item?.is_recurring)reasons.push('recurring');
-  if(item?.type!=='single')reasons.push('purchase_type');
+  // Tebex can omit the catalog type from basket items. Require explicit nonrecurrence in that case.
+  if(item?.type!=='single'&&!(item?.type===undefined&&item?.is_recurring===false))reasons.push('purchase_type');
  }
  if(reasons.length){
   console.warn('Tebex basket validation failed',JSON.stringify({reasons,packageCount:Array.isArray(items)?items.length:null,

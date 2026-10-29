@@ -47,7 +47,7 @@ test('basket conflicts identify each rejected field without logging buyer or bas
   [b=>b.packages[0].in_basket.quantity=2,['quantity']],
   [b=>b.packages[0].in_basket.gift_username_id='private-recipient',['gift']],
   [b=>b.packages[0].is_recurring='false',['recurring']],
-  [b=>delete b.packages[0].type,['purchase_type']],
+  [b=>{delete b.packages[0].type;delete b.packages[0].is_recurring;},['purchase_type']],
   [b=>b.packages=[null],['package_id','quantity','purchase_type']],
  ];
  for(const [change,reasons] of cases){
@@ -62,6 +62,24 @@ test('basket conflicts identify each rejected field without logging buyer or bas
  const logged=JSON.parse(warnings.mock.calls.at(-1).arguments[1]);
  assert.deepEqual(logged.purchaseType,{type:'string'});assert.deepEqual(logged.quantity,{type:'object'});
  const count=warnings.mock.calls.length;assert.equal(checkoutView(basket(),pending,user).packageId,mapping.id);assert.equal(warnings.mock.calls.length,count);
+});
+
+test('basket items without catalog type require explicit nonrecurrence',t=>{
+ t.mock.method(console,'warn',()=>{});
+ const value=basket();delete value.packages[0].type;value.packages[0].in_basket.gift_username_id=null;
+ assert.equal(checkoutView(value,pending,user).status,'ready');
+ for(const recurring of [undefined,null,0,1,'','false','0',true]){
+  const changed=structuredClone(value);changed.packages[0].is_recurring=recurring;
+  assert.throws(()=>checkoutView(changed,pending,user),e=>e.status===409);
+ }
+ for(const type of ['subscription','both','unknown','',null]){
+  const changed=structuredClone(value);changed.packages[0].type=type;
+  assert.throws(()=>checkoutView(changed,pending,user),e=>e.status===409);
+ }
+ for(const change of [b=>b.packages[0].id=999,b=>b.packages[0].in_basket.quantity=2,b=>b.packages[0].in_basket.gift_username_id='other',b=>b.packages.push(b.packages[0])]){
+  const changed=structuredClone(value);change(changed);
+  assert.throws(()=>checkoutView(changed,pending,user),e=>e.status===409);
+ }
 });
 
 test('Hytale basket authorization accepts only a provider HTTPS URL and encodes the return state',async()=>{
@@ -86,6 +104,20 @@ async function harness(t,changes={}){
  const request=async(path,body,headers={})=>{const response=await fetch('http://127.0.0.1:'+server.address().port+path,{method:body===undefined?'GET':'POST',headers:{Cookie:cookie,'Content-Type':'application/json','X-CSRF-Token':'test-token',...headers},body:body===undefined?undefined:JSON.stringify(body)});if(response.headers.has('set-cookie'))cookie=response.headers.get('set-cookie').split(';')[0];return response;};
  return {state,request,headless};
 }
+test('checkout accepts the observed Tebex basket shape and reuses it on retry',async t=>{
+ const {state,request,headless}=await harness(t);
+ const add=headless.add;
+ headless.add=async()=>{
+  const value=await add();delete value.packages[0].type;value.packages[0].in_basket.gift_username_id=null;
+  return value;
+ };
+ for(let attempt=0;attempt<2;attempt++){
+  const response=await request('/api/store/checkout',{packageId:mapping.id});
+  assert.equal(response.status,200);
+  assert.deepEqual(await response.json(),{status:'ready',ident:pending.ident,checkoutUrl:basket().links.checkout,packageId:mapping.id,price:5.25,currency:'USD'});
+ }
+ assert.equal(state.creates,1);assert.equal(state.adds,1);
+});
 test('checkout reuses a basket after ambiguous add timeout and does not double add or accept client amounts',async t=>{
  const {state,request}=await harness(t);state.failAdd=true;
  assert.equal((await request('/api/store/checkout',{packageId:mapping.id})).status,503);
