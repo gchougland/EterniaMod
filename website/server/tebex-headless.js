@@ -8,39 +8,45 @@ export function safeTebexUrl(value){
 }
 export function createHeadless(cfg,fetcher=fetch){
  const token=cfg.tebexPublicToken,account='/accounts/'+encodeURIComponent(token||'');
- async function request(endpoint,body){
+ async function request(operation,endpoint,body){
   if(!token)throw new HttpError(503,'The Crown treasury is not connected yet.');
   const headers={Accept:'application/json'};
   if(cfg.tebexPrivateKey)headers.Authorization='Basic '+Buffer.from(token+':'+cfg.tebexPrivateKey).toString('base64');
   if(body)headers['Content-Type']='application/json';
+  let status=null,failure='connection';
   try{
    const response=await fetcher(API+endpoint,{method:body?'POST':'GET',headers,body:body?JSON.stringify(body):undefined,redirect:'error',signal:AbortSignal.timeout(10000)});
+   status=response.status;failure=response.ok?'response':'http';
    if(!response.ok)throw new Error('Provider unavailable');
    const reader=response.body.getReader(),parts=[];let bytes=0;
    for(;;){const part=await reader.read();if(part.done)break;bytes+=part.value.length;if(bytes>1024*1024){await reader.cancel();throw new Error('Response too large');}parts.push(part.value);}
    return JSON.parse(Buffer.concat(parts).toString('utf8'));
-  }catch{throw new HttpError(503,'Tebex is temporarily unavailable. Please try again.');}
+  }catch{
+   // Never log URLs, headers, bodies or raw errors: these may contain credentials or buyer data.
+   console.warn('Tebex request failed',JSON.stringify({operation,status,failure}));
+   throw new HttpError(503,'Tebex could not prepare your purchase. Please try again later.');
+  }
  }
  function basketId(ident){if(typeof ident!=='string'||!IDENT.test(ident))throw new HttpError(502,'Checkout could not be prepared.');return encodeURIComponent(ident);}
  return {
   configured:Boolean(token),
-  async packages(){const result=await request(account+'/packages');if(!Array.isArray(result.data))throw new HttpError(502,'The Crown treasury could not be loaded.');
+  async packages(){const result=await request('catalog',account+'/packages');if(!Array.isArray(result.data))throw new HttpError(502,'The Crown treasury could not be loaded.');
    return result.data.filter(p=>/^\d+$/.test(String(p.id))&&typeof p.name==='string').map(p=>({id:String(p.id),name:p.name.slice(0,160),type:p.type,
     price:p.total_price,currency:p.currency,category:p.category?.name||'',requiresOptions:Boolean(p.options?.length||p.variables?.length)}));},
   async create(user,ip){
    if(!isIP(ip))throw new HttpError(400,'Your connection address could not be verified.');
-   const result=await request(account+'/baskets',{username:user.name,ip_address:ip,
+   const result=await request('create_basket',account+'/baskets',{username:user.name,ip_address:ip,
     complete_url:cfg.baseUrl+'/store?checkout=returned',cancel_url:cfg.baseUrl+'/store?checkout=cancelled',complete_auto_redirect:false,
     custom:{eternia_profile_uuid:user.uuid}});
    basketId(result.data?.ident);return result.data;
   },
-  async get(ident){const result=await request(account+'/baskets/'+basketId(ident));if(result.data?.ident!==ident)throw new HttpError(502,'Checkout could not be verified.');return result.data;},
-  async auth(ident,state){const result=await request(account+'/baskets/'+basketId(ident)+'/auth?returnUrl='+encodeURIComponent(cfg.baseUrl+'/store?checkout=authorize&state='+state));
+  async get(ident){const result=await request('read_basket',account+'/baskets/'+basketId(ident));if(result.data?.ident!==ident)throw new HttpError(502,'Checkout could not be verified.');return result.data;},
+  async auth(ident,state){const result=await request('authorize_basket',account+'/baskets/'+basketId(ident)+'/auth?returnUrl='+encodeURIComponent(cfg.baseUrl+'/store?checkout=authorize&state='+state));
    const links=Array.isArray(result)?result:result.data;
    const hytale=Array.isArray(links)?links.find(item=>/hytale/i.test(item.name)&&safeTebexUrl(item.url)):null;
    if(!hytale)throw new HttpError(409,'Tebex could not verify your Hytale profile. Please try again or contact the server team.');
    return safeTebexUrl(hytale.url);},
-  async add(ident,id){await request('/baskets/'+basketId(ident)+'/packages',{package_id:id,quantity:1});return this.get(ident);}
+  async add(ident,id){await request('add_package','/baskets/'+basketId(ident)+'/packages',{package_id:id,quantity:1});return this.get(ident);}
  };
 }
 

@@ -5,6 +5,7 @@ import session from 'express-session';
 import {createHeadless,checkoutView,safeTebexUrl} from '../server/tebex-headless.js';
 import {mountTebexCheckout} from '../server/tebex-checkout.js';
 import {config} from '../server/config.js';
+import {errorHandler} from '../server/errors.js';
 
 const user={uuid:'11111111-1111-4111-8111-111111111111',name:'Explorer',admin:true};
 const mapping={id:'7704919',revision:1,crowns:500,name:'Pouch of Crowns'};
@@ -53,7 +54,7 @@ async function harness(t,changes={}){
  const app=express();app.use(session({secret:'local-test-secret-12345678901234567890',resave:false,saveUninitialized:false}));app.use(express.json());
  app.use((req,res,next)=>{req.session.user=state.user;req.session.csrf='test-token';next();});
  app.use((req,res,next)=>req.method==='POST'&&req.get('X-CSRF-Token')!=='test-token'?res.sendStatus(403):next());
- mountTebexCheckout(app,cfg,headless,bridge);app.use((e,req,res,next)=>res.status(e.status||500).json({error:e.message}));
+ mountTebexCheckout(app,cfg,headless,bridge);app.use(errorHandler);
  const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));let cookie='';
  t.after(async()=>{server.closeAllConnections();await new Promise(r=>server.close(r));});
  const request=async(path,body,headers={})=>{const response=await fetch('http://127.0.0.1:'+server.address().port+path,{method:body===undefined?'GET':'POST',headers:{Cookie:cookie,'Content-Type':'application/json','X-CSRF-Token':'test-token',...headers},body:body===undefined?undefined:JSON.stringify(body)});if(response.headers.has('set-cookie'))cookie=response.headers.get('set-cookie').split(';')[0];return response;};
@@ -100,4 +101,35 @@ test('provider testing can be restricted to current administrators',async t=>{
  assert.equal((await (await request('/api/store')).json()).checkoutEnabled,false);
  assert.equal((await request('/api/store/checkout',{packageId:mapping.id})).status,403);
  state.user={...user};assert.equal((await request('/api/store/checkout',{packageId:mapping.id})).status,200);
+});
+
+test('checkout preserves safe provider errors and logs only the failing operation and HTTP status',async t=>{
+ const warnings=t.mock.method(console,'warn',()=>{});
+ const {request,headless}=await harness(t);
+ const client=createHeadless({tebexPublicToken:'private-catalog-token',tebexPrivateKey:'private-api-key',baseUrl:'https://eternia.example'},async()=>new Response('sensitive provider response',{status:403}));
+ headless.create=()=>client.create(user,'203.0.113.12');
+ const response=await request('/api/store/checkout',{packageId:mapping.id});
+ assert.equal(response.status,503);
+ assert.deepEqual(await response.json(),{error:'Tebex could not prepare your purchase. Please try again later.'});
+ assert.deepEqual(warnings.mock.calls.map(call=>call.arguments),[['Tebex request failed',JSON.stringify({operation:'create_basket',status:403,failure:'http'})]]);
+});
+
+test('unexpected checkout exceptions remain private through the production error handler',async t=>{
+ const {request,headless}=await harness(t);
+ headless.create=async()=>{throw new Error('private-api-key and buyer data');};
+ const response=await request('/api/store/checkout',{packageId:mapping.id});
+ assert.equal(response.status,500);
+ assert.deepEqual(await response.json(),{error:'Service unavailable. Please try again.'});
+});
+
+test('provider connection and response failures log no raw data',async t=>{
+ const warnings=t.mock.method(console,'warn',()=>{});
+ for(const [fetcher,status,failure] of [
+  [async()=>{throw new Error('private transport details');},null,'connection'],
+  [async()=>new Response('private malformed response'),200,'response'],
+ ]){
+  const client=createHeadless({tebexPublicToken:'private-catalog-token'},fetcher);
+  await assert.rejects(client.get('private-basket-id'),e=>e.status===503&&!e.message.includes('private'));
+  assert.deepEqual(warnings.mock.calls.at(-1).arguments,['Tebex request failed',JSON.stringify({operation:'read_basket',status,failure})]);
+ }
 });

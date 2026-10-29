@@ -1,5 +1,5 @@
 import express from 'express';import session from 'express-session';import connectPg from 'connect-pg-simple';import crypto from 'node:crypto';import path from 'node:path';
-import {root} from './config.js';import {createOidc,isAdmin,regenerate,saveSession,UUID} from './auth.js';import {createBridge,FIXTURE_UUID} from './bridge.js';import {createCatalog} from './catalog.js';import {createRenderQueue} from './render-queue.js';import {route,requireUser,requireAdmin,HttpError} from './errors.js';
+import {root} from './config.js';import {createOidc,isAdmin,regenerate,saveSession,UUID} from './auth.js';import {createBridge,FIXTURE_UUID} from './bridge.js';import {createCatalog} from './catalog.js';import {createRenderQueue} from './render-queue.js';import {route,requireUser,requireAdmin,HttpError,errorHandler} from './errors.js';
 import {mountTebexRelay} from './tebex-relay.js';import {exportNativeBundle} from './native-export.js';
 import {createHeadless} from './tebex-headless.js';import {mountTebexCheckout} from './tebex-checkout.js';
 export function createApp(cfg,repo){
@@ -52,6 +52,6 @@ export function createApp(cfg,repo){
  app.use('/admin',requireAdmin,express.static(path.join(root,'web/admin')));
 
  app.use(express.static(path.join(root,'web'),{index:false,dotfiles:'deny'}));
- app.use((err,req,res,next)=>{if(res.headersSent)return next(err);const status=err.status|| (err.code==='23505'?409:500);res.status(status).json({error:status<500?err.message:'Service unavailable. Please try again.'});});
+ app.use(errorHandler);
  return {app,queue,catalog};
 }
