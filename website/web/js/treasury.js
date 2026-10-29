@@ -27,10 +27,10 @@ export async function treasury(view,state){
   panel.append(purchaseNotice());
   const pay=el('button','Loading secure checkout…','primary');pay.disabled=true;panel.append(pay);
   const fallback=link('Open secure checkout in a new tab',result.checkoutUrl);fallback.target='_blank';fallback.rel='noopener noreferrer';panel.append(fallback);
-  const again=el('button','Choose another package');again.onclick=async()=>{try{await api('/api/store/checkout/reset',{method:'POST',body:'{}'});panel.hidden=true;}catch(e){notice(e.message,true);}};panel.append(again);
+  const again=el('button','Choose another package');again.onclick=()=>{panel.hidden=true;grid.scrollIntoView({block:'nearest',behavior:'auto'});};panel.append(again);
   try{const Tebex=await loadCheckout();Tebex.checkout.init({ident:result.ident,theme:'dark',colors:[{name:'primary',color:'#d8b66b'},{name:'secondary',color:'#6c9a87'}]});
    if(!eventsBound){
-    Tebex.checkout.on('payment:complete',()=>{notice('Checkout finished. Your Crowns will appear after delivery is confirmed.');refreshBalance();});
+    Tebex.checkout.on('payment:complete',()=>{panel.hidden=true;notice('Checkout finished. Your Crowns will appear after delivery is confirmed.');refreshBalance();});
     Tebex.checkout.on('payment:error',()=>notice('Payment could not be completed. You can try again in checkout.',true));eventsBound=true;
    }
    pay.textContent='Continue to secure payment';pay.disabled=false;pay.onclick=()=>{try{Tebex.checkout.launch();}catch{notice('Use the secure checkout link to continue.',true);}};
@@ -52,10 +52,9 @@ export async function treasury(view,state){
  view.append(el('p','Crowns do not expire and cannot be traded. They are separate from the Coins earned through play.','muted'));
  view.append(el('p','Secure payments powered by Tebex.','muted'));
  if(state.user){
-  const actions=el('div',undefined,'actions'),refresh=el('button','Refresh balance'),restart=el('button','Start a new checkout');
+  const actions=el('div',undefined,'actions'),refresh=el('button','Refresh balance');
   refresh.onclick=refreshBalance;
-  restart.onclick=async()=>{try{await api('/api/store/checkout/reset',{method:'POST',body:'{}'});panel.hidden=true;notice('Choose a package to start a new checkout.');history.replaceState(null,'','/store');}catch(e){notice(e.message,true);}};
-  actions.append(refresh,restart);view.append(actions);
+  actions.append(refresh);view.append(actions);
  }
  if(state.user?.admin)view.append(link('Manage treasury','/admin/commerce'));
  const query=new URLSearchParams(location.search);

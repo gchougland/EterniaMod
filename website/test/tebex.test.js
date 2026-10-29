@@ -92,7 +92,7 @@ test('Hytale basket authorization accepts only a provider HTTPS URL and encodes 
 async function harness(t,changes={}){
  const state={user:{...user},current:basket(),creates:0,adds:0,products:[mapping],source:'game',accountUuid:user.uuid,failAdd:false};
  const cfg={tebexPackages:[mapping],tebexCheckoutEnabled:true,clientId:'configured',clientSecret:'configured',bridgeUrl:'https://game.example',bridgeToken:'configured',...changes};
- const headless={configured:true,packages:async()=>[listing],create:async()=>{state.creates++;state.current=basket();state.current.packages=[];return state.current;},get:async()=>structuredClone(state.current),auth:async(id,nonce)=>'https://headless.tebex.io/auth?state='+nonce,
+ const headless={configured:true,packages:async()=>[listing],create:async()=>{state.creates++;state.current=basket();if(state.creates>1){state.current.ident+='-'+state.creates;state.current.links.checkout='https://pay.tebex.io/'+state.current.ident;}state.current.packages=[];return state.current;},get:async()=>structuredClone(state.current),auth:async(id,nonce)=>'https://headless.tebex.io/auth?state='+nonce,
   add:async()=>{state.adds++;state.current.packages=basket().packages;if(state.failAdd){state.failAdd=false;throw Object.assign(new Error('Timeout'),{status:503});}return structuredClone(state.current);}};
  const bridge={getCrownProducts:async()=>({source:state.source,products:state.products}),getOverview:async()=>({source:state.source,account:{uuid:state.accountUuid}})};
  const app=express();app.use(session({secret:'local-test-secret-12345678901234567890',resave:false,saveUninitialized:false}));app.use(express.json());
@@ -128,6 +128,46 @@ test('checkout reuses a basket after ambiguous add timeout and does not double a
  assert.equal((await request('/api/store/checkout',{packageId:mapping.id},{'X-CSRF-Token':''})).status,403);
  assert.equal((await request('/api/store/checkout/reset',{})).status,200);
  assert.equal((await request('/api/store/checkout',{packageId:mapping.id})).status,429);
+});
+
+test('a completed checkout automatically becomes a fresh basket for the next purchase',async t=>{
+ let now=Date.now();t.mock.method(Date,'now',()=>now);
+ const {state,request}=await harness(t);
+ const first=await (await request('/api/store/checkout',{packageId:mapping.id})).json();
+ state.current.complete=true;now+=6000;
+ const response=await request('/api/store/checkout',{packageId:mapping.id});assert.equal(response.status,200);
+ const second=await response.json();assert.notEqual(second.ident,first.ident);assert.equal(second.status,'ready');
+ assert.equal(state.creates,2);assert.equal(state.adds,2);
+ const retry=await (await request('/api/store/checkout',{packageId:mapping.id})).json();assert.equal(retry.ident,second.ident);
+ assert.equal(state.creates,2);assert.equal(state.adds,2);
+});
+
+test('automatic replacement preserves its basket after an ambiguous package add',async t=>{
+ let now=Date.now();t.mock.method(Date,'now',()=>now);
+ const {state,request}=await harness(t);
+ await request('/api/store/checkout',{packageId:mapping.id});state.current.complete=true;now+=6000;state.failAdd=true;
+ assert.equal((await request('/api/store/checkout',{packageId:mapping.id})).status,503);
+ const replacement=state.current.ident;
+ const retry=await request('/api/store/checkout',{packageId:mapping.id});assert.equal(retry.status,200);
+ assert.equal((await retry.json()).ident,replacement);assert.equal(state.creates,2);assert.equal(state.adds,2);
+});
+
+test('failed reads and changed identity cannot trigger automatic basket replacement',async t=>{
+ let now=Date.now();t.mock.method(Date,'now',()=>now);
+ const {state,request,headless}=await harness(t);
+ await request('/api/store/checkout',{packageId:mapping.id});now+=6000;
+ const get=headless.get;headless.get=async()=>{throw Object.assign(new Error('Provider unavailable'),{status:503});};
+ assert.equal((await request('/api/store/checkout',{packageId:mapping.id})).status,503);assert.equal(state.creates,1);
+ headless.get=get;state.current.complete=true;state.current.custom.eternia_profile_uuid='other';
+ assert.equal((await request('/api/store/checkout',{packageId:mapping.id})).status,409);assert.equal(state.creates,1);
+ state.current.custom.eternia_profile_uuid=user.uuid;state.current.username='Other';
+ assert.equal((await request('/api/store/checkout',{packageId:mapping.id})).status,409);assert.equal(state.creates,1);
+});
+
+test('automatic completed basket replacement still respects creation throttling',async t=>{
+ const {state,request}=await harness(t);
+ await request('/api/store/checkout',{packageId:mapping.id});state.current.complete=true;
+ assert.equal((await request('/api/store/checkout',{packageId:mapping.id})).status,429);assert.equal(state.creates,1);
 });
 test('checkout gates on real login, game account and exact configured Crown benefit',async t=>{
  const {state,request}=await harness(t);

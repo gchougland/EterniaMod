@@ -60,14 +60,23 @@ export function mountTebexCheckout(app,cfg,headless,bridge){
   try{
    await delivery(req,req.body.packageId);
    let pending=req.session.tebexCheckout;
-   if(!pending||pending.owner!==req.session.user.uuid||pending.packageId!==req.body.packageId||Date.now()-pending.createdAt>30*60000){
+   let basket;
+   const reusable=pending&&pending.owner===req.session.user.uuid&&pending.packageId===req.body.packageId&&Date.now()-pending.createdAt<=30*60000;
+   if(reusable){
+    // Keep uncertain attempts on the same basket. Only the provider can confirm it is finished.
+    basket=await headless.get(pending.ident);
+    if(basket.custom?.eternia_profile_uuid!==req.session.user.uuid)throw new HttpError(409,'This checkout belongs to another profile.');
+    if(basket.username&&basket.username.toLowerCase()!==req.session.user.name.toLowerCase())throw new HttpError(409,'Use the same Hytale profile for Eternia and Tebex.');
+   }
+   if(!reusable||basket.complete===true){
     if(Date.now()-(req.session.tebexAttempt||0)<5000)throw new HttpError(429,'Please wait a moment before choosing another package.');
     req.session.tebexAttempt=Date.now();await saveSession(req);
-    const basket=await headless.create(req.session.user,req.ip.replace(/^::ffff:/,''));
+    basket=await headless.create(req.session.user,req.ip.replace(/^::ffff:/,''));
     pending=req.session.tebexCheckout={ident:basket.ident,owner:req.session.user.uuid,packageId:req.body.packageId,createdAt:Date.now()};
     await saveSession(req);
+    basket=await headless.get(pending.ident);
    }
-   res.set('Cache-Control','no-store').json(await ready(req,pending,await headless.get(pending.ident)));
+   res.set('Cache-Control','no-store').json(await ready(req,pending,basket));
   }finally{busy.delete(req.sessionID);}
  }));
  app.post('/api/store/checkout/resume',requireUser,route(async(req,res)=>{
