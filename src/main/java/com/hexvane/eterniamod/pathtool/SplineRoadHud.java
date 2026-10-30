@@ -21,7 +21,7 @@ public final class SplineRoadHud extends CustomUIHud {
     }
     public static void controls(UICommandBuilder commands,PlayerRef player,boolean reviewing) {
         commands.clear("#ControlRows");
-        var slots=new ToolKeybindSlot[]{ToolKeybindSlot.SECONDARY,ToolKeybindSlot.PRIMARY,ToolKeybindSlot.USE,ToolKeybindSlot.ABILITY1,ToolKeybindSlot.ABILITY2,ToolKeybindSlot.PICK};
+        var slots=new ToolKeybindSlot[]{ToolKeybindSlot.SECONDARY,ToolKeybindSlot.PRIMARY,ToolKeybindSlot.USE,ToolKeybindSlot.ABILITY1,ToolKeybindSlot.ABILITY4,ToolKeybindSlot.PICK};
         var descriptions=new String[]{"Add a ground node / remove aimed node","Select a node, then move it",reviewing?"Confirm reviewed road":"Review road before building","Undo last node edit","Road width and paving style","Edit or remove saved road"};
         for(int i=0;i<slots.length;i++)ToolHudHotkeyRows.appendRow(commands,"#ControlRows",i,slots[i],Message.raw(descriptions[i]),player);
     }

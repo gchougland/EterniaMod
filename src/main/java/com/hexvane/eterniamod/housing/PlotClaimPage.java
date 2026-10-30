@@ -17,11 +17,16 @@ import java.util.UUID;
 import java.util.concurrent.*;
 
 public final class PlotClaimPage extends EterniaInteractiveCustomUIPage<PlotClaimPage.Data> {
-    private record Draft(String world,int x,int y,int z,boolean paid,boolean rectangle,HousingRules.Scope scope){}
+    /** A draft only resumes near where it was left, so the deed always plans land where the player stands. */
+    private record Draft(String world,int x,int y,int z,boolean paid,boolean rectangle,HousingRules.Scope scope){
+        private static final int RESUME_RANGE=48;
+        boolean nearby(String worldName,double px,double pz){return world.equals(worldName)&&Math.abs(px-x)<=RESUME_RANGE&&Math.abs(pz-z)<=RESUME_RANGE;}
+    }
     private static final ConcurrentHashMap<UUID,Draft> DRAFTS=new ConcurrentHashMap<>();
     private boolean discarded;
     public static boolean resumeDraft(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,EterniaModPlugin plugin){
-        var draft=DRAFTS.get(player.getUuid());if(draft==null||!draft.world.equals(store.getExternalData().getWorld().getName()))return false;
+        var draft=DRAFTS.get(player.getUuid());var t=store.getComponent(ref,TransformComponent.getComponentType());
+        if(draft==null||t==null||!draft.nearby(store.getExternalData().getWorld().getName(),t.getPosition().x,t.getPosition().z))return false;
         open(ref,store,player,plugin);return true;
     }
     private static final ScheduledExecutorService TIMER=Executors.newSingleThreadScheduledExecutor(Thread.ofPlatform().daemon(true).name("eternia-claim-preview").factory());
@@ -44,7 +49,7 @@ public final class PlotClaimPage extends EterniaInteractiveCustomUIPage<PlotClai
         if(transform==null||p==null)return;var pos=transform.getPosition();
         var next=new PlotClaimPage(player,plugin,(int)Math.floor(pos.x),(int)Math.floor(pos.y),(int)Math.floor(pos.z));
         var draft=DRAFTS.get(player.getUuid());
-        if(draft!=null&&draft.world.equals(store.getExternalData().getWorld().getName())){next.centerX=draft.x;next.groundY=draft.y;next.centerZ=draft.z;next.paid=draft.paid;next.rectangle=draft.rectangle;next.scope=draft.scope;next.resize();}
+        if(draft!=null&&draft.nearby(store.getExternalData().getWorld().getName(),pos.x,pos.z)){next.centerX=draft.x;next.groundY=draft.y;next.centerZ=draft.z;next.paid=draft.paid;next.rectangle=draft.rectangle;next.scope=draft.scope;next.resize();}
         p.getPageManager().openCustomPage(ref,store,next);
     }
     public static void openNew(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,EterniaModPlugin plugin,boolean guild){

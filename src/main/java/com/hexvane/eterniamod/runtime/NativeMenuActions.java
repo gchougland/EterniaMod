@@ -19,7 +19,7 @@ public final class NativeMenuActions implements SocialUiActions {
         switch(action) {
             case ARCHITECT_LEDGER -> com.hexvane.eterniamod.customization.CustomizationTools.ledger(plugin,ref,store,player);
             case HOUSING_INVENTORY -> HousingInventory.open(plugin,ref,store,player);
-            case HOUSING_CLAIM -> {player.sendMessage(Message.raw(com.hexvane.eterniamod.customization.CustomizationTools.reissue(ref,store,player,true)));PlotClaimPage.open(ref,store,player,plugin);}
+            case HOUSING_CLAIM -> {var notice=com.hexvane.eterniamod.customization.CustomizationTools.reissue(ref,store,player,true)+" Walk to where you want your home, then use the Housing Deed to mark your plot there.";player.sendMessage(Message.raw(notice));return Result.notice(notice);}
             case HOUSING_MANAGE -> {player.sendMessage(Message.raw(com.hexvane.eterniamod.customization.CustomizationTools.reissue(ref,store,player,true)));HousingInventory.open(plugin,ref,store,player);}
             case GUILD_HOUSING -> ChoicePage.open(ref,store,player,"Guild estate",plugin.getRuntimeConfig().local()?"Local testing: a solo guild can claim an estate. Normal placement rules still apply.":"Guild leaders claim estates with at least five members. Authorized builders furnish them.",List.of(
                 new ChoicePage.Choice("Claim an estate","Choose plot",(r,s)->PlotClaimPage.openNew(r,s,player,plugin,true)),

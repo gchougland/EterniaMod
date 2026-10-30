@@ -2,6 +2,10 @@
 
 Use `/e admin setup` in the world you want to configure. You can assign world roles, set arrival points, build and register roads, reserve public plazas, and place/manage the Hub NPCs and world portal without editing JSON. The menu puts **Hub services** and **Road Designer** on its first page.
 
+Choose **World details**, enter a display name such as **Chapter 1** and an optional portal description, then select **Save details**. Descriptions can contain up to 160 characters and appear on the world's portal card. Leave the description empty to use the usual description for its world role. Choose a world role first if the world is not configured yet.
+
+Portals, the current world label, and the housing menu use the display name. It is saved with the world and keeps your spaces and capitalization. Leave the name empty to restore the normal name. This does not rename the world folder or change travel destinations, so commands still use the original name such as `Chapter1`.
+
 ## Your existing Hub with housing
 
 You do not need a separate housing world. Stay in your existing world, open setup, choose **World role → Hub with player and guild housing**, and confirm. This keeps the same terrain and world name. A world called `default` can be your Hub; it does not need to be renamed.
@@ -27,6 +31,9 @@ The menu is sufficient. These in-game commands are useful when you want descript
 
 | Command | Action |
 | --- | --- |
+| `/e admin setup spawns off` | Stop natural spawning and goblin breaches in the Hub |
+| `/e admin setup spawns on` | Allow natural spawning and world events in the Hub |
+| `/e admin setup spawns status` | Check the Hub's natural spawning setting |
 | `/e admin build on` | Enable your Hub building session |
 | `/e admin build off` | End your Hub building session |
 | `/e admin build` | Toggle your Hub building session |
@@ -53,11 +60,17 @@ For another adventure or authoring world, native Hytale commands provide `/world
 
 Setup requires current Hytale WorldEditor permission, including inherited administrator access. An administrator can grant the native group using `/perm user group add <player-uuid> hytale:WorldEditor`, and revoke it with `/perm user group remove <player-uuid> hytale:WorldEditor`. These are native permission commands and do not require editing a permissions file. WorldEditor is a powerful native editing role; assign it to trusted builders. Every setup confirmation rechecks the permission, even if a menu was opened earlier.
 
-**The Road Designer works after housing is enabled.** It uses Eternia's checked world adapter and does not require turning protections off. Smooth splines support 2–32 nodes, width 1–9 and up to 4,096 surface cells. Each cell follows dry plain ground with two clear blocks above it; steep jumps, plots, durable reservations, public plazas, guild roads, complex blocks, inventories and fluids are rejected. Endpoint junctions may join another public road using read-only shared cells. Interior crossings are rejected. See [spline-road-tool.md](spline-road-tool.md) for controls, limits and content authoring.
+**The Road Designer works after housing is enabled.** It uses Eternia's checked world adapter and does not require turning protections off. Smooth splines support 2–32 nodes, width 1–9 and up to 4,096 surface cells. Each cell follows dry plain ground with two clear blocks above it; plots, durable reservations, public plazas, guild roads, complex blocks, inventories and fluids are rejected. Endpoint junctions may join another public road using read-only shared cells. Interior crossings are rejected. See [spline-road-tool.md](spline-road-tool.md) for controls, limits and content authoring.
 
 The item's Manage action provides saved-node editing, reviewed undo and recovery. Undo restores the road's own original terrain and removes its registration together; existing claims and branch junctions must remain valid. Recovery checks durable before/after snapshots, while unfinished road columns stay protected and new claims wait. Legacy rectangular paving remains recoverable under Manage → Legacy records. Do not delete recovery files to unlock an area.
 
 Housing-enabled worlds protect ordinary players from hand placement and breaking throughout the world. Admins with WorldEditor permission can use `/e admin build on` to place and break blocks on unclaimed ground and in public plazas, and `/e admin build off` when finished. `/e admin build` toggles the setting. Each admin enables their own session; it ends when they leave the world, disconnect, or the server restarts. The world must already have a Hub role. Claimed and reserved plots, registered public and guild roads, unfinished road work, and managed NPC/portal footprints stay protected. Use the dedicated tools for those areas. Fluid buckets, gathering and fluid/fire simulation remain disabled. NPC services, public portals, player house/prop/palette/path tools, and the checked administrative paving tool remain usable. Use admin building mode to shape the Hub terrain and build public structures. You can also author larger structures in a separate editor world and import them through your trusted prefab workflow. Raw native WorldEditor operations can bypass block-event protections; do not treat unrestricted editor commands as safe tools around live player plots.
+
+## Natural Hub spawning
+
+Stand in the configured Hub and use `/e admin setup spawns off`. This takes effect immediately and is kept in the world's normal save across restarts. Use `on` to allow natural spawning again or `status` to check the setting. WorldEditor permission is required. The command works with both Hub roles and refuses other worlds.
+
+This also disables Hytale world events in the Hub, including goblin breaches. Active events are cancelled through Hytale, which cleans up their event objects. Other worlds keep their own settings. Ordinary existing creatures are not removed. Placed Hub characters, pets and summoned mounts remain available. Automatic population spawning and automatic NPC spawn markers respect the setting. Explicit NPC spawning and creatures stored inside placed prefabs are still allowed. Both the natural spawning setting and the world event setting are saved. Use `off` again after updating if natural spawning was already disabled. The separate spawn marker setting is preserved, so turning natural spawning on does not enable markers that were disabled separately.
 
 ## Hub NPCs and portal management
 

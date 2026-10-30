@@ -14,6 +14,7 @@
 - Admins can design season passes in game with `/eternia season`: levels, rewards and dates. Drafts go to the website as they are saved, and a pass goes live in game when it is ready.
 
 - Admins can turn Hub building on and off for themselves while homes, roads and service areas stay protected.
+- Admins can turn natural enemy and animal spawning and goblin breaches off or on in the Hub with `/eternia admin setup spawns`.
 - The Gilded Gull, a furnished harbour tavern for the Hub, is ready to place from the prefab browser. Its hearth warms visitors and its tower has a lookout over the town.
 - A new Hub town square is ready to place from the prefab browser. Players arrive under a tall gate tower in the middle of the square, with the Waygate to other worlds straight ahead.
 - Admins can build the whole town in one go with `/eternia admin town place`: it settles into the land where you stand, with streets, houses and walls that rise and fall with the hills, and lays wide roads out of town for players and guilds to build along. `/eternia admin town undo` puts the land back.
@@ -26,7 +27,7 @@
 - Joining Eternia takes you to the right place: new players start in the Hub, players who have met the Hub characters wait in the housing area until they claim a plot, and players with a home always log in at their house.
 - Returning to an adventure world puts you back where you left it. Your first visit starts at the world's spawn.
 - The Eternia Home Portal takes you straight back to your house from anywhere it is placed.
-- Admins can choose where brand new players appear and where players without a plot appear with `/eternia admin setup firstjoin` and `newcomer`.
+- Admins can choose where brand new players appear and where players without a plot appear with `/eternia admin setup firstjoin` and `newcomer`. World setup also lets admins choose the world name shown in portals and menus and add a description to its portal card.
 - Houses and decorations can be turned and zoomed in 3D in the Crown Store and from your Collection.
 - Each Hub character now runs only their own trade: Bramble Hearthleaf for homes, Torren Ironbough for guilds, Nima Quicktail for the market, Prowl for getting started and travel, and Pip Coppercap for minigames.
 
@@ -39,7 +40,7 @@
 - Distinct category icons and item previews in the Crown Store, Collection, and season rewards. Collections have compact six column cards with separate categories for houses, decorations, materials, titles, wardrobe, pets, mounts and upgrades.
 
 - The Crown Store has twenty new furnishings for homes and gardens, such as a dining table laid for supper, a cosy bed, a fire pit and a garden well.
-- The Corn Buddy is a new pet in the Crown Store. This cheerful little ear of corn walks along behind you, hops with joy when it catches up, looks around, dances, and naps when you stand still for a while.
+- The Corn Buddy is a new pet in the Crown Store. This cheerful little ear of corn walks along behind you, hops with joy when it catches up, looks around, dances, and naps when you stand still for a while. A Crowned Corn Buddy with a little golden crown is also available.
 - Seven new houses for plots: three cottages and townhouses for free plots, a manor and a tower house for larger plots, and a lodge and a keep for guild estates.
 
 - Prowl Shirt is the first paid Foundations reward and can be worn from your Wardrobe.

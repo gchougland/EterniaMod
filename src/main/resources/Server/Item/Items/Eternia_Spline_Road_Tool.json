@@ -45,7 +45,7 @@
         }
       ]
     },
-    "Ability2": {
+    "Ability4": {
       "Interactions": [
         {
           "Type": "EterniaSplineRoad",

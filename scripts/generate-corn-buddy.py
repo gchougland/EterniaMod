@@ -1,6 +1,7 @@
-"""Generate the Corn Buddy pet model and texture.
+"""Generate the Corn Buddy pet model and texture, and its golden crown attachment.
 
-Writes Common/NPC/Eternia/Pets/Corn_Buddy/Model.blockymodel and Texture.png.
+Writes Common/NPC/Eternia/Pets/Corn_Buddy/Model.blockymodel and Texture.png, and
+Attachments/Crown.blockymodel and Crown_Texture.png beside them.
 Animations are authored separately (see docs/implementation/content-authoring.md).
 Requires Python 3 with Pillow. Units: 64 per block, model faces +Z, feet at y 0.
 """
@@ -44,6 +45,11 @@ PUPIL = hexrgb("#1f1a2c")
 PUPIL_SHINE = hexrgb("#fbfaf2")
 SILK = hexrgb("#ead27c")
 SILK_DARK = hexrgb("#c8a24a")
+GOLD = hexrgb("#f4bd35")
+GOLD_LIGHT = hexrgb("#ffe98a")
+GOLD_DARK = hexrgb("#b8701c")
+RUBY = hexrgb("#d23a4e")
+SAPPHIRE = hexrgb("#3d7fd4")
 
 FACE_LIGHT = {"top": .14, "bottom": -.28, "front": 0, "back": -.06, "left": -.03, "right": -.03}
 
@@ -218,6 +224,31 @@ def silk(w, h):
             rows[y][x] = c + (255,)
     return rows
 
+def gold(w, h, face):
+    """Polished gold: bright along the top edge, warm brown shadow at the bottom."""
+    if face == "top":
+        return flat(w, h, face, mix(GOLD, GOLD_LIGHT, .5))
+    if face == "bottom":
+        return flat(w, h, face, GOLD_DARK)
+    rows = []
+    for y in range(h):
+        t = y / max(1, h - 1)
+        c = mix(GOLD_LIGHT, GOLD, min(1, t * 2)) if t < .5 else mix(GOLD, GOLD_DARK, (t - .5) * 1.6)
+        rows.append([shade(c, FACE_LIGHT.get(face, 0)) + (255,) for x in range(w)])
+    return rows
+
+def gem(color):
+    def paint(w, h, face):
+        rows = []
+        for y in range(h):
+            row = []
+            for x in range(w):
+                c = mix(color, (255, 255, 240), .45) if (x, y) == (0, 0) and face == "front" else mix(color, (60, 20, 60), y / (h * 3))
+                row.append(shade(c, FACE_LIGHT.get(face, 0)) + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
 # ---------------------------------------------------------------- packing
 
 class Atlas:
@@ -328,6 +359,8 @@ def build():
         ]),
         node("Cob-Upper", (0, 24, 0), shape=box((18, 6, 14), (0, 3, 0), lambda w, h, f: kernels(w, h, f, 2)), children=[
             node("Cob-Tip", (0, 6, 0), shape=box((12, 4, 10), (0, 2, 0), lambda w, h, f: kernels(w, h, f, 3)), children=[
+                # Attachments named Crown-Anchor (the golden crown) hang from here.
+                node("Crown-Anchor", (0, 4, 0)),
                 node("Silk", (0, 4, 0), children=[
                     node("Silk-A", (0, 0, 0), shape=quad((12, 12), (0, 6, 0), silk_pixels, double=True)),
                     node("Silk-B", (0, 0, 0), (0, 90, 0), shape=quad((12, 12), (0, 6, 0), silk_pixels, double=True)),
@@ -342,10 +375,40 @@ def build():
     pelvis = node("Pelvis", (0, 12, 0), children=[cob, leg_node("L"), leg_node("R")])
     return {"nodes": [node("Origin", children=[pelvis])], "lod": "auto"}
 
+def build_crown():
+    """The crown sits on the cob tip (12 x 10), tilted a little to one side."""
+    # The band spans y -1 to 2, so every point stands on y 2.
+    def spikes(prefix, z):
+        return [node(f"{prefix}-{i}", (x, 2, z), shape=box((2, h, 1), (0, h / 2, 0), gold))
+                for i, (x, h) in enumerate(((-6, 3), (0, 4), (6, 3)))]
+    crown = node("Crown", (0, -.5, 0), (0, 0, -8), children=[
+        node("Crown-Band-Front", (0, 0, 5.5), shape=box((14, 3, 1), (0, .5, 0), gold)),
+        node("Crown-Band-Back", (0, 0, -5.5), shape=box((14, 3, 1), (0, .5, 0), gold)),
+        node("L-Crown-Band", (6.5, 0, 0), shape=box((1, 3, 10), (0, .5, 0), gold)),
+        node("R-Crown-Band", (-6.5, 0, 0), shape=box((1, 3, 10), (0, .5, 0), gold)),
+        *spikes("Crown-Point-Front", 5.5),
+        *spikes("Crown-Point-Back", -5.5),
+        node("L-Crown-Point", (6.5, 2, 0), shape=box((1, 3, 2), (0, 1.5, 0), gold)),
+        node("R-Crown-Point", (-6.5, 2, 0), shape=box((1, 3, 2), (0, 1.5, 0), gold)),
+        node("Crown-Ruby", (0, .5, 6.3), shape=box((2, 2, 1), (0, 0, 0), gem(RUBY))),
+        node("L-Crown-Sapphire", (7.3, .5, 0), shape=box((1, 2, 2), (0, 0, 0), gem(SAPPHIRE))),
+        node("R-Crown-Sapphire", (-7.3, .5, 0), shape=box((1, 2, 2), (0, 0, 0), gem(SAPPHIRE))),
+    ])
+    # isPiece marks the root as a piece: the client hangs it on the pet's node of the same name.
+    anchor = node("Crown-Anchor", children=[crown])
+    anchor["shape"]["settings"]["isPiece"] = True
+    return {"nodes": [anchor], "lod": "auto"}
+
 if __name__ == "__main__":
     os.makedirs(ROOT, exist_ok=True)
     model = build()
     with open(os.path.join(ROOT, "Model.blockymodel"), "w", encoding="utf-8", newline="\n") as f:
         json.dump(model, f, indent=2)
     ATLAS.img.save(os.path.join(ROOT, "Texture.png"))
+    ATLAS = Atlas(64)
+    crown = build_crown()
+    os.makedirs(os.path.join(ROOT, "Attachments"), exist_ok=True)
+    with open(os.path.join(ROOT, "Attachments", "Crown.blockymodel"), "w", encoding="utf-8", newline="\n") as f:
+        json.dump(crown, f, indent=2)
+    ATLAS.img.save(os.path.join(ROOT, "Attachments", "Crown_Texture.png"))
     print("wrote", os.path.abspath(ROOT))

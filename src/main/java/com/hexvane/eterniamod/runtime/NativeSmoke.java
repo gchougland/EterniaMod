@@ -59,6 +59,7 @@ public final class NativeSmoke {
             CompletableFuture.allOf(loads.toArray(CompletableFuture[]::new)).join();
             var result=new CompletableFuture<Void>();
             world.execute(()-> {try {
+                com.hexvane.eterniamod.setup.NativeHubSpawnsSmoke.run(plugin,world);
                 com.hexvane.eterniamod.boundary.NativeBoundarySmoke.validate(world);
                 com.hexvane.eterniamod.customization.HubBuildMode.nativeSmoke(plugin,world);
                 plugin.getLogger().atInfo().log("ETERNIA_NATIVE_BOUNDARY_SIDES_PASS: all four sides and protected public paving support the visual border");

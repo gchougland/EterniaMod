@@ -21,8 +21,9 @@ public final class HousingInfrastructure {
     public record Area(AreaKind kind, PlotRect rect) {
         public Area { Objects.requireNonNull(kind); Objects.requireNonNull(rect); }
     }
-    public record WorldPlan(String role, List<PlotRect> roads, List<PlotRect> portals, Point arrival, boolean housingEnabled, Map<String,Area> areas) {
+    public record WorldPlan(String role, List<PlotRect> roads, List<PlotRect> portals, Point arrival, boolean housingEnabled, Map<String,Area> areas, String description) {
         public WorldPlan {
+            description = normalizeDescription(description);
             if (!Set.of("hub", "housing", "adventure").contains(role)) throw new IllegalArgumentException("Unknown world role: " + role);
             if (housingEnabled && role.equals("adventure")) throw new IllegalArgumentException("Housing cannot be enabled in an adventure world");
             roads = List.copyOf(Objects.requireNonNull(roads)); portals = List.copyOf(Objects.requireNonNull(portals));
@@ -46,11 +47,19 @@ public final class HousingInfrastructure {
             this(role, roads, portals, arrival, false, null);
         }
         public WorldPlan(String role, List<PlotRect> roads, List<PlotRect> portals, Point arrival, boolean housingEnabled) { this(role,roads,portals,arrival,housingEnabled,null); }
-        public WorldPlan withRole(String role,boolean housing) { return new WorldPlan(role,roads,portals,arrival,housing,areas); }
-        public WorldPlan withArrival(Point point) { return new WorldPlan(role,roads,portals,point,housingEnabled,areas); }
+        public WorldPlan(String role, List<PlotRect> roads, List<PlotRect> portals, Point arrival, boolean housingEnabled, Map<String,Area> areas) { this(role,roads,portals,arrival,housingEnabled,areas,""); }
+        public WorldPlan withRole(String role,boolean housing) { return new WorldPlan(role,roads,portals,arrival,housing,areas,description); }
+        public WorldPlan withArrival(Point point) { return new WorldPlan(role,roads,portals,point,housingEnabled,areas,description); }
+        public WorldPlan withDescription(String value) { return new WorldPlan(role,roads,portals,arrival,housingEnabled,areas,value); }
+        public static String normalizeDescription(String value) {
+            if (value == null) return "";
+            if (value.length() > 160 || value.codePoints().anyMatch(c -> Character.isISOControl(c) && c != '\n' && c != '\r' && c != '\t'))
+                throw new IllegalArgumentException("Keep the description within 160 characters.");
+            return value.strip().replaceAll("\\s+", " ");
+        }
         public WorldPlan withAreas(Map<String,Area> values) {
             var sorted=new TreeMap<>(values);
-            return new WorldPlan(role,sorted.values().stream().filter(a->a.kind==AreaKind.ROAD).map(Area::rect).toList(),sorted.values().stream().filter(a->a.kind==AreaKind.PORTAL).map(Area::rect).toList(),arrival,housingEnabled,sorted);
+            return new WorldPlan(role,sorted.values().stream().filter(a->a.kind==AreaKind.ROAD).map(Area::rect).toList(),sorted.values().stream().filter(a->a.kind==AreaKind.PORTAL).map(Area::rect).toList(),arrival,housingEnabled,sorted,description);
         }
         public boolean supportsHousing() { return role.equals("housing") || housingEnabled; }
         /** A residential hub keeps public travel at its portals; distant homes still need their convenience unlock. */

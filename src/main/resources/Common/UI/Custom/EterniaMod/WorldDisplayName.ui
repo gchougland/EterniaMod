@@ -1,0 +1,18 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+$T.@PageOverlay {}
+Group {
+ Anchor: (Width: 700, Height: 540); Background: $T.@JournalPanelSurface; Padding: (Full: 28); LayoutMode: Top;
+ Label { Text: "WORLD DETAILS"; Anchor: (Height: 38, Bottom: 8); Style: $T.@TitleStyle; }
+ Label #World { Anchor: (Height: 28, Bottom: 12); Style: $T.@MutedStyle; }
+ Label { Text: "Choose the name players see in portals and world menus."; Anchor: (Height: 28, Bottom: 14); Style: $T.@DefaultLabelStyle; }
+ Label { Text: "Display name"; Anchor: (Height: 26); Style: $T.@MutedStyle; }
+ $T.@TextField #DisplayName { Anchor: (Height: 46, Bottom: 14); MaxLength: 64; }
+ Label { Text: "Portal description · Up to 160 characters"; Anchor: (Height: 26, Bottom: 6); Style: $T.@MutedStyle; }
+ MultilineTextField #Description { Anchor: (Height: 100, Bottom: 14); AutoGrow: false; MaxLength: 160; Background: $T.@HeaderSurface; Padding: (Full: 12); Style: (FontSize: 16, TextColor: $T.@Text); PlaceholderStyle: (FontSize: 16, TextColor: $T.@Muted); ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+ Label #Status { FlexWeight: 1; Style: $T.@MutedStyle; }
+ Group { Anchor: (Height: 46); LayoutMode: Left;
+  $T.@SecondaryTextButton #Back { Text: "Back"; FlexWeight: 1; Anchor: (Height: 46, Right: 12); }
+  $T.@TextButton #Save { Text: "Save details"; FlexWeight: 1; Anchor: (Height: 46); }
+ }
+}

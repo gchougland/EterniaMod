@@ -463,7 +463,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 var housing = services.housing().find(Owner.player(actor)).orElse(null);
                 List<Row> rows = new ArrayList<>();
                 rows.add(Row.info(housing == null ? "Your free 24 × 24 plot is waiting for you." : "Your home · " + UiPresentation.friendlyId(housing.state().name())));
-                services.housing().location(Owner.player(actor)).ifPresent(location -> rows.add(Row.info(location.width() + " × " + location.depth() + " plot in " + UiPresentation.friendlyId(location.worldId()) + (location.guildId()==null?"":" · Guild neighbourhood"))));
+                services.housing().location(Owner.player(actor)).ifPresent(location -> rows.add(Row.info(location.width() + " × " + location.depth() + " plot in " + com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId()) + (location.guildId()==null?"":" · Guild neighbourhood"))));
                 rows.add(Row.info("Move credits available: " + services.ownership().available(Owner.player(actor), HousingService.MOVE_CREDIT)));
                 rows.add(Row.info("Keep structures and additions five blocks inside the plot and five blocks away from roads."));
                 if (request.desk == Desk.JOURNAL && housing == null) rows.add(Row.info("Visit Bramble Hearthleaf in the Hub to claim your free plot."));
@@ -505,7 +505,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 yield View.desk(home ? "Welcome back! Want to change something about your home, or find a new view?"
                         : "Welcome! Every adventurer gets a free plot, a starter house and one free move. Shall we find you a spot?", List.of(
                     home ? new Tile("Furnish my home", "Place your house, decorations and additions.", "housing", "external:HOUSING_MANAGE", true)
-                        : new Tile("Claim a plot", "Choose a spot near a road or portal.", "plot", "external:HOUSING_CLAIM", true),
+                        : new Tile("Claim a plot", "Get a Housing Deed, then use it where you want to live.", "plot", "external:HOUSING_CLAIM", true),
                     new Tile("Architect's Ledger", "Your plots, palettes, paths and waygate.", "ledger", "external:ARCHITECT_LEDGER", false),
                     new Tile("Housing storage", "Browse your house styles and decorations.", "storage", "external:HOUSING_INVENTORY", false),
                     new Tile("Home details", "Your plot, move credits and building rules.", "plot", "nav:HOUSING", false)));

@@ -2,7 +2,6 @@ package com.hexvane.eterniamod.runtime;
 
 import com.hexvane.eterniamod.EterniaModPlugin;
 import com.hexvane.eterniamod.ui.IllustratedMenuPage;
-import com.hexvane.eterniamod.ui.UiPresentation;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.protocol.packets.interface_.Page;
 import com.hypixel.hytale.server.core.Message;
@@ -30,7 +29,7 @@ public final class WorldDestinationsMenu {
             var destination = entry.getValue();
             // Adventure worlds fall back to their own spawn, so they need no authored arrival.
             if (id.equals(current) || destination.arrival() == null && !destination.role().equals("adventure") || Universe.get().getWorld(id) == null) return;
-            choices.add(new IllustratedMenuPage.Card(UiPresentation.friendlyId(id), description(destination.role()), image(destination.role()), "Travel", (r, s) -> {
+            choices.add(new IllustratedMenuPage.Card(WorldDisplayNames.name(id), description(destination), image(destination.role()), "Travel", (r, s) -> {
                 guard.accept(r,s);
                 // The travel service rechecks access and availability when the player clicks.
                 plugin.getTravel().selectWorld(player, id);
@@ -39,9 +38,11 @@ public final class WorldDestinationsMenu {
             }));
         });
         var component = store.getComponent(ref, Player.getComponentType());
-        if (component != null) IllustratedMenuPage.open(ref,store,player,"Travel","WHERE WILL YOU GO NEXT?","You are in " + UiPresentation.friendlyId(current) + ". Choose a destination to step through the Waygate.",choices);
+        if (component != null) IllustratedMenuPage.open(ref,store,player,"Travel","WHERE WILL YOU GO NEXT?","You are in " + WorldDisplayNames.name(current) + ". Choose a destination to step through the Waygate.",choices);
     }
-    private static String description(String role){return switch(role.toLowerCase(java.util.Locale.ROOT)){
+    static String description(com.hexvane.eterniamod.housing.HousingInfrastructure.WorldPlan plan){
+        if (!plan.description().isBlank()) return plan.description();
+        return switch(plan.role().toLowerCase(java.util.Locale.ROOT)){
         case "hub" -> "Meet your neighbors, visit the shops and return to the heart of Eternia.";
         case "housing" -> "Return to your neighborhood, decorate your home and visit friends.";
         case "adventure", "wilderness", "survival" -> "Explore the world, gather resources and make your next discovery.";

@@ -13,14 +13,25 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
-/** Every authoring command opens a review; only confirm commits the server-owned draft. */
+/** Infrastructure edits use reviewed drafts; spawning switches apply immediately on the world thread. */
 public final class EterniaSetupCommand extends AbstractPlayerCommand {
     public EterniaSetupCommand() {
         super("setup","Set up this world's housing, roads, portals and Hub services in game");setPermissionGroups("hytale:WorldEditor");
         for(String name:new String[]{"world","arrival","firstjoin","newcomer","corner","road","portal","remove","list","show","confirm"})addSubCommand(new Action(name));
+        addSubCommand(new Spawns());
     }
     @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world) {
         try{InfrastructureSetup.open(EterniaModPlugin.get(),ref,store,player);}catch(RuntimeException failure){context.sendMessage(Message.raw(failure.getMessage()));}
+    }
+    private static final class Spawns extends AbstractPlayerCommand {
+        private final RequiredArg<String> mode=withRequiredArg("mode","on, off or status",ArgTypes.STRING);
+        Spawns(){super("spawns","Turn natural spawning and goblin breaches on or off in the Hub");setPermissionGroups("hytale:WorldEditor");}
+        @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world) {
+            try {
+                SetupAccess.require(player.getUuid());
+                context.sendMessage(Message.raw(HubNaturalSpawns.configure(EterniaModPlugin.get().getInfrastructure().world(world.getName()).orElse(null),world,mode.get(context))));
+            }catch(RuntimeException failure){context.sendMessage(Message.raw(failure.getMessage()));}
+        }
     }
     private static final class Action extends AbstractPlayerCommand {
         private final String action;private final RequiredArg<String> value;

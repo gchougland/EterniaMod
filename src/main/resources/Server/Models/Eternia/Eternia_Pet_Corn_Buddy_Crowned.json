@@ -1,0 +1,104 @@
+{
+  "Model": "NPC/Eternia/Pets/Corn_Buddy/Model.blockymodel",
+  "Texture": "NPC/Eternia/Pets/Corn_Buddy/Texture.png",
+  "DefaultAttachments": [
+    {
+      "Model": "NPC/Eternia/Pets/Corn_Buddy/Attachments/Crown.blockymodel",
+      "Texture": "NPC/Eternia/Pets/Corn_Buddy/Attachments/Crown_Texture.png"
+    }
+  ],
+  "EyeHeight": 0.5,
+  "HitBox": {
+    "Min": {
+      "X": -0.3,
+      "Y": 0,
+      "Z": -0.3
+    },
+    "Max": {
+      "X": 0.3,
+      "Y": 0.85,
+      "Z": 0.3
+    }
+  },
+  "AnimationSets": {
+    "Idle": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Corn_Buddy/Animations/Idle.blockyanim",
+          "BlendingDuration": 0.2
+        }
+      ]
+    },
+    "Walk": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Corn_Buddy/Animations/Walk.blockyanim",
+          "BlendingDuration": 0.15
+        }
+      ]
+    },
+    "Run": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Corn_Buddy/Animations/Run.blockyanim",
+          "BlendingDuration": 0.15
+        }
+      ]
+    },
+    "Sleep": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Corn_Buddy/Animations/Sleep.blockyanim",
+          "BlendingDuration": 0.4
+        }
+      ]
+    },
+    "Wake": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Corn_Buddy/Animations/Wake.blockyanim",
+          "BlendingDuration": 0.1,
+          "Looping": false
+        }
+      ]
+    },
+    "Happy": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Corn_Buddy/Animations/Happy.blockyanim",
+          "BlendingDuration": 0.1,
+          "Looping": false
+        }
+      ]
+    },
+    "LookAround": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Corn_Buddy/Animations/Look_Around.blockyanim",
+          "BlendingDuration": 0.2,
+          "Looping": false
+        }
+      ]
+    },
+    "Surprised": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Corn_Buddy/Animations/Surprised.blockyanim",
+          "BlendingDuration": 0.05,
+          "Looping": false
+        }
+      ]
+    },
+    "Wiggle": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Corn_Buddy/Animations/Wiggle.blockyanim",
+          "BlendingDuration": 0.1,
+          "Looping": false
+        }
+      ]
+    }
+  },
+  "MinScale": 1,
+  "MaxScale": 1
+}

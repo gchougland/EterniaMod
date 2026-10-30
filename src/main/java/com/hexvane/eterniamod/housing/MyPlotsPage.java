@@ -24,7 +24,7 @@ public final class MyPlotsPage {
             var owner=entry.owner();var slot=entry.slot();var location=entry.location();
             String name=owner.kind()==Owner.Kind.PLAYER?"Your plot":"Guild estate";
             if(slot==null){choices.add(new ChoicePage.Choice(name+" · No plot claimed","Preview claim",(r,s)->PlotClaimPage.openNew(r,s,player,plugin,owner.kind()==Owner.Kind.GUILD)));continue;}
-            String where=location==null?"Location unavailable":location.worldId()+" · X "+location.minX()+" to "+(location.minX()+location.width()-1)+", Z "+location.minZ()+" to "+(location.minZ()+location.depth()-1);
+            String where=location==null?"Location unavailable":com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId())+" · X "+location.minX()+" to "+(location.minX()+location.width()-1)+", Z "+location.minZ()+" to "+(location.minZ()+location.depth()-1);
             choices.add(new ChoicePage.Choice(name+" · "+slot.state()+"\n"+where,"Manage",(r,s)->{
                 var actions=new ArrayList<ChoicePage.Choice>();
                 var pending=plugin.getServices().journal().unfinished().stream().filter(op->op.owner().equals(owner)).toList();

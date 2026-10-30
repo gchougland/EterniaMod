@@ -74,6 +74,24 @@ class HousingInfrastructureTest {
         assertFalse(infrastructure.world("Housing").orElseThrow().allowsPublicTravelFrom(new PlotRect(1000,1000,1,1)));
         assertThrows(IllegalArgumentException.class,()->new HousingInfrastructure.WorldPlan("adventure",List.of(),List.of(),null,true));
     }
+    @Test void worldDescriptionSurvivesReloadAndOtherSetupChanges() throws Exception {
+        var infrastructure = infrastructure();
+        var plan = infrastructure.world("housing").orElseThrow();
+        assertEquals("", plan.description(), "Legacy files need no migration");
+        var described = plan.withDescription("  Explore the hills.\nMeet the villagers.  ");
+        assertEquals("Explore the hills. Meet the villagers.", described.description());
+        described = described.withRole("hub", true).withArrival(new HousingInfrastructure.Point(5, 80, 5)).withAreas(described.areas());
+        infrastructure.saveWorld(infrastructure.snapshot().revision(), "housing", described);
+        infrastructure.load();
+        var loaded = infrastructure.world("housing").orElseThrow();
+        assertEquals("Explore the hills. Meet the villagers.", loaded.description());
+        assertEquals(plan.areas(), loaded.areas());
+        assertThrows(IllegalArgumentException.class, () -> loaded.withDescription("x".repeat(161)));
+        assertThrows(IllegalArgumentException.class, () -> loaded.withDescription("bad\u0000text"));
+        infrastructure.saveWorld(infrastructure.snapshot().revision(), "housing", loaded.withDescription("  "));
+        infrastructure.load();
+        assertEquals("", infrastructure.world("housing").orElseThrow().description());
+    }
     private HousingInfrastructure infrastructure() throws IOException {
         Path file=temp.resolve("infrastructure.json");
         Files.writeString(file,"""

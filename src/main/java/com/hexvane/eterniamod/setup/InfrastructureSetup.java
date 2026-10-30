@@ -37,17 +37,18 @@ public final class InfrastructureSetup {
         SetupAccess.require(player.getUuid());clean();var world=store.getExternalData().getWorld();var plan=plugin.getInfrastructure().world(world.getName()).orElse(null);
         var choices=new ArrayList<ChoicePage.Choice>();
         choices.add(new ChoicePage.Choice("Choose this world's role","World role",(r,s)->roles(plugin,r,s,player)));
+        choices.add(new ChoicePage.Choice("Choose the world name and description players see in portals","World details",(r,s)->WorldDisplayNamePage.open(plugin,r,s,player)));
         choices.add(new ChoicePage.Choice("Use the safe position where you are standing","Set arrival",(r,s)->arrival(plugin,r,s,player)));
-        choices.add(new ChoicePage.Choice("Brand new players appear where you are standing","First join spot",(r,s)->joinSpot(plugin,r,s,player,com.hexvane.eterniamod.runtime.JoinSpawns.Kind.FIRST_JOIN)));
-        choices.add(new ChoicePage.Choice("Players who met the Hub NPCs but have no plot appear where you are standing","Newcomer spot",(r,s)->joinSpot(plugin,r,s,player,com.hexvane.eterniamod.runtime.JoinSpawns.Kind.NEWCOMER)));
         choices.add(new ChoicePage.Choice("Place, move or remove the Hub's service NPCs and portal","Hub services",(r,s)->ManagedHubServices.open(plugin,r,s,player)));
         choices.add(new ChoicePage.Choice("Equip a tool to shape roads with editable spline nodes","Road Designer",(r,s)->com.hexvane.eterniamod.pathtool.SplineRoadTool.give(r,s,player)));
+        choices.add(new ChoicePage.Choice("Brand new players appear where you are standing","First join spot",(r,s)->joinSpot(plugin,r,s,player,com.hexvane.eterniamod.runtime.JoinSpawns.Kind.FIRST_JOIN)));
+        choices.add(new ChoicePage.Choice("Players who met the Hub NPCs but have no plot appear where you are standing","Newcomer spot",(r,s)->joinSpot(plugin,r,s,player,com.hexvane.eterniamod.runtime.JoinSpawns.Kind.NEWCOMER)));
         choices.add(new ChoicePage.Choice("Mark the first corner of a public services plaza","Plaza start",(r,s)->corner(r,s,player,1)));
         choices.add(new ChoicePage.Choice("Mark the opposite corner of the public services plaza","Plaza end",(r,s)->corner(r,s,player,2)));
         choices.add(new ChoicePage.Choice("Protect a public portal and Hub NPC plaza using the selected corners","Register plaza",(r,s)->area(plugin,r,s,player,HousingInfrastructure.AreaKind.PORTAL,newName("plaza"))));
         choices.add(new ChoicePage.Choice("Inspect public plazas and legacy registered road areas","Manage areas",(r,s)->list(plugin,r,s,player)));
         choices.add(new ChoicePage.Choice("Refresh the selection outline without changing the world","Show selection",(r,s)->show(r,s,player)));
-        ChoicePage.open(ref,store,player,"World setup · "+world.getName(),"Current role: "+(plan==null?"not configured":plan.role()+(plan.supportsHousing()?" · housing enabled":""))+". Shape public roads directly in the world with the Road Designer. Its confirmation builds and registers the road together. Plaza registration protects existing terrain.",choices);
+        ChoicePage.open(ref,store,player,"World setup · "+com.hexvane.eterniamod.runtime.WorldDisplayNames.name(world.getName()),"Current role: "+(plan==null?"not configured":plan.role()+(plan.supportsHousing()?" · housing enabled":""))+". Shape public roads directly in the world with the Road Designer. Its confirmation builds and registers the road together. Plaza registration protects existing terrain.",choices);
     }
     private static void roles(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
         SetupAccess.require(player.getUuid());var choices=new ArrayList<ChoicePage.Choice>();

@@ -23,4 +23,17 @@ class RoadLegendAssetTest {
         assertEquals("RMB",settings.get("PrimaryItemAction"));assertEquals("Ctrl+T",settings.get("Ability1ItemAction"));
         assertEquals("Q",ToolKeybindSlot.ABILITY1.defaultLabel());
     }
+    @Test void roadSettingsUseTheHeldToolKeyInsteadOfRuneAbilitySlots() throws Exception {
+        try(var input=getClass().getClassLoader().getResourceAsStream("Server/Item/Items/Eternia_Spline_Road_Tool.json")) {
+            var bindings=JsonParser.parseString(new String(input.readAllBytes(),StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("Interactions");
+            assertFalse(bindings.has("Ability2"));assertFalse(bindings.has("Ability3"));
+            assertEquals("Settings",bindings.getAsJsonObject("Ability4").getAsJsonArray("Interactions").get(0).getAsJsonObject().get("Action").getAsString());
+            assertEquals("Ability4ItemAction",ToolKeybindSlot.ABILITY4.inputBindingKey());
+            assertEquals("H",ToolKeybindSlot.ABILITY4.defaultLabel());
+        }
+        var settings=ToolKeybindDisplay.parseSettingsOverrides("""
+            {"InputActions":{"Ability4ItemAction":{"Bindings":[{"SourceType":0,"Scancode":23}]}}}
+            """);
+        assertEquals("T",settings.get(ToolKeybindSlot.ABILITY4.inputBindingKey()));
+    }
 }

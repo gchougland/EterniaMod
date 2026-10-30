@@ -77,7 +77,9 @@ final class SplineRoadService {
         requireWorld(world);
         var materials=pavingMaterials();var hints=SplineGeometry.footprint(nodes,width);var cells=new ArrayList<SplineGeometry.Cell>();var connections=new ArrayList<SplineGeometry.Cell>();var invalid=new LinkedHashMap<SplineGeometry.Column,String>();var forbidden=forbidden(world,authoritative);var publicRoads=connectionRoads(world,editing);
         for(var hint:hints){var c=hint.column();boolean shared=publicRoads.stream().anyMatch(r->r.contains(c.x(),c.z()));Integer y=ground(world,c.x(),c.z(),hint.y(),shared,materials);if(y==null){invalid.put(c,"Load the ground under every part of the road");continue;}var cell=new SplineGeometry.Cell(c.x(),y,c.z());if(shared)connections.add(cell);else cells.add(cell);String problem=cellProblem(world,cell,forbidden,shared,materials);if(problem!=null)invalid.put(c,problem);if(shared&&!SplineGeometry.endpointConnection(c,nodes,width))invalid.put(c,"Only a short road endpoint can join a road or plaza. Move the rest of the curve outside it");}
-        var all=new ArrayList<>(cells);all.addAll(connections);var heights=new HashMap<SplineGeometry.Column,Integer>();all.forEach(c->heights.put(c.column(),c.y()));for(var cell:all)for(var neighbor:List.of(new SplineGeometry.Column(cell.x()+1,cell.z()),new SplineGeometry.Column(cell.x(),cell.z()+1))){Integer y=heights.get(neighbor);if(y!=null&&Math.abs(y-cell.y())>1){invalid.put(cell.column(),"The road is too steep here; move its nodes onto gentler ground");invalid.put(neighbor,"The road is too steep here");}}
+        // This is a WorldEditor tool: follow each terrain column without imposing a slope limit,
+        // including across the road's width. Keep the height map for entity clearance checks.
+        var all=new ArrayList<>(cells);all.addAll(connections);var heights=new HashMap<SplineGeometry.Column,Integer>();all.forEach(c->heights.put(c.column(),c.y()));
         world.getEntityStore().getStore().forEachChunk(TransformComponent.getComponentType(),(chunk,commands)->{for(int i=0;i<chunk.size();i++){if(chunk.getComponent(i,Player.getComponentType())!=null)continue;var p=chunk.getComponent(i,TransformComponent.getComponentType()).getPosition();var column=new SplineGeometry.Column((int)Math.floor(p.x),(int)Math.floor(p.z));var floor=heights.get(column);if(floor!=null&&p.y>=floor)invalid.put(column,"Move props, creatures and dropped items out of the road");}});
         if(cells.isEmpty()&&!connections.isEmpty())invalid.put(connections.getFirst().column(),"Extend beyond the existing road to create new ground");if(!authoritative)return new Plan(List.copyOf(cells),List.copyOf(connections),Map.copyOf(invalid),List.of());var clearance=RoadClearance.scan(world,cells);invalid.putAll(clearance.invalid());return new Plan(List.copyOf(cells),List.copyOf(connections),Map.copyOf(invalid),clearance.blocks());
     }
@@ -200,7 +202,7 @@ final class SplineRoadService {
     private void verify(World world,NativeSnapshotStore.Snapshot expected,List<SplineGeometry.Cell> cells){SparseRoadSnapshots.requireSame(SparseRoadSnapshots.capture(files(),world,cells),expected.document(),null);}
     private static void flush(World world,List<SplineGeometry.Cell> cells)throws IOException{var chunks=new HashSet<String>();for(var cell:cells){String key=(cell.x()>>5)+":"+(cell.z()>>5);if(chunks.add(key))NativePlacementTransactions.flush(world,new NativeSnapshotStore.Bounds(cell.x(),cell.y(),cell.z(),cell.x()+1,cell.y()+1,cell.z()+1));}}
     void nativeSmoke(World world)throws Exception{
-        var tool=com.hypixel.hytale.server.core.asset.type.item.config.Item.getAssetMap().getAsset(SplineRoadTool.ITEM);if(tool==null||!tool.getInteractions().keySet().containsAll(Set.of(com.hypixel.hytale.protocol.InteractionType.Primary,com.hypixel.hytale.protocol.InteractionType.Secondary,com.hypixel.hytale.protocol.InteractionType.Use,com.hypixel.hytale.protocol.InteractionType.Ability1,com.hypixel.hytale.protocol.InteractionType.Ability2,com.hypixel.hytale.protocol.InteractionType.Pick)))throw new IllegalStateException("Road Designer item or native input bindings did not load");
+        var tool=com.hypixel.hytale.server.core.asset.type.item.config.Item.getAssetMap().getAsset(SplineRoadTool.ITEM);if(tool==null||!tool.getInteractions().keySet().containsAll(Set.of(com.hypixel.hytale.protocol.InteractionType.Primary,com.hypixel.hytale.protocol.InteractionType.Secondary,com.hypixel.hytale.protocol.InteractionType.Use,com.hypixel.hytale.protocol.InteractionType.Ability1,com.hypixel.hytale.protocol.InteractionType.Ability4,com.hypixel.hytale.protocol.InteractionType.Pick)))throw new IllegalStateException("Road Designer item or native input bindings did not load");
         var actor=UUID.randomUUID();var permissions=com.hypixel.hytale.server.core.permissions.PermissionsModule.get();var builder=Set.of(com.hypixel.hytale.server.core.permissions.HytalePermissions.BUILDER_TOOLS_EDITOR.getId());
         var nodes=List.of(new SplineGeometry.Node(-26.5,1,-22.5),new SplineGeometry.Node(-20.5,1,-10.5),new SplineGeometry.Node(-10.5,1,-22.5));
         boolean denied=false;try{review(world,actor,nodes,3,"cobblestone",null);}catch(DomainException expected){denied=true;}if(!denied)throw new IllegalStateException("Spline road accepted an unauthorized actor");
@@ -241,8 +243,35 @@ final class SplineRoadService {
             var endSnapshot=plugin.getInfrastructure().snapshot();var endPlan=endSnapshot.worlds().get(world.getName());var endAreas=new TreeMap<>(endPlan.areas());endAreas.remove("smoke-road-plaza");plugin.getInfrastructure().saveWorld(endSnapshot.revision(),world.getName(),endPlan.withAreas(endAreas));
             var editorCommands=new com.hypixel.hytale.server.core.ui.builder.UICommandBuilder();var editorEvents=new com.hypixel.hytale.server.core.ui.builder.UIEventBuilder();new SplineRoadStylePage(null,new SplineRoadTool.Session(world.getName()),pattern,false).build(null,editorCommands,editorEvents,null);
             if(Arrays.stream(editorEvents.getEvents()).filter(e->e.selector!=null&&e.selector.startsWith("#Palette[")).count()!=54)throw new IllegalStateException("Road style editor did not expose every palette slot");
+            var settingsCommands=new com.hypixel.hytale.server.core.ui.builder.UICommandBuilder();var settingsEvents=new com.hypixel.hytale.server.core.ui.builder.UIEventBuilder();new SplineRoadSettingsPage(null,new SplineRoadTool.Session(world.getName())).build(null,settingsCommands,settingsEvents,null);
+            if(!Arrays.stream(settingsEvents.getEvents()).map(e->e.selector).toList().containsAll(List.of("#Narrower","#Wider","#Previous","#Next","#EditStyle","#NewStyle","#SavedStyles","#Done")))throw new IllegalStateException("Road settings menu did not bind width and style controls");
+            nativeSlopeSmoke(world,actor);
             plugin.getLogger().atInfo().log("ETERNIA_NATIVE_ROAD_WORKSHOP_PASS: mixed palette placement, independent saved style edits, restart snapshot verification, paved plaza junction, plaza protection and unchanged paving after road removal; 54 editor slots serialized");
             plugin.getLogger().atInfo().log("ETERNIA_NATIVE_SPLINE_ROAD_SMOKE_PASS: full-height plants/rubble clearance and restoration (including Y=40), native curve, empty interior, read-only junction and independent undo, revoked permission, saved-node edit, interrupted write recovery, claim lock and exact original terrain undo");
         }finally{permissions.removeUserPermission(actor,builder);}
+    }
+    private void nativeSlopeSmoke(World world,UUID actor)throws Exception {
+        // A gradual climb along the curve and a four-block bank across its width must both work.
+        var nodes=List.of(new SplineGeometry.Node(-29.5,2,-3.5),new SplineGeometry.Node(-19.5,7,-3.5));
+        var ground=BlockType.getAssetMap().getAsset("Soil_Dirt");
+        var seeded=new ArrayList<SplineGeometry.Cell>();
+        for(var hint:SplineGeometry.footprint(nodes,3)) {
+            var column=hint.column();int height=1+Math.max(0,(column.x()+30)/2)+(column.z()<-4?4:0);
+            for(int y=1;y<=height;y++) {
+                if(!ChunkSectionBlockUtil.setBlock(world,column.x(),y,column.z(),ground,0))throw new IllegalStateException("Could not seed sloping road ground");
+                seeded.add(new SplineGeometry.Cell(column.x(),y,column.z()));
+            }
+        }
+        var preview=preview(world,nodes,3,null);
+        if(!preview.valid())throw new IllegalStateException("Admin slope preview rejected: "+preview.invalid());
+        var review=review(world,actor,nodes,3,"cobblestone",null);var version=review.pending().change().next();
+        var heights=new HashMap<SplineGeometry.Column,Integer>();version.cells().forEach(c->heights.put(c.column(),c.y()));
+        if(version.cells().stream().noneMatch(c->Math.abs(c.y()-heights.getOrDefault(new SplineGeometry.Column(c.x(),c.z()+1),c.y()))>1))throw new IllegalStateException("Slope fixture did not exercise a steep bank");
+        confirm(world,review);
+        for(var cell:version.cells())if(!"Rock_Stone_Cobble".equals(ChunkSectionBlockUtil.blockType(world,cell.x(),cell.y(),cell.z()).getId()))throw new IllegalStateException("Road did not follow sloping ground");
+        confirm(world,reviewRemoval(world,actor,review.pending().id()));
+        SparseRoadSnapshots.requireSame(SparseRoadSnapshots.capture(files(),world,review.pending().change().cells()),files().load(review.pending().change().before()).document(),null);
+        for(var cell:seeded)if(!ChunkSectionBlockUtil.setBlock(world,cell.x(),cell.y(),cell.z(),BlockType.EMPTY,0))throw new IllegalStateException("Could not restore slope fixture");
+        plugin.getLogger().atInfo().log("ETERNIA_NATIVE_ROAD_SLOPE_PASS: admin preview, placement and exact undo on a gradual climb with a steep bank; held tool settings use Ability4 and serialize all width/style buttons");
     }
 }

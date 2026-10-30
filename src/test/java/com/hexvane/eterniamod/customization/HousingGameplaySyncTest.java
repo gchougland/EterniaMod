@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.*;
 
-class HousingGameplaySyncTest {
+public class HousingGameplaySyncTest {
     @Test void connectedClientsReceiveBuildModeAndRestoredRules(@TempDir Path temp)throws Exception {
         // Native WorldConfig requires Hytale's JUL manager from JVM startup.
         String cp=String.join(java.io.File.pathSeparator,
@@ -45,7 +45,7 @@ class HousingGameplaySyncTest {
                 System.exit(1);
             }
         }
-        private static void checkGameplaySync() throws Exception {
+        public static void initializeNative() throws java.io.IOException {
             com.hypixel.hytale.server.core.Options.parse(new String[0]);
             IWorldGenProvider.CODEC.register(Priority.DEFAULT,VoidWorldGenProvider.ID,VoidWorldGenProvider.class,VoidWorldGenProvider.CODEC);
             IWorldMapProvider.CODEC.register(Priority.DEFAULT,DisabledWorldMapProvider.ID,DisabledWorldMapProvider.class,DisabledWorldMapProvider.CODEC);
@@ -58,6 +58,9 @@ class HousingGameplaySyncTest {
                 .setCodec(EntityEffect.CODEC).setKeyFunction(EntityEffect::getId).setReplaceOnRemove(EntityEffect::new)) {
                     @Override protected EventBus getEventBus(){return events;}
                 });
+        }
+        private static void checkGameplaySync() throws Exception {
+            initializeNative();
             var config=new WorldConfig();
             config.setGameplayConfig(HousingWorldPolicy.GAMEPLAY);
             var sent=new ArrayList<String>();
