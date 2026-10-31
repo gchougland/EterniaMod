@@ -13,6 +13,13 @@ export function createRenderQueue(cfg,repo,catalog){
  if((await repo.list('jobs')).filter(x=>['queued','running'].includes(x.status)).length>=24)throw new HttpError(429,'Render queue is full');
  const job={id:crypto.randomUUID(),contentKey,mode,actor,status:'queued',attempts:0,createdAt:new Date().toISOString()};
  await repo.put('jobs',job.id,job);void drain();return job;});}
+ /** Queues a card picture unless this revision already has one on disk or on the way, so saving again repairs a failed or lost render. */
+ async function ensureIcon(contentKey,actor){
+  const jobs=(await repo.list('jobs')).filter(x=>x.contentKey===contentKey&&x.mode==='icon');
+  if(jobs.some(x=>['queued','running'].includes(x.status)))return null;
+  for(const job of jobs)if(job.status==='complete'&&await fs.access(path.join(outputDir,job.id+'.png')).then(()=>true,()=>false))return null;
+  return enqueue(contentKey,'icon',actor);
+ }
  async function retry(id){return admit(async()=>{const job=await repo.get('jobs',id);if(!job||job.status!=='failed')throw new HttpError(409,'Only failed jobs can be retried');if((await repo.list('jobs')).filter(x=>['queued','running'].includes(x.status)).length>=24)throw new HttpError(429,'Render queue is full');job.status='queued';job.attempts=0;delete job.error;await repo.put('jobs',id,job);void drain();return job;});}
  async function drain(){if(active||closing||!origin)return;active=true;
  try{while(!closing){const job=(await repo.list('jobs')).filter(x=>x.status==='queued').sort((a,b)=>a.createdAt.localeCompare(b.createdAt))[0];if(!job)break;
@@ -51,5 +58,5 @@ export function createRenderQueue(cfg,repo,catalog){
   for(const job of jobs){if(!/^[0-9a-f-]{36}$/i.test(job.id))throw new Error('Invalid stored render ID');images.set(job.contentKey+':'+job.mode,await fs.readFile(path.join(outputDir,job.id+'.png')));}
   return images;
  }
- return {start,enqueue,retry,auth,nativeImages,list:()=>repo.list('jobs'),get:id=>repo.get('jobs',id),outputPath:id=>path.join(outputDir,id+'.png'),async close(){closing=true;await browser?.close();}};
+ return {start,enqueue,ensureIcon,retry,auth,nativeImages,list:()=>repo.list('jobs'),get:id=>repo.get('jobs',id),outputPath:id=>path.join(outputDir,id+'.png'),async close(){closing=true;await browser?.close();}};
 }

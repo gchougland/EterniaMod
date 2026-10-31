@@ -33,6 +33,30 @@ test('the game server uploads content and season passes with the bridge token on
   assert.equal(seasons[0].author,undefined);
  }finally{await queue.close();await new Promise(r=>server.close(r));await repo.close();await fs.rm(temp,{recursive:true});}
 });
+test('game uploads queue one card picture and serve it publicly once rendered',async()=>{
+ const temp=await fs.mkdtemp(path.join(os.tmpdir(),'eternia-sync-'));const cfg=config({LOCAL_FIXTURES:'true',DATA_DIR:temp,GAME_BRIDGE_TOKEN:TOKEN});
+ const repo=await createRepository(cfg),{app,queue,catalog}=createApp(cfg,repo),server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port;
+ const post=body=>fetch(base+'/api/server/content',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+TOKEN},body:JSON.stringify(body)}).then(r=>r.json());
+ const icons=async key=>(await queue.list()).filter(j=>j.contentKey===key&&j.mode==='icon');
+ const finish=async(job,bytes)=>{await fs.mkdir(path.dirname(queue.outputPath(job.id)),{recursive:true});await fs.writeFile(queue.outputPath(job.id),bytes);await repo.put('jobs',job.id,{...job,status:'complete'});};
+ const art=base+'/media/catalog/prop/garden_lamp.png';
+ try{
+  const first=await post(entry());const [job]=await icons(first.key);assert.equal(job.status,'queued');
+  assert.equal((await fetch(art)).status,404);
+  await post(entry());assert.equal((await icons(first.key)).length,1);
+  await finish(job,'first');
+  const res=await fetch(art);assert.equal(res.status,200);assert.equal(res.headers.get('content-type'),'image/png');assert.equal(await res.text(),'first');
+  await post(entry());assert.equal((await icons(first.key)).length,1);
+  const changed=await post({...entry(),displayName:'Garden Lantern'});const [next]=await icons(changed.key);assert.ok(next);
+  assert.equal(await (await fetch(art)).text(),'first');
+  await finish(next,'second');assert.equal(await (await fetch(art)).text(),'second');
+  await fs.rm(queue.outputPath(next.id));assert.equal((await icons(changed.key)).length,1);await post({...entry(),displayName:'Garden Lantern'});assert.equal((await icons(changed.key)).length,2);
+  const addition=await post({...entry(),kind:'addition',id:'bay_window'});const [added]=await icons(addition.key);await finish(added,'added');assert.equal(await (await fetch(base+'/media/catalog/prop/bay_window.png')).text(),'added');
+  const draft=await catalog.import({definition:{schemaVersion:1,kind:'prop',id:'eternia:prop/secret_draft',revision:1,displayName:'Draft'},prefab:{blocks:[{x:0,y:0,z:0,name:'Rock_Stone'}]}},'admin');const draftJob=await queue.enqueue(draft.key,'icon','admin');await finish(draftJob,'draft');
+  assert.equal((await fetch(base+'/media/catalog/prop/secret_draft.png')).status,404);
+  assert.equal((await fetch(base+'/media/catalog/pet/garden_lamp.png')).status,404);
+ }finally{await queue.close();await new Promise(r=>server.close(r));await repo.close();await fs.rm(temp,{recursive:true});}
+});
 test('uploads are refused when no bridge token is configured',async()=>{
  const temp=await fs.mkdtemp(path.join(os.tmpdir(),'eternia-sync-'));const cfg=config({LOCAL_FIXTURES:'true',DATA_DIR:temp});
  const repo=await createRepository(cfg),{app,queue}=createApp(cfg,repo),server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));

@@ -1,4 +1,4 @@
-import crypto from 'node:crypto';import express from 'express';import {HttpError,route} from './errors.js';import {UUID} from './auth.js';
+import crypto from 'node:crypto';import fs from 'node:fs/promises';import path from 'node:path';import express from 'express';import {HttpError,route} from './errors.js';import {UUID} from './auth.js';
 // Server-to-server uploads from the game. The game checks admin permission; the website trusts only the shared bridge token.
 const SLUG=/^[a-z0-9][a-z0-9_-]{0,95}$/,DATE=/^\d{4}-\d{2}-\d{2}$/,CONTENT=/^eternia:[a-z0-9_/-]{1,160}$/;
 const text=(v,name,max,required=false)=>{if(v===undefined||v===null||v===''){if(required)throw new HttpError(400,name+' is required');return '';}if(typeof v!=='string'||v.length>max)throw new HttpError(400,name+' must be text up to '+max+' characters');return v.trim();};
@@ -45,10 +45,26 @@ export async function publicSeasons(catalog){
  return [...latest.values()].filter(r=>r.definition.pass?.status==='live').map(({definition:d})=>({id:d.pass.id,name:d.displayName,description:d.description,startsOn:d.pass.startsOn,endsOn:d.pass.endsOn,levels:d.pass.thresholds.length,totalXp:d.pass.thresholds.at(-1),thresholds:d.pass.thresholds,
   rewards:d.pass.rewards.map(r=>({track:r.track,level:r.level,contentId:r.contentId,quantity:r.quantity,name:r.name}))})).sort((a,b)=>a.name.localeCompare(b.name));
 }
+/** Card pictures for items uploaded from the game, at the path pages already try. Mount after the bundled art so that wins. Admin workshop drafts are never served. */
+export function mountUploadedArt(app,catalog,queue){
+ app.get('/media/catalog/:kind(house|prop)/:id([a-z0-9][a-z0-9_-]{0,95}).png',route(async(req,res)=>{
+  const {kind,id}=req.params,ids=kind==='prop'?['eternia:prop/'+id,'eternia:addition/'+id]:['eternia:house/'+id];
+  const records=(await catalog.list()).filter(r=>r.definition.source==='game'&&ids.includes(r.definition.id)).sort((a,b)=>b.definition.revision-a.definition.revision);
+  const jobs=records.length?(await queue.list()).filter(j=>j.mode==='icon'&&j.status==='complete'):[];
+  // The newest revision with a finished picture, so an item keeps its old picture while a new one renders.
+  for(const record of records)for(const job of jobs.filter(j=>j.contentKey===record.key)){
+   const file=queue.outputPath(job.id);if(await fs.access(file).then(()=>true,()=>false))return res.set('Cache-Control','public, max-age=300').sendFile(path.basename(file),{root:path.dirname(file)});
+  }
+  res.status(404).end();
+ }));
+}
 /** Mounted before browser sessions and CSRF: these calls carry no cookies and come only from the game server. */
-export function mountGameSync(app,cfg,catalog){
+export function mountGameSync(app,cfg,catalog,queue){
  const gate=serverGate(cfg),json=express.json({limit:'12mb'});
- app.post('/api/server/content',gate,json,route(async(req,res)=>{const input=contentUpload(req.body);res.status(201).json(summary(await catalog.importNext(input,'game:'+input.definition.author.uuid)));}));
+ app.post('/api/server/content',gate,json,route(async(req,res)=>{const input=contentUpload(req.body),actor='game:'+input.definition.author.uuid,record=await catalog.importNext(input,actor);
+  // A picture that cannot be queued must not lose the upload; the card shows its category icon until the item is saved again.
+  await queue.ensureIcon(record.key,actor).catch(error=>console.error('Could not queue card picture for '+record.definition.id+': '+error.message));
+  res.status(201).json(summary(record));}));
  app.post('/api/server/seasons',gate,json,route(async(req,res)=>{const input=seasonUpload(req.body);res.status(201).json(summary(await catalog.importNext(input,'game:'+input.definition.author.uuid)));}));
  app.get('/api/v1/seasons',route(async(req,res)=>res.set('Cache-Control','public, max-age=60').json({seasons:await publicSeasons(catalog)})));
 }

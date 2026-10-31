@@ -117,3 +117,24 @@ a.pass-banner:hover .banner-cta{background:linear-gradient(#f0d394,#cbae6d)}
 @media(prefers-reduced-motion:reduce){.pass-banner{transition:none}a.pass-banner:hover{transform:none}}
 @media(max-width:900px){.pass-side{position:static}.pass-side .pass-banner{display:none}}
 @media(max-width:600px){.banner-row{justify-content:center;padding-inline:14px}.pass-banner{width:min(264px,100%)}}
+/* Collection: the Journal's Collection shelves, tabs beside a grid of picture cards. */
+.collection{grid-template-columns:260px minmax(0,1fr);margin-bottom:24px}
+.collection-side{position:sticky;top:24px;display:flex;flex-direction:column;gap:6px;padding:14px}
+.collection-tab{display:flex;align-items:center;gap:12px;min-height:48px;padding:8px 12px;border:1px solid transparent;border-left-width:3px;color:var(--et-muted);font-weight:600;text-decoration:none}
+.collection-tab img{flex:none;opacity:.75}
+.collection-tab:hover{background:#233c3e;color:var(--et-text)}
+.collection-tab[aria-current]{background:linear-gradient(90deg,#d8b66b26,#233c3e66);border-color:#d8b66b55;border-left-color:var(--et-primary);color:var(--et-primary)}
+.collection-tab[aria-current] img{opacity:1}
+.collection-count{margin-left:auto;font-size:13px;font-weight:400;color:var(--et-muted)}
+.collection-shelf h2{margin-bottom:6px}.collection-shelf>p{margin:0 0 22px}
+.collection-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.collection-card{display:flex;flex-direction:column;padding:8px 8px 14px;text-align:center;background:linear-gradient(155deg,#233c3e,#192d31 70%);border:1px solid #45615d;transition:border-color 120ms}
+.collection-card:hover{border-color:var(--et-primary)}
+.collection-art{aspect-ratio:1;display:grid;place-items:center;margin-bottom:12px;background:radial-gradient(circle at 50% 42%,#29474a,#0a1619 78%);border:1px solid #3c5953}
+.collection-art img{width:92%;height:92%;object-fit:contain}
+.collection-art img.art-icon{width:46%;height:46%;opacity:.8}
+.collection-card h3{margin:0 4px 4px;font-size:17px;line-height:1.25;overflow-wrap:anywhere}
+.collection-card p{margin:auto 4px 0;font-size:13px}
+.collection-card.used-up .collection-art img{opacity:.35}
+@media(max-width:900px){.collection{grid-template-columns:1fr}.collection-side{position:static;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:600px){.collection-side{grid-template-columns:repeat(2,minmax(0,1fr))}.collection-tab{padding-inline:8px;gap:8px}.collection-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.collection-card h3{font-size:15px}}

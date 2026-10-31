@@ -1,16 +1,16 @@
 import {api,el} from './api.js';
 
 // Season passes in the same Codex layout as the in-game Journal: passes on the left, the open pass and its reward track on the right.
-const ICONS={prop:'furnishing',addition:'addition',house:'housing',title:'title',wearable:'wardrobe',outfit:'wardrobe',pet:'pet',mount:'mount',palette:'palette',path:'path',plot_move_credit:'move',move:'move',season:'season',season_paid:'season',guild_voucher:'charter',convenience:'worlds',currency:'crown',crowns:'crown'};
+const ICONS={plot:'plot',prop:'furnishing',addition:'addition',house:'housing',title:'title',wearable:'wardrobe',outfit:'wardrobe',pet:'pet',mount:'mount',palette:'palette',path:'path',plot_move_credit:'move',move:'move',season:'season',season_paid:'season',guild_voucher:'charter',convenience:'worlds',currency:'crown',crowns:'crown'};
 const number=new Intl.NumberFormat();
 const key=id=>String(id||'').replace(/^eternia:/,'').replace(/^season\//,'');
 const pretty=id=>key(id).split('/').pop().replace(/[_-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 
-function picture(contentId,alt){
+export function picture(contentId,alt){
  const [kind,id]=key(contentId).split('/');const img=el('img');img.alt=alt;img.loading='lazy';img.width=72;img.height=72;
- const fallback='/media/catalog/icons/'+(ICONS[kind]||'collection')+'.svg';
- img.src=id?'/media/catalog/'+(kind==='addition'?'prop':kind)+'/'+id+'.png':fallback;
- img.onerror=()=>{img.onerror=null;img.src=fallback;};return img;
+ const fallback='/media/catalog/icons/'+(id==='guild_waygate'?'worlds':ICONS[kind]||'collection')+'.svg';
+ if(id)img.src='/media/catalog/'+(kind==='addition'?'prop':kind)+'/'+id+'.png';else{img.src=fallback;img.classList.add('art-icon');}
+ img.onerror=()=>{img.onerror=null;img.src=fallback;img.classList.add('art-icon');};return img;
 }
 function icon(name,size){const img=el('img');img.src='/media/catalog/icons/'+name+'.svg';img.alt='';img.width=size;img.height=size;return img;}
 

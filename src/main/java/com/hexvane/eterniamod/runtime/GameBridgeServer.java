@@ -81,6 +81,10 @@ public final class GameBridgeServer implements AutoCloseable {
                     var item=owned.computeIfAbsent(grant.contentId(),id->{var value=new LinkedHashMap<String,Object>();value.put("id",id);value.put("name",collectionNames.getOrDefault(id,contentLabel(id)));value.put("kind",grant.kind().name().toLowerCase(Locale.ROOT));value.put("quantity",0L);return value;});
                     item.put("quantity",grant.kind()==OwnershipService.Kind.QUANTITY?Math.addExact((Long)item.get("quantity"),grant.available()):1L);
                 }
+                for(var entry:com.hexvane.eterniamod.ui.CollectionInventory.summarize(overview.grants(),services.provenance().ownedInstances(Owner.player(player)),Instant.now())) {
+                    var item=owned.get(entry.contentId());
+                    if(item!=null){item.put("packed",entry.packed());item.put("placed",entry.placed());}
+                }
                 payload.put("owned",owned.values());
                 payload.put("housing",overview.housing()==null?Map.of("state","unclaimed"):overview.housing());
                 payload.put("guild",overview.guild());
