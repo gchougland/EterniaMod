@@ -76,11 +76,11 @@ final class SplineRoadService {
     private Plan plan(World world,List<SplineGeometry.Node> nodes,int width,UUID editing,boolean authoritative){
         requireWorld(world);
         var materials=pavingMaterials();var hints=SplineGeometry.footprint(nodes,width);var cells=new ArrayList<SplineGeometry.Cell>();var connections=new ArrayList<SplineGeometry.Cell>();var invalid=new LinkedHashMap<SplineGeometry.Column,String>();var forbidden=forbidden(world,authoritative);var publicRoads=connectionRoads(world,editing);
-        for(var hint:hints){var c=hint.column();boolean shared=publicRoads.stream().anyMatch(r->r.contains(c.x(),c.z()));Integer y=ground(world,c.x(),c.z(),hint.y(),shared,materials);if(y==null){invalid.put(c,"Load the ground under every part of the road");continue;}var cell=new SplineGeometry.Cell(c.x(),y,c.z());if(shared)connections.add(cell);else cells.add(cell);String problem=cellProblem(world,cell,forbidden,shared,materials);if(problem!=null)invalid.put(c,problem);if(shared&&!SplineGeometry.endpointConnection(c,nodes,width))invalid.put(c,"Only a short road endpoint can join a road or plaza. Move the rest of the curve outside it");}
+        for(var hint:hints){var c=hint.column();boolean shared=publicRoads.stream().anyMatch(r->r.contains(c.x(),c.z()));Integer y=ground(world,c.x(),c.z(),hint.y(),shared,materials);if(y==null){invalid.put(c,"Load the ground under every part of the road");continue;}var cell=new SplineGeometry.Cell(c.x(),y,c.z());if(shared)connections.add(cell);else cells.add(cell);String problem=cellProblem(world,cell,forbidden,shared,materials);if(problem!=null)invalid.put(c,problem);}
         // This is a WorldEditor tool: follow each terrain column without imposing a slope limit,
-        // including across the road's width. Keep the height map for entity clearance checks.
+        // including across the road's width. Only placed props obstruct entity clearance.
         var all=new ArrayList<>(cells);all.addAll(connections);var heights=new HashMap<SplineGeometry.Column,Integer>();all.forEach(c->heights.put(c.column(),c.y()));
-        world.getEntityStore().getStore().forEachChunk(TransformComponent.getComponentType(),(chunk,commands)->{for(int i=0;i<chunk.size();i++){if(chunk.getComponent(i,Player.getComponentType())!=null)continue;var p=chunk.getComponent(i,TransformComponent.getComponentType()).getPosition();var column=new SplineGeometry.Column((int)Math.floor(p.x),(int)Math.floor(p.z));var floor=heights.get(column);if(floor!=null&&p.y>=floor)invalid.put(column,"Move props, creatures and dropped items out of the road");}});
+        world.getEntityStore().getStore().forEachChunk(TransformComponent.getComponentType(),(chunk,commands)->{for(int i=0;i<chunk.size();i++){if(chunk.getComponent(i,Player.getComponentType())!=null||chunk.getComponent(i,com.hypixel.hytale.server.npc.entities.NPCEntity.getComponentType())!=null||chunk.getComponent(i,com.hypixel.hytale.server.core.modules.entity.item.ItemComponent.getComponentType())!=null&&chunk.getComponent(i,com.hypixel.hytale.server.core.entity.entities.BlockEntity.getComponentType())==null)continue;var p=chunk.getComponent(i,TransformComponent.getComponentType()).getPosition();var column=new SplineGeometry.Column((int)Math.floor(p.x),(int)Math.floor(p.z));var floor=heights.get(column);if(floor!=null&&p.y>=floor)invalid.put(column,"Move placed props out of the road");}});
         if(cells.isEmpty()&&!connections.isEmpty())invalid.put(connections.getFirst().column(),"Extend beyond the existing road to create new ground");if(!authoritative)return new Plan(List.copyOf(cells),List.copyOf(connections),Map.copyOf(invalid),List.of());var clearance=RoadClearance.scan(world,cells);invalid.putAll(clearance.invalid());return new Plan(List.copyOf(cells),List.copyOf(connections),Map.copyOf(invalid),clearance.blocks());
     }
     synchronized Review review(World world,UUID actor,List<SplineGeometry.Node> nodes,int width,String styleId,UUID editing)throws Exception{
@@ -160,7 +160,7 @@ final class SplineRoadService {
     }
     private List<PlotRect> connectionRoads(World world,UUID editing){var edited=editing==null?null:find(editing);Set<String> own=edited==null||edited.current()==null?Set.of():edited.current().areas().keySet();return plugin.getInfrastructure().world(world.getName()).orElseThrow().areas().entrySet().stream().filter(e->!own.contains(e.getKey())).map(e->e.getValue().rect()).toList();}
     private String cellProblem(World world,SplineGeometry.Cell cell,List<PlotRect> forbidden,boolean shared,Set<String> materials){
-        if(ManagedHubServices.intersectsManaged(world.getName(),new PlotRect(cell.x(),cell.z(),1,1)))return "Move the road around the portal or service NPC";
+        if(!shared&&ManagedHubServices.intersectsManaged(world.getName(),new PlotRect(cell.x(),cell.z(),1,1)))return "Move the road around the portal or service NPC";
         if(forbidden.stream().anyMatch(r->r.contains(cell.x(),cell.z())))return "Road crosses a plot, reserved claim or another protected road";
         var block=ChunkSectionBlockUtil.blockType(world,cell.x(),cell.y(),cell.z());if(block==null||!block.isCubeDrawType()||block.getBlockEntity()!=null||!shared&&!natural(block.getId(),materials))return "Road needs natural plain ground; move the node around structures";
         var section=ChunkSectionBlockUtil.sectionRefAt(world,cell.x(),cell.y(),cell.z());if(section==null)return "Load every ground section";var fluids=section.getStore().getComponent(section,com.hypixel.hytale.server.core.universe.world.chunk.section.FluidSection.getComponentType());if(fluids!=null&&fluids.getFluidId(cell.x(),cell.y(),cell.z())!=0)return "Move the road around water or lava";
@@ -246,9 +246,44 @@ final class SplineRoadService {
             var settingsCommands=new com.hypixel.hytale.server.core.ui.builder.UICommandBuilder();var settingsEvents=new com.hypixel.hytale.server.core.ui.builder.UIEventBuilder();new SplineRoadSettingsPage(null,new SplineRoadTool.Session(world.getName())).build(null,settingsCommands,settingsEvents,null);
             if(!Arrays.stream(settingsEvents.getEvents()).map(e->e.selector).toList().containsAll(List.of("#Narrower","#Wider","#Previous","#Next","#EditStyle","#NewStyle","#SavedStyles","#Done")))throw new IllegalStateException("Road settings menu did not bind width and style controls");
             nativeSlopeSmoke(world,actor);
+            nativeRoadAccessSmoke(world,actor);
             plugin.getLogger().atInfo().log("ETERNIA_NATIVE_ROAD_WORKSHOP_PASS: mixed palette placement, independent saved style edits, restart snapshot verification, paved plaza junction, plaza protection and unchanged paving after road removal; 54 editor slots serialized");
             plugin.getLogger().atInfo().log("ETERNIA_NATIVE_SPLINE_ROAD_SMOKE_PASS: full-height plants/rubble clearance and restoration (including Y=40), native curve, empty interior, read-only junction and independent undo, revoked permission, saved-node edit, interrupted write recovery, claim lock and exact original terrain undo");
         }finally{permissions.removeUserPermission(actor,builder);}
+    }
+    private void nativeRoadAccessSmoke(World world,UUID actor)throws Exception {
+        var store=world.getEntityStore().getStore();
+        var npcs=com.hypixel.hytale.server.npc.NPCPlugin.get();
+        int role=npcs.getIndex("Skeleton_Fighter");if(role<0)throw new IllegalStateException("Road smoke NPC role is unavailable");
+        var npc=npcs.spawnEntity(store,role,new org.joml.Vector3d(170.5,1,140.5),new com.hypixel.hytale.math.vector.Rotation3f(0,0,0),null,(entity,holder,accessor)->{},null);
+        if(npc==null)throw new IllegalStateException("Could not spawn road smoke NPC");
+        var holder=com.hypixel.hytale.server.core.modules.entity.item.ItemComponent.generateItemDrop(store,new com.hypixel.hytale.server.core.inventory.ItemStack("Rock_Stone_Cobble",2),new org.joml.Vector3d(190.5,1,140.5),new com.hypixel.hytale.math.vector.Rotation3f(0,0,0),0,0,0);
+        if(holder==null)throw new IllegalStateException("Could not create road smoke dropped item");
+        var item=store.addEntity(holder,com.hypixel.hytale.component.AddReason.SPAWN);
+        try {
+            var nodes=List.of(new SplineGeometry.Node(160.5,1,140.5),new SplineGeometry.Node(200.5,1,140.5));
+            if(!preview(world,nodes,5,null).valid())throw new IllegalStateException("NPC or dropped item blocked road preview");
+            var parent=review(world,actor,nodes,5,"cobblestone",null);confirm(world,parent);
+            var plan=plugin.getInfrastructure().world(world.getName()).orElseThrow();
+            var candidate=new HousingRules.Candidate(new PlotRect(170,145,24,24),HousingRules.Scope.PUBLIC,null,false,0);
+            if(!HousingRules.claim(candidate,List.of(),plan.roads(),List.of(),network(world.getName(),plan,null)).valid())throw new IllegalStateException("A disconnected authored road did not support a housing claim");
+            var crossing=review(world,actor,List.of(new SplineGeometry.Node(180.5,1,120.5),new SplineGeometry.Node(180.5,1,160.5)),3,"cobblestone",null);
+            if(crossing.pending().change().next().connections().isEmpty())throw new IllegalStateException("Crossing missed the middle of the existing road");
+            confirm(world,crossing);
+            var side=review(world,actor,List.of(new SplineGeometry.Node(165.5,1,143.5),new SplineGeometry.Node(195.5,1,143.5)),3,"cobblestone",null);
+            if(side.pending().change().next().connections().size()<20)throw new IllegalStateException("Side overlap did not exercise a long shared edge");
+            confirm(world,side);new SplineRoadService(plugin);
+            if(SavedRoadSelection.aimed(roads(),world.getName(),170,140)==null||SavedRoadSelection.edges(find(parent.pending().id()),180,140).isEmpty())throw new IllegalStateException("Saved road could not be selected or outlined");
+            confirm(world,reviewRemoval(world,actor,side.pending().id()));
+            confirm(world,reviewRemoval(world,actor,crossing.pending().id()));
+            confirm(world,reviewRemoval(world,actor,parent.pending().id()));
+            SparseRoadSnapshots.requireSame(SparseRoadSnapshots.capture(files(),world,parent.pending().change().cells()),files().load(parent.pending().change().before()).document(),null);
+            if(!npc.first().isValid()||item==null||!item.isValid()||store.getComponent(item,com.hypixel.hytale.server.core.modules.entity.item.ItemComponent.getComponentType()).getItemStack().getQuantity()!=2)throw new IllegalStateException("Road construction or deletion changed an NPC or dropped item");
+            plugin.getLogger().atInfo().log("ETERNIA_NATIVE_ROAD_ACCESS_PASS: disconnected public road supports claims; middle crossing and long one-block edge overlap survive reload; saved road selection, outline and exact deletion; NPC and dropped item retained");
+        } finally {
+            if(npc.first().isValid())store.removeEntity(npc.first(),com.hypixel.hytale.component.RemoveReason.REMOVE);
+            if(item!=null&&item.isValid())store.removeEntity(item,com.hypixel.hytale.component.RemoveReason.REMOVE);
+        }
     }
     private void nativeSlopeSmoke(World world,UUID actor)throws Exception {
         // A gradual climb along the curve and a four-block bank across its width must both work.

@@ -32,12 +32,10 @@ public final class InfrastructureRules {
             if(claims.stream().anyMatch(claim->claim.rect().contains(x,z)))throw new IllegalArgumentException("A public arrival must be outside claimed plots.");
             if(pending.stream().anyMatch(rect->rect.contains(x,z)))throw new IllegalArgumentException("A public arrival must be outside protected construction operations.");
         }
-        if(before!=null)for(var claim:claims)if(supported(claim,claims,before,oldNetwork)&&!supported(claim,claims,after,newNetwork))throw new IllegalArgumentException("This change would disconnect plot "+claim.id()+" from its required road or portal anchors.");
+        if(before!=null)for(var claim:claims)if(supported(claim,claims,before,oldNetwork)&&!supported(claim,claims,after,newNetwork))throw new IllegalArgumentException("This change would leave plot "+claim.id()+" without its nearby road or guild house.");
     }
     private static boolean supported(HousingRules.Anchor claim,List<HousingRules.Anchor> claims,HousingInfrastructure.WorldPlan plan,PublicRoadNetwork network) {
-        if(claim.scope()!=HousingRules.Scope.GUILD_MEMBER&&plan.roads().stream().noneMatch(road->road.gap(claim.rect())<=5))return false;
-        if(claim.scope()==HousingRules.Scope.GUILD_ROOT)return plan.portals().stream().anyMatch(portal->portal.gap(claim.rect())<=240);
-        if(claim.scope()==HousingRules.Scope.PUBLIC&&(plan.portals().stream().anyMatch(portal->portal.gap(claim.rect())<=5)||network.anchored(claim.rect(),plan.portals())))return true;
+        if(claim.scope()!=HousingRules.Scope.GUILD_MEMBER)return network.near(claim.rect());
         var reached=HousingRules.reachable(claims,plan.portals(),claim.scope(),claim.guildId(),network);
         return reached.contains(claim.id())||claims.stream().anyMatch(anchor->reached.contains(anchor.id())&&anchor.rect().gap(claim.rect())<=5);
     }

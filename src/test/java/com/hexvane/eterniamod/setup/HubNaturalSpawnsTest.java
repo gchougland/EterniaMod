@@ -50,6 +50,7 @@ class HubNaturalSpawnsTest {
                 check(HubNaturalSpawns.configure(plan("hub",housing),config,"off").contains("is off."),"Report disabled spawning");
                 check(!config.isSpawningNPC()&&config.consumeHasChanged(),"Disable spawning and schedule a world save");
                 check(!WorldEventsWorldConfig.getOrCreate(config).isEnableWorldEvents(),"Disable breach world events too");
+                check(!HubNaturalSpawns.eventsEnabled(config),"Block every event start while the switch is off");
                 check(!config.isAllNPCFrozen()&&!config.isSpawnMarkersEnabled(),"Preserve freeze and marker settings");
                 var saved=WorldConfig.CODEC.encode(config,new com.hypixel.hytale.codec.ExtraInfo());
                 check(!saved.getBoolean("IsSpawningNPC").getValue(),"Persist the native spawning flag");
@@ -60,6 +61,7 @@ class HubNaturalSpawnsTest {
                 var loaded=WorldConfig.CODEC.decode(fields,new com.hypixel.hytale.codec.ExtraInfo());
                 check(!loaded.isSpawningNPC(),"Keep spawning disabled after loading a saved world config");
                 check(!WorldEventsWorldConfig.getOrCreate(loaded).isEnableWorldEvents(),"Keep breach events disabled after loading");
+                check(!HubNaturalSpawns.eventsEnabled(loaded),"Keep blocking event starts after loading");
                 check(HubNaturalSpawns.configure(plan("hub",housing),loaded,"status").contains("is off."),"Status reads saved config");
                 loaded.consumeHasChanged();
                 HubNaturalSpawns.configure(plan("hub",housing),loaded,"off");
@@ -68,11 +70,13 @@ class HubNaturalSpawnsTest {
                 HubNaturalSpawns.configure(plan("hub",housing),loaded,"ON");
                 check(loaded.isSpawningNPC()&&loaded.consumeHasChanged(),"Reenable spawning and save");
                 check(WorldEventsWorldConfig.getOrCreate(loaded).isEnableWorldEvents(),"Reenable world events");
+                check(HubNaturalSpawns.eventsEnabled(loaded),"Allow event starts once the Hub setting allows them");
                 check(!loaded.isSpawnMarkersEnabled(),"Keep independently disabled markers disabled");
             }
             var config=new WorldConfig();config.consumeHasChanged();
             check(HubNaturalSpawns.configure(plan("hub",false),config,"status").contains("breaches, are on."),"Report default world event setting");
             check(config.getPluginConfig().get(WorldEventsWorldConfig.class)==null&&!config.consumeHasChanged(),"Status must not create plugin configuration");
+            check(HubNaturalSpawns.eventsEnabled(config),"Worlds that never set the switch keep their events");
             rejects(null,config,"off");
             for(String role:List.of("housing","adventure"))rejects(plan(role,false),config,"off");
             rejects(plan("hub",false),config,"false");

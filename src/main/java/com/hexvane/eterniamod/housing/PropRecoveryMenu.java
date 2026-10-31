@@ -3,6 +3,7 @@ package com.hexvane.eterniamod.housing;
 import com.hexvane.eterniamod.EterniaModPlugin;
 import com.hexvane.eterniamod.domain.Owner;
 import com.hexvane.eterniamod.housing.relocation.FailedPropRecovery;
+import com.hexvane.eterniamod.housing.relocation.FailedHouseRecovery;
 import com.hexvane.eterniamod.hub.EterniaWorldRegistries;
 import com.hexvane.eterniamod.ui.ChoicePage;
 import com.hypixel.hytale.component.*;
@@ -23,16 +24,17 @@ public final class PropRecoveryMenu {
             if(!location.worldId().equals(world.getName()))throw new IllegalStateException("Visit "+location.worldId()+" first, then retry recovery. Plot: X "+location.minX()+", Z "+location.minZ()+".");
             var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).getPlot(slot.propertyId());
             if(plot==null)throw new IllegalStateException("The saved plot cannot be found. Its operation has been retained for administrator review.");
-            ChoicePage.open(ref,store,player,"Recover decoration","Loading the saved plot cells and checking the interrupted placement...",List.of(new ChoicePage.Choice("You may leave this screen while recovery finishes.","My plots",(r,s)->MyPlotsPage.open(plugin,r,s,player))));
+            boolean house=plugin.getServices().journal().unfinished().stream().anyMatch(op->op.owner().equals(owner)&&op.kind().equals("PLACE_HOUSE"));
+            ChoicePage.open(ref,store,player,"Recover placement","Loading your plot and checking the interrupted placement...",List.of(new ChoicePage.Choice("You may leave this screen while recovery finishes.","My plots",(r,s)->MyPlotsPage.open(plugin,r,s,player))));
             var progress=store.getComponent(ref,Player.getComponentType()).getPageManager().getCustomPage();
             FailedPropRecovery.loadPending(plugin,world,plot,player.getUuid()).whenComplete((v,failure)->world.execute(()->{
                 String message;boolean success=false;
                 try {
                     if(failure!=null)throw new IllegalStateException("The plot could not be loaded. Please retry.",failure);
-                    int count=FailedPropRecovery.recover(plugin,world,plot,player.getUuid());
+                    int count=house?(FailedHouseRecovery.recover(plugin,world,plot,player.getUuid())?1:0):FailedPropRecovery.recover(plugin,world,plot,player.getUuid());
                     success=count>0;
-                    message=success?"The interrupted decoration is back in your housing build inventory. Your plot is unlocked. It is a catalog quantity, not an item in your hotbar.":"This operation cannot be automatically returned. No blocks or inventory were changed. Its ownership and snapshots remain saved for administrator review.";
-                }catch(Exception error){plugin.getLogger().atWarning().withCause(error).log("Prop recovery did not complete for property %s",plot.getPlotId());message=error.getMessage()==null?"Recovery could not finish. See the server log for details.":error.getMessage();}
+                    message=success?(house?"Your house placement is complete. Your plot is unlocked, and you can use or pack your house.":"The interrupted decoration is back in your housing build inventory. Your plot is unlocked."):"This placement needs administrator review before recovery can finish. Your house and belongings remain saved.";
+                }catch(Exception error){plugin.getLogger().atWarning().withCause(error).log("Placement recovery did not complete for property %s",plot.getPlotId());message="Recovery could not finish. Your plot remains protected. An administrator can check the server log for details.";}
                 player.sendMessage(Message.raw(message));
                 if(ref.isValid()&&ref.equals(player.getReference())&&store.getComponent(ref,Player.getComponentType()).getPageManager().getCustomPage()==progress)result(plugin,ref,store,player,owner,message,success);
             }));
@@ -43,6 +45,6 @@ public final class PropRecoveryMenu {
         if(success)actions.add(new ChoicePage.Choice("Browse your houses and returned decorations","Housing inventory",(r,s)->HousingInventory.open(plugin,r,s,player)));
         else actions.add(new ChoicePage.Choice("Load the plot cells and check again","Retry recovery",(r,s)->open(plugin,r,s,player,owner)));
         actions.add(new ChoicePage.Choice("See this property's current state","My plots",(r,s)->MyPlotsPage.open(plugin,r,s,player)));
-        ChoicePage.open(ref,store,player,success?"Decoration returned":"Recovery needs attention",message,actions);
+        ChoicePage.open(ref,store,player,success?"Recovery complete":"Recovery needs attention",message,actions);
     }
 }

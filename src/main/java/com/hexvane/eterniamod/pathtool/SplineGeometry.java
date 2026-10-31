@@ -11,8 +11,6 @@ public final class SplineGeometry {
     public record Hint(Column column,double y){}
     public record Cell(int x,int y,int z){public Column column(){return new Column(x,z);}}
     private SplineGeometry(){}
-    /** Only short endpoint junctions may borrow another road's surface without taking custody of it. */
-    public static boolean endpointConnection(Column cell,List<Node> nodes,int width){if(nodes.size()<2)return false;double limit=width/2.0+5;return List.of(nodes.getFirst(),nodes.getLast()).stream().anyMatch(n->Math.hypot(cell.x+.5-n.x,cell.z+.5-n.z)<=limit);}
     public static List<Node> sample(List<Node> nodes){
         if(nodes.size()<2||nodes.size()>MAX_NODES)throw new IllegalArgumentException("A road needs 2–32 nodes");
         var samples=new ArrayList<Node>();double total=0;

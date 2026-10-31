@@ -142,7 +142,7 @@ public final class NativeSnapshotStore {
         BsonDocument expected=snapshot.document().clone();if(!entities)expected.remove("entities");
         actual=NativeRelocationCoordinator.onlyCapturedCells(actual,expected);
         actual=canonicalEmptyFluids(SelectionPrefabSerializer.serialize(SelectionPrefabSerializer.deserialize(actual)));
-        if(!comparisonDocument(expected).equals(comparisonDocument(actual))){
+        if(!comparisonDocument(expected,destination).equals(comparisonDocument(actual,destination))){
             String diagnostic="unavailable";
             try{var saved=files.write("verify-"+UUID.randomUUID()+".json",new BsonDocument("expected",expected).append("actual",actual).toJson().getBytes(StandardCharsets.UTF_8));diagnostic=saved.reference();}catch(IOException ignored){}
             throw new IllegalStateException("Native world write did not match verified snapshot; recovery required; diagnostic="+diagnostic+"; "+differenceSummary(expected,actual));
@@ -164,6 +164,22 @@ public final class NativeSnapshotStore {
             }
             if(components.isEmpty())holder.remove("Components");
             if(holder.isEmpty())block.remove("components");
+        }
+        return copy;
+    }
+    /** Apply the exact local -> world -> local arithmetic used by entity placement/capture.
+     * This tolerates only precision lost at this destination, not an arbitrary position epsilon.
+     * Snapshots, UUIDs, rotations, items and every other persisted field remain unchanged. */
+    static BsonDocument comparisonDocument(BsonDocument source,Vector3i destination) {
+        var copy=comparisonDocument(source);
+        for(var value:copy.getArray("entities",new BsonArray())) {
+            var position=value.asDocument().getDocument("Components").getDocument("Transform").getDocument("Position");
+            for(String axis:List.of("X","Y","Z")) {
+                double local=position.getNumber(axis).doubleValue();
+                int origin=switch(axis){case "X"->destination.x;case "Y"->destination.y;default->destination.z;};
+                if(!Double.isFinite(local))throw new IllegalStateException("Invalid saved decoration position");
+                position.put(axis,new BsonDouble((local+origin)-origin));
+            }
         }
         return copy;
     }

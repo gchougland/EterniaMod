@@ -12,7 +12,7 @@ Revisiting does not rebuild modified roads or houses. The worlds, shop stock and
 
 On servers running with `ETERNIA_MODE=local`, a guild with one member can claim and restore its estate. Production still requires five members. Guild claim permissions, road connections, portal distance, plot borders, paid sizes and the one estate limit still apply. You do not need to add fake members to your existing guild.
 
-Open `/e menu`, choose **Architect's Ledger** at the top, then **Guild estate → Choose plot**. This opens the guild estate preview directly. Use a clear area near a public road and within 240 blocks of a Hub portal. The example guild's estate belongs to that example guild, so your guild needs its own clear site. After claiming, stand inside your estate and choose **Housing inventory** to place the guild hall.
+Open `/e menu`, choose **Architect's Ledger** at the top, then **Guild estate → Choose plot**. This opens the guild estate preview directly. Use a clear area within five blocks of a public road centerline. A portal connection is not required. The example guild's estate belongs to that example guild, so your guild needs its own clear site. After claiming, stand inside your estate and choose **Housing inventory** to place the guild hall.
 
 The Ledger has separate illustrated cards for plots, housing inventory, customization, claiming, guild estates and Home Waygate. A physical ledger item opens the same page. An unfinished placement still resumes when reopening the Ledger.
 
@@ -59,9 +59,9 @@ For the new frames, fonts, local preview and manual client checks, see [Citadel 
 2. Equip a following pet, walk forward, turn a corner, and rotate while standing still. The pet follows from its current position and settles nearby. Turning the camera no longer makes it orbit to a fixed side.
 3. Open **Season passes** in the main sidebar, then the quest journal. Check the selected label, full button hit area, and progress bars at your normal UI scale. Browse Iris Wren's listings and item deliveries to see the native item icons.
 4. From the ledger, open **Customize**, choose your plot and path style, then a width from one to three blocks. Start far enough from your house to leave one empty block beside the entire path. Review and confirm the result. Remove the old path before choosing another width. Place a prop nearby to check the clearance and rounded bends.
-5. New example villages use **Eternia Guild Hall**, adapted from the Stormwind hall. For an existing village, leave the Lantern Company plot, open **/e playground**, and select **Refresh guild hall**. Confirm the refresh. The original example hall is packed into guild custody before replacement. Changed blocks, moved example buildings, added decorations, players in the plot, or an unfinished operation block the refresh. The new hall faces its entrance toward the village. Player homes and other guild halls are not replaced.
+5. Example villages use **Eternia Guild Hall**, adapted from the Stormwind hall, which faces its entrance toward the village.
 
-The new hall has a separate `founders_hall` catalog ID. The old Founder’s Hall (`guild_hall`) is retired from the house picker and is no longer granted to new guilds. Its definition and prefab remain for safely packing existing halls and restoring whole plot snapshots. The adapter preserves native decorative doors and the sign; Aetherhaven quest boards, smoke emitters, POI marker, and unsupported loose display entities are removed. The Eternia management block is inside the hall.
+The hall's catalog ID is `founders_hall`. The adapter preserves native decorative doors and the sign; Aetherhaven quest boards, smoke emitters, POI marker, and unsupported loose display entities are removed. The Eternia management block is inside the hall.
 
 
 ## Housing and travel menu follow-up

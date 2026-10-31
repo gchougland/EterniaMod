@@ -16,7 +16,11 @@ public final class CollectionService extends DomainSupport {
     public record Pet(UUID id,Owner owner,String contentId,String sourceGrant,long sourceIndex,String assignment,UUID propertyId){}
     private final OwnershipService ownership;
     CollectionService(TransactionalStore s,Clock c,Supplier<UUID> i,OwnershipService ownership){super(s,c,i);this.ownership=ownership;}
-    public void register(Definition definition){store.transaction(tx->{var data=fields("name",definition.name,"kind",definition.kind,"slot",definition.slot,"asset",definition.assetId);var old=tx.find("collection_definition",definition.id);if(old.isPresent())require(old.get().fields().equals(data),CONFLICT,"Collection definition already registered differently");else tx.save("collection_definition",definition.id,0,data);return null;});}
+    public void register(Definition definition){store.transaction(tx->{var data=fields("name",definition.name,"kind",definition.kind,"slot",definition.slot,"asset",definition.assetId);var old=tx.find("collection_definition",definition.id);if(old.isEmpty())tx.save("collection_definition",definition.id,0,data);else if(!old.get().fields().equals(data)){
+            // Ownership and selections keep the id, so a corrected name or asset can ship; what the content is cannot change.
+            require(old.get().value("kind").equals(data.get("kind"))&&old.get().value("slot").equals(data.get("slot")),CONFLICT,"Collection definition already registered differently");
+            tx.save("collection_definition",definition.id,old.get().revision(),data);
+        }return null;});}
     public List<Definition> definitions(){return store.transaction(tx->tx.scan("collection_definition").stream().map(CollectionService::definition).toList());}
     public Selection selection(UUID actor){return store.transaction(tx->selection(tx.find("collection_selection",actor.toString()).map(TransactionalStore.Row::fields).orElse(Map.of())));}
     public Selection equip(UUID actor,String contentId){

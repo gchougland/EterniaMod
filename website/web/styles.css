@@ -10,6 +10,7 @@ button:hover,.button:hover{background:linear-gradient(#3c5a57,#294644);border-co
 button.primary,.button.primary{background:linear-gradient(#e0bf79,#b89855);border-color:#eed79e}
 button:active,.button:active{box-shadow:inset 0 2px 4px #00000044}
 .topbar{background:linear-gradient(105deg,#20373b,#101e22);box-shadow:inset 0 -3px #d8b66b0d}
+#identity{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}
 .brand{font-weight:600;letter-spacing:3px}h1,h2,h3{font-weight:500}
 
 /* Crown treasury uses the same brass and sage geometry as the game menus. */

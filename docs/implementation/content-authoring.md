@@ -36,7 +36,7 @@ Uploads use `ETERNIA_WEBSITE_URL` and `ETERNIA_BRIDGE_TOKEN`, sent as `Authoriza
 
 Use the website **Content workshop** as an admin: import a definition and native prefab JSON, inspect the 3D preview, render a screenshot and transparent icon, and download the native catalog archive. This workflow supports only admins; there are no community submissions. The export preserves the prefab source, emits game definitions/indexes and a hash manifest, and does not publish or grant anything. [Exact authoring/export fields](../../website/README.md).
 
-A native house definition looks like the bundled [starter house](../../src/main/resources/Server/EterniaMod/Buildings/hub_house.json) or [guild hall](../../src/main/resources/Server/EterniaMod/Buildings/guild_hall.json):
+A native house definition looks like the bundled [starter house](../../src/main/resources/Server/EterniaMod/Buildings/hub_house.json) or [guild hall](../../src/main/resources/Server/EterniaMod/Buildings/founders_hall.json):
 
 ```json
 {
@@ -116,10 +116,7 @@ Collection categories use `CollectionCardRow.ui`, with four card slots per row a
 
 `Buildings/founders_hall.json` and `Prefabs/FoundersHall.prefab.json` contain the adapted Stormwind hall. Its coordinates are centered for Eternia plots, its entrance is defined for arrivals, and it no longer includes a Building Records Shelf. Native decorative doors and the sign retain their geometry; fresh instance UUIDs and custody links are assigned by the normal placement adapter. The prefab contains no Aetherhaven block IDs, POI components, seeded inventory, or custom smoke emitters. Unsupported loose weapon/model displays were omitted. Catalog icon and screenshot images were rendered through the website's native prefab viewer.
 
-Keep this distinct from the old `guild_hall`: changing the dimensions of an existing catalog ID would invalidate packed snapshots. Ship future incompatible house replacements under a new ID, retain the old definition/prefab for restoration, and add an explicit migration if existing placed examples need updating.
-
-
-A building definition can set `"retired": true` to remove an old style from Housing inventory without deleting the assets needed to pack existing buildings or restore saved plots. The original `guild_hall` is retired; `founders_hall` is the current Eternia Guild Hall. Keep those IDs unchanged so saved ownership and building records remain valid.
+Changing the dimensions of an existing catalog ID would invalidate packed snapshots. Ship future incompatible house replacements under a new ID, retain the old definition/prefab for restoration, and add an explicit migration if existing placed examples need updating. `founders_hall` is the current Eternia Guild Hall.
 
 
 ### Daily and weekly quest pools

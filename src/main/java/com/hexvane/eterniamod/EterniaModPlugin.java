@@ -46,8 +46,11 @@ public final class EterniaModPlugin extends JavaPlugin {
     private com.hexvane.eterniamod.housing.VoluntaryPlotMover plotMover;
     private com.hexvane.eterniamod.customization.CustomizationService customization;
     private com.hexvane.eterniamod.discovery.DiscoveryBootstrap discoveries;
+    private com.hexvane.eterniamod.loot.LootChests lootChests;
     private AutoCloseable managedHubServices;
+    private com.hexvane.eterniamod.memories.PersonalMemories memories;
 
+    public com.hexvane.eterniamod.memories.PersonalMemories getMemories() { return memories; }
     public com.hexvane.eterniamod.housing.HousingInfrastructure getInfrastructure() { return infrastructure; }
     public com.hexvane.eterniamod.domain.EterniaServices getServices() { return runtime.services(); }
     public com.hexvane.eterniamod.runtime.RuntimeConfig getRuntimeConfig() { return runtime.config(); }
@@ -125,7 +128,10 @@ public final class EterniaModPlugin extends JavaPlugin {
         catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
         try { discoveries = new com.hexvane.eterniamod.discovery.DiscoveryBootstrap(this,getServices(),infrastructure,dataDirectory.resolve("discoveries.json")); }
         catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
+        lootChests = com.hexvane.eterniamod.loot.LootChests.register(this);
         getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.runtime.GuildWaygateEntrySystem(this));
+        getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.setup.DisabledWorldEvents());
+        memories = com.hexvane.eterniamod.memories.MemoryBootstrap.register(this);
         com.hexvane.eterniamod.runtime.NativeSmoke.register(this);
         departures = new com.hexvane.eterniamod.housing.relocation.GuildDepartureWorker(this,
             error -> getLogger().atWarning().withCause(error).log("Guild property return needs recovery"));
@@ -150,12 +156,14 @@ public final class EterniaModPlugin extends JavaPlugin {
         if (collectionRuntime != null) collectionRuntime.close();
         if (gameplayAdapters != null) gameplayAdapters.close();
         if (lifecycle != null) lifecycle.close();
+        if (lootChests != null) lootChests.close();
         if (runtime != null) runtime.close();
         instance = null;
     }
 
     @Override
     protected void start() {
+        com.hexvane.eterniamod.memories.MemoryBootstrap.start(this);
         if (!getManifest().includesAssetPack()) {
             return;
         }

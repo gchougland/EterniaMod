@@ -98,6 +98,9 @@ public final class NativePlacementTransactions {
         try {source=packed!=null?packed.sourceReference():house?"unlock:"+content:plugin.getServices().ownership().reserve(custodyOwner,content,1,"native-place:"+operation).id();}
         catch(RuntimeException failure){journal.advance(operation,op.revision(),JournalService.State.CANCELLED);throw failure;}
         var manifest=new BsonDocument("before",new BsonString(before.file().reference())).append("beforeHash",new BsonString(before.file().sha256())).append("after",new BsonString(after.file().reference())).append("afterHash",new BsonString(after.file().sha256())).append("instance",new BsonString(instance.toString())).append("source",new BsonString(source));
+        manifest.append("catalog",new BsonString(catalogId)).append("yaw",new BsonString(yaw.name()))
+            .append("originX",new BsonInt32(origin.x)).append("originY",new BsonInt32(origin.y)).append("originZ",new BsonInt32(origin.z))
+            .append("actor",new BsonString(actor.toString())).append("placedAt",new BsonString(Long.toString(System.currentTimeMillis())));
         try {
             var manifestFile=nativeStore.files().write(operation+"-placement.json",manifest.toJson().getBytes(StandardCharsets.UTF_8));
             op=journal.attachVerifiedSnapshot(operation,op.revision(),manifestFile.reference(),manifestFile.sha256());

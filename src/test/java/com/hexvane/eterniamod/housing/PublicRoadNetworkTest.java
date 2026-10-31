@@ -5,6 +5,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PublicRoadNetworkTest {
+    @Test void anyPublicRoadSupportsClaimsWithoutPortalsButHousePathsDoNot(){
+        var road=new PlotRect(1000,1000,5,100);var lot=new PlotRect(1007,1040,24,24);
+        var claim=new HousingRules.Candidate(lot,HousingRules.Scope.PUBLIC,null,false,0);
+        assertTrue(HousingRules.claim(claim,List.of(),List.of(road),List.of()).valid());
+        assertTrue(HousingRules.claim(claim,List.of(),List.of(road),List.of(new PlotRect(0,0,5,5))).valid());
+        // A personal path is not registered in the public-road network.
+        assertEquals("road",HousingRules.claim(claim,List.of(),List.of(),List.of()).code());
+    }
     @Test void claimsMeasureFromCenterlineAndDoNotNeedToOverlapTheRoad(){
         var road=new PlotRect(-2,0,5,160);var portal=new PlotRect(-20,-20,40,20);
         var network=PublicRoadNetwork.rectangles(List.of(road));

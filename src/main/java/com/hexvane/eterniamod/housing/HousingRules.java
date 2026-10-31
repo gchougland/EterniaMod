@@ -2,7 +2,7 @@ package com.hexvane.eterniamod.housing;
 
 import java.util.*;
 
-/** Server-authoritative topology. Existing disconnected claims retain ownership but cannot anchor expansion. */
+/** Public claims need a nearby public road; guild member claims follow their own house chain. */
 public final class HousingRules {
     public enum Scope { PUBLIC, GUILD_ROOT, GUILD_MEMBER }
     public record Anchor(UUID id, PlotRect rect, Scope scope, UUID guildId, boolean hasHouse) {
@@ -34,18 +34,14 @@ public final class HousingRules {
             if (candidate.guildMemberCount < (localTesting ? 1 : 5)) return Result.no("members", localTesting ? "Create or join a guild before claiming its plot." : "A guild needs at least five members to claim a guild plot.");
             if (plots.stream().anyMatch(p -> p.scope == Scope.GUILD_ROOT && p.guildId.equals(candidate.guildId)))
                 return Result.no("guildSlot", "This guild already has a plot.");
-            if (!near(candidate.rect, portals, 240)) return Result.no("guildPortal", "Place the guild plot within 240 blocks of a hub portal.");
             if (!network.near(candidate.rect)) return Result.no("connector", "An administrator must approve a connecting road before this guild plot can be claimed.");
             return Result.yes();
         }
-        if (candidate.scope == Scope.PUBLIC && !network.near(candidate.rect))
-            return Result.no("road", "Place the plot within five blocks of the centerline of a public road.");
+        if (candidate.scope == Scope.PUBLIC)
+            return network.near(candidate.rect) ? Result.yes() : Result.no("road", "Place the plot within five blocks of the centerline of a public road. House paths do not count.");
         Set<UUID> reachable = reachable(plots, portals, candidate.scope, candidate.guildId,network);
-        boolean anchored = candidate.scope == Scope.PUBLIC && (near(candidate.rect, portals, 5)||network.anchored(candidate.rect,portals))
-            || plots.stream().anyMatch(p -> reachable.contains(p.id) && p.rect.gap(candidate.rect) <= 5);
-        if (!anchored) return Result.no("anchor", candidate.scope == Scope.PUBLIC
-            ? "Use a road connected to a Hub portal, or place within five blocks of a connected public house or portal."
-            : "Place the plot within five blocks of your guild house or a connected member house.");
+        boolean anchored = plots.stream().anyMatch(p -> reachable.contains(p.id) && p.rect.gap(candidate.rect) <= 5);
+        if (!anchored) return Result.no("anchor", "Place the plot within five blocks of your guild house or a connected member house.");
         return Result.yes();
     }
     public static Set<UUID> reachable(List<Anchor> plots, List<PlotRect> portals, Scope scope, UUID guildId) {
@@ -55,7 +51,7 @@ public final class HousingRules {
         List<Anchor> eligible = plots.stream().filter(Anchor::hasHouse).filter(p -> scope == Scope.PUBLIC
             ? p.scope == Scope.PUBLIC : p.scope != Scope.PUBLIC && Objects.equals(p.guildId, guildId)).toList();
         Set<UUID> reached = new HashSet<>();
-        for (Anchor p : eligible) if (scope == Scope.PUBLIC ? near(p.rect, portals, 5)||network.anchored(p.rect,portals) : p.scope == Scope.GUILD_ROOT && near(p.rect, portals, 240)) reached.add(p.id);
+        for (Anchor p : eligible) if (scope == Scope.PUBLIC ? network.near(p.rect) : p.scope == Scope.GUILD_ROOT) reached.add(p.id);
         boolean changed;
         do {
             changed = false;

@@ -181,6 +181,20 @@ public final class CollectionRuntime implements AutoCloseable {
             desired.add(plan.pet.id());
         }
         var iterator=visible.entrySet().iterator();while(iterator.hasNext()){var entry=iterator.next();if(!desired.contains(entry.getKey())){remove(store,entry.getValue());iterator.remove();}}
+        removeStrays(store,visible);
+    }
+
+    /**
+     * A pet that walks or jumps into a sleeping chunk section is parked there by the engine, even though it is never saved,
+     * and returns when that section wakes. By then its ref is dead and a replacement exists, so anything untracked is a stray.
+     */
+    private void removeStrays(Store<EntityStore> store,Map<UUID,VisiblePet> visible) {
+        store.forEachChunk(CosmeticPet.getComponentType(),(chunk,commands)->{
+            for(int i=0;i<chunk.size();i++) {
+                var ref=chunk.getReferenceTo(i);var tracked=visible.get(chunk.getComponent(i,CosmeticPet.getComponentType()).getPetId());
+                if(tracked==null||!tracked.ref.equals(ref))commands.removeEntity(ref,RemoveReason.REMOVE);
+            }
+        });
     }
 
     private void applyAppearance(PlayerRef player,Ref<EntityStore> ref,Store<EntityStore> store,Selection selection) {

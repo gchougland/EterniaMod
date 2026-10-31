@@ -6,9 +6,12 @@
 
 - Eternia runs on Hytale Update 7 (0.7.0).
 
-- Road Designer includes clear node markers, plaza connections, and a workshop for saving and editing paving styles.
+- Loot chests found out in the world now hold separate loot for every player. Your chest stays as you left it, and it does not refill. These chests can no longer be broken. Chests that had already appeared in explored areas stay shared.
+
+- Road Designer includes node markers, saved road outlines, selection and deletion, and a paving style workshop. Roads can overlap and cross, and NPCs or dropped items do not block building. Any public road supports nearby plots without a portal connection; house paths do not count.
 
 - New players receive 500 Coins when they first join Eternia.
+- Memories now belong to each player. You collect and record your own, and recipes that need memories unlock from your own count. Memories recorded earlier were shared by everyone, so they have been cleared and everyone starts fresh.
 - Admins can grant Crowns and Coins to players by name, with each grant recorded.
 - Admins can set up prefabs for the website in game: pick a prefab in the prefab browser, give it a name and details, list it in the Crown Store and add it to a season pass. Saving sends it to the website automatically.
 - Admins can design season passes in game with `/eternia season`: levels, rewards and dates. Drafts go to the website as they are saved, and a pass goes live in game when it is ready.
@@ -24,14 +27,14 @@
 - Guild Waygates include an optional glowing portal for the guild estate, placed and packed like a decoration. Step inside to choose a destination. Public and guild portals share teal arches, translucent facets, gold gems and turning runes.
 
 - Press the game mode key (O by default) to open your Journal anywhere: collection, quests, seasons, mail, guild and home, in a full screen view that keeps the world visible behind it.
-- Joining Eternia takes you to the right place: new players start in the Hub, players who have met the Hub characters wait in the housing area until they claim a plot, and players with a home always log in at their house.
+- Joining Eternia takes you to the right place: new players start in the Hub, players who have met the Hub characters wait in the housing area until they claim a plot, and players with a home log in at their house. Log back in within 10 minutes and you appear exactly where you left off instead.
 - Returning to an adventure world puts you back where you left it. Your first visit starts at the world's spawn.
 - The Eternia Home Portal takes you straight back to your house from anywhere it is placed.
 - Admins can choose where brand new players appear and where players without a plot appear with `/eternia admin setup firstjoin` and `newcomer`. World setup also lets admins choose the world name shown in portals and menus and add a description to its portal card.
 - Houses and decorations can be turned and zoomed in 3D in the Crown Store and from your Collection.
 - Each Hub character now runs only their own trade: Bramble Hearthleaf for homes, Torren Ironbough for guilds, Nima Quicktail for the market, Prowl for getting started and travel, and Pip Coppercap for minigames.
 
-- Illustrated menus for the Architect's Ledger, travel, and housing inventory, with decorations you can browse anywhere.
+- Illustrated menus for the Architect's Ledger, travel, and housing inventory, with decorations you can browse anywhere. My Plots can recover interrupted house placements and restore access to the house.
 
 - Framed menu balances and price icons make Coins and Crowns easy to tell apart.
 - Season passes hang as banners in the Journal, each with its own crest and colour, your level and the next reward at a glance. Open one to see every level on a single track, claim rewards and check your quests.
@@ -61,3 +64,7 @@
 - Prop placement includes a bird's eye view, movement that follows your view, and a red highlight for blocked spots.
 - **Prefab browser** â€” Use `/eternia prefab browse` to browse server prefabs and create props or buildings from them.
 - Props and buildings now place prefab entities (NPCs, items, etc.) and remove them when packaged or picked up.
+
+### Fixed
+
+- The game no longer crashes when entering instances such as the Forgotten Temple or the Deepworks.

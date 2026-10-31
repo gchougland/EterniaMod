@@ -19,7 +19,6 @@ public final class AccountService extends DomainSupport {
     public void recordDisconnect(UUID id) { store.transaction(tx->{var r=accrue(tx,id);save(tx,r,"lastDisconnect",clock.instant(),"lastSeen",clock.instant(),"sessionStarted","");return null;}); }
     /** First conversation with a Hub NPC; from then on players without a plot join in the housing area. */
     public boolean markIntroduced(UUID id) { return store.transaction(tx->{var r=row(tx,"account",id.toString());if(!r.value("introduced").isEmpty())return false;save(tx,r,"introduced",clock.instant());return true;}); }
-    public void heartbeat(UUID id) { store.transaction(tx->{accrue(tx,id);return null;}); }
     private TransactionalStore.Row accrue(TransactionalStore.Transaction tx,UUID id) {var r=row(tx,"account",id.toString());long elapsed=r.value("sessionStarted").isEmpty()?0:Math.max(0,Duration.between(Instant.parse(r.value("sessionStarted")),clock.instant()).getSeconds());long total=r.value("playSeconds").isEmpty()?0:r.number("playSeconds");return save(tx,r,"playSeconds",Math.addExact(total,elapsed),"sessionStarted",r.value("sessionStarted").isEmpty()?"":clock.instant(),"lastSeen",clock.instant());}
     public Optional<Stats> stats(UUID id) {return store.transaction(tx->tx.find("account",id.toString()).map(r->{var activity=tx.find("activity_stats",id.toString());return new Stats(r.value("playSeconds").isEmpty()?0:r.number("playSeconds"),activity.map(a->a.number("kills")).orElse(null),activity.map(a->a.number("resources")).orElse(null),Instant.parse(r.value("lastSeen")));}));}
     /** External authentication/claim verification happens before this method; never pass browser-chosen IDs. */
@@ -32,7 +31,6 @@ public final class AccountService extends DomainSupport {
             if(old.isEmpty())tx.save("identity",k,0,data);return null;});
     }
     public Map<UUID,Account> findAll(Collection<UUID> ids){return store.transaction(tx->{var result=new HashMap<UUID,Account>();tx.findAll("account",ids.stream().map(UUID::toString).toList()).values().forEach(row->{var value=account(row);result.put(value.id(),value);});return Map.copyOf(result);});}
-    public void heartbeats(Collection<UUID> ids){store.transaction(tx->{tx.findAll("account",ids.stream().map(UUID::toString).toList());for(var id:ids)accrue(tx,id);return null;});}
     public Optional<Account> find(UUID id) { return store.transaction(tx->tx.find("account",id.toString()).map(AccountService::account)); }
     public Optional<Account> findByName(String name) {text(name,"display name",64);return store.transaction(tx->{var matches=tx.scan("account").stream().filter(r->r.value("name").equalsIgnoreCase(name)).toList();require(matches.size()<=1,CONFLICT,"Display name is ambiguous");return matches.stream().findFirst().map(AccountService::account);});}
     private static Account account(TransactionalStore.Row r) { return new Account(UUID.fromString(r.key()),r.value("name"),Instant.parse(r.value("lastSeen")),r.value("lastDisconnect").isEmpty()?null:Instant.parse(r.value("lastDisconnect")),!r.value("introduced").isEmpty()); }

@@ -68,7 +68,7 @@ public final class HousingInventory {
     private static void houses(EterniaModPlugin p,Ref<EntityStore> r,Store<EntityStore>s,PlayerRef player,Owner owner) {
         var choices=new ArrayList<ChoicePage.Choice>();
         var definitions=List.copyOf(p.getBuildingCatalog().asMap().values());
-        var owned=p.getServices().readView(new InventoryKey(owner,"houses",definitions.stream().map(d->d.getId()).toList()),java.time.Duration.ofSeconds(2),()->definitions.stream().filter(d->!d.isRetired()&&p.getServices().ownership().owns(owner,"eternia:house/"+d.getId())).map(d->d.getId()).collect(java.util.stream.Collectors.toUnmodifiableSet()));
+        var owned=p.getServices().readView(new InventoryKey(owner,"houses",definitions.stream().map(d->d.getId()).toList()),java.time.Duration.ofSeconds(2),()->definitions.stream().filter(d->p.getServices().ownership().owns(owner,"eternia:house/"+d.getId())).map(d->d.getId()).collect(java.util.stream.Collectors.toUnmodifiableSet()));
         for(var def:definitions)if(owned.contains(def.getId()))choices.add(new ChoicePage.Choice(def.getDisplayName()==null?com.hexvane.eterniamod.ui.UiPresentation.friendlyId(def.getId()):def.getDisplayName(),"Place",(ref,store)->{
             var current=placementPlot(p,ref,store,player,owner,true);if(current==null)return;
             if(!p.getServices().ownership().owns(owner,"eternia:house/"+def.getId()))return;

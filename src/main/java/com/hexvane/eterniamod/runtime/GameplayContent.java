@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.function.Consumer;
 
-/** Released definitions are immutable. New files add content without code changes. */
+/** Released definitions are immutable, except a collection item's name and asset. New files add content without code changes. */
 public final class GameplayContent {
     private GameplayContent(){}
     public static void load(EterniaServices services,Path data) {

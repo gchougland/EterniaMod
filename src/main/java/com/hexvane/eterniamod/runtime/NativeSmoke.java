@@ -43,6 +43,8 @@ public final class NativeSmoke {
                 if(com.hypixel.hytale.server.core.asset.type.particle.config.ParticleSystem.getAssetMap().getAsset(id)==null||com.hypixel.hytale.server.core.asset.type.particle.config.ParticleSpawner.getAssetMap().getAsset(id+"_Spawner")==null)throw new IllegalStateException("Mote boundary assets failed native loading: "+id);
             }
             plugin.getLogger().atInfo().log("ETERNIA_NATIVE_BORDER_ASSETS_PASS: all mote systems and spawners loaded");
+            com.hexvane.eterniamod.loot.NativeLootChestSmoke.run(plugin);
+            plugin.getLogger().atInfo().log("ETERNIA_NATIVE_LOOT_CHEST_PASS: marked chests stay empty, plain and stocked chests stay shared, stored copies are separate per player and never roll twice");
             World world=com.hexvane.eterniamod.localplayground.LocalPlayground.createFlatWorld("eternia_smoke").join();
             com.hexvane.eterniamod.inventory.NativeInventorySmoke.run(world);
             plugin.getLogger().atInfo().log("ETERNIA_NATIVE_INVENTORY_SAVE_PASS: live components retained without cloning; inventory and custody proof saved together and reloaded");
@@ -57,6 +59,7 @@ public final class NativeSmoke {
             // Since 0.7.0 a section starts idle whatever its column does; this fixture has no player to wake them.
             loads.clear();for(int x=-1;x<=8;x++)for(int z=-1;z<=5;z++)for(int sy=0;sy<NativeSnapshotStore.MAX_Y/ChunkUtil.SIZE;sy++)loads.add(world.getChunkStore().getChunkSectionReferenceAsync(x,sy,z,com.hypixel.hytale.server.core.universe.world.storage.GetChunkFlags.SET_TICKING));
             CompletableFuture.allOf(loads.toArray(CompletableFuture[]::new)).join();
+            com.hexvane.eterniamod.setup.NativeHubSpawnsSmoke.globalRoute(plugin,world);
             var result=new CompletableFuture<Void>();
             world.execute(()-> {try {
                 com.hexvane.eterniamod.setup.NativeHubSpawnsSmoke.run(plugin,world);
@@ -89,6 +92,7 @@ public final class NativeSmoke {
         UUID property=plugin.getClaims().claim(world,actor,new PlotRect(8,8,24,24),0,HousingRules.Scope.PUBLIC,false,UUID.randomUUID());
         plugin.getLogger().atInfo().log("ETERNIA_NATIVE_SMOKE_STAGE: claim committed");
         var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin); var plot=manager.getPlot(property);
+        NativeHouseRecoverySmoke.exercise(plugin,world,plot,actor);
         var prefab=PrefabResolveUtil.resolvePrefabBuffer("House.prefab.json");
         var definition=plugin.getBuildingCatalog().get("hub_house");
         var preview=new com.hexvane.eterniamod.placement.BuildingPlacementSession(world,property,new Vector3i(9,3,9),0,"hub_house");

@@ -17,11 +17,11 @@ public final class FailedPropRecovery {
     /** Loading is asynchronous; never join chunk work from its owning world thread. */
     public static java.util.concurrent.CompletableFuture<Void> loadPending(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID actor) throws Exception {
         world.getEntityStore().getStore().assertThread();
-        if(!plot.isOwnedBy(actor)&&(plot.getGuildOwnerUuid()==null||!plugin.getServices().guilds().can(actor,plot.getGuildOwnerUuid(),HousingCustody.PACK)))throw new IllegalStateException("Plot packaging permission is required.");
+        if(!plot.isOwnedBy(actor)&&(plot.getGuildOwnerUuid()==null||!plugin.getServices().guilds().can(actor,plot.getGuildOwnerUuid(),HousingCustody.PACK)&&!plugin.getServices().guilds().can(actor,plot.getGuildOwnerUuid(),"housing.structure")))throw new IllegalStateException("Plot management permission is required.");
         var snapshots=NativePlacementTransactions.snapshots(plugin);
         var columns=new ArrayList<java.util.concurrent.CompletableFuture<?>>();
         var bounds=new ArrayList<NativeSnapshotStore.Bounds>();
-        for(var op:plugin.getServices().journal().unfinished())if(op.owner().equals(HousingAccess.owner(plot))&&op.kind().equals("PLACE_PROP")) {
+        for(var op:plugin.getServices().journal().unfinished())if(op.owner().equals(HousingAccess.owner(plot))&&op.detail().equals(plot.getPlotId().toString())&&Set.of("PLACE_PROP","PLACE_HOUSE").contains(op.kind())&&!op.snapshotRef().isEmpty()) {
             var manifest=BsonDocument.parse(new String(snapshots.files().read(new SnapshotFiles.Saved(op.snapshotRef(),op.snapshotHash())),StandardCharsets.UTF_8));
             var b=snapshots.load(new SnapshotFiles.Saved(manifest.getString("before").getValue(),manifest.getString("beforeHash").getValue())).bounds();bounds.add(b);
             for(int x=Math.floorDiv(b.minX(),32);x<=Math.floorDiv(b.maxX()-1,32);x++)for(int z=Math.floorDiv(b.minZ(),32);z<=Math.floorDiv(b.maxZ()-1,32);z++)columns.add(world.getChunkStore().getChunkReferenceAsync(com.hypixel.hytale.math.util.ChunkUtil.indexChunk(x,z),com.hypixel.hytale.server.core.universe.world.storage.GetChunkFlags.SET_TICKING));

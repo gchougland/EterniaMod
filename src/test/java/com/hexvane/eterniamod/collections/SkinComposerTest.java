@@ -18,6 +18,13 @@ class SkinComposerTest {
         assertEquals(original.face,changed.face);assertEquals(original.haircut,changed.haircut);
         assertEquals(original,SkinComposer.compose(original,Map.of(),Map.of()));
     }
+    @Test void shippedJacketNamesTheVariantItsSkinPartRequires() throws java.io.IOException {
+        // PuffyJacket has style variants, so the native skin check refuses an id without one.
+        assertEquals("PuffyJacket.Turquoise.Default",SkinComposer.outfit(data,"citadel_traveler").get("overtop"));
+        try(var stream=SkinComposer.class.getClassLoader().getResourceAsStream("Server/EterniaMod/Collections/citadel_jacket.json")){
+            assertEquals("PuffyJacket.Turquoise.Default",com.google.gson.JsonParser.parseString(new String(stream.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject().get("assetId").getAsString());
+        }
+    }
     @Test void shippedOutfitPreservesIdentityAndRejectsUnsafeAssetReferences() {
         var original=new PlayerSkin();original.face="OriginalFace";original.eyes="OriginalEyes.Green";original.cape="OriginalCape.Red";
         var changed=SkinComposer.compose(original,SkinComposer.outfit(data,"citadel_traveler"),Map.of());

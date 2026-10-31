@@ -29,8 +29,6 @@ public final class BuildingDefinition {
     private String rotationYaw = "None";
     private int[] spawnLocalPos;
     private String housingKind = "personal";
-    private boolean retired;
-    public boolean isRetired(){return retired;}
     public String getHousingKind() { return housingKind == null ? "personal" : housingKind; }
     public int[] getSpawnLocalPos() { return spawnLocalPos != null && spawnLocalPos.length == 3 ? spawnLocalPos.clone() : null; }
 
@@ -83,7 +81,6 @@ public final class BuildingDefinition {
         def.rotationYaw = rotationYaw;
         def.spawnLocalPos = spawnLocalPos == null ? null : spawnLocalPos.clone();
         def.housingKind = housingKind;
-        def.retired = retired;
         return def;
     }
 

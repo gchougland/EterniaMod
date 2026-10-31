@@ -8,6 +8,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static com.hexvane.eterniamod.pathtool.SplineRoadStore.*;
 
 class RoadConnectionRulesTest {
+    @Test void intersectionsAndLongSharedEdgesAreValidSavedRoads(){
+        var nodes=List.of(new SplineGeometry.Node(.5,1,.5),new SplineGeometry.Node(.5,1,40.5));
+        var owned=List.of(new SplineGeometry.Cell(0,0,0),new SplineGeometry.Cell(0,0,40));
+        var shared=new ArrayList<SplineGeometry.Cell>();for(int z=1;z<40;z++)shared.add(new SplineGeometry.Cell(0,0,z));
+        var v=new Version(nodes,1,"stone","Rock_Stone_Cobble",owned,Map.of(),new SnapshotFiles.Saved("before.json","a".repeat(64)),new SnapshotFiles.Saved("after.json","b".repeat(64)),shared);
+        assertEquals(39,v.connections().size());
+        assertEquals(v,new com.google.gson.Gson().fromJson(new com.google.gson.Gson().toJson(v),Version.class));
+    }
     private final List<SplineGeometry.Cell> cells=List.of(new SplineGeometry.Cell(0,0,0),new SplineGeometry.Cell(1,0,0),new SplineGeometry.Cell(2,0,0));
     private Version version(List<SplineGeometry.Cell> mask,String block){return new Version(List.of(new SplineGeometry.Node(.5,1,.5),new SplineGeometry.Node(2.5,1,.5)),1,"stone",block,mask,Map.of(),new SnapshotFiles.Saved("before.json","a".repeat(64)),new SnapshotFiles.Saved("after.json","b".repeat(64)));}
     @Test void parentRemovalOrRepaintMustWaitForBranchDetachment(){var old=version(cells,"Rock_Stone_Cobble");var connections=List.of(cells.getFirst());assertThrows(IllegalStateException.class,()->RoadConnectionRules.preserveSurface(old,null,connections));assertThrows(IllegalStateException.class,()->RoadConnectionRules.preserveSurface(old,version(cells,"Rock_Stone_Brick"),connections));assertThrows(IllegalStateException.class,()->RoadConnectionRules.preserveSurface(old,version(cells.subList(1,3),"Rock_Stone_Cobble"),connections));assertDoesNotThrow(()->RoadConnectionRules.preserveSurface(old,null,List.of()));}

@@ -67,7 +67,10 @@ public final class BuildingPlacementCommit {
         if (buffer == null) return false;
         NativePlacementTransactions.Placed placed;
         try { placed=NativePlacementTransactions.place(plugin,world,plot,actor.getUuid(),session.getBuildingId(),buildingAnchor,session.getPrefabYaw(),buffer,true); }
-        catch (Exception failure) { actor.sendMessage(com.hypixel.hytale.server.core.Message.raw(failure.getMessage())); return false; }
+        catch (Exception failure) {
+            plugin.getLogger().atWarning().withCause(failure).log("House placement failed: house=%s property=%s world=%s anchor=%s yaw=%s",session.getBuildingId(),plot.getPlotId(),world.getName(),buildingAnchor,session.getPrefabYaw());
+            return false;
+        }
         try {
         plot.setBuilding(
             new HubPlotBuilding(
@@ -89,6 +92,10 @@ public final class BuildingPlacementCommit {
             HubPlotVisibilityOverlay.refreshIfEnabled(playerRef, world, plugin);
         }
         return true;
-        } catch (Exception failure) { NativePlacementTransactions.lock(plugin,placed.operation()); actor.sendMessage(com.hypixel.hytale.server.core.Message.raw("Placement metadata needs recovery; its snapshot is retained.")); return false; }
+        } catch (Exception failure) {
+            NativePlacementTransactions.lock(plugin,placed.operation());
+            plugin.getLogger().atWarning().withCause(failure).log("House placement metadata failed: operation=%s property=%s",placed.operation(),plot.getPlotId());
+            return false;
+        }
     }
 }

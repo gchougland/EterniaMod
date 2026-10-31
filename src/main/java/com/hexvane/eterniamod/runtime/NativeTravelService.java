@@ -88,7 +88,7 @@ public final class NativeTravelService {
     public static JoinTarget joinTarget(boolean introduced,boolean activePlot){return activePlot?JoinTarget.HOME:introduced?JoinTarget.NEWCOMER:JoinTarget.FIRST_JOIN;}
     /**
      * Where a connecting player should appear, resolved before they enter any world so the engine spawns them there.
-     * A teleport sent while the client is still finishing its join crashes the 0.7.4 client.
+     * That avoids a visible hop after loading in.
      */
     public CompletableFuture<Landing> joinLanding(UUID player) {
         boolean introduced=plugin.getServices().accounts().find(player).map(AccountService.Account::introduced).orElse(false);

@@ -42,10 +42,14 @@ public final class HubNaturalSpawns {
             case "status" -> { }
             default -> throw new IllegalArgumentException("Choose on, off or status.");
         }
-        var events=config.getPluginConfig().get(WorldEventsWorldConfig.class);
-        boolean eventsEnabled=events==null||events.isEnableWorldEvents();
         return "Natural enemy and animal spawning in the Hub is "+(config.isSpawningNPC()?"on.":"off.")
-            +" World events, including goblin breaches, are "+(eventsEnabled?"on.":"off.")
+            +" World events, including goblin breaches, are "+(eventsEnabled(config)?"on.":"off.")
             +" Hub characters and summoned companions remain available.";
+    }
+
+    /** Worlds allow events until the saved switch says otherwise. */
+    public static boolean eventsEnabled(WorldConfig config) {
+        var events=config.getPluginConfig().get(WorldEventsWorldConfig.class);
+        return events==null||events.isEnableWorldEvents();
     }
 }

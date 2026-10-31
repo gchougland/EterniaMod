@@ -28,7 +28,7 @@ public final class MyPlotsPage {
             choices.add(new ChoicePage.Choice(name+" · "+slot.state()+"\n"+where,"Manage",(r,s)->{
                 var actions=new ArrayList<ChoicePage.Choice>();
                 var pending=plugin.getServices().journal().unfinished().stream().filter(op->op.owner().equals(owner)).toList();
-                if(!pending.isEmpty())actions.add(new ChoicePage.Choice("Interrupted housing operation: "+pending.getFirst().kind()+" / "+pending.getFirst().state()+"\n"+pending.getFirst().id(),"Recover prop",(rr,ss)->{
+                if(!pending.isEmpty())actions.add(new ChoicePage.Choice("A housing placement was interrupted. Check it to restore access to your plot.","Recover placement",(rr,ss)->{
                     PropRecoveryMenu.open(plugin,rr,ss,player,owner);
                 }));
                 if(slot.state()==HousingService.State.ACTIVE){

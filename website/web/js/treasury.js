@@ -54,9 +54,10 @@ export async function treasury(view,state){
  if(state.user){
   const actions=el('div',undefined,'actions'),refresh=el('button','Refresh balance');
   refresh.onclick=refreshBalance;
-  actions.append(refresh);view.append(actions);
+  actions.append(refresh);
+  if(state.user.admin)actions.append(link('Manage treasury','/admin/commerce'));
+  view.append(actions);
  }
- if(state.user?.admin)view.append(link('Manage treasury','/admin/commerce'));
  const query=new URLSearchParams(location.search);
  if(query.get('checkout')==='authorize'&&query.get('state')){const stateToken=query.get('state');history.replaceState(null,'','/store');try{await showCheckout(await api('/api/store/checkout/resume',{method:'POST',body:JSON.stringify({state:stateToken})}));}catch(e){notice(e.message,true);}}
  else if(query.get('checkout')==='returned')notice('Check your balance here after Tebex confirms payment and Eternia completes delivery.');

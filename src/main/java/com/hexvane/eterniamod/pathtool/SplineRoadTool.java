@@ -26,7 +26,7 @@ public final class SplineRoadTool {
     private static final Map<UUID,Session> sessions=new ConcurrentHashMap<>();
     static final class Session{
         final String world;List<SplineGeometry.Node> nodes=List.of();final Deque<List<SplineGeometry.Node>> undo=new ArrayDeque<>();int width=5,selected=-1,style;
-        UUID editing,recovery;Instant recoveryExpiry;SplineRoadService.Review review;SplineRoadService.Plan plan;String message="Aim at the ground and add the first node";long revision,lastPaint,lastPlan,lastEdges,lastEdgeRevision,confirmAfter;boolean shown;
+        UUID editing,recovery,hovered;int nearby;Instant recoveryExpiry;SplineRoadService.Review review;SplineRoadService.Plan plan;String message="Aim at the ground to add a node, or select an outlined road";long revision,lastPaint,lastPlan,lastEdges,lastEdgeRevision,confirmAfter;boolean shown;
         Session(String world){this.world=world;}
         void change(List<SplineGeometry.Node> value){undo.push(nodes);while(undo.size()>32)undo.removeLast();nodes=List.copyOf(value);invalidate();}
         void invalidate(){review=null;recovery=null;plan=null;lastPaint=0;revision++;}
@@ -61,6 +61,10 @@ public final class SplineRoadTool {
             if(action.equals("Select")&&picked>=0){s.selected=picked;s.message="Node "+(picked+1)+" selected · aim at new ground and use Select / move again";s.revision++;s.lastPaint=0;return;}
             if(action.equals("Add")&&picked>=0){var next=new ArrayList<>(s.nodes);next.remove(picked);s.change(next);s.selected=-1;s.message="Node removed · undo restores it";return;}
             var target=TargetUtil.getTargetBlock(ref,64,store);if(target==null){s.message="Aim at solid ground within 64 blocks";return;}
+            if(action.equals("Select")&&s.nodes.isEmpty()) {
+                var road=SavedRoadSelection.aimed(service().roads(),world.getName(),target.x,target.z);
+                if(road!=null){manage(ref,store,player,s,road.id());return;}
+            }
             var node=new SplineGeometry.Node(target.x+.5,target.y+1,target.z+.5);var next=new ArrayList<>(s.nodes);
             if(action.equals("Add")){if(next.size()>=SplineGeometry.MAX_NODES)throw new IllegalStateException("This road has 32 nodes; finish it before starting another");next.add(node);s.change(next);s.selected=next.size()-1;s.message="Node "+next.size()+" added · keep adding nodes to shape the curve";}
             else if(action.equals("Select")&&s.selected>=0&&s.selected<next.size()){next.set(s.selected,node);s.change(next);s.message="Node moved · the grounded preview has updated";}
@@ -73,18 +77,36 @@ public final class SplineRoadTool {
         var styles=service().styles();var style=styles.get(Math.floorMod(session.style,styles.size()));session.review=service().review(world,player.getUuid(),session.nodes,session.width,style.id(),session.editing);session.confirmAfter=System.currentTimeMillis()+500;session.lastPaint=0;session.message="REVIEW · "+session.review.pending().change().next().cells().size()+" road cells. Clears everything above the road. Press Use again to build; edit a node to cancel.";session.revision++;player.sendMessage(Message.raw(session.message));
     }
     private static void manage(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,Session session){
+        manage(ref,store,player,session,null);
+    }
+    private static void manage(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,Session session,UUID selected){
+        SetupAccess.require(player.getUuid());
+        if(!holding(ref,store)||!session.world.equals(store.getExternalData().getWorld().getName()))return;
         var target=TargetUtil.getTargetBlock(ref,64,store);var world=store.getExternalData().getWorld();var choices=new ArrayList<ChoicePage.Choice>();
         choices.add(new ChoicePage.Choice("Start a fresh curve; discard only this unsaved preview","New road",(r,s)->{sessions.remove(player.getUuid());s.getComponent(r,Player.getComponentType()).getPageManager().setPage(r,s,Page.None);}));
         choices.add(new ChoicePage.Choice("Recover or undo rectangular paving created before the Road Designer","Legacy records",(r,s)->com.hexvane.eterniamod.setup.paving.RoadPaving.openLegacy(plugin,r,s,player)));
-        var aimed=target==null?null:service().roads().stream().filter(road->road.world().equals(world.getName())&&road.protectedCells().stream().anyMatch(c->c.x()==target.x&&c.z()==target.z)).findFirst().orElse(null);
+        choices.add(new ChoicePage.Choice("Select a saved road near you by its location","Nearby roads",(r,s)->browse(r,s,player,session)));
+        var aimed=selected!=null?service().find(selected):target==null?null:SavedRoadSelection.aimed(service().roads(),world.getName(),target.x,target.z);
+        if(aimed!=null&&!aimed.world().equals(world.getName()))throw new IllegalStateException("Open the road tool in the road's world");
         var roads=aimed==null?service().roads().stream().filter(r->r.world().equals(world.getName())&&r.state()==SplineRoadStore.State.PENDING).toList():List.of(aimed);
         for(var road:roads){
             if(road.state()==SplineRoadStore.State.PENDING){choices.add(new ChoicePage.Choice("Interrupted road · restore its previous version","Review recovery",(r,s)->{SetupAccess.require(player.getUuid());session.review=null;session.recovery=road.id();session.recoveryExpiry=Instant.now().plusSeconds(90);session.message="RECOVERY REVIEW · Press Use to restore the saved previous road and terrain";s.getComponent(r,Player.getComponentType()).getPageManager().setPage(r,s,Page.None);}));continue;}
             if(road.state()!=SplineRoadStore.State.ACTIVE)continue;
             choices.add(new ChoicePage.Choice("Reopen this road's "+road.current().nodes().size()+" saved spline nodes","Edit curve",(r,s)->{SetupAccess.require(player.getUuid());session.editing=road.id();session.nodes=road.current().nodes();session.undo.clear();session.width=road.current().width();var styles=service().styles();for(int i=0;i<styles.size();i++)if(styles.get(i).id().equals(road.current().style()))session.style=i;session.selected=-1;session.invalidate();session.message="Editing a saved road · move nodes, then review with Use";s.getComponent(r,Player.getComponentType()).getPageManager().setPage(r,s,Page.None);}));
-            choices.add(new ChoicePage.Choice("Remove this authored road and restore its original ground","Review undo",(r,s)->{try{session.review=service().reviewRemoval(s.getExternalData().getWorld(),player.getUuid(),road.id());session.message="UNDO ROAD REVIEW · Press Use to restore the original terrain and remove protection";session.revision++;s.getComponent(r,Player.getComponentType()).getPageManager().setPage(r,s,Page.None);}catch(Exception error){error(player,error);}}));
+            choices.add(new ChoicePage.Choice("Delete this road and restore its original ground","Delete road",(r,s)->{try{session.review=service().reviewRemoval(s.getExternalData().getWorld(),player.getUuid(),road.id());session.recovery=null;session.confirmAfter=System.currentTimeMillis()+500;session.message="DELETE ROAD REVIEW · Press Use to restore the original terrain and remove this road";session.revision++;s.getComponent(r,Player.getComponentType()).getPageManager().setPage(r,s,Page.None);}catch(Exception error){error(player,error);}}));
         }
         ChoicePage.open(ref,store,player,"Road Designer",aimed==null?"Aim at an authored road to edit or undo it. Interrupted roads in this world appear here for recovery.":"Manage the road under your crosshair. Changes remain a preview until you confirm with the tool.",choices);
+    }
+    private static void browse(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,Session session){
+        SetupAccess.require(player.getUuid());if(!holding(ref,store)||!session.world.equals(store.getExternalData().getWorld().getName()))return;
+        var transform=store.getComponent(ref,com.hypixel.hytale.server.core.modules.entity.component.TransformComponent.getComponentType());if(transform==null)return;var p=transform.getPosition();
+        var choices=new ArrayList<ChoicePage.Choice>();
+        for(var road:SavedRoadSelection.nearby(service().roads(),session.world,p.x,p.z)){
+            var cell=SavedRoadSelection.surface(road).getFirst();
+            String label=(road.state()==SplineRoadStore.State.PENDING?"Interrupted road":"Road")+" at X "+cell.x()+", Z "+cell.z()+" · "+road.id().toString().substring(0,8);
+            choices.add(new ChoicePage.Choice(label,"Select road",(r,s)->manage(r,s,player,session,road.id())));
+        }
+        ChoicePage.open(ref,store,player,"Nearby roads","Choose a saved road to edit or delete. Blue outlines show roads within 96 blocks. The road under your crosshair is gold.",choices);
     }
     static void error(PlayerRef player,Exception error){player.sendMessage(Message.raw(error.getMessage()==null?"Road action could not complete":error.getMessage()));}
     /** Root's dedicated local playground uses the exact same validation, snapshots and commit as the item. */

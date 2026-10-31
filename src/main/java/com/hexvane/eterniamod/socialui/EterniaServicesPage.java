@@ -452,7 +452,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         return switch (request.section) {
             case GREETER -> new View("Welcome to Eternia", "I'm Prowl. Build a home, find your people, and explore at your own pace.", List.of(
                 Row.info("Your first 24 × 24 plot, starter house, mailbox and one plot move are free."),
-                Row.info("Choose a housing plot near a connected public road, an established home, or a hub portal."),
+                Row.info("Choose a housing plot within five blocks of any public road's centerline. House paths do not count."),
                 Row.info("Walk near a plot edge to see its low, glowing boundary. Claim previews show placement reasons."),
                 Row.info("Guilds share a house and can grow a neighborhood of member plots."),
                 Row.info("Select a season pass and earn progress through normal play. Old seasons never expire."),

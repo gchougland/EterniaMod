@@ -2,7 +2,7 @@
 
 Public plots must be within five horizontal blocks of a public road's **centerline**, measured from the nearest plot edge. Spline roads use their saved Catmull–Rom curve, including existing roads; legacy rectangular roads use their long-axis centerline. The plot does not need to overlap the pavement. Roads and portals keep their full vertical protection if a plot does overlap them.
 
-A public road connected to a Hub portal can anchor claims along its length. The first road must reach within five blocks of the portal area; subsequent road surfaces must touch or overlap. A disconnected road does not create an anchor. Established public houses connected through this network may also anchor neighboring plots. Guild member plots retain their guild-only anchoring rules. Claim previews, confirmation, whole-plot restoration and infrastructure removal checks use this topology. Previously valid claims are retained when changing from edge-based to centerline distances; the server does not move or unclaim them.
+Any registered public road supports claims along its length, even with no portal or connection to another road. Personal house paths do not count as public roads. Public plots and guild estates must be within five blocks of a public road centerline. Guild member plots remain attached to their own guild house or member house chain. Claim previews, confirmation, whole-plot restoration and infrastructure removal checks use these rules. Existing ownership is retained; the server does not move or unclaim plots.
 
 The sample road in newly created playgrounds starts at X=3.5 so its existing sample-house locations meet the centerline rule. Existing playground roads and homes are retained, including builder edits.
 

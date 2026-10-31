@@ -13,7 +13,7 @@ class HousingRulesTest {
         assertEquals("members",claim(candidate,List.of(),roads,portals,network).code());
         assertTrue(claim(candidate,List.of(),roads,portals,network,true).valid());
         assertEquals("connector",claim(candidate,List.of(),List.of(),portals,PublicRoadNetwork.rectangles(List.of()),true).code());
-        assertEquals("guildPortal",claim(candidate,List.of(),roads,List.of(),network,true).code());
+        assertTrue(claim(candidate,List.of(),roads,List.of(),network,true).valid());
         var occupied=new Anchor(UUID.randomUUID(),candidate.rect(),Scope.PUBLIC,null,true);
         assertEquals("overlap",claim(candidate,List.of(occupied),roads,portals,network,true).code());
     }
@@ -31,7 +31,8 @@ class HousingRulesTest {
         var rect=new PlotRect(82,0,24,24);
         var portals=List.of(new PlotRect(-10,0,1,1)); var roads=List.of(new PlotRect(82,-5,24,1));
         assertTrue(claim(new Candidate(rect,Scope.GUILD_MEMBER,guild,false,5),List.of(root,member),List.of(),portals).valid());
-        assertFalse(claim(new Candidate(rect,Scope.PUBLIC,null,false,0),List.of(root,member),roads,portals).valid());
+        assertTrue(claim(new Candidate(rect,Scope.PUBLIC,null,false,0),List.of(root,member),roads,List.of()).valid());
+        assertFalse(claim(new Candidate(rect,Scope.PUBLIC,null,false,0),List.of(root,member),List.of(),portals).valid());
         assertFalse(claim(new Candidate(rect,Scope.GUILD_MEMBER,UUID.randomUUID(),false,5),List.of(root,member),roads,portals).valid());
         assertFalse(claim(new Candidate(rect,Scope.GUILD_MEMBER,guild,false,5),List.of(member),roads,portals).valid());
     }

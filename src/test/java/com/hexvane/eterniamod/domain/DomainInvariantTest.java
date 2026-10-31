@@ -93,8 +93,8 @@ class DomainInvariantTest {
         op=services.journal().find(operation).orElseThrow();services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);services.housing().activate(owner,operation);assertEquals(0,services.ownership().available(owner,HousingService.MOVE_CREDIT));
     }
     @Test void loginAfterCrashDoesNotAccrueOfflineHours(){
-        UUID player=account("Mira");clock.advance(Duration.ofSeconds(30));services.accounts().heartbeat(player);clock.advance(Duration.ofHours(12));services.accounts().recordAuthenticatedLogin(player,"Mira");
-        clock.advance(Duration.ofSeconds(30));services.accounts().heartbeat(player);assertEquals(60,services.accounts().stats(player).orElseThrow().playtimeSeconds());
+        UUID player=account("Mira");clock.advance(Duration.ofHours(12));services.accounts().recordAuthenticatedLogin(player,"Mira");
+        clock.advance(Duration.ofSeconds(30));services.accounts().recordDisconnect(player);assertEquals(30,services.accounts().stats(player).orElseThrow().playtimeSeconds());
     }
     @Test void exactDepartureDeadlineCannotBeCancelledByLateRejoin(){
         UUID leader=account("Leader"),member=account("Member");UUID guild=services.guilds().create(leader,"Guild","create").id();services.guilds().acceptInvite(member,services.guilds().invite(leader,member));
@@ -113,6 +113,14 @@ class DomainInvariantTest {
         assertEquals(1,services.ownership().available(Owner.player(player),"eternia:gift"));services.commerce().requestCancellation("tebex","sub","cancel");assertTrue(services.ownership().owns(Owner.player(player),"eternia:supporter"));
         clock.advance(Duration.ofDays(31));services.commerce().expireSubscriptions();assertFalse(services.ownership().owns(Owner.player(player),"eternia:supporter"));assertEquals(1,services.ownership().available(Owner.player(player),"eternia:gift"));
         services.commerce().reverse(purchase.id(),"refund","Requested refund");assertEquals(0,services.ownership().available(Owner.player(player),"eternia:gift"));
+    }
+    @Test void collectionDefinitionCanCorrectItsAssetButNotWhatItIs(){
+        var collection=services.collection();
+        collection.register(new CollectionService.Definition("eternia:jacket","Jacket",CollectionService.Kind.WEARABLE,"overtop","Jacket.Blue"));
+        collection.register(new CollectionService.Definition("eternia:jacket","Jacket",CollectionService.Kind.WEARABLE,"overtop","Jacket.Blue.Default"));
+        collection.register(new CollectionService.Definition("eternia:jacket","Jacket",CollectionService.Kind.WEARABLE,"overtop","Jacket.Blue.Default"));
+        assertEquals("Jacket.Blue.Default",collection.definitions().stream().filter(d->d.id().equals("eternia:jacket")).findFirst().orElseThrow().assetId());
+        assertThrows(DomainException.class,()->collection.register(new CollectionService.Definition("eternia:jacket","Jacket",CollectionService.Kind.WEARABLE,"cape","Jacket.Blue.Default")));
     }
     @Test void petHasOneAssignmentAndProvenanceKeepsGuildOwner(){
         UUID player=account("Mira");var home=home(player,0);services.collection().register(new CollectionService.Definition("eternia:pet","Prowl",CollectionService.Kind.PET,"","Prowl"));var grant=quantity(player,"eternia:pet",2,"pets");var one=services.collection().materializePet(Owner.player(player),grant.id(),0);var two=services.collection().materializePet(Owner.player(player),grant.id(),1);

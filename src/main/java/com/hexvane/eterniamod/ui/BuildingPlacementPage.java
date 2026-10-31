@@ -462,7 +462,7 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
                 if (!ref.isValid()) {
                     return;
                 }
-                if (tryPlace(ref, store)) {
+                if (tryPlace(ref, store) != PlacementResult.FAILED) {
                     PlayerRef pr = store.getComponent(ref, PlayerRef.getComponentType());
                     UUIDComponent uc = store.getComponent(ref, UUIDComponent.getComponentType());
                     if (pr != null) {
@@ -483,23 +483,25 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
         );
     }
 
-    private boolean tryPlace(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
+    private enum PlacementResult { PLACED, RECOVERY_REQUIRED, FAILED }
+
+    private PlacementResult tryPlace(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
         EterniaModPlugin plugin = EterniaModPlugin.get();
         UUIDComponent uc = store.getComponent(ref, UUIDComponent.getComponentType());
         if (plugin == null || uc == null) {
-            return false;
+            return PlacementResult.FAILED;
         }
         World world = store.getExternalData().getWorld();
         HubPlotManager plotManager = EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin);
         HubPlotRecord plot = plotManager.getPlot(session.getPlotId());
         if (plot == null) {
             sendError(store, ref, Message.translation("eterniamod_common.eterniamod.common.notInPlot"));
-            return false;
+            return PlacementResult.FAILED;
         }
         BuildingDefinition def = plugin.getBuildingCatalog().get(session.getBuildingId());
         if (def == null) {
             sendError(store, ref, Message.translation("eterniamod_common.eterniamod.common.unknownBuilding"));
-            return false;
+            return PlacementResult.FAILED;
         }
         String errKey =
             BuildingPlacementValidator.preview(
@@ -507,17 +509,22 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
             );
         if (errKey != null) {
             sendError(store, ref, Message.translation("eterniamod_common.eterniamod.common." + errKey));
-            return false;
+            return PlacementResult.FAILED;
         }
         if (!BuildingPlacementCommit.place(ref, store, session, plugin)) {
+            if(com.hexvane.eterniamod.housing.HousingAccess.locked(plugin,plot)) {
+                sendError(store,ref,Message.raw("House placement was interrupted. Open /e myplots, choose Manage, then Recover placement to finish it."));
+                // End the preview and reset its camera. Recovery owns the saved placement now.
+                return PlacementResult.RECOVERY_REQUIRED;
+            }
             sendError(store, ref, Message.translation("eterniamod_common.eterniamod.common.placeFailed"));
-            return false;
+            return PlacementResult.FAILED;
         }
         PlayerRef pr = store.getComponent(ref, PlayerRef.getComponentType());
         if (pr != null) {
             pr.sendMessage(Message.translation("eterniamod_common.eterniamod.common.buildingPlaced"));
         }
-        return true;
+        return PlacementResult.PLACED;
     }
 
     private void refreshPreview(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
