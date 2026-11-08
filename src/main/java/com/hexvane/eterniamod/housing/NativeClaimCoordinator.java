@@ -150,6 +150,13 @@ public final class NativeClaimCoordinator {
         if(replay.isEmpty()) {
             var verdict=HexClaimCheck.validate(plugin,world,actor,cells.cells(),scope,paid);
             if(!verdict.valid())return HexCommitResult.refused(verdict);
+            // A packed home is set down whole on a same shape placement through the relocation journal.
+            var eligibility=ClaimEligibility.load(services,actor,scope,paid);var packed=eligibility.slot();
+            if(packed!=null&&packed.state()==HousingService.State.PACKED) {
+                try{plugin.getRelocation().restoreCells(world,actor,eligibility.owner(),packed.operationId(),cells,groundY,scope);}
+                catch(RuntimeException e){return HexCommitResult.failed(HexPlotText.plots("claim.restoreFailed","Your home could not be set down here: {reason}","reason",String.valueOf(e.getMessage())),packed.propertyId().toString());}
+                return HexCommitResult.success(HexPlotText.plots("claim.restored","Your home is back! It stands on its new hexagons."),packed.propertyId().toString(),verdict);
+            }
             // Baseline before the durable reservation: a failure here leaves nothing to recover.
             var probe=new HubPlotRecord(property,world.getName(),HubPlotFootprint.forCells(cells,groundY),null);
             com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator.captureBaseline(plugin,world,probe);
@@ -225,6 +232,9 @@ public final class NativeClaimCoordinator {
     private void applyExpansion(World world,HousingService.PendingExpansion pending) {
         var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);
         if(applyExpansion(plugin.getServices().housing(),pending,manager::getPlot,manager::updatePlot))manager.saveIfDirty();
+        // Record the new hexagons' ground so a grown plot can still be packed (idempotent).
+        var plot=manager.getPlot(pending.propertyId());
+        if(plot!=null&&plot.getCells()!=null)com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator.extendBaseline(plugin,world,plot);
     }
 
     /**
