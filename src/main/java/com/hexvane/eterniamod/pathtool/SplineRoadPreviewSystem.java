@@ -47,9 +47,22 @@ final class SplineRoadPreviewSystem extends EntityTickingSystem<EntityStore> {
                 if(!columns.contains(new SplineGeometry.Column(x,z+1)))line(playerRef,x,y,z+1,x+1,y,z+1,color);
                 if(invalid.containsKey(c.column())&&marked++<128)line(playerRef,x+.25,y,z+.25,x+.75,y,z+.75,RED);
             }
-
+            hexGrid(playerRef,session,store.getExternalData().getWorld(),position,cells);
         }catch(Exception error){session.message=error.getMessage()==null?"Adjust the nodes to make a supported road":error.getMessage();if(player.getHudManager().getCustomHud(SplineRoadTool.HUD) instanceof SplineRoadHud hud)hud.refresh(session);}
     }
+    /** Hex worlds: the grid around the builder, street and new street hexagons, and each row's middle line. */
+    private static void hexGrid(PlayerRef playerRef,SplineRoadTool.Session session,com.hypixel.hytale.server.core.universe.world.World world,org.joml.Vector3d position,List<SplineGeometry.Cell> road){
+        var view=position==null?null:com.hexvane.eterniamod.hexplots.HexLand.view(world).orElse(null);
+        if(view==null){session.hexNote="";return;}
+        var claimed=new HashSet<>(view.land().owners().keySet());claimed.addAll(view.reservedCells());
+        var columns=new ArrayList<int[]>();for(var c:road)columns.add(new int[]{c.x(),c.z()});
+        var overlay=RoadLatticePreview.of(view.lattice(),view.streetCells(),claimed,columns,position.x,position.z,2);
+        session.hexNote=overlay.summary();
+        double y=Math.floor(position.y)+.12;
+        for(var cell:overlay.cells()){var k=view.lattice().corners(cell.cell());var color=rgb(cell.tone().rgb());for(int i=0;i<6;i++){var a=k[i];var b=k[(i+1)%6];line(playerRef,a[0],y,a[1],b[0],y,b[1],color);}}
+        for(double mz:overlay.rowMiddles())for(double x=Math.floor(position.x)-48;x<position.x+48;x+=8)line(playerRef,x,y+.02,mz,x+4,y+.02,mz,IVORY);
+    }
+    private static Vector3f rgb(int value){return new Vector3f(((value>>16)&255)/255f,((value>>8)&255)/255f,(value&255)/255f);}
     private static void nodes(PlayerRef playerRef,SplineRoadTool.Session session){
         for(int i=0;i<session.nodes.size();i++){var n=session.nodes.get(i);var color=i==session.selected?GOLD:IVORY;if(i==session.selected){nodeLine(playerRef,n.x(),n.y()+.1,n.z(),n.x(),n.y()+1.7,n.z(),GOLD);for(int edge=0;edge<4;edge++){double a=edge*Math.PI/2,b=(edge+1)*Math.PI/2;nodeLine(playerRef,n.x()+.8*Math.cos(a),n.y()+.08,n.z()+.8*Math.sin(a),n.x()+.8*Math.cos(b),n.y()+.08,n.z()+.8*Math.sin(b),GOLD);}}double y=n.y()+(i==session.selected?.65:.45);double radius=i==session.selected?.5:.3;nodeLine(playerRef,n.x()-radius,y,n.z(),n.x(),y+radius,n.z(),color);nodeLine(playerRef,n.x(),y+radius,n.z(),n.x()+radius,y,n.z(),color);nodeLine(playerRef,n.x()+radius,y,n.z(),n.x(),y-radius,n.z(),color);nodeLine(playerRef,n.x(),y-radius,n.z(),n.x()-radius,y,n.z(),color);nodeLine(playerRef,n.x(),y,n.z()-radius,n.x(),y+radius,n.z(),color);nodeLine(playerRef,n.x(),y+radius,n.z(),n.x(),y,n.z()+radius,color);nodeLine(playerRef,n.x(),y,n.z()+radius,n.x(),y-radius,n.z(),color);nodeLine(playerRef,n.x(),y-radius,n.z(),n.x(),y,n.z()-radius,color);}
     }
