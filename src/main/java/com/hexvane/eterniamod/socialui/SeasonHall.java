@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /** The Banner Hall season screens: one hanging banner per pass, and a pass page with every level on one track. */
-final class SeasonHall {
+public final class SeasonHall {
     private SeasonHall() {}
 
     static final int TRACK_WIDTH = 900, TILE_WIDTH = 84, TILE_HEIGHT = 96;
@@ -21,7 +21,7 @@ final class SeasonHall {
     private static final Map<String, String> COLORS = Map.of("Hearth", "#d8b66b", "Tide", "#6fc3cf", "Ember", "#e58b5a", "Grove", "#93c47d");
     private static final Map<String, String> KNOWN = Map.of("eternia:foundations", "Hearth");
 
-    record Banner(String id, String name, String style, boolean active, boolean paid, int level, int maxLevel, long intoLevel, long levelSpan, long toNext,
+    public record Banner(String id, String name, String style, boolean active, boolean paid, int level, int maxLevel, long intoLevel, long levelSpan, long toNext,
                   String nextLabel, String nextName, String nextContent, int ready) {}
     record Tile(int level, boolean free, String name, String contentId, String state, String route) {}
     record Quest(String name, String goal, long count, long total, long xp) {}
@@ -34,7 +34,7 @@ final class SeasonHall {
         return KNOWN.getOrDefault(seasonId, STYLES[Math.floorMod(seasonId.hashCode(), STYLES.length)]);
     }
 
-    static Banner banner(SeasonService.Definition season, SeasonService.Progress progress, Set<SeasonService.Reward> claimed, Function<String, String> names) {
+    public static Banner banner(SeasonService.Definition season, SeasonService.Progress progress, Set<SeasonService.Reward> claimed, Function<String, String> names) {
         var thresholds = season.thresholds();
         int max = thresholds.size(), level = progress.level();
         long previous = level == 0 ? 0 : thresholds.get(level - 1), next = level < max ? thresholds.get(level) : previous;
@@ -151,7 +151,8 @@ final class SeasonHall {
         }
     }
 
-    private static void fillBanner(UICommandBuilder c, String selector, Banner banner) {
+    /** Fills one appended SeasonBanner.ui; the Gatehouse desk shares it with the Journal. */
+    public static void fillBanner(UICommandBuilder c, String selector, Banner banner) {
         boolean complete = banner.level() >= banner.maxLevel();
         c.setObject(selector + " #BanArt.Background", new PatchStyle(Value.of("EterniaMod/SeasonArt/Banner" + banner.style() + (banner.active() ? "Active" : "") + ".png")));
         c.set(selector + " #BanStatus.Text", (banner.active() ? "Active" : "Paused") + " · " + (banner.paid() ? "Premium" : "Free"));

@@ -12,6 +12,7 @@ Choose a named character for the corresponding service. Minigames opens its Comi
 | Nima Quicktail | Market Broker | Feran with fox coat, poncho and top fur |
 | Lyra Starweave | Royal Quartermaster | Elf with styled hair, green shirt and boots |
 | Pip Coppercap | Games Master | Goblin with hermit hat, coat and beard |
+| Varek Dawnmantle | Gate Warden | Outlander with a hunter's cape, braided beard and red-brown hair; keeps the season passes and bounty board at the Gatehouse |
 
 Names and professions appear above each character on one line, for example **Prowl [Eternia Guide]**. Avoid newlines in native nameplates: this client renders them as an unsupported glyph. The native **Use** interaction displays the player's current bound key and a translated “Speak with…” hint. Roles also explicitly request the native prompt; no key name is embedded in the text. Managed NPCs created by older versions update their model, nameplate and persistent interaction hint as their entities load. Existing positions, service roles and managed UUIDs remain intact. Opening the character's management page retries an interrupted presentation refresh.
 

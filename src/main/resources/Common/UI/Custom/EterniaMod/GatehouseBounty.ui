@@ -1,0 +1,19 @@
+$T = "Theme/Citadel.ui";
+Group { Anchor: (Height: 92, Bottom: 8); Background: $T.@CodexCardSurface; Padding: (Horizontal: 16, Top: 10, Bottom: 12); LayoutMode: Top;
+Group { Anchor: (Height: 24); LayoutMode: Left;
+Label #BtyName { FlexWeight: 1; Style: (FontSize: 16, TextColor: $T.@Text, RenderBold: true, VerticalAlignment: Center); }
+Label #BtyReward { Anchor: (Width: 120, Left: 8); Style: (FontSize: 15, TextColor: $T.@Primary, RenderBold: true, HorizontalAlignment: End, VerticalAlignment: Center); }
+}
+Group { Anchor: (Height: 22, Bottom: 6); LayoutMode: Left;
+Label #BtyGoal { FlexWeight: 1; Style: (FontSize: 14, TextColor: $T.@Muted, VerticalAlignment: Center); }
+Group { Anchor: (Width: 18, Height: 18, Top: 2, Left: 12, Right: 6); Background: "Icons/coins.png"; }
+Label #BtyCoins { Style: (FontSize: 14, TextColor: $T.@Primary, HorizontalAlignment: End, VerticalAlignment: Center); }
+}
+Group { Anchor: (Height: 18); LayoutMode: Left;
+Group { FlexWeight: 1; Anchor: (Height: 8, Top: 5, Right: 12); Padding: (Full: 1); LayoutMode: Left; Background: #45615d;
+Group #BtyFill { FlexWeight: 1; Background: $T.@Accent; }
+Group #BtyRest { FlexWeight: 1; Background: #101e22; }
+}
+Label #BtyCount { Anchor: (Width: 72, Height: 18); Style: (FontSize: 13, TextColor: $T.@Muted, HorizontalAlignment: End, VerticalAlignment: Center); }
+}
+}

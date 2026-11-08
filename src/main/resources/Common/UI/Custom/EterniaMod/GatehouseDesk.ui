@@ -1,0 +1,52 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+@CardTitle = LabelStyle(FontName: "Secondary", FontSize: 22, TextColor: $T.@Text, RenderBold: true, VerticalAlignment: Center);
+Group { FlexWeight: 1; LayoutMode: Top;
+Group { Anchor: (Height: 96, Bottom: 20); LayoutMode: Left; Background: $T.@JournalInsetSurface; Padding: (Horizontal: 20, Vertical: 14);
+Group { Anchor: (Width: 68, Height: 68, Right: 18); Background: $T.@IconTilePrimarySurface;
+Group { Anchor: (Width: 42, Height: 42); Background: "Icons/season.png"; }
+}
+Label #GateGreeting { FlexWeight: 1; Style: (FontSize: 19, TextColor: $T.@Text, Wrap: true, VerticalAlignment: Center); }
+Label #GateStatus { Anchor: (Width: 420, Left: 18); Style: (FontSize: 15, TextColor: $T.@Accent, RenderBold: true, Wrap: true, HorizontalAlignment: End, VerticalAlignment: Center); }
+}
+Group { FlexWeight: 1; LayoutMode: Left;
+Group { FlexWeight: 1; Anchor: (Right: 20); Background: $T.@JournalPanelSurface; Padding: (Horizontal: 24, Top: 20, Bottom: 16); LayoutMode: Top;
+Group { Anchor: (Height: 36, Bottom: 10); LayoutMode: Left;
+Label { FlexWeight: 1; Text: "Season passes"; Style: @CardTitle; }
+Label #PassCount { Anchor: (Width: 560); Style: (...$T.@MutedStyle, FontSize: 15, HorizontalAlignment: End, VerticalAlignment: Center); }
+}
+Group #GatePasses { FlexWeight: 1; LayoutMode: LeftScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+Group #GateEmpty { Visible: false; FlexWeight: 1; LayoutMode: Middle;
+Group { Anchor: (Height: 260); LayoutMode: Top; Background: $T.@CodexCardSurface; Padding: (Full: 32);
+Group { Anchor: (Width: 84, Height: 84, Bottom: 18); Background: $T.@IconTileSurface;
+Group { Anchor: (Width: 52, Height: 52); Background: "Icons/seasonMuted.png"; }
+}
+Label { Anchor: (Height: 32, Bottom: 8); Text: "No season has opened yet"; Style: (FontName: "Secondary", FontSize: 22, TextColor: $T.@Text, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+Label #GateEmptyText { Anchor: (Height: 52); Style: (FontSize: 16, TextColor: $T.@Muted, Wrap: true, HorizontalAlignment: Center); }
+}
+}
+}
+Group { Anchor: (Width: 560); LayoutMode: Top;
+Group { FlexWeight: 1; Anchor: (Bottom: 20); Background: $T.@JournalPanelSurface; Padding: (Horizontal: 24, Top: 20, Bottom: 20); LayoutMode: Top;
+Group { Anchor: (Height: 36, Bottom: 2); LayoutMode: Left;
+Group { Anchor: (Width: 32, Height: 32, Top: 2, Right: 12); Background: "Icons/quests.png"; }
+Label { FlexWeight: 1; Text: "Bounty board"; Style: @CardTitle; }
+Label #BountyOpen { Anchor: (Width: 180); Style: (FontSize: 15, TextColor: $T.@Primary, RenderBold: true, HorizontalAlignment: End, VerticalAlignment: Center); }
+}
+Label #BountyPass { Anchor: (Height: 22, Bottom: 12); Style: (FontSize: 14, TextColor: $T.@Accent, RenderBold: true, RenderUppercase: true, VerticalAlignment: Center); }
+Group #BountyList { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+$T.@SecondaryTextButton #BountyAll { Anchor: (Height: 44, Top: 12); Text: "Open the quest log"; }
+}
+Group { Anchor: (Height: 132); Background: $T.@CodexCardSurface; Padding: (Full: 18); LayoutMode: Left;
+Group { Anchor: (Width: 64, Height: 64, Top: 16, Right: 16); Background: $T.@IconTilePrimarySurface;
+Group { Anchor: (Width: 40, Height: 40); Background: "Icons/crown.png"; }
+}
+Group { FlexWeight: 1; LayoutMode: Middle;
+Label #PremiumTitle { Anchor: (Height: 26, Bottom: 4); Style: (FontSize: 17, TextColor: $T.@Primary, RenderBold: true, VerticalAlignment: Center); }
+Label #PremiumText { Anchor: (Height: 44); Style: (FontSize: 14, TextColor: $T.@Muted, Wrap: true); }
+}
+$T.@TextButton #PremiumBuy { Anchor: (Width: 168, Height: 44, Top: 30, Left: 14); Text: "Crown Store"; }
+}
+}
+}
+}

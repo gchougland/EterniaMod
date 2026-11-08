@@ -9,7 +9,8 @@ public enum HubNpcIdentity {
     GUILD("Eternia_Guild","Torren Ironbough","Guild Marshal","Eternia_Guild_Marshal","guild"),
     SHOP("Eternia_Shop","Nima Quicktail","Market Broker","Eternia_Market_Broker","shop"),
     STORE("Eternia_Store","Lyra Starweave","Royal Quartermaster","Eternia_Royal_Quartermaster","store"),
-    MINIGAME("Eternia_Minigame","Pip Coppercap","Games Master","Eternia_Games_Master","minigame");
+    MINIGAME("Eternia_Minigame","Pip Coppercap","Games Master","Eternia_Games_Master","minigame"),
+    GATEHOUSE("Eternia_Gatehouse","Varek Dawnmantle","Gate Warden","Eternia_Gatehouse_Warden","gatehouse"){@Override public String hint(){return "eternia_gatehouse.interact";}};
     public static final int REVISION=2;
     private final String role,name,profession,model,key;
     HubNpcIdentity(String role,String name,String profession,String model,String key){this.role=role;this.name=name;this.profession=profession;this.model=model;this.key=key;}

@@ -1,0 +1,131 @@
+# Gatehouse (wave 1): Varek Dawnmantle, the season pass keeper
+
+A seventh Hub character. **Varek Dawnmantle [Gate Warden]**, an Outlander who keeps the season passes and the bounty
+board at the Gatehouse, the gate that will one day lead to Castle Aeterna. Talking to him opens his desk.
+
+## What was built
+
+- **Identity**: `HubNpcIdentity.GATEHOUSE` (role `Eternia_Gatehouse`, model `Eternia_Gatehouse_Warden`, prompt key
+  `eternia_gatehouse.interact`). Because the setup menu lists every identity, admins can place him with
+  **/e admin setup → Hub services → Place Varek Dawnmantle · Gate Warden** exactly like the others.
+- **Role** `Server/NPC/Roles/Eternia/Eternia_Gatehouse.json`: copy of the other Hub roles (invulnerable, still, watches
+  players, native Use prompt), opening section `SEASON`.
+- **Model** `Server/Models/Eternia/Eternia_Gatehouse_Warden.json`: vanilla `Outlander_Hunter` body, chest, legs and
+  cape, unhooded, Outlander face and ears, Berserker haircut and DoubleBraid beard in `Hair/BrownDark`, no random
+  attachments. Picture: `notes/pictures/gatehouse/varek-model.png`. No new textures or Blockbench work were needed.
+- **Desk** (`gatehouse/GatehouseDesk` + `GatehouseDesk.ui`, `GatehousePass.ui`, `GatehouseBounty*.ui`), inside the
+  normal Citadel services frame (same header, wallet, Journal button, Esc Goodbye):
+  - Varek's greeting (changes with the player's state: no seasons, no active pass, rewards waiting, otherwise) and the
+    result of the last action in the same strip.
+  - **Season passes**: every pass as its Journal banner (`SeasonBanner.ui` filled by `SeasonHall.fillBanner`, so level,
+    progress, next reward and "N to claim" are the Journal's own). Under each: **Claim N** (claims every reached
+    reward on that pass in one click, premium too when owned) and **Make active** (one click), or an "Earning XP" chip
+    on the active pass. Clicking a banner opens the existing pass view (full track, single claims, quests);
+    Back and "All passes" return to Varek's desk.
+  - **Bounty board**: the active pass's quests split into Daily / Weekly / Season with "New in 5 hours" style resets,
+    XP and Coins per bounty, progress bars, done ones last; "Open the quest log" opens the pass's quest view.
+  - **Premium card**: "Unlock the premium track" with a **Crown Store** button (`external:STORE_OPEN`, the same Crown
+    Store Lyra opens; premium passes are sold there under Season passes). Owned: "Premium track is yours". The card
+    already supports a "not on sale yet" state (disabled button with its own label and a sale sentence), unused until
+    season sales are merged (see REQUESTS).
+- **Welcome text**: lang keys `eternia_gatehouse.welcome.title` ("The Gatehouse") and `.subtitle` ("Varek keeps the
+  season passes and the bounty board") for the step-inside title; no prefab was changed (see builder steps below).
+  Prowl's Getting started page now names Varek too.
+- **Tests**: `GatehouseBoardTest` (page model: states, greeting, ready counts, bounty split, reset wording, no dashes),
+  `GatehouseActionsTest` (switching keeps progress, only the active pass earns, claim all is once only, premium only
+  when owned; real SeasonService on InMemoryStore), `GatehouseDeskTest` (child JVM like the other native tests: routes
+  bound per state, nothing bound while busy, closed gate, every addressed id exists; writes the commands to
+  `build/gatehouse-ui/*.json`), `GatehouseIdentityTest` (role, model, prompt `{key}`, NPC opens his desk, other desks
+  unchanged). `tests/hytale/gatehouse-desk.test.json` renders the six states from those Java commands with goldens.
+
+## Pictures (all from the commands the Java sends, captured by `GatehouseDeskTest`)
+
+`notes/pictures/gatehouse/`: `desk-several-active.png` (3 passes, one active, rewards to claim, status after a switch),
+`desk-overfull.png` (6 passes, long names, 9 bounties, huge numbers), `desk-one-not-active.png`, `desk-empty.png`
+(no seasons), `desk-premium-upcoming.png` (premium not on sale yet), `desk-several-busy.png` (while working),
+`varek-model.png`. Judged and fixed: coins icon floated mid row (moved next to the amount), long pass names in the
+bounty header and premium title (header split, title shortened), mojibake was only the render case's file encoding.
+
+## What an admin does in game
+
+1. `/e admin setup` in the Hub world → **Hub services** → **Place Varek Dawnmantle · Gate Warden**.
+2. Aim at level, dry ground inside the registered plaza (the town plaza covers the whole walled town). Suggested spot:
+   just inside the **south gate** (the King's Road gate, town coordinates about x 7, z 93 from the town anchor, beside
+   the passage, off the road), facing the passage. Confirm. He can be moved later with **Manage**.
+
+## Town builder (not done, on purpose)
+
+`TownPlan.npcs` places NPCs at fixed heights from the town anchor, but the walls and gates follow the hills, so a fixed
+y at a gate is not clean, and the plan is generated by the local, untracked `tools/prefabs/town-plan-export.mjs`. To add
+him to `/e admin town place` later:
+- `town-plan-export.mjs` `npcs`: add `{ role: 'GATEHOUSE', at: [7, <y>, 93], facing: 'west' }` once the gate's ground
+  height relative to the anchor is known (or teach `TownBuilder.services` to drop the NPC to the ground like
+  `ManagedHubServices` does), then `node tools/prefabs/Eternia_Old_Town.build.mjs --plan`.
+- Welcome title: in `tools/prefabs/Eternia_Gatehouse.build.mjs` before `return p;` add
+  `p.trigger({ region: [[-3, 0, -8], [3, 3, -7]], name: 'gatehouse_welcome', tags: { Eternia_Hub: 'Gatehouse_Welcome' }, effects: [{ Type: 'ShowEventTitle', Event: 'ENTER', PrimaryTitle: 'eternia_gatehouse.welcome.title', SecondaryTitle: 'eternia_gatehouse.welcome.subtitle', Style: 'Default', Duration: 3, Recipient: 'TriggeringPlayer' }] });`
+  (inner mouth only, so it greets people coming to the gate from town), then rebuild the kit and `Eternia_Kit_Turned`
+  and `finalize-dir.ps1 Hub/Kit/Turned`. Check for `.bak` editor saves first; none existed for the gatehouse kit on
+  2026-11-07. Towns already placed need the trigger added in the prefab editor or a re-place.
+
+## SHARED EDITS
+
+- `setup/HubNpcIdentity.java`: one enum constant `GATEHOUSE(...)` with its own `hint()` (`eternia_gatehouse.interact`,
+  so `eternia_services.lang` is untouched). `REVISION` not bumped (no existing appearance changed).
+- `socialui/EterniaServicesPage.java` (all additive):
+  - `Desk.GATEHOUSE(HubNpcIdentity.GATEHOUSE, "season", List.of(Section.SEASON), Set.of(STORE_OPEN))`;
+    `Desk.forNpc`: `case SEASON -> GATEHOUSE`.
+  - `tabs()`: SEASON "All passes" goes to `desk_home` on the Gatehouse desk.
+  - `buildDeskHome`: Gatehouse branch appends `GatehouseDesk.ui` and calls `GatehouseDesk.render`.
+  - `handleDataEvent`: routes `gate_view:` and `gate_quests`; `mutate`: `gate_activate:` and `gate_claim:` (delegate to
+    `gatehouse/GatehouseActions`).
+  - `deskView`: `case GATEHOUSE` loads `GatehouseBoard`; `View` record gains a trailing `gate` component (+ `gate()`).
+  - Prowl's Getting started row names Varek.
+- `socialui/SeasonHall.java` (not in the contract list, but nobody else owns it this wave): `class`, `Banner`,
+  `banner(...)` and `fillBanner(...)` made `public` so the desk reuses the Journal banners instead of copying them.
+- `src/test/.../setup/HubNpcIdentityTest.java`: count 6 → 7 and test renamed.
+- `docs/implementation/managed-hub-services.md`: one roster row for Varek.
+- No plugin setup line was needed (the NPC action and page are the existing ones). `SocialUiBootstrap` unchanged.
+
+## CHANGELOG
+
+- Varek Dawnmantle, an Outlander who keeps the Gatehouse, now looks after season passes. See all your passes at once,
+  switch your active pass or claim every reward with one click, take on daily and weekly bounties, and find the premium
+  track in the Crown Store.
+
+## STATUS
+
+- Gatehouse (2026-11-07): Varek Dawnmantle [Gate Warden], role `Eternia_Gatehouse`, desk `Desk.GATEHOUSE` in
+  `EterniaServicesPage` rendered by `gatehouse/GatehouseDesk` from `GatehouseBoard`. Verified: build and tests (405),
+  `asset_validate` 0 errors / 35 warnings (same as main), `ui_check_java` 0 errors / 115 warnings (none in Gatehouse
+  files), six `ui_render` states from the real commands, model render. Not seen in the client: the NPC, his prompt,
+  the desk, scrolling the bounty list and the banner row with many passes, hover states, the Crown Store hand off.
+  Not placed in the town plan; no welcome trigger in any prefab yet.
+- Desk tests that need `UICommandBuilder` run in a child JVM (Hytale's log manager), like `WorldDisplayNamesTest`.
+
+## DECISIONS
+
+- Name and title: **Varek Dawnmantle, Gate Warden** (cast pattern: given name + nature surname; "Dawnmantle" for an
+  Outlander who turned toward the light). Look: unhooded Outlander Hunter with cape, red-brown hair and braided beard,
+  so he reads as an Outlander yet friendly (the hooded hunter mask looked hostile).
+- The desk is a `Desk` of `EterniaServicesPage`, not a separate page class: it gets the frame, wallet, async loading,
+  the pass view, claims and activation for free. The Gatehouse owns only the desk home and its model.
+- The Journal keeps its own Seasons section; Varek's desk is the place to manage passes in the Hub.
+- Passes keep their published order (no jumping when switching); the active one is marked by banner art and chip.
+- "Claim N" claims every reached reward on a pass in one go (new); single claims stay in the pass view.
+- Premium goes through the Crown Store (as today), not a website link.
+
+## REQUESTS
+
+1. **Season sales merge (coordinator)**: the premium card already takes a sale state. In `GatehouseBoard.load`, after
+   `of(...)`, replace the premium with
+   `premium.sale(SeasonSaleText.note(status), status.purchasable() ? "" : SeasonSaleText.closedButton(status.state()))`
+   where `status = seasons.saleStatus(premium.passId())` (names from `wave/season-sales`: `SeasonService.saleStatus`,
+   `SaleStatus.purchasable()`, `SeasonSaleText.note/closedButton`). `desk-premium-upcoming.png` shows the result.
+2. **Season sales request 1 (their notes)**, in my file `EterniaServicesPage.seasonView`: after merge replace
+   `(current.paid() ? " Both tracks are yours." : " The premium pass unlocks the second track.")` with
+   `(current.paid() ? " Both tracks are yours." : " The premium pass unlocks the second track. " + com.hexvane.eterniamod.seasonsales.SeasonSaleText.note(services.seasons().saleStatus(current.id())))`.
+   Not applied here: the API is not on this branch and would not compile. Check the pass view subtitle height with a
+   long note after merge.
+3. Crown Store: an `open(..., category)` on `PremiumShopPage` (season-sales owns `premium/**`) would let the premium
+   button land on "Season passes" directly. Today it opens on All.
+4. A player test in the client: talk to Varek, switch passes, claim, open the quest log and the Crown Store.

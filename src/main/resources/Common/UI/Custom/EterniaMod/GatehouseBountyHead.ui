@@ -1,0 +1,5 @@
+$T = "Theme/Citadel.ui";
+Group { Anchor: (Height: 30, Top: 4, Bottom: 6); LayoutMode: Left;
+Label #BtyHeadName { FlexWeight: 1; Style: (FontSize: 14, TextColor: $T.@Primary, RenderBold: true, RenderUppercase: true, VerticalAlignment: Center); }
+Label #BtyHeadReset { Anchor: (Width: 220); Style: (FontSize: 13, TextColor: $T.@Muted, HorizontalAlignment: End, VerticalAlignment: Center); }
+}

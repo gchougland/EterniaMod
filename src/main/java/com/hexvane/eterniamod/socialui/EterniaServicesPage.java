@@ -45,14 +45,15 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             SocialUiActions.Action.HOUSING_INVENTORY, SocialUiActions.Action.ARCHITECT_LEDGER)),
         MARSHAL(HubNpcIdentity.GUILD, "guild", List.of(Section.GUILD), Set.of(SocialUiActions.Action.GUILD_HOUSING)),
         BROKER(HubNpcIdentity.SHOP, "market", List.of(Section.SHOP), Set.of(SocialUiActions.Action.SHOP_MANAGE, SocialUiActions.Action.ITEM_DESK, SocialUiActions.Action.TRADE_DESK)),
-        GAMES(HubNpcIdentity.MINIGAME, "games", List.of(Section.COMING_SOON), Set.of());
+        GAMES(HubNpcIdentity.MINIGAME, "games", List.of(Section.COMING_SOON), Set.of()),
+        GATEHOUSE(HubNpcIdentity.GATEHOUSE, "season", List.of(Section.SEASON), Set.of(SocialUiActions.Action.STORE_OPEN));
         final HubNpcIdentity identity; final String emblem; final List<Section> sections; final Set<SocialUiActions.Action> actions;
         Desk(HubNpcIdentity identity, String emblem, List<Section> sections, Set<SocialUiActions.Action> actions) {
             this.identity = identity; this.emblem = emblem; this.sections = sections; this.actions = actions;
         }
         /** The desk a Hub NPC's role opens; sections without an NPC of their own belong to the Journal. */
         public static Desk forNpc(Section section) {
-            return switch (section) { case GREETER, WORLDS -> GUIDE; case HOUSING -> STEWARD; case GUILD -> MARSHAL; case SHOP -> BROKER; case COMING_SOON -> GAMES; default -> JOURNAL; };
+            return switch (section) { case GREETER, WORLDS -> GUIDE; case HOUSING -> STEWARD; case GUILD -> MARSHAL; case SHOP -> BROKER; case COMING_SOON -> GAMES; case SEASON -> GATEHOUSE; default -> JOURNAL; };
         }
         /** The desk a menu shortcut in code reaches: personal sections open the Journal, trades open their NPC's desk. */
         public static Desk forShortcut(Section section) {
@@ -204,7 +205,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private List<Tab> tabs(){return switch(section){
         case GUILD->view.title.equals("Find your guild")||view.title.equals("Loading")?List.of():List.of(new Tab("Members","back","members",mode.isEmpty()||mode.equals("member")),new Tab("Roles","guild_roles","title",mode.startsWith("role")),new Tab("Notice board","guild_board","board",false),new Tab("Guild estate","external:GUILD_HOUSING","charter",false));
         case MAIL->List.of(new Tab("Inbox","back","mail",!mode.equals("compose")),new Tab("Write a letter","mail_compose","quests",mode.equals("compose")),new Tab("Deliveries","external:ITEM_DESK","parcel",false));
-        case SEASON->focus.isEmpty()?List.of():List.of(new Tab("Rewards","season_rewards","season",!mode.equals("quests")),new Tab("Quests","season_quests","quests",mode.equals("quests")),new Tab("All passes","back","back",false));
+        case SEASON->focus.isEmpty()?List.of():List.of(new Tab("Rewards","season_rewards","season",!mode.equals("quests")),new Tab("Quests","season_quests","quests",mode.equals("quests")),new Tab("All passes",desk==Desk.GATEHOUSE?"desk_home":"back","back",false));
         case COLLECTION->{
             String current=mode.isEmpty()?"houses":mode.equals("pet")?"pets":mode;
             String[][] categories={{"Houses","housing"},{"Decorations","furnishing"},{"Materials","palette"},{"Titles","title"},{"Wardrobe","wardrobe"},{"Pets","pet"},{"Mounts","mount"},{"Upgrades","addition"}};
@@ -227,6 +228,12 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
 
     private void buildDeskHome(UICommandBuilder commands, UIEventBuilder events, Ref<EntityStore> ref, Store<EntityStore> store) {
         commands.set("#SideBar.Visible", false);
+        if (desk == Desk.GATEHOUSE && view.gate != null) {
+            commands.append("#ServicesBody", com.hexvane.eterniamod.gatehouse.GatehouseDesk.DOCUMENT);
+            com.hexvane.eterniamod.gatehouse.GatehouseDesk.render(commands, view.gate, (selector, route) -> bind(events, selector, route), busy, status);
+            if (initialLoad) { initialLoad = false; store.getExternalData().getWorld().execute(()->{if(!isDismissed()&&ref.isValid())refresh(ref, store, "");}); }
+            return;
+        }
         commands.append("#ServicesBody", "EterniaMod/ServicesDesk.ui");
         commands.set("#DeskGreeting.TextSpans", Message.raw(view.description));
         commands.set("#DeskStatus.TextSpans", Message.raw(busy ? "Working…" : status));
@@ -318,6 +325,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (route.startsWith("cap:")) { String capability = route.substring(4); if (draftCapabilities == null || !EDITABLE_CAPABILITIES.contains(capability)) return;
             if (!draftCapabilities.add(capability)) draftCapabilities.remove(capability); refresh(ref, store, "Draft updated; save to apply permissions."); return; }
         if (route.startsWith("mail_read:")) { mode = "message"; focus = route.substring(10); page = 0; runDomain(ref, store, "mail_mark", input()); return; }
+        if (route.startsWith("gate_view:")) { section = Section.SEASON; deskHome = false; mode = "rewards"; focus = route.substring(10); page = 0; refresh(ref, store, ""); return; }
+        if (route.equals("gate_quests") && view.gate != null && view.gate.bounties() != null) { section = Section.SEASON; deskHome = false; mode = "quests"; focus = view.gate.bounties().passId(); page = 0; refresh(ref, store, ""); return; }
         if (route.startsWith("season_view:")) { mode = "rewards"; focus = route.substring(12); page = 0; refresh(ref, store, ""); return; }
         if (route.equals("season_quests")) { mode = "quests"; page = 0; refresh(ref, store, ""); return; }
         if (route.equals("season_rewards")) { mode = "rewards"; page = 0; refresh(ref, store, ""); return; }
@@ -421,6 +430,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                     services.collection().materializePet(Owner.player(actor), parts[0], Long.parseLong(parts[1]));
                     return "Pet added to your collection. Open Pets to choose its assignment.";
                 }
+                if (route.startsWith("gate_activate:")) return com.hexvane.eterniamod.gatehouse.GatehouseActions.activate(services.seasons(), actor, route.substring(14));
+                if (route.startsWith("gate_claim:")) return com.hexvane.eterniamod.gatehouse.GatehouseActions.claimAll(services.seasons(), actor, route.substring(11));
                 if (route.startsWith("reward:")) {
                     String[] reward = route.substring(7).split(":");
                     services.seasons().claimReward(actor, input.focus, SeasonService.Track.valueOf(reward[0]), Integer.parseInt(reward[1]), Integer.parseInt(reward[2]));
@@ -456,7 +467,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 Row.info("Walk near a plot edge to see its low, glowing boundary. Claim previews show placement reasons."),
                 Row.info("Guilds share a house and can grow a neighborhood of member plots."),
                 Row.info("Select a season pass and earn progress through normal play. Old seasons never expire."),
-                Row.info("Bramble Hearthleaf helps with plots and homes. Torren Ironbough handles guilds. Nima Quicktail runs the market."),
+                Row.info("Bramble Hearthleaf helps with plots and homes. Torren Ironbough handles guilds. Nima Quicktail runs the market. Varek Dawnmantle keeps the season passes at the Gatehouse."),
                 Row.info("Press O any time to open your Journal: mail, guild, quests, seasons and your collection.")),
                 noFields(), buttons("Starter toolkit", "intro_toolkit", "Travel", "external:WORLD_SELECT", "", ""), null);
             case HOUSING -> {
@@ -524,6 +535,12 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 new Tile("My shop", "Stock your shelves and set your prices.", "storage", "external:SHOP_MANAGE", false),
                 new Tile("Item desk", "Collect deliveries and stored items.", "parcel", "external:ITEM_DESK", false),
                 new Tile("Trade with a player", "Swap items and coins safely.", "trade", "external:TRADE_DESK", false)));
+            case GATEHOUSE -> {
+                var names = new HashMap<String,String>();
+                services.collection().definitions().forEach(item -> names.put(item.id(), item.name()));
+                var board = com.hexvane.eterniamod.gatehouse.GatehouseBoard.load(services.seasons(), id -> names.getOrDefault(id, UiPresentation.contentName(id)), actor, Instant.now());
+                yield View.desk(board.greeting(), List.of()).gate(board);
+            }
             case GAMES -> View.desk("Minigames are on their way! Until then, your home and season pass are ready for you.", List.of(
                 new Tile("Minigames", "Coming soon.", "games", "", true)));
             case JOURNAL -> throw new IllegalStateException("The Journal has no desk home.");
@@ -733,12 +750,13 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private record Input(String one, String two, String three, String mode, String focus, Set<String> capabilities) {}
     private record Request(Section section, Input input, Desk desk, boolean home) {}
     private record Tile(String title,String detail,String icon,String route,boolean primary) {}
-    private record View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role,String document,long progress,long progressTotal,String progressLabel,List<Tile> tiles,SeasonHall.Screen season) {
-        View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role){this(title,description,rows,fields,buttons,role,"",0,0,"",List.of(),null);}
-        View document(String value){return new View(title,description,rows,fields,buttons,role,value,progress,progressTotal,progressLabel,tiles,season);}
-        View season(SeasonHall.Screen value){return new View(title,description,rows,fields,buttons,role,document,progress,progressTotal,progressLabel,tiles,value);}
-        static View desk(String greeting,List<Tile> tiles){return new View("",greeting,List.of(),noFields(),EterniaServicesPage.buttons("","","","","",""),null,"",0,0,"",tiles,null);}
-        View progress(SeasonService.Progress value){return new View(title,description,rows,fields,buttons,role,document,value.xp(),value.totalXp(),"Level "+value.level()+"  ·  "+value.xp()+" / "+value.totalXp()+" XP"+(value.active()?"  ·  Active pass":""),tiles,season);}
+    private record View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role,String document,long progress,long progressTotal,String progressLabel,List<Tile> tiles,SeasonHall.Screen season,com.hexvane.eterniamod.gatehouse.GatehouseBoard gate) {
+        View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role){this(title,description,rows,fields,buttons,role,"",0,0,"",List.of(),null,null);}
+        View document(String value){return new View(title,description,rows,fields,buttons,role,value,progress,progressTotal,progressLabel,tiles,season,gate);}
+        View season(SeasonHall.Screen value){return new View(title,description,rows,fields,buttons,role,document,progress,progressTotal,progressLabel,tiles,value,gate);}
+        View gate(com.hexvane.eterniamod.gatehouse.GatehouseBoard value){return new View(title,description,rows,fields,buttons,role,document,progress,progressTotal,progressLabel,tiles,season,value);}
+        static View desk(String greeting,List<Tile> tiles){return new View("",greeting,List.of(),noFields(),EterniaServicesPage.buttons("","","","","",""),null,"",0,0,"",tiles,null,null);}
+        View progress(SeasonService.Progress value){return new View(title,description,rows,fields,buttons,role,document,value.xp(),value.totalXp(),"Level "+value.level()+"  ·  "+value.xp()+" / "+value.totalXp()+" XP"+(value.active()?"  ·  Active pass":""),tiles,season,gate);}
         static View empty(String title, String description) { return new View(title, description, List.of(), noFields(), EterniaServicesPage.buttons("Retry", "refresh", "", "", "", ""), null); }
     }
     private record Loaded(View view, String notice) {}
