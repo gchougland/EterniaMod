@@ -66,7 +66,9 @@ public final class NativePlacementTransactions {
         if(min[0]==Integer.MAX_VALUE)throw new IllegalStateException("Empty prefab");
         var bounds=new NativeSnapshotStore.Bounds(origin.x+min[0],origin.y+min[1],origin.z+min[2],origin.x+max[0]+1,origin.y+max[1]+1,origin.z+max[2]+1);
         // Existing entities are never overwritten as a side effect of an ordinary placement.
-        var before=nativeStore.save(operation+"-before.json",bounds,nativeStore.capture(world,bounds,Set.of(),true,false));
+        // Hex plots: the object box may reach past a stair edge; only the plot's own columns are read and written.
+        var cells=plot.getCells();
+        var before=nativeStore.save(operation+"-before.json",bounds,cells,nativeStore.capture(world,bounds,ColumnMask.of(cells),Set.of(),true,false));
         BlockSelection desired=SelectionPrefabSerializer.deserialize(before.document());
         buffer.forEach(IPrefabBuffer.iterateAllColumns(),(x,y,z,b,h,s,r,f,t,fluid,level)->{
             if(!house&&b==0&&f==0&&fluid==0)return;
@@ -91,7 +93,7 @@ public final class NativePlacementTransactions {
             if(!yaw.name().equals(packed.nativeData().get("yaw"))||!sameBounds)throw new IllegalStateException("Packed object must retain its original orientation and catalog bounds");
             desiredDocument=before.document().clone();NativeRelocationCoordinator.overlay(desiredDocument,savedContent);
         }
-        var after=nativeStore.save(operation+"-after.json",bounds,desiredDocument);
+        var after=nativeStore.save(operation+"-after.json",bounds,cells,desiredDocument);
         var journal=plugin.getServices().journal();
         var op=journal.prepare(operation,house?"PLACE_HOUSE":"PLACE_PROP",owner,plot.getPlotId().toString());
         String source;
@@ -137,16 +139,16 @@ public final class NativePlacementTransactions {
         }
         var placedAfter=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));
         var mask=NativeRelocationCoordinator.difference(placedAfter.document(),before.document());
-        var captured=store.capture(world,b,Set.of(instanceId),true,false);
+        var captured=store.capture(world,b,before.mask(),Set.of(instanceId),true,false);
         NativeDecorativeEntities.requireIdentity(placedAfter.document(),captured,instanceId);
         NativeRelocationCoordinator.requireSameBlocks(captured,placedAfter.document(),mask);
         if(item.owner().kind()==Owner.Kind.GUILD&&!item.owner().equals(owner(plot)))NativeRelocationCoordinator.requireEmptyGuildContainers(NativeRelocationCoordinator.onlyCapturedCells(captured,mask));
-        UUID operation=UUID.randomUUID();var packed=store.save(operation+"-pickup.json",b,NativeRelocationCoordinator.onlyCapturedCells(captured,mask));
-        var restore=store.save(operation+"-pickup-before.json",b,NativeRelocationCoordinator.onlyCapturedCells(before.document(),mask));
+        UUID operation=UUID.randomUUID();var packed=store.save(operation+"-pickup.json",b,before.cells(),NativeRelocationCoordinator.onlyCapturedCells(captured,mask));
+        var restore=store.save(operation+"-pickup-before.json",b,before.cells(),NativeRelocationCoordinator.onlyCapturedCells(before.document(),mask));
         // Recovery locks the edited property; provenance retains the distinct inventory owner.
         var op=services.journal().prepare(operation,"PICKUP",owner(plot),plot.getPlotId().toString());op=services.journal().attachVerifiedSnapshot(operation,op.revision(),packed.file().reference(),packed.file().sha256());
         try {
-            for(var ref:NativeSnapshotStore.entities(world,b)){
+            for(var ref:NativeSnapshotStore.entities(world,b,before.mask())){
                 var link=world.getEntityStore().getStore().getComponent(ref,EterniaPlacedInstance.getComponentType());
                 if(link!=null&&link.getInstanceId().equals(instanceId))NativeDecorativeEntities.remove(world,ref);
             }

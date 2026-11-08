@@ -32,7 +32,7 @@ public final class NativeShopTravel {
         var visit=guests.get(player.getUuid());var ref=player.getReference();if(visit==null||ref==null||!ref.isValid())throw new IllegalStateException("You have no current shop visit to return from.");
         var store=ref.getStore();var world=store.getExternalData().getWorld();var t=store.getComponent(ref,TransformComponent.getComponentType());
         var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).getPlot(visit.property);
-        if(t==null||plot==null||!world.getName().equals(visit.shopWorld)||!NativeHousingChecks.rect(plot.getFootprint()).contains((int)Math.floor(t.getPosition().x),(int)Math.floor(t.getPosition().z)))throw new IllegalStateException("Return from the shop plot where this visit began.");
+        if(t==null||plot==null||!world.getName().equals(visit.shopWorld)||!plot.containsColumn((int)Math.floor(t.getPosition().x),(int)Math.floor(t.getPosition().z)))throw new IllegalStateException("Return from the shop plot where this visit began.");
         plugin.getTravel().returnFromShop(player,visit.originWorld,new Vector3d(visit.origin)).thenAccept(ok->{if(ok)guests.remove(player.getUuid(),visit);else player.sendMessage(com.hypixel.hytale.server.core.Message.raw("The return point is obstructed. Your shop doors remain usable; try returning after the obstruction is cleared."));});
     }
     private record Destination(MarketService.Listing listing,World world,HubPlotRecord plot,Vector3d point){}
@@ -40,7 +40,7 @@ public final class NativeShopTravel {
         store.assertThread();var identity=store.getComponent(ref,PlayerRef.getComponentType());if(identity==null||!identity.getUuid().equals(buyer.getUuid()))throw new IllegalStateException("Player location is unavailable.");
         var listing=listing(plugin,listingId);var world=store.getExternalData().getWorld();var destination=destination(plugin,listing,world);
         var position=store.getComponent(ref,TransformComponent.getComponentType());
-        if(position==null||!NativeHousingChecks.rect(destination.plot.getFootprint()).contains((int)Math.floor(position.getPosition().x),(int)Math.floor(position.getPosition().z))||position.getPosition().distanceSquared(destination.point)>144)
+        if(position==null||!destination.plot.containsColumn((int)Math.floor(position.getPosition().x),(int)Math.floor(position.getPosition().z))||position.getPosition().distanceSquared(destination.point)>144)
             throw new IllegalStateException("Visit this house's shop entrance before purchasing.");
         return listing;
     }
@@ -64,7 +64,7 @@ public final class NativeShopTravel {
                         var current=destination(plugin,listing(plugin,listingId),target);if(!current.plot.getPlotId().equals(first.plot.getPlotId())||current.point.distanceSquared(p)>0.01){result.complete(false);return;}
                         Vector3d safe=null;for(int radius=0;radius<=2&&safe==null;radius++)for(int dx=-radius;dx<=radius&&safe==null;dx++)for(int dz=-radius;dz<=radius&&safe==null;dz++){
                             int x=(int)Math.floor(p.x)+dx,y=(int)Math.floor(p.y),z=(int)Math.floor(p.z)+dz;
-                            for(int dy:new int[]{0,1,-1,2,-2,3,-3})if(NativeHousingChecks.rect(current.plot.getFootprint()).contains(x,z)&&safe(plugin,target,x,y+dy,z)){safe=new Vector3d(x+.5,y+dy,z+.5);break;}
+                            for(int dy:new int[]{0,1,-1,2,-2,3,-3})if(current.plot.containsColumn(x,z)&&safe(plugin,target,x,y+dy,z)){safe=new Vector3d(x+.5,y+dy,z+.5);break;}
                         }
                         if(safe==null){result.complete(false);return;}Vector3d arrival=safe;var ref=buyer.getReference();if(ref==null||!ref.isValid()){result.complete(false);return;}
                         var store=ref.getStore();store.getExternalData().getWorld().execute(()->{

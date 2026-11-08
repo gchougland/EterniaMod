@@ -57,8 +57,9 @@ public final class FailedPropRecovery {
         if(!before.bounds().equals(after.bounds())||!before.document().getArray("entities",new BsonArray()).isEmpty()||!after.document().getArray("entities",new BsonArray()).isEmpty())return 0;
         var bounds=before.bounds();
         for(int x=bounds.minX();x<bounds.maxX();x++)for(int z=bounds.minZ();z<bounds.maxZ();z++)
-            if(!plot.getFootprint().containsHorizontal(x,z)||plugin.getInfrastructure().protectedColumn(world.getName(),x,z))return 0;
-        var actual=snapshots.capture(world,bounds,Set.of(),true,false);
+            if(before.mask().contains(x,z)&&(!plot.getFootprint().containsHorizontal(x,z)||plugin.getInfrastructure().protectedColumn(world.getName(),x,z)))return 0;
+        if(!java.util.Objects.equals(before.cells(),after.cells()))return 0;
+        var actual=snapshots.capture(world,bounds,before.mask(),Set.of(),true,false);
         var comparison=NativeSnapshotStore.comparisonDocument(actual);
         boolean restored=comparison.equals(NativeSnapshotStore.comparisonDocument(before.document()));
         if(!restored&&!comparison.equals(NativeSnapshotStore.comparisonDocument(after.document())))

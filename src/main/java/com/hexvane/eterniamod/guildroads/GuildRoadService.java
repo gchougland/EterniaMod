@@ -53,12 +53,12 @@ final class GuildRoadService {
         var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).getPlot(property);
         if(plot==null||!actor.equals(plot.getOwnerUuid())||plot.getGuildOwnerUuid()!=null||plot.getAttachedGuildUuid()==null||!plot.getAttachedGuildUuid().equals(membership(actor)))throw new IllegalStateException("Only the current attached plot owner can change its road easement");
         NativePlacementTransactions.requireActive(plugin,plot);
-        if(!allow&&roads().stream().anyMatch(r->r.world().equals(world.getName())&&r.rectangle().overlaps(NativeHousingChecks.rect(plot.getFootprint()))))throw new IllegalStateException("Remove intersecting road segments before revoking this easement");
+        if(!allow&&roads().stream().anyMatch(r->r.world().equals(world.getName())&&com.hexvane.eterniamod.housing.PlotAreas.overlaps(plot,r.rectangle())))throw new IllegalStateException("Remove intersecting road segments before revoking this easement");
         registry.easement(property,plot.getAttachedGuildUuid(),allow);
     }
     private boolean canRemove(World world,UUID actor,Road road){
         if(canManage(actor,road.guild()))return true;
-        return EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots().stream().anyMatch(p->actor.equals(p.getOwnerUuid())&&p.getGuildOwnerUuid()==null&&road.guild().equals(p.getAttachedGuildUuid())&&road.rectangle().overlaps(NativeHousingChecks.rect(p.getFootprint())));
+        return EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots().stream().anyMatch(p->actor.equals(p.getOwnerUuid())&&p.getGuildOwnerUuid()==null&&road.guild().equals(p.getAttachedGuildUuid())&&com.hexvane.eterniamod.housing.PlotAreas.overlaps(p,road.rectangle()));
     }
     List<CustomizationCatalog.PathStyle> styles(UUID guild){return plugin.getServices().batch(()->catalog.paths().stream().filter(s->s.id().equals("cobblestone")||plugin.getServices().ownership().owns(Owner.guild(guild),"eternia:path/"+s.id())).toList());}
     UUID guild(UUID actor){UUID guild=plugin.getServices().guilds().membership(actor).orElseThrow(()->new IllegalStateException("Join a guild to manage its roads")).guildId();if(!plugin.getServices().guilds().can(actor,guild,CAPABILITY))throw new IllegalStateException("Guild road permission is required");return guild;}
@@ -100,8 +100,8 @@ final class GuildRoadService {
     }
     /** Complete intersecting segments are returned to terrain before any plot baseline is compared. */
     synchronized void beforePack(World world,HubPlotRecord plot)throws Exception{
-        world.getEntityStore().getStore().assertThread();var rect=NativeHousingChecks.rect(plot.getFootprint());
-        for(var road:roads().stream().filter(r->r.world().equals(world.getName())&&(r.rectangle().overlaps(rect)||plot.getGuildOwnerUuid()!=null&&plot.getGuildOwnerUuid().equals(r.guild()))).toList()){
+        world.getEntityStore().getStore().assertThread();
+        for(var road:roads().stream().filter(r->r.world().equals(world.getName())&&(com.hexvane.eterniamod.housing.PlotAreas.overlaps(plot,r.rectangle())||plot.getGuildOwnerUuid()!=null&&plot.getGuildOwnerUuid().equals(r.guild()))).toList()){
             if(road.state()!=State.ACTIVE)throw new IllegalStateException("Recover the interrupted guild road before this property can move");
             remove(world,road);
         }
@@ -109,7 +109,7 @@ final class GuildRoadService {
     }
     private void remove(World world,Road current)throws Exception{
         publicClear(world,current.rectangle());boolean recovering=current.state()!=State.ACTIVE;
-        for(var plot:EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots())if(current.rectangle().overlaps(NativeHousingChecks.rect(plot.getFootprint()))){var owner=HousingAccess.owner(plot);var slot=owner==null?null:plugin.getServices().housing().find(owner).orElse(null);if(slot==null||slot.state()!=HousingService.State.ACTIVE||!slot.propertyId().equals(plot.getPlotId()))throw new IllegalStateException("An intersecting property is moving or requires recovery; retain the road until that operation is resolved");}
+        for(var plot:EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots())if(com.hexvane.eterniamod.housing.PlotAreas.overlaps(plot,current.rectangle())){var owner=HousingAccess.owner(plot);var slot=owner==null?null:plugin.getServices().housing().find(owner).orElse(null);if(slot==null||slot.state()!=HousingService.State.ACTIVE||!slot.propertyId().equals(plot.getPlotId()))throw new IllegalStateException("An intersecting property is moving or requires recovery; retain the road until that operation is resolved");}
         var before=files().load(current.before());var after=files().load(current.after());
         scoped(world,current,()->{var actual=files().capture(world,before.bounds(),Set.of(),false,false);if(recovering)requireKnown(actual,before.document(),after.document());else requireSame(actual,after.document());return null;});
         var journal=plugin.getServices().journal();var road=current.state(State.REMOVING,recovering?current.operation():UUID.randomUUID());
@@ -148,10 +148,10 @@ final class GuildRoadService {
             return Map.copyOf(result);
         });
         for(var plot:plots){
-            var rect=NativeHousingChecks.rect(plot.getFootprint());var state=data.get(plot.getPlotId());var slot=state.slot();boolean member=state.member();
+            var rects=com.hexvane.eterniamod.housing.PlotAreas.rects(plot);var state=data.get(plot.getPlotId());var slot=state.slot();boolean member=state.member();
             boolean consent=guild.equals(plot.getGuildOwnerUuid())||actor.equals(plot.getOwnerUuid())||registry.easement(plot.getPlotId(),guild);
             boolean usable=member&&consent&&slot!=null&&slot.state()==HousingService.State.ACTIVE&&slot.propertyId().equals(plot.getPlotId())&&!state.locked();
-            if(usable)zone.add(rect);else forbidden.add(rect);
+            if(usable)zone.addAll(rects);else forbidden.addAll(rects);
             for(var item:state.instances())if(item.state().equals("PLACED")){
                 var image=files().load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));var b=image.bounds();var objectRect=new PlotRect(b.minX(),b.minZ(),b.maxX()-b.minX(),b.maxZ()-b.minZ());
                 boolean structure="HOUSE".equals(item.nativeData().get("kind"));var prop=plugin.getPropCatalog().get(item.nativeData().get("catalog"));structure|=prop!=null&&"addition".equals(prop.getCategory());

@@ -27,7 +27,7 @@ public final class NativeSmoke {
             throw new IllegalStateException("Native smoke requires a fresh isolated local file store without PostgreSQL");
         plugin.getEventRegistry().register(BootEvent.class, event -> {
             CompletableFuture.runAsync(() -> run(plugin)).orTimeout(360, TimeUnit.SECONDS).whenComplete((unused, failure) -> {
-                if (failure == null) { plugin.getLogger().atInfo().log("ETERNIA_NATIVE_SMOKE_PASS: housing policy, claim, native house/palette/path/props, pack, elevation restore, guild hall and mixed-owner custody, policy restoration"); HytaleServer.get().shutdownServer(); }
+                if (failure == null) { plugin.getLogger().atInfo().log("ETERNIA_NATIVE_SMOKE_PASS: housing policy, claim, native house/palette/path/props, pack, elevation restore, guild hall and mixed-owner custody, hex plot moves, policy restoration"); HytaleServer.get().shutdownServer(); }
                 else { plugin.getLogger().atSevere().withCause(failure).log("ETERNIA_NATIVE_SMOKE_FAIL"); HytaleServer.get().shutdownServer(ShutdownReason.CRASH.withMessage(Message.raw("Eternia native smoke failed"))); }
             });
         });
@@ -74,6 +74,7 @@ public final class NativeSmoke {
                 NativeGuildSmoke.exercise(plugin,world);result.complete(null);
             } catch(Throwable failure) { result.completeExceptionally(failure); }});
             result.join();
+            NativeHexSmoke.run(plugin);
             Files.writeString(plugin.getDataDirectory().resolve("housing-infrastructure.json"),new Gson().toJson(new HousingInfrastructure.FileData(1,Map.of())));plugin.getInfrastructure().load();
             com.hexvane.eterniamod.customization.HousingWorldPolicy.refreshAll().join();
             if(!previousGameplay.equals(world.getWorldConfig().getGameplayConfig())||!previousTickers.equals(world.getWorldConfig().getDisabledFluidTickers()))throw new IllegalStateException("Removing the housing role did not restore prior native world policy");

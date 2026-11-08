@@ -64,9 +64,15 @@ public final class HexClaimCheck {
         if (eligibility.scope() != HousingRules.Scope.GUILD_ROOT && !manager.listPlotsForOwner(eligibility.actor()).isEmpty())
             return HexClaimRules.Result.of(HexClaimRules.Reason.LEGACY);
         UUID guild = eligibility.guild();
+        Set<HexCoord> anchors = eligibility.scope() == HousingRules.Scope.GUILD_MEMBER ? view.guildLand(guild) : Set.of();
+        // A packed plot is set down again: its own shape in the same turn, not a new start shape (relocation seam).
+        if (eligibility.slot() != null && eligibility.slot().state() == HousingService.State.PACKED) {
+            PlotCells packed = eligibility.location() == null ? null : eligibility.location().cells();
+            if (packed == null) return HexClaimRules.Result.of(HexClaimRules.Reason.PACKED);
+            return com.hexvane.eterniamod.housing.relocation.HexRelocation.check(view.land(), eligibility.hexKind(), packed, cells, anchors);
+        }
         boolean guildHasEstate = guild != null && manager.listPlots().stream().anyMatch(p -> guild.equals(p.getGuildOwnerUuid()));
         var candidate = new HexClaimRules.Candidate(eligibility.hexKind(), eligibility.paid(), eligibility.members(), guildHasEstate, plugin.getRuntimeConfig().local());
-        Set<HexCoord> anchors = eligibility.scope() == HousingRules.Scope.GUILD_MEMBER ? view.guildLand(guild) : Set.of();
         return HexClaimRules.claim(view.land(), candidate, cells, anchors, HexPlotSettings.current());
     }
 
@@ -76,8 +82,9 @@ public final class HexClaimCheck {
      * CLAIMING and the journal PREPARED; the native adapter must then add the plot projection, advance the journal
      * to WORLD_APPLIED and activate (exactly the tail of {@link NativeClaimCoordinator#claim}).
      *
-     * <p>Packed plots are not restored here (relocation seam): a packed owner gets {@link HexClaimRules.Reason#PACKED}
-     * and must go through the relocation restore path.
+     * <p>Packed plots are not reserved here: {@link #validate} answers for them with the restore rule (same shape, same
+     * turn), and a valid packed owner gets {@link HexClaimRules.Reason#PACKED} from this method, which means "set it
+     * down with {@code NativeRelocationCoordinator.restoreCells}" (it reserves through the restore journal instead).
      */
     public static HousingService.HexOutcome reserve(EterniaModPlugin plugin, World world, UUID actor, Collection<HexCoord> cells, HousingRules.Scope scope, boolean paid, UUID propertyId, UUID operationId) {
         Objects.requireNonNull(propertyId);

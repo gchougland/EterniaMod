@@ -149,20 +149,41 @@ public final class InfrastructureSetup {
         com.hexvane.eterniamod.pathtool.SplineRoadTool.validateConnections(world.getName(),after);
         var splineNames=new HashSet<String>();if(before!=null)splineNames.addAll(before.areas().keySet());splineNames.addAll(after.areas().keySet());
         for(String id:splineNames)if(id.startsWith("spline-")&&!Objects.equals(before==null?null:before.areas().get(id),after.areas().get(id)))throw input("Edit authored spline roads with the Road Designer so terrain and protection stay synchronized.");
+        var claimSet=claims(plugin,world);
+        var pending=new ArrayList<>(com.hexvane.eterniamod.setup.paving.RoadPaving.protectedRects(world.getName()));
+        pending.addAll(com.hexvane.eterniamod.guildroads.GuildRoads.roadRects(world.getName()));
+        pending.addAll(com.hexvane.eterniamod.pathtool.SplineRoadTool.pendingRects(world.getName()));
+        try{InfrastructureRules.validate(before,after,claimSet.rects(),claimSet.hex(),pending,com.hexvane.eterniamod.pathtool.SplineRoadTool.roadNetwork(world.getName(),before),com.hexvane.eterniamod.pathtool.SplineRoadTool.roadNetwork(world.getName(),after));ManagedHubServices.validateInfrastructure(world,after);}catch(IllegalArgumentException failure){throw input(failure.getMessage());}
+        if(after.arrival()!=null&&(before==null||!Objects.equals(before.arrival(),after.arrival())))requireSafeArrival(world,after.arrival());
+    }
+    /** Rectangle and hex plots of a world (native projection plus durable rows) for the setup strand checks. World thread. */
+    public record ClaimSet(List<HousingRules.Anchor> rects,List<InfrastructureRules.HexClaim> hex) {}
+    public static ClaimSet claims(EterniaModPlugin plugin,World world) {
         var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);var claims=new LinkedHashMap<UUID,HousingRules.Anchor>();
-        for(var plot:manager.listPlots())claims.put(plot.getPlotId(),new HousingRules.Anchor(plot.getPlotId(),NativeHousingChecks.rect(plot.getFootprint()),plot.getGuildOwnerUuid()!=null?HousingRules.Scope.GUILD_ROOT:plot.getAttachedGuildUuid()!=null?HousingRules.Scope.GUILD_MEMBER:HousingRules.Scope.PUBLIC,plot.getGuildOwnerUuid()!=null?plot.getGuildOwnerUuid():plot.getAttachedGuildUuid(),plot.hasBuilding()));
+        var hexClaims=new LinkedHashMap<UUID,InfrastructureRules.HexClaim>();var owners=new HashMap<UUID,Owner>();
+        for(var plot:manager.listPlots())if(plot.isHex()){if(plot.getOwnerUuid()!=null)owners.put(plot.getPlotId(),Owner.player(plot.getOwnerUuid()));var scope=plot.getGuildOwnerUuid()!=null?HousingRules.Scope.GUILD_ROOT:plot.getAttachedGuildUuid()!=null?HousingRules.Scope.GUILD_MEMBER:HousingRules.Scope.PUBLIC;hexClaims.put(plot.getPlotId(),new InfrastructureRules.HexClaim(plot.getPlotId(),"",plot.getCells(),scope,plot.getGuildOwnerUuid()!=null?plot.getGuildOwnerUuid():plot.getAttachedGuildUuid()));}
+        else claims.put(plot.getPlotId(),new HousingRules.Anchor(plot.getPlotId(),NativeHousingChecks.rect(plot.getFootprint()),plot.getGuildOwnerUuid()!=null?HousingRules.Scope.GUILD_ROOT:plot.getAttachedGuildUuid()!=null?HousingRules.Scope.GUILD_MEMBER:HousingRules.Scope.PUBLIC,plot.getGuildOwnerUuid()!=null?plot.getGuildOwnerUuid():plot.getAttachedGuildUuid(),plot.hasBuilding()));
         for(var property:plugin.getServices().housing().properties()) {
             var slot=property.slot();var location=property.location();if(location==null||!location.worldId().equals(world.getName())||slot.state()==HousingService.State.PACKED)continue;
             if(slot.state()!=HousingService.State.ACTIVE)throw input("A housing operation is unfinished in this world. Recover it before changing infrastructure.");
+            if(location.cells()!=null){
+                var hex=hexClaims.get(slot.propertyId());if(hex!=null&&!hex.cells().equals(location.cells()))throw input("A plot's saved hexagons differ from its world projection. Recover it first.");
+                hexClaims.putIfAbsent(slot.propertyId(),new InfrastructureRules.HexClaim(slot.propertyId(),"",location.cells(),slot.owner().kind()==Owner.Kind.GUILD?HousingRules.Scope.GUILD_ROOT:location.guildId()!=null?HousingRules.Scope.GUILD_MEMBER:HousingRules.Scope.PUBLIC,location.guildId()));
+                owners.put(slot.propertyId(),slot.owner());continue;
+            }
             var rect=new PlotRect(location.minX(),location.minZ(),location.width(),location.depth());var projection=claims.get(slot.propertyId());
             if(projection!=null&&!projection.rect().equals(rect))throw input("A plot's saved reservation differs from its world projection. Recover it first.");
             claims.putIfAbsent(slot.propertyId(),new HousingRules.Anchor(slot.propertyId(),rect,slot.owner().kind()==Owner.Kind.GUILD?HousingRules.Scope.GUILD_ROOT:location.guildId()!=null?HousingRules.Scope.GUILD_MEMBER:HousingRules.Scope.PUBLIC,location.guildId(),location.buildingPresent()));
         }
-        var pending=new ArrayList<>(com.hexvane.eterniamod.setup.paving.RoadPaving.protectedRects(world.getName()));
-        pending.addAll(com.hexvane.eterniamod.guildroads.GuildRoads.roadRects(world.getName()));
-        pending.addAll(com.hexvane.eterniamod.pathtool.SplineRoadTool.pendingRects(world.getName()));
-        try{InfrastructureRules.validate(before,after,List.copyOf(claims.values()),pending,com.hexvane.eterniamod.pathtool.SplineRoadTool.roadNetwork(world.getName(),before),com.hexvane.eterniamod.pathtool.SplineRoadTool.roadNetwork(world.getName(),after));ManagedHubServices.validateInfrastructure(world,after);}catch(IllegalArgumentException failure){throw input(failure.getMessage());}
-        if(after.arrival()!=null&&(before==null||!Objects.equals(before.arrival(),after.arrival())))requireSafeArrival(world,after.arrival());
+        var named=hexClaims.values().stream().map(c->new InfrastructureRules.HexClaim(c.id(),plotLabel(plugin,c,owners.get(c.id())),c.cells(),c.scope(),c.guildId())).toList();
+        return new ClaimSet(List.copyOf(claims.values()),named);
+    }
+    /** "Mira's plot at hexagon 3:1" or "the guild estate at hexagon 0:4": what an administrator needs to find it. */
+    private static String plotLabel(EterniaModPlugin plugin,InfrastructureRules.HexClaim claim,Owner owner){
+        String where=" at hexagon "+claim.cells().cells().getFirst();
+        if(claim.scope()==HousingRules.Scope.GUILD_ROOT){var guild=claim.guildId()==null?null:plugin.getServices().guilds().find(claim.guildId()).map(g->g.name()).orElse(null);return (guild==null?"a guild estate":guild+"'s guild estate")+where;}
+        String name=null;if(owner!=null&&owner.kind()==Owner.Kind.PLAYER){com.hexvane.eterniamod.hexplots.HexLand.loadNames(plugin.getServices(),List.of(owner.id()));name=com.hexvane.eterniamod.hexplots.HexLand.nameOf(owner.id());}
+        return (name==null?"a player's plot":name+"'s plot")+where;
     }
     private static void requireSafeArrival(World world,HousingInfrastructure.Point point) {
         int x=(int)Math.floor(point.x()),y=(int)Math.floor(point.y()),z=(int)Math.floor(point.z());if(y<1||y>317)throw input("Choose an arrival with supported floor and headroom height.");

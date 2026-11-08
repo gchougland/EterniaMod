@@ -27,6 +27,8 @@ public final class SplineRoadTool {
     static final class Session{
         final String world;List<SplineGeometry.Node> nodes=List.of();final Deque<List<SplineGeometry.Node>> undo=new ArrayDeque<>();int width=5,selected=-1,style;
         UUID editing,recovery,hovered;int nearby;Instant recoveryExpiry;SplineRoadService.Review review;SplineRoadService.Plan plan;String message="Aim at the ground to add a node, or select an outlined road";long revision,lastPaint,lastPlan,lastEdges,lastEdgeRevision,confirmAfter;boolean shown;
+        /** Hex worlds: one line about the street this road makes (see RoadLatticePreview). */
+        String hexNote="";
         Session(String world){this.world=world;}
         void change(List<SplineGeometry.Node> value){undo.push(nodes);while(undo.size()>32)undo.removeLast();nodes=List.copyOf(value);invalidate();}
         void invalidate(){review=null;recovery=null;plan=null;lastPaint=0;revision++;}

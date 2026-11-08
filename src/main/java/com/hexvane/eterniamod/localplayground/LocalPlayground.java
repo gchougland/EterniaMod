@@ -102,6 +102,7 @@ public final class LocalPlayground {
             ensure(plugin,actor).join();if(homes!=plugin.getServices().housing().allSlots().size()||!offers.equals(plugin.getServices().market().search("")))throw new IllegalStateException("Revisiting the playground recreated a house or listing");
             World village=Universe.get().getWorld(VILLAGE);load(village,-2,4,-2,5);on(village,()->{
                 var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(village,plugin);if(manager.listPlots().size()!=2||manager.listPlots().stream().anyMatch(p->!p.hasBuilding()))throw new IllegalStateException("Playground house and guild hall were not placed");
+                if(!HexFixtures.isHex(village)||manager.listPlots().stream().map(HubPlotRecord::getCells).anyMatch(c->c==null||c.size()!=1&&c.size()!=7)||manager.plotAtCell(SHOP_CELL)==null||manager.plotAtCell(ESTATE_CENTRE)==null)throw new IllegalStateException("Playground plots are not the sample hexagons");
                 var plot=manager.getPlot(plugin.getServices().housing().find(Owner.player(SELLER)).orElseThrow().propertyId());int x=plot.getBuilding().getAnchorX(),z=plot.getBuilding().getAnchorZ();boolean safe=false;
                 for(int dx=-2;dx<=2;dx++)for(int dz=-2;dz<=2;dz++)if(ChunkSectionBlockUtil.blockId(village,x+dx,1,z+dz)!=0&&ChunkSectionBlockUtil.blockId(village,x+dx,2,z+dz)==0&&ChunkSectionBlockUtil.blockId(village,x+dx,3,z+dz)==0)safe=true;
                 if(!safe)throw new IllegalStateException("The example shop has no clear arrival near its configured entrance");
@@ -145,7 +146,7 @@ public final class LocalPlayground {
     }
     @FunctionalInterface private interface Work {void run()throws Exception;}
     private static CompletableFuture<Void> on(World w,Work action){var result=new CompletableFuture<Void>();w.execute(()->{try{action.run();result.complete(null);}catch(Throwable e){result.completeExceptionally(e);}});return result;}
-    private static void register(EterniaModPlugin plugin,World w,String role,boolean housing,HousingInfrastructure.Point arrival,Map<String,HousingInfrastructure.Area> areas){try{var snapshot=plugin.getInfrastructure().snapshot();if(snapshot.worlds().containsKey(w.getName()))return;var plan=new HousingInfrastructure.WorldPlan(role,List.of(),List.of(),arrival,housing).withAreas(areas);plugin.getInfrastructure().saveWorld(snapshot.revision(),w.getName(),plan);}catch(java.io.IOException e){throw new java.io.UncheckedIOException(e);}}
+    private static void register(EterniaModPlugin plugin,World w,String role,boolean housing,HousingInfrastructure.Point arrival,Map<String,HousingInfrastructure.Area> areas){try{var snapshot=plugin.getInfrastructure().snapshot();if(snapshot.worlds().containsKey(w.getName()))return;var plan=HexFixtures.hex(new HousingInfrastructure.WorldPlan(role,List.of(),List.of(),arrival,housing).withAreas(areas));plugin.getInfrastructure().saveWorld(snapshot.revision(),w.getName(),plan);}catch(java.io.IOException e){throw new java.io.UncheckedIOException(e);}}
     private static void buildVillage(EterniaModPlugin plugin,World w,UUID actor)throws Exception{require(plugin,actor);if(!managedWorld(plugin,w.getName()))throw new IllegalStateException("World is not a managed playground");
         w.getWorldConfig().setSpawningNPC(false);w.getWorldConfig().markChanged();
         var existingPlan=plugin.getInfrastructure().world(w.getName());
@@ -163,18 +164,25 @@ public final class LocalPlayground {
         com.hexvane.eterniamod.pathtool.SplineRoadTool.ensureExample(w,actor);
         int n=0;for(var identity:HubNpcIdentity.values()){int x=-12+(n%3)*12,z=n<3?-10:10;ManagedHubServices.ensureNpc(plugin,w,actor,identity,x,1,z,n<3?0:(float)Math.PI);n++;}
         ManagedHubServices.ensurePortal(plugin,w,actor,16,1,0,0);
-        plugin.getRuntime().welcome(SELLER,"Iris Wren");var shop=house(plugin,w,SELLER,Owner.player(SELLER),new PlotRect(8,22,24,24),"hub_house",HousingRules.Scope.PUBLIC);
+        plugin.getRuntime().welcome(SELLER,"Iris Wren");// Hex villages: the shop takes the hexagon east of the plaza, the guild estate a flower beside the example road.
+        var shop=house(plugin,w,SELLER,Owner.player(SELLER),new PlotRect(8,22,24,24),List.of(SHOP_CELL),"hub_house",HousingRules.Scope.PUBLIC);
         placeShelf(plugin,w,shop,SELLER);
         for(String item:List.of("Ingredient_Bar_Iron","Food_Bread")){String receipt="local-playground:shop-v1:"+item;var stock=issue(plugin,SELLER,item,20,receipt);plugin.getServices().market().list(SELLER,stock.id(),item.equals("Food_Bread")?5:15,receipt+":listing");}
         plugin.getRuntime().welcome(GUILD_LEADER,"Rowan Ashford");var services=plugin.getServices();var guild=services.guilds().membership(GUILD_LEADER).map(m->services.guilds().find(m.guildId()).orElseThrow()).orElseGet(()->services.guilds().create(GUILD_LEADER,"The Lantern Company","local-playground:showcase-guild"));
         for(int i=1;i<=4;i++){UUID member=UUID.nameUUIDFromBytes(("eternia.local.guild.member."+i).getBytes(StandardCharsets.UTF_8));plugin.getRuntime().welcome(member,"Lantern Keeper "+i);if(services.guilds().membership(member).isEmpty())services.guilds().acceptInvite(member,services.guilds().invite(GUILD_LEADER,member));}
-        house(plugin,w,GUILD_LEADER,Owner.guild(guild.id()),new PlotRect(8,52,48,48),"founders_hall",HousingRules.Scope.GUILD_ROOT);
+        house(plugin,w,GUILD_LEADER,Owner.guild(guild.id()),new PlotRect(8,52,48,48),HexFixtures.flower(ESTATE_CENTRE),"founders_hall",HousingRules.Scope.GUILD_ROOT);
     }
-    private static HubPlotRecord house(EterniaModPlugin plugin,World w,UUID actor,Owner owner,PlotRect rect,String building,HousingRules.Scope scope)throws java.io.IOException{
-        var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(w,plugin);var slot=plugin.getServices().housing().find(owner).orElse(null);
-        UUID property=slot==null?plugin.getClaims().claim(w,actor,rect,0,scope,false,UUID.randomUUID()):slot.propertyId();var plot=Objects.requireNonNull(manager.getPlot(property),"Example plot is unavailable; restore its saved world before retrying");
+    /** Sample hex plots: east of the village plaza, and a guild flower whose west hexagon meets the example road. */
+    static final com.hexvane.eterniamod.hexplots.HexCoord SHOP_CELL=new com.hexvane.eterniamod.hexplots.HexCoord(1,0),ESTATE_CENTRE=new com.hexvane.eterniamod.hexplots.HexCoord(1,2);
+    /** Rectangle villages (made before hex plots) keep {@code rect}; hex villages claim {@code cells} and build on the middle one. */
+    private static HubPlotRecord house(EterniaModPlugin plugin,World w,UUID actor,Owner owner,PlotRect rect,List<com.hexvane.eterniamod.hexplots.HexCoord> cells,String building,HousingRules.Scope scope)throws java.io.IOException{
+        var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(w,plugin);var slot=plugin.getServices().housing().find(owner).orElse(null);boolean hex=HexFixtures.isHex(w);
+        UUID property=slot!=null?slot.propertyId():hex?HexFixtures.claim(plugin,w,actor,cells,scope,0):plugin.getClaims().claim(w,actor,rect,0,scope,false,UUID.randomUUID());var plot=Objects.requireNonNull(manager.getPlot(property),"Example plot is unavailable; restore its saved world before retrying");
         if(!plot.hasBuilding()){
-            var definition=plugin.getBuildingCatalog().get(building);var yaw=definition.getDefaultRotationYaw();var prefab=PrefabResolveUtil.resolvePrefabBuffer(definition.getPrefabPath());int x=rect.x()+rect.width()/2,z=rect.z()+rect.depth()/2;
+            var definition=plugin.getBuildingCatalog().get(building);var yaw=definition.getDefaultRotationYaw();var prefab=PrefabResolveUtil.resolvePrefabBuffer(definition.getPrefabPath());
+            // The first cell is the single plot's cell, or the centre of a flower (HexCoord.disk lists it first).
+            var middle=hex?HexFixtures.centre(plot.getCells().lattice(),cells.getFirst(),1):null;
+            int x=hex?middle.x:rect.x()+rect.width()/2,z=hex?middle.z:rect.z()+rect.depth()/2;
             var placement=NativePlacementTransactions.place(plugin,w,plot,actor,building,new Vector3i(x,1,z),yaw,prefab,true);
             plot.setBuilding(new HubPlotBuilding(building,x,1,z,yaw,List.of()));manager.updatePlot(plot);manager.saveIfDirty();plugin.getServices().housing().updateBuildingPresent(owner,property,true);NativePlacementTransactions.complete(plugin,placement.operation());
         }return plot;
