@@ -1,0 +1,4 @@
+npc = Varek Dawnmantle [Gate Warden]
+interact = Press [{key}] to speak with Varek Dawnmantle
+welcome.title = The Gatehouse
+welcome.subtitle = Varek keeps the season passes and the bounty board

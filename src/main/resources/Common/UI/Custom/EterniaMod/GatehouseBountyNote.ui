@@ -1,0 +1,4 @@
+$T = "Theme/Citadel.ui";
+Group { Anchor: (Height: 120, Bottom: 8); Background: $T.@CodexCardSurface; Padding: (Full: 20); LayoutMode: Middle;
+Label #BtyNoteText { Anchor: (Height: 80); Style: (FontSize: 16, TextColor: $T.@Muted, Wrap: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+}

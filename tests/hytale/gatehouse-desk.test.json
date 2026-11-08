@@ -1,0 +1,5392 @@
+{
+ "name": "gatehouse desk",
+ "steps": [
+  {
+   "tool": "asset_validate",
+   "arguments": {
+    "project": "_worktrees/EterniaMod-gatehouse"
+   },
+   "expect": {
+    "valid": true
+   }
+  },
+  {
+   "tool": "ui_render",
+   "name": "gatehouse desk: empty",
+   "arguments": {
+    "root": "projects",
+    "path": "_worktrees/EterniaMod-gatehouse/src/main/resources/Common/UI/Custom/EterniaMod/ServicesPage.ui",
+    "crop": "page",
+    "commands": [
+     {
+      "type": "Append",
+      "selector": "#CurrencyWallet",
+      "text": "EterniaMod/Wallet.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#WalletCoins.Text",
+      "data": {
+       "0": "1,250 Coins"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#WalletCrowns.Text",
+      "data": {
+       "0": "700 Crowns"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#DeskEmblem.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#Wordmark.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesTitle.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesTitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Varek Dawnmantle"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesSubtitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Gate Warden"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#DeskIcon.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/season.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#JournalShortcut.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#HintJournal.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#HintCloseText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Goodbye"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#Return.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#SideBar.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#ServicesBody",
+      "text": "EterniaMod/GatehouseDesk.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GateGreeting.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Welcome to the Gatehouse. The road beyond this gate is quiet for now. When a new season opens, its pass will be waiting for you here."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GateStatus.TextSpans",
+      "data": {
+       "0": {
+        "RawText": ""
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GateEmpty.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PassCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": ""
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GateEmptyText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Varek will have the first pass ready the moment a season begins. Your quests and rewards start then."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyAll.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyAll.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyOpen.TextSpans",
+      "data": {
+       "0": {
+        "RawText": ""
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyPass.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Closed until the first season"
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBountyNote.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[0] #BtyNoteText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Bounties are posted when a season opens."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumTitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Unlock the premium track"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Every season has a second row of rewards. It opens in the Crown Store with the season."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Crown Store"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.Disabled",
+      "data": {
+       "0": false
+      }
+     }
+    ]
+   },
+   "expect": {
+    "valid": true
+   },
+   "golden": "tests/hytale/golden/gatehouse-empty.png"
+  },
+  {
+   "tool": "ui_render",
+   "name": "gatehouse desk: one-not-active",
+   "arguments": {
+    "root": "projects",
+    "path": "_worktrees/EterniaMod-gatehouse/src/main/resources/Common/UI/Custom/EterniaMod/ServicesPage.ui",
+    "crop": "page",
+    "commands": [
+     {
+      "type": "Append",
+      "selector": "#CurrencyWallet",
+      "text": "EterniaMod/Wallet.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#WalletCoins.Text",
+      "data": {
+       "0": "1,250 Coins"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#WalletCrowns.Text",
+      "data": {
+       "0": "700 Crowns"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#DeskEmblem.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#Wordmark.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesTitle.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesTitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Varek Dawnmantle"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesSubtitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Gate Warden"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#DeskIcon.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/season.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#JournalShortcut.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#HintJournal.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#HintCloseText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Goodbye"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#Return.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#SideBar.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#ServicesBody",
+      "text": "EterniaMod/GatehouseDesk.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GateGreeting.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Welcome to the Gatehouse. One day this gate will open on the road to Castle Aeterna. Until then I keep the season passes. Choose one to start earning XP."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GateStatus.TextSpans",
+      "data": {
+       "0": {
+        "RawText": ""
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GateEmpty.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PassCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "1 pass, yours to keep. Choose one to earn XP."
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[0] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerHearth.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Paused \u00b7 Free"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "Foundations"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "0"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 30"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#d8b66b"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 1000
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "2,000 XP to level 1"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Next at level 1"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Aqua Lamp"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowImage.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/furnishing.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "0 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassActivate.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassActivate.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassEarning.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyAll.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyAll.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyOpen.TextSpans",
+      "data": {
+       "0": {
+        "RawText": ""
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyPass.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "No active pass"
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBountyNote.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[0] #BtyNoteText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Make a pass active and its daily and weekly bounties appear here."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumTitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Unlock the premium track"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "A second row of rewards on every level of Foundations, yours forever."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Crown Store"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.Disabled",
+      "data": {
+       "0": false
+      }
+     }
+    ]
+   },
+   "expect": {
+    "valid": true
+   },
+   "golden": "tests/hytale/golden/gatehouse-one-not-active.png"
+  },
+  {
+   "tool": "ui_render",
+   "name": "gatehouse desk: several-active",
+   "arguments": {
+    "root": "projects",
+    "path": "_worktrees/EterniaMod-gatehouse/src/main/resources/Common/UI/Custom/EterniaMod/ServicesPage.ui",
+    "crop": "page",
+    "commands": [
+     {
+      "type": "Append",
+      "selector": "#CurrencyWallet",
+      "text": "EterniaMod/Wallet.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#WalletCoins.Text",
+      "data": {
+       "0": "1,250 Coins"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#WalletCrowns.Text",
+      "data": {
+       "0": "700 Crowns"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#DeskEmblem.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#Wordmark.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesTitle.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesTitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Varek Dawnmantle"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesSubtitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Gate Warden"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#DeskIcon.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/season.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#JournalShortcut.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#HintJournal.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#HintCloseText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Goodbye"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#Return.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#SideBar.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#ServicesBody",
+      "text": "EterniaMod/GatehouseDesk.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GateGreeting.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Good to see you back. You have 3 rewards waiting. Claim them below, or open a banner to see every level."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GateStatus.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Tidewater is now your active pass. Your other passes keep their progress."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GateEmpty.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PassCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "3 passes, all yours to keep. Only the active one earns XP."
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[0] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerHearth.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Paused \u00b7 Free"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "Foundations"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "6"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 30"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#d8b66b"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 600
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 400
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "800 XP to level 7"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Next at level 15"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Potion Shelf"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowImage.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/furnishing.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "1 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim 1"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassActivate.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassActivate.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassEarning.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[1] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerTideActive.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Active \u00b7 Premium"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "Tidewater"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "2"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 30"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#6fc3cf"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 300
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 700
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "1,400 XP to level 3"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Next at level 5"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Wayfarer"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNext #RowImage.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/title.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "2 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassClaim.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim 2"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassClaim.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassActivate.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassActivate.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassEarning.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[2] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerEmber.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Paused \u00b7 Free"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "Emberfall"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "0"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 20"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#e58b5a"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 1000
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "2,000 XP to level 1"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Next at level 1"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Aqua Lamp"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNext #RowImage.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/furnishing.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "0 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassClaim.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassClaim.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassActivate.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassActivate.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassEarning.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyAll.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyAll.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyOpen.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "2 open"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyPass.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Tidewater"
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBountyHead.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[0] #BtyHeadName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Daily"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[0] #BtyHeadReset.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "New in 5 hours"
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "A miner's morning"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Mine 40 ore"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "+250 XP"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "100"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "18 / 40"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyFill.FlexWeight",
+      "data": {
+       "0": 450
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyRest.FlexWeight",
+      "data": {
+       "0": 550
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "On patrol"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Defeat 12 creatures"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Done"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "100"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "12 / 12"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyRest.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyFill.FlexWeight",
+      "data": {
+       "0": 1000
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyRest.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBountyHead.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[3] #BtyHeadName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Weekly"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[3] #BtyHeadReset.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "New in 29 hours"
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "A fruitful week"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Harvest 300 crops"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "+1,500 XP"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "500"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "120 / 300"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyFill.FlexWeight",
+      "data": {
+       "0": 400
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyRest.FlexWeight",
+      "data": {
+       "0": 600
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumTitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Premium track is yours"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Both reward rows of Tidewater are yours. Thank you for supporting Eternia!"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Crown Store"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.Disabled",
+      "data": {
+       "0": false
+      }
+     }
+    ]
+   },
+   "expect": {
+    "valid": true
+   },
+   "golden": "tests/hytale/golden/gatehouse-several-active.png"
+  },
+  {
+   "tool": "ui_render",
+   "name": "gatehouse desk: overfull",
+   "arguments": {
+    "root": "projects",
+    "path": "_worktrees/EterniaMod-gatehouse/src/main/resources/Common/UI/Custom/EterniaMod/ServicesPage.ui",
+    "crop": "page",
+    "commands": [
+     {
+      "type": "Append",
+      "selector": "#CurrencyWallet",
+      "text": "EterniaMod/Wallet.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#WalletCoins.Text",
+      "data": {
+       "0": "1,250 Coins"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#WalletCrowns.Text",
+      "data": {
+       "0": "700 Crowns"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#DeskEmblem.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#Wordmark.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesTitle.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesTitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Varek Dawnmantle"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesSubtitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Gate Warden"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#DeskIcon.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/season.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#JournalShortcut.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#HintJournal.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#HintCloseText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Goodbye"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#Return.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#SideBar.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#ServicesBody",
+      "text": "EterniaMod/GatehouseDesk.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GateGreeting.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Good to see you back. You have 20 rewards waiting. Claim them below, or open a banner to see every level."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GateStatus.TextSpans",
+      "data": {
+       "0": {
+        "RawText": ""
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GateEmpty.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PassCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "6 passes, all yours to keep. Only the active one earns XP."
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[0] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerHearthActive.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Active \u00b7 Premium"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "The Long Road to Castle Aeterna and Beyond"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "39"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 40"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#d8b66b"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 999
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "1 XP to level 40"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Rewards"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Ready to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "5 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim 5"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassActivate.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassActivate.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassEarning.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[1] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerHearth.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Paused \u00b7 Premium"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "Foundations"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "0"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 30"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#d8b66b"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 1000
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "2,000 XP to level 1"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Next at level 1"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Aqua Lamp"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNext #RowImage.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/furnishing.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "0 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassClaim.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassClaim.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassActivate.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassActivate.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassEarning.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[2] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerTide.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Paused \u00b7 Free"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "Tidewater Festival of Lanterns and Long Summer Nights"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "7"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 30"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#6fc3cf"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 500
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 500
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "1,000 XP to level 8"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Next at level 15"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Potion Shelf"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNext #RowImage.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/furnishing.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "2 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassClaim.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim 2"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassClaim.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassActivate.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassActivate.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassEarning.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[3] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerEmber.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Paused \u00b7 Premium"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "Emberfall"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "15"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 30"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#e58b5a"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 1000
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "2,000 XP to level 16"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Rewards"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Ready to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "5 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassClaim.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim 5"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassClaim.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassActivate.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassActivate.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[3] #PassEarning.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[4] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerGrove.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Paused \u00b7 Free"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "Frostwake"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "22"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 30"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#93c47d"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 500
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 500
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "1,000 XP to level 23"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Rewards"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Ready to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "3 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassClaim.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim 3"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassClaim.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassActivate.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassActivate.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[4] #PassEarning.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[5] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerHearth.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Paused \u00b7 Premium"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "Greenwood"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "30"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 30"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#d8b66b"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 1000
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "Every level reached"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Rewards"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Ready to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "5 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassClaim.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim 5"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassClaim.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassActivate.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassActivate.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[5] #PassEarning.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyAll.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyAll.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyOpen.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "5 open"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyPass.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "The Long Road to Castle Aeterna and Beyond"
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBountyHead.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[0] #BtyHeadName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Daily"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[0] #BtyHeadReset.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "New in 5 hours"
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Clear the King's Road"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Defeat 25 Trorks, goblins or Outlanders"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "+12,500 XP"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "1,200"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "7 / 40"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyFill.FlexWeight",
+      "data": {
+       "0": 175
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyRest.FlexWeight",
+      "data": {
+       "0": 825
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Supper for the whole town"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Harvest 150 crops"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "+12,500 XP"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "1,200"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "14 / 40"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyFill.FlexWeight",
+      "data": {
+       "0": 350
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyRest.FlexWeight",
+      "data": {
+       "0": 650
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[3] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Deep veins under the old quarry road"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[3] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Mine 80 ore from three different kinds of rock"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[3] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Done"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[3] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "1,200"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[3] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "40 / 40"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[3] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[3] #BtyRest.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[3] #BtyFill.FlexWeight",
+      "data": {
+       "0": 1000
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[3] #BtyRest.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Gathering expedition"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Gather 60 resources"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Done"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "1,200"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "40 / 40"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyRest.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyFill.FlexWeight",
+      "data": {
+       "0": 1000
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyRest.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBountyHead.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[5] #BtyHeadName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Weekly"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[5] #BtyHeadReset.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "New in 29 hours"
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[6] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Deep veins under the old quarry road (week)"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[6] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Mine 80 ore from three different kinds of rock"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[6] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "+50,000 XP"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[6] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "5,000"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[6] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "28 / 400"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[6] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[6] #BtyRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[6] #BtyFill.FlexWeight",
+      "data": {
+       "0": 70
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[6] #BtyRest.FlexWeight",
+      "data": {
+       "0": 930
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[7] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Clear the King's Road (week)"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[7] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Defeat 25 Trorks, goblins or Outlanders"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[7] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "+50,000 XP"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[7] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "5,000"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[7] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "35 / 400"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[7] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[7] #BtyRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[7] #BtyFill.FlexWeight",
+      "data": {
+       "0": 87
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[7] #BtyRest.FlexWeight",
+      "data": {
+       "0": 913
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[8] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Gathering expedition (week)"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[8] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Gather 60 resources"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[8] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "+50,000 XP"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[8] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "5,000"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[8] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "49 / 400"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[8] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[8] #BtyRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[8] #BtyFill.FlexWeight",
+      "data": {
+       "0": 122
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[8] #BtyRest.FlexWeight",
+      "data": {
+       "0": 878
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[9] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Supper for the whole town (week)"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[9] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Harvest 150 crops"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[9] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Done"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[9] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "5,000"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[9] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "400 / 400"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[9] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[9] #BtyRest.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[9] #BtyFill.FlexWeight",
+      "data": {
+       "0": 1000
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[9] #BtyRest.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBountyHead.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[10] #BtyHeadName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Season"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[10] #BtyHeadReset.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Until you finish"
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[11] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "A very long season goal name that keeps going"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[11] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Finish every bounty posted at the Gatehouse this season"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[11] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Done"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[11] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "10,000"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[11] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "1 / 1"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[11] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[11] #BtyRest.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[11] #BtyFill.FlexWeight",
+      "data": {
+       "0": 1000
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[11] #BtyRest.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumTitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Premium track is yours"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Both reward rows of The Long Road to Castle Aeterna and Beyond are yours. Thank you for supporting Eternia!"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Crown Store"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.Disabled",
+      "data": {
+       "0": false
+      }
+     }
+    ]
+   },
+   "expect": {
+    "valid": true
+   },
+   "golden": "tests/hytale/golden/gatehouse-overfull.png"
+  },
+  {
+   "tool": "ui_render",
+   "name": "gatehouse desk: premium-upcoming",
+   "arguments": {
+    "root": "projects",
+    "path": "_worktrees/EterniaMod-gatehouse/src/main/resources/Common/UI/Custom/EterniaMod/ServicesPage.ui",
+    "crop": "page",
+    "commands": [
+     {
+      "type": "Append",
+      "selector": "#CurrencyWallet",
+      "text": "EterniaMod/Wallet.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#WalletCoins.Text",
+      "data": {
+       "0": "1,250 Coins"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#WalletCrowns.Text",
+      "data": {
+       "0": "700 Crowns"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#DeskEmblem.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#Wordmark.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesTitle.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesTitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Varek Dawnmantle"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesSubtitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Gate Warden"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#DeskIcon.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/season.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#JournalShortcut.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#HintJournal.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#HintCloseText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Goodbye"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#Return.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#SideBar.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#ServicesBody",
+      "text": "EterniaMod/GatehouseDesk.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GateGreeting.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Welcome to the Gatehouse. One day this gate will open on the road to Castle Aeterna. Until then I keep the season passes. Choose one to start earning XP."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GateStatus.TextSpans",
+      "data": {
+       "0": {
+        "RawText": ""
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GateEmpty.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PassCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "1 pass, yours to keep. Choose one to earn XP."
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[0] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerHearth.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Paused \u00b7 Free"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "Foundations"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "0"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 30"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#d8b66b"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 1000
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "2,000 XP to level 1"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Next at level 1"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Aqua Lamp"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowImage.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/furnishing.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "0 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassActivate.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassActivate.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassEarning.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyAll.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyAll.Disabled",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyOpen.TextSpans",
+      "data": {
+       "0": {
+        "RawText": ""
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyPass.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "No active pass"
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBountyNote.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[0] #BtyNoteText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Make a pass active and its daily and weekly bounties appear here."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumTitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Unlock the premium track"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Premium for Foundations goes on sale on Saturday, 14 November."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Coming soon"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.Disabled",
+      "data": {
+       "0": true
+      }
+     }
+    ]
+   },
+   "expect": {
+    "valid": true
+   },
+   "golden": "tests/hytale/golden/gatehouse-premium-upcoming.png"
+  },
+  {
+   "tool": "ui_render",
+   "name": "gatehouse desk: several-busy",
+   "arguments": {
+    "root": "projects",
+    "path": "_worktrees/EterniaMod-gatehouse/src/main/resources/Common/UI/Custom/EterniaMod/ServicesPage.ui",
+    "crop": "page",
+    "commands": [
+     {
+      "type": "Append",
+      "selector": "#CurrencyWallet",
+      "text": "EterniaMod/Wallet.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#WalletCoins.Text",
+      "data": {
+       "0": "1,250 Coins"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#WalletCrowns.Text",
+      "data": {
+       "0": "700 Crowns"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#DeskEmblem.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#Wordmark.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesTitle.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesTitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Varek Dawnmantle"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#ServicesSubtitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Gate Warden"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#DeskIcon.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/season.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#JournalShortcut.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#HintJournal.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#HintCloseText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Goodbye"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#Return.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#SideBar.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#ServicesBody",
+      "text": "EterniaMod/GatehouseDesk.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GateGreeting.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Good to see you back. You have 3 rewards waiting. Claim them below, or open a banner to see every level."
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GateStatus.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Working\u2026"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GateEmpty.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PassCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "3 passes, all yours to keep. Only the active one earns XP."
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[0] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerHearth.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Paused \u00b7 Free"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "Foundations"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "6"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 30"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#d8b66b"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 600
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 400
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "800 XP to level 7"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Next at level 15"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Potion Shelf"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowImage.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/furnishing.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "1 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim 1"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassClaim.Disabled",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassActivate.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassActivate.Disabled",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[0] #PassEarning.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[1] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerTideActive.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Active \u00b7 Premium"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "Tidewater"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "2"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 30"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#6fc3cf"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 300
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 700
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "1,400 XP to level 3"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Next at level 5"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Wayfarer"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNext #RowImage.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/title.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "2 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassClaim.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim 2"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassClaim.Disabled",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassActivate.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassActivate.Disabled",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[1] #PassEarning.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses",
+      "text": "EterniaMod/GatehousePass.ui"
+     },
+     {
+      "type": "Append",
+      "selector": "#GatePasses[2] #PassSlot",
+      "text": "EterniaMod/SeasonBanner.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanArt.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/SeasonArt/BannerEmber.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanStatus.Text",
+      "data": {
+       "0": "Paused \u00b7 Free"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanName.Text",
+      "data": {
+       "0": "Emberfall"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanLevel.Text",
+      "data": {
+       "0": "0"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanMax.Text",
+      "data": {
+       "0": "/ 20"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanFill.Background",
+      "data": {
+       "0": {
+        "Color": "#e58b5a"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanFill.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanFill.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanRest.FlexWeight",
+      "data": {
+       "0": 1000
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanLine.Text",
+      "data": {
+       "0": "2,000 XP to level 1"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNextLabel.Text",
+      "data": {
+       "0": "Next at level 1"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNextName.Text",
+      "data": {
+       "0": "Aqua Lamp"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNext #RowImage.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNext #RowImage.Background",
+      "data": {
+       "0": {
+        "TexturePath": "EterniaMod/Icons/furnishing.png"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanNext #RowItem.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanBadge.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassSlot[0] #BanBadge.Text",
+      "data": {
+       "0": "0 to claim"
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassClaim.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassClaim.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Claim"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassClaim.Disabled",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassActivate.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassActivate.Disabled",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#GatePasses[2] #PassEarning.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyAll.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyAll.Disabled",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyOpen.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "2 open"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyPass.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Tidewater"
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBountyHead.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[0] #BtyHeadName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Daily"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[0] #BtyHeadReset.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "New in 5 hours"
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "A miner's morning"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Mine 40 ore"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "+250 XP"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "100"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "18 / 40"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyFill.FlexWeight",
+      "data": {
+       "0": 450
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[1] #BtyRest.FlexWeight",
+      "data": {
+       "0": 550
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "On patrol"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Defeat 12 creatures"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Done"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "100"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "12 / 12"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyRest.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyFill.FlexWeight",
+      "data": {
+       "0": 1000
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[2] #BtyRest.FlexWeight",
+      "data": {
+       "0": 1
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBountyHead.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[3] #BtyHeadName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Weekly"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[3] #BtyHeadReset.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "New in 29 hours"
+       }
+      }
+     },
+     {
+      "type": "Append",
+      "selector": "#BountyList",
+      "text": "EterniaMod/GatehouseBounty.ui"
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyName.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "A fruitful week"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyGoal.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Harvest 300 crops"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyReward.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "+1,500 XP"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyCoins.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "500"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyCount.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "120 / 300"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyFill.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyRest.Visible",
+      "data": {
+       "0": true
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyFill.FlexWeight",
+      "data": {
+       "0": 400
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#BountyList[4] #BtyRest.FlexWeight",
+      "data": {
+       "0": 600
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumTitle.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Premium track is yours"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumText.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Both reward rows of Tidewater are yours. Thank you for supporting Eternia!"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.Visible",
+      "data": {
+       "0": false
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.TextSpans",
+      "data": {
+       "0": {
+        "RawText": "Crown Store"
+       }
+      }
+     },
+     {
+      "type": "Set",
+      "selector": "#PremiumBuy.Disabled",
+      "data": {
+       "0": true
+      }
+     }
+    ]
+   },
+   "expect": {
+    "valid": true
+   },
+   "golden": "tests/hytale/golden/gatehouse-several-busy.png"
+  }
+ ]
+}
