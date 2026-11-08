@@ -76,7 +76,7 @@ public final class NativeTravelService {
         var property=plugin.getServices().housing().property(owner).orElseThrow();var slot=property.slot();var location=java.util.Objects.requireNonNull(property.location());
         var world=Universe.get().getWorld(location.worldId());if(world==null||slot.state()!=HousingService.State.ACTIVE)return;
         world.execute(()->{var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).getPlot(slot.propertyId());if(plot==null)return;
-            var fp=plot.getFootprint();arrive(player,world,new Vector3d(fp.getMinX()+2.5,fp.resolveVisualCenterY(),fp.getMinZ()+2.5),NativeHousingChecks.rect(fp)).thenAccept(ok->player.sendMessage(Message.raw(ok?"Your plot. Open /e housing to choose a house or decoration.":"The plot arrival is obstructed. Use the coordinates in My plots to reach it.")));
+            var fp=plot.getFootprint();var edge=com.hexvane.eterniamod.housing.PlotAreas.arrival(plot);arrive(player,world,new Vector3d(edge.x(),fp.resolveVisualCenterY(),edge.z()),edge.area()).thenAccept(ok->player.sendMessage(Message.raw(ok?"Your plot. Open /e housing to choose a house or decoration.":"The plot arrival is obstructed. Use the coordinates in My plots to reach it.")));
         });
     }
     public enum JoinTarget { FIRST_JOIN, NEWCOMER, HOME }
@@ -113,7 +113,7 @@ public final class NativeTravelService {
             try{
                 var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).getPlot(slot.propertyId());
                 if(plot==null){points.complete(null);return;}
-                var fp=plot.getFootprint();var plotEdge=new Vector3d(fp.getMinX()+2.5,fp.resolveVisualCenterY(),fp.getMinZ()+2.5);
+                var fp=plot.getFootprint();var arrival=com.hexvane.eterniamod.housing.PlotAreas.arrival(plot);var plotEdge=new Vector3d(arrival.x(),fp.resolveVisualCenterY(),arrival.z());
                 var building=plot.hasBuilding()?plot.getBuilding():null;var def=building==null?null:plugin.getBuildingCatalog().get(building.getBuildingId());
                 Vector3d house=null;
                 if(def!=null&&def.getSpawnLocalPos()!=null){int[] spawn=def.getSpawnLocalPos();var offset=PrefabLocalOffset.rotate(building.resolveRotationYaw(),spawn[0],spawn[1],spawn[2]);

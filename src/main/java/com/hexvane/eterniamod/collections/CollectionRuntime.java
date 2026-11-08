@@ -136,7 +136,8 @@ public final class CollectionRuntime implements AutoCloseable {
                 else {
                     var random=ThreadLocalRandom.current();
                     target=surface(world,bounds.x(x+(random.nextDouble()*2-1)*location.width()*.32),bounds.z(z+(random.nextDouble()*2-1)*location.depth()*.32),plot.getFootprint().resolveVisualCenterY(),1);
-                    if(target==null)continue;
+                    // Hex plots: the box corners belong to neighbours; pick again next time.
+                    if(target==null||!plot.containsColumn((int)Math.floor(target.x),(int)Math.floor(target.z)))continue;
                     if(current!=null)current.nextWander=now+(long)((6+random.nextDouble()*10)*1e9);
                 }
             }else {
@@ -151,7 +152,7 @@ public final class CollectionRuntime implements AutoCloseable {
                 double seed=(plan.pet.id().getLeastSignificantBits()&0xffff)*.001;
                 x=bounds.x(x+Math.sin(seed+System.nanoTime()/1e10)*(location.width()*.32));
                 z=bounds.z(z+Math.cos(seed+System.nanoTime()/1.3e10)*(location.depth()*.32));
-                target=surface(world,x,z,plot.getFootprint().resolveVisualCenterY(),1.4);if(target==null)continue;
+                target=surface(world,x,z,plot.getFootprint().resolveVisualCenterY(),1.4);if(target==null||!plot.containsColumn((int)Math.floor(target.x),(int)Math.floor(target.z)))continue;
             }
             if(!clear(world,target))continue;
             VisiblePet existing=visible.get(plan.pet.id());

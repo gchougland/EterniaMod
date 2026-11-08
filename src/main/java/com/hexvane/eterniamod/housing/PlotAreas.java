@@ -33,6 +33,24 @@ public final class PlotAreas {
         return List.copyOf(out);
     }
 
+    /**
+     * Where a player arrives on a plot's edge: two and a half blocks inside its north west corner, and the area a
+     * landing search may use. For a hex plot the box corner belongs to a neighbour, so this is inside the plot's
+     * first hexagon (north most row, then west), just below its north tip on the straight west side.
+     */
+    public record Arrival(double x, double z, PlotRect area) {}
+
+    public static Arrival arrival(HubPlotRecord plot) {
+        PlotCells cells = plot.getCells();
+        if (cells == null) {
+            var fp = plot.getFootprint();
+            return new Arrival(fp.getMinX() + 2.5, fp.getMinZ() + 2.5, NativeHousingChecks.rect(fp));
+        }
+        var lattice = cells.lattice();
+        HexCoord first = cells.cells().getFirst();
+        return new Arrival(lattice.minX(first) + 2.5, lattice.minZ(first) + lattice.tipDepth() + 2.5, new PlotRect(lattice.minX(first), lattice.minZ(first) + lattice.tipDepth(), lattice.cellWidth(), lattice.bodyDepth()));
+    }
+
     /** True when {@code rect} shares at least one block column with the plot (cell exact for hex plots). */
     public static boolean overlaps(HubPlotRecord plot, PlotRect rect) {
         PlotRect box = NativeHousingChecks.rect(plot.getFootprint());
