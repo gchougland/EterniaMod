@@ -1,0 +1,10 @@
+$Sounds = "../Sounds.ui";
+
+// One clickable brick of the claim map (see ClaimMapGeometry). Transparent until hovered.
+Button {
+  Style: ButtonStyle(
+    Hovered: (Background: "ClaimMap/HexHoverWest.png"),
+    Pressed: (Background: "ClaimMap/HexPressWest.png"),
+    Sounds: $Sounds.@ButtonsLight
+  );
+}

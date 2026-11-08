@@ -37,7 +37,7 @@ public final class ArchitectLedgerPage extends EterniaInteractiveCustomUIPage<Ch
                     case "Plots" -> MyPlotsPage.open(plugin,ref,store,playerRef);
                     case "Place" -> HousingInventory.open(plugin,ref,store,playerRef);
                     case "Customize" -> CustomizationMenus.open(plugin,ref,store,playerRef);
-                    case "Claim" -> PlotClaimPage.open(ref,store,playerRef,plugin);
+                    case "Claim" -> com.hexvane.eterniamod.claimmap.ClaimMapRoutes.claim(plugin,ref,store,playerRef);
                     case "Guild" -> plugin.getMenuActions().perform(SocialUiActions.Action.GUILD_HOUSING,ref,store,playerRef);
                     case "Waygate" -> {
                         if(plugin.getTravel().canUseTravel(ref,store,playerRef.getUuid()))WorldDestinationsMenu.open(plugin,ref,store,playerRef);
