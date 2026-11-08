@@ -32,6 +32,7 @@ public final class EterniaServices {
     private final GuildBenefitService guildBenefits;
     private final GuildCommunicationService guildCommunications;
     private final LootChestService lootChests;
+    private final com.hexvane.eterniamod.chat.ChatPreferences chatPreferences;
     public EterniaServices(TransactionalStore store,Clock clock,Supplier<UUID> ids) {
         batched=new com.hexvane.eterniamod.persistence.BatchedStore(store);
         store=batched;
@@ -52,6 +53,7 @@ public final class EterniaServices {
         guildBenefits=new GuildBenefitService(store,clock,ids,ownership);
         guildCommunications=new GuildCommunicationService(store,clock,ids);
         lootChests=new LootChestService(store,clock,ids);
+        chatPreferences=new com.hexvane.eterniamod.chat.ChatPreferences(store);
     }
     public EterniaServices(TransactionalStore store) { this(store,Clock.systemUTC(),UUID::randomUUID); }
     /** A short group of domain calls sharing one transaction. Never invoke world or network work here. */
@@ -91,6 +93,7 @@ public final class EterniaServices {
     public GuildBenefitService guildBenefits(){return guildBenefits;}
     public GuildCommunicationService guildCommunications(){return guildCommunications;}
     public LootChestService lootChests(){return lootChests;}
+    public com.hexvane.eterniamod.chat.ChatPreferences chatPreferences(){return chatPreferences;}
     public record Overview(UUID playerId,AccountService.Account account,EconomyService.Balance coins,
         List<OwnershipService.Grant> grants,HousingService.Slot housing,GuildService.Membership guild) {}
     /** Read projection for an already-authorized caller. Do not expose this without account authorization. */

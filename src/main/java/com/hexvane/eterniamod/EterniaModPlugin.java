@@ -116,6 +116,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         menuActions = new com.hexvane.eterniamod.runtime.NativeMenuActions(this);
         socialUi = com.hexvane.eterniamod.socialui.SocialUiBootstrap.register(this,getServices(),menuActions);
         collectionRuntime = com.hexvane.eterniamod.collections.CollectionBootstrap.register(this,getServices());
+        com.hexvane.eterniamod.chat.ChatBootstrap.register(this);
         gameplayAdapters = new com.hexvane.eterniamod.runtime.GameplayAdapters(this,serverEnvironment);
         customization = com.hexvane.eterniamod.customization.CustomizationBootstrap.register(this);
         try { com.hexvane.eterniamod.guildroads.GuildRoads.startup(this); }
@@ -143,6 +144,7 @@ public final class EterniaModPlugin extends JavaPlugin {
     @Override
     protected void shutdown() {
         if (boundaryFog != null) boundaryFog.close();
+        com.hexvane.eterniamod.chat.ChatBootstrap.close();
         if (socialUi != null) socialUi.close();
         if (departures != null) departures.close();
         if (plotMover != null) plotMover.close();

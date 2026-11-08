@@ -1,0 +1,57 @@
+command.desc=Choose who hears your chat
+command.message=Your message
+command.help=Show the chat channels
+
+channel.server.tag=[Server]
+channel.server.name=Server
+channel.server.about=Everyone on Eternia
+channel.server.command=Talk to everyone on Eternia, or send one message there
+channel.server.switch=Talk to everyone on Eternia
+
+channel.world.tag=[World]
+channel.world.name=World
+channel.world.about=Everyone in your world
+channel.world.command=Talk to everyone in your world, or send one message there
+channel.world.switch=Talk to everyone in your world
+
+channel.party.tag=[Party]
+channel.party.name=Party
+channel.party.about=Your party in any world
+channel.party.command=Talk to your party, or send them one message
+channel.party.switch=Talk to your party
+
+channel.guild.tag=[Guild]
+channel.guild.name=Guild
+channel.guild.about=Your guild in any world
+channel.guild.command=Talk to your guild, or send them one message
+channel.guild.switch=Talk to your guild
+
+channel.nearby.tag=[Nearby]
+channel.nearby.name=Nearby
+channel.nearby.about=Players within {radius} blocks of you
+channel.nearby.command=Talk to players close by, or send them one message
+channel.nearby.switch=Talk to players close by
+
+switch.done=You switched to {channel}. {about} will hear you.
+switch.already=You are already talking in {channel}.
+status.current=You are talking in {channel}. Your chat goes to:
+help.usage=Type /e c and a channel to switch, or add a message to send just one, like /e c p on my way!
+help.shortcut=Quicker still: start a chat line with @ and the channel, like @p on my way!
+join.reminder=You are talking in {channel}. Type /e c s to talk to everyone.
+
+hint.nobodyNearby=Nobody within {radius} blocks heard you. Try /e c w to reach your whole world.
+hint.partyAlone=None of your party is online right now.
+hint.worldAlone=Nobody else is in this world right now. Try /e c s to reach everyone.
+hint.guildAlone=None of your guild is online right now.
+
+fail.empty=Add a message after the channel, like /e c p hello!
+fail.tooLong=That message is too long. Keep it under 500 letters.
+fail.oneLine=Messages must fit on one line.
+fail.noParty=You are not in a party, so nobody heard that. Start one with /e party create, or type /e c s to talk to everyone.
+fail.noPartySwitch=You are not in a party yet. Start one with /e party create, then try again.
+fail.noGuild=You are not in a guild, so nobody heard that. Visit Torren in the Hub to join one, or type /e c s to talk to everyone.
+fail.noGuildSwitch=You are not in a guild yet. Visit Torren in the Hub to join one, then try again.
+fail.guildRole=Your guild role does not allow guild chat.
+fail.guildCooldown=Wait two seconds between guild messages.
+fail.guildBusy=Guild chat is busy. Try again shortly.
+fail.unavailable=Chat is unavailable right now. Try again shortly.
