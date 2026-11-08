@@ -121,6 +121,7 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
                 .param("oz", prefabO.z)
                 .param("step", session.getRotationSteps())
         );
+        hexRoom(commandBuilder,store,def);
         commandBuilder.set("#PlotTypeDropdown.Visible", false);
         commandBuilder.set("#PlotTypeLabel.Visible", false);
         commandBuilder.set("#MoveConfirmGroup.Visible", false);
@@ -147,7 +148,7 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
             commandBuilder.set("#MoveConfirmBackButton.Visible", false);
             commandBuilder.set(
                 "#MoveConfirmText.TextSpans",
-                Message.translation("eterniamod_common.eterniamod.common." + lastValidationError)
+                com.hexvane.eterniamod.placement.PlacementText.message(lastValidationError)
             );
         } else {
             commandBuilder.set("#MoveConfirmGroup.Visible", false);
@@ -335,6 +336,19 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
         );
     }
 
+
+    /** Hex plots: the details line says how many more decorations fit on the hexagon under the prop. */
+    private void hexRoom(UICommandBuilder commandBuilder, Store<EntityStore> store, PropDefinition def) {
+        EterniaModPlugin plugin = EterniaModPlugin.get();
+        if (plugin == null || def == null || !com.hexvane.eterniamod.placement.HexPlacement.isDecoration(def)) return;
+        var plot = EterniaWorldRegistries.getOrCreateHubPlotManager(store.getExternalData().getWorld(), plugin).getPlot(session.getPlotId());
+        if (plot == null || !plot.isHex()) return;
+        var fp = com.hexvane.eterniamod.placement.HexPlacement.footprint(def.getPrefabPath(), def.resolvePrefabAnchorWorld(session.getAnchor(), session.getPrefabYaw()), session.getPrefabYaw());
+        if (fp == null) return;
+        var cell = com.hexvane.eterniamod.placement.HexPlacement.standingCell(plot.getCells().lattice(), com.hexvane.eterniamod.placement.HexPlacement.rect(fp));
+        if (!plot.getCells().contains(cell)) return;
+        commandBuilder.set("#Details.TextSpans", com.hexvane.eterniamod.placement.PlacementText.room(com.hexvane.eterniamod.placement.HexPlacement.decorationsLeft(plugin, plot, cell)));
+    }
     @Nullable
     private String resolveValidationError(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store) {
         EterniaModPlugin plugin = EterniaModPlugin.get();
@@ -382,7 +396,7 @@ public final class PropPlacementPage extends EterniaInteractiveCustomUIPage<Prop
                 world, plot, uc.getUuid(), session.getAnchor(), session.getPrefabYaw(), def
             );
         if (errKey != null) {
-            sendError(store, ref, Message.translation("eterniamod_common.eterniamod.common." + errKey));
+            sendError(store, ref, com.hexvane.eterniamod.placement.PlacementText.message(errKey));
             return false;
         }
         if (!PropPlacementCommit.place(ref, store, session, plugin)) {

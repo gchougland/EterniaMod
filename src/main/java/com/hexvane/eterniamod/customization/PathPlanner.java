@@ -7,10 +7,15 @@ import java.util.function.Predicate;
 /** A bounded four-neighbor route. Protected columns are excluded before entering the search queue. */
 public final class PathPlanner {
     public record Cell(int x,int z){}
+    /** The land a path may use: a plot rectangle, or the cells of a hex plot ({@code HubPlotRecord::containsColumn}). */
+    @FunctionalInterface public interface Area { boolean contains(int x,int z); }
     public static List<Cell> route(PlotRect plot,Cell start,List<PlotRect> roads,Predicate<Cell> passable) {
+        return route(plot::contains,start,roads,passable,5);
+    }
+    public static List<Cell> route(Area plot,Cell start,List<PlotRect> roads,Predicate<Cell> passable) {
         return route(plot,start,roads,passable,5);
     }
-    private static List<Cell> route(PlotRect plot,Cell start,List<PlotRect> roads,Predicate<Cell> passable,int reach) {
+    private static List<Cell> route(Area plot,Cell start,List<PlotRect> roads,Predicate<Cell> passable,int reach) {
         if(!plot.contains(start.x,start.z)||roads.isEmpty()||roads.stream().anyMatch(road->road.contains(start.x,start.z))||!passable.test(start))throw new IllegalArgumentException("Stand on clear ground outside your door, inside your plot.");
         ArrayDeque<Cell> queue=new ArrayDeque<>();Map<Cell,Cell> previous=new HashMap<>();queue.add(start);previous.put(start,null);
         Cell best=null;double bestGap=Double.POSITIVE_INFINITY;int bestDepth=Integer.MAX_VALUE;Map<Cell,Integer> depths=new HashMap<>();depths.put(start,0);
@@ -30,6 +35,9 @@ public final class PathPlanner {
     public record Plan(List<Cell> centerline,List<Cell> blocks,int width){}
     /** Width and obstacle clearance are checked for every paved cell, including rounded corners. */
     public static Plan plan(PlotRect plot,Cell start,List<PlotRect> roads,int width,Predicate<Cell> ground,List<PlotRect> obstacles){
+        return plan((Area)plot::contains,start,roads,width,ground,obstacles);
+    }
+    public static Plan plan(Area plot,Cell start,List<PlotRect> roads,int width,Predicate<Cell> ground,List<PlotRect> obstacles){
         if(width<1||width>3)throw new IllegalArgumentException("Choose a path width from one to three blocks.");
         Map<Cell,Boolean> checked=new HashMap<>();
         Predicate<Cell> valid=cell->checked.computeIfAbsent(cell,c->plot.contains(c.x,c.z)&&roads.stream().noneMatch(r->r.contains(c.x,c.z))

@@ -61,3 +61,14 @@ plots.expand.done=Your plot grew to {cells} hexagons.
 plots.expand.paid=Your plot grew to {cells} hexagons. {coins} coins paid.
 plots.expand.retry=Your plot could not grow just now. Open My Plots to check it, then try again.
 plots.expand.guildRole=Only your guild leader can grow the guild estate.
+plots.claim.failed=Your claim could not finish. Open My Plots to check it before you try again.
+
+# Placement on hex plots. {count} is blocks, hexagons, decorations or generators.
+plots.place.hexEdge=Too close to the edge of your plot. Keep it {count} blocks inside the border.
+plots.place.hexHouseShape=This house needs a plot of at least {count} hexagons. Grow your plot from My Plots, or choose a smaller house.
+plots.place.hexCellFull=This hexagon already holds {count} decorations; add a hexagon to place more.
+plots.place.hexGeneratorsFull=This hexagon already holds {count} generators; add a hexagon to place more.
+plots.place.room=This hexagon has room for {count} more decorations.
+plots.place.roomOne=This hexagon has room for one more decoration.
+plots.place.roomNone=This hexagon is full. Add a hexagon to your plot to place more decorations.
+plots.place.findNone=No spot fits this house right now. Turn it, or grow your plot from My Plots.

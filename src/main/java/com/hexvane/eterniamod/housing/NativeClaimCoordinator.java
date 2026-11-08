@@ -102,11 +102,16 @@ public final class NativeClaimCoordinator {
         UUID operation=UUID.randomUUID();
         return onWorld(world,()->loadGround(world,cells.bounds())).thenCompose(f->f)
             .thenApplyAsync(v->{
-                var done=claimCellsNow(world,player.getUuid(),cells,kind,groundY(world,player,cells),operation);
+                HexCommitResult done;
+                try{done=claimCellsNow(world,player.getUuid(),cells,kind,groundY(world,player,cells),operation);}
+                catch(RuntimeException failure){
+                    plugin.getLogger().atWarning().withCause(failure).log("Hex claim did not finish");
+                    done=HexCommitResult.failed(HexPlotText.plots("claim.failed","Your claim could not finish. Open My Plots to check it before you try again."),null);
+                }
                 tell(player,done);return done;
             },world)
             .exceptionallyAsync(error->{
-                plugin.getLogger().atWarning().withCause(error).log("Hex claim did not finish");
+                plugin.getLogger().atWarning().withCause(error).log("Hex claim could not load its ground");
                 var done=HexCommitResult.failed(HexPlotText.plots("claim.retry","The land here is still loading. Try again in a moment."),null);
                 tell(player,done);return done;
             },world);
@@ -219,10 +224,21 @@ public final class NativeClaimCoordinator {
 
     private void applyExpansion(World world,HousingService.PendingExpansion pending) {
         var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);
-        var plot=manager.getPlot(pending.propertyId());
-        if(plot==null||pending.location()==null||!pending.location().isHex())return; // Packed or moved: the row is the truth and travels with it.
-        applyCells(manager,plot,pending.location().cells());
-        plugin.getServices().housing().completeExpansion(pending.owner(),pending.operationId());
+        if(applyExpansion(plugin.getServices().housing(),pending,manager::getPlot,manager::updatePlot))manager.saveIfDirty();
+    }
+
+    /**
+     * Shows a paid hexagon on the plot's world record ({@code cells} from the durable row, the truth) and acknowledges
+     * it. A plot that is not in this world (packed, moving) is left for later: its row already holds the cells.
+     * Returns true when the world record changed. Idempotent.
+     */
+    static boolean applyExpansion(HousingService housing,HousingService.PendingExpansion pending,java.util.function.Function<UUID,HubPlotRecord> plots,java.util.function.Consumer<HubPlotRecord> updated) {
+        var plot=plots.apply(pending.propertyId());
+        if(plot==null||pending.location()==null||!pending.location().isHex())return false;
+        var cells=pending.location().cells();boolean changed=!cells.equals(plot.getCells());
+        if(changed){plot.setFootprint(plot.getFootprint().withCells(cells));updated.accept(plot);}
+        housing.completeExpansion(pending.owner(),pending.operationId());
+        return changed;
     }
 
     private static void applyCells(HubPlotManager manager,HubPlotRecord plot,PlotCells cells) {
