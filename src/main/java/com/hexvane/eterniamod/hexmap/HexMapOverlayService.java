@@ -124,6 +124,48 @@ public final class HexMapOverlayService implements AutoCloseable {
         HexLandView view;
         LongOpenHashSet candidates = new LongOpenHashSet();
         int cursor;
+        /** Plot names on the map, rebuilt when the land or the known names change. */
+        List<HexMapLabels.Spec> labels = List.of();
+        /** Bumped whenever {@link #labels} changes, so cached player tiles repaint. */
+        int labelVersion;
+        String labelSignature = "";
+        final Set<UUID> askedNames = new HashSet<>();
+
+        void refreshLabels() {
+            List<HexMapLabels.Spec> next = new ArrayList<>();
+            StringBuilder signature = new StringBuilder();
+            for (HexLandView.PlotInfo plot : view.plots().values()) {
+                UUID named = plot.ownerKind() == HexLandView.OwnerKind.GUILD ? plot.guildId() != null ? plot.guildId() : plot.ownerId() : plot.ownerId();
+                String text = HexLand.nameOf(named);
+                if (text == null || text.isBlank()) continue;
+                next.add(new HexMapLabels.Spec(slot(plot.plotId()), text, middle(plot)));
+                signature.append(plot.plotId()).append(':').append(text).append(':').append(plot.cells()).append(';');
+            }
+            String sig = signature.toString();
+            if (!sig.equals(labelSignature)) { labelSignature = sig; labels = List.copyOf(next); labelVersion++; }
+        }
+
+        /**
+         * Spots to centre a plot's name on: the middle of its cells when that is inside the plot, every cell centre, and
+         * the point between two side by side cells (the widest place in most shapes). The label painter picks the best.
+         */
+        private List<double[]> middle(HexLandView.PlotInfo plot) {
+            var lattice = view.lattice();
+            List<double[]> out = new ArrayList<>();
+            Set<HexCoord> cells = plot.cells().asSet();
+            double sx = 0, sz = 0;
+            for (HexCoord cell : cells) { sx += lattice.centerX(cell); sz += lattice.centerZ(cell); }
+            double mx = sx / cells.size(), mz = sz / cells.size();
+            if (plot.equals(view.plotAtColumn((int) Math.floor(mx), (int) Math.floor(mz)))) out.add(new double[] {mx, mz});
+            List<HexCoord> sorted = new ArrayList<>(cells);
+            sorted.sort(java.util.Comparator.comparingInt(HexCoord::r).thenComparingInt(HexCoord::q));
+            for (HexCoord cell : sorted) {
+                out.add(new double[] {lattice.centerX(cell), lattice.centerZ(cell)});
+                HexCoord east = new HexCoord(cell.q() + 1, cell.r());
+                if (cells.contains(east)) out.add(new double[] {(lattice.centerX(cell) + lattice.centerX(east)) / 2, lattice.centerZ(cell)});
+            }
+            return out;
+        }
 
         int slot(UUID plot) {
             Integer slot = slots.get(plot);
@@ -157,7 +199,9 @@ public final class HexMapOverlayService implements AutoCloseable {
             if (state.view != null && !state.view.lattice().equals(view.lattice())) state.stamps.apply(new HexLandEvents.Change(name, Set.of(), HexLandEvents.Cause.LATTICE), null);
             state.view = view;
             state.candidates = candidateTiles(view);
+            requestNames(world, state);
         }
+        state.refreshLabels();
         List<PlayerRef> refs = new ArrayList<>(world.getPlayerRefs());
         Set<UUID> here = new HashSet<>();
         for (PlayerRef ref : refs) here.add(ref.getUuid());
@@ -175,6 +219,18 @@ public final class HexMapOverlayService implements AutoCloseable {
         }
         state.cursor = first + count;
         record(start);
+    }
+
+    /** Loads owner names for the map labels off the world thread; labels appear on a later pass once they arrive. */
+    private void requestNames(World world, WorldState state) {
+        Set<UUID> ids = new HashSet<>();
+        for (HexLandView.PlotInfo plot : state.view.plots().values()) {
+            for (UUID id : new UUID[] {plot.ownerId(), plot.guildId()})
+                if (id != null && HexLand.nameOf(id) == null && state.askedNames.add(id)) ids.add(id);
+        }
+        if (ids.isEmpty()) return;
+        java.util.concurrent.CompletableFuture.runAsync(() -> HexLand.loadNames(plugin.getServices(), ids))
+            .whenComplete((ok, failure) -> { if (failure != null) { LOG.log(Level.FINE, "Map label names did not load", failure); world.execute(() -> state.askedNames.removeAll(ids)); } });
     }
 
     private synchronized void record(long start) { worstPassNanos = Math.max(worstPassNanos, System.nanoTime() - start); }
@@ -225,7 +281,7 @@ public final class HexMapOverlayService implements AutoCloseable {
         ps.painted.removeIf(index -> !loaded.contains(index));
 
         HexLandView.Viewer viewer = HexViewers.viewer(id);
-        int viewerKey = Objects.hash(viewer.player(), viewer.guild());
+        int viewerKey = Objects.hash(viewer.player(), viewer.guild(), state.labelVersion);
         WorldMapManager maps = world.getWorldMapManager();
         List<MapChunk> send = new ArrayList<>();
 
@@ -281,6 +337,7 @@ public final class HexMapOverlayService implements AutoCloseable {
     public static MapImage render(HexLandView view, MapImage base, int chunkX, int chunkZ, HexLandView.Viewer viewer) {
         WorldState state = new WorldState();
         state.view = view;
+        state.refreshLabels();
         return paintTile(state, base, chunkX, chunkZ, 0L, viewer);
     }
 
@@ -300,6 +357,7 @@ public final class HexMapOverlayService implements AutoCloseable {
             HexLandView.PlotInfo plot = view.plots().get(state.slotPlots.get(key));
             return plot == null ? null : HexMapPainter.Style.of(HexBorderPlanner.relation(view, plot, viewer));
         });
+        HexMapLabels.draw(out, base.width, base.height, cx, cz, state.labels, state::keyAt);
         return HexMapPixels.pack(base.width, base.height, out);
     }
 

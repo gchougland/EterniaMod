@@ -1,13 +1,45 @@
 {
   "Parent": "Outlander_Hunter",
   "Model": "Characters/Player.blockymodel",
-  "Texture": "Characters/Player_Textures/Outlander_1.png",
+  "Texture": "Characters/Player_Textures/Player_Muscular_Greyscale.png",
+  "GradientSet": "Skin",
+  "GradientId": "05",
   "MinScale": 1,
   "MaxScale": 1,
   "DefaultAttachments": [
     {
+      "Model": "Characters/Body_Attachments/Faces/Player_Face_Detached.blockymodel",
+      "Texture": "Characters/Body_Attachments/Faces/Faces_Detached_Textures/Older_Face.png",
+      "GradientSet": "Skin",
+      "GradientId": "05"
+    },
+    {
+      "Model": "Characters/Body_Attachments/Eyes/Eyes.blockymodel",
+      "Texture": "Characters/Body_Attachments/Eyes/Eyes_Textures/Greyscale.png",
+      "GradientSet": "Eyes_Gradient",
+      "GradientId": "BrownDark"
+    },
+    {
+      "Model": "Characters/Body_Attachments/Eyebrows/Eyebrows_Medium.blockymodel",
+      "Texture": "Characters/Body_Attachments/Eyebrows/Serious_Greyscale.png",
+      "GradientSet": "Hair",
+      "GradientId": "Grey"
+    },
+    {
       "Model": "Characters/Body_Attachments/Mouths/Mouth1.blockymodel",
-      "Texture": "Characters/Body_Attachments/Mouths/Mouth1_Textures/Outlander_1.png"
+      "Texture": "Characters/Body_Attachments/Mouths/Mouth1_Textures/Default_Greyscale.png",
+      "GradientSet": "Skin",
+      "GradientId": "05"
+    },
+    {
+      "Model": "Characters/Body_Attachments/Ears/Ears1.blockymodel",
+      "Texture": "Characters/Body_Attachments/Ears/Ears.png",
+      "GradientSet": "Skin",
+      "GradientId": "05"
+    },
+    {
+      "Model": "Cosmetics/Undertops/LongSleeveShirt.blockymodel",
+      "Texture": "Cosmetics/Undertops/LongSleeveShirt_Textures/Bannerlord_Undertop_Iron.png"
     },
     {
       "Model": "NPC/Intelligent/Outlander/Models/Attachments/Hunter/Chest.blockymodel",
@@ -22,24 +54,16 @@
       "Texture": "NPC/Intelligent/Outlander/Models/Attachments/Hunter/Cape_Texture.png"
     },
     {
-      "Model": "Characters/Body_Attachments/Eyes/Eyes.blockymodel",
-      "Texture": "Characters/Body_Attachments/Eyes/Eyes_Textures/Outlander_Brown.png"
-    },
-    {
-      "Model": "Characters/Body_Attachments/Ears/Ears1.blockymodel",
-      "Texture": "Characters/Body_Attachments/Ears/Ears1_Textures/Outlander_1.png"
-    },
-    {
-      "Model": "Characters/Haircuts/Berserker.blockymodel",
-      "Texture": "Characters/Haircuts/Berserker_Greyscale.png",
+      "Model": "Characters/Haircuts/Viking.blockymodel",
+      "Texture": "Characters/Haircuts/Viking_Greyscale.png",
       "GradientSet": "Hair",
-      "GradientId": "BrownDark"
+      "GradientId": "Grey"
     },
     {
-      "Model": "Characters/Body_Attachments/Beards/DoubleBraid.blockymodel",
-      "Texture": "Characters/Body_Attachments/Beards/DoubleBraid_Greyscale.png",
+      "Model": "Characters/Body_Attachments/Beards/Full.blockymodel",
+      "Texture": "Characters/Body_Attachments/Beards/Medium_Greyscale.png",
       "GradientSet": "Hair",
-      "GradientId": "BrownDark"
+      "GradientId": "Grey"
     }
   ],
   "RandomAttachmentSets": {}

@@ -119,6 +119,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             Section entry = desk.sections.get(i);
             bind(events, JournalChrome.navTab(commands, i, tabLabel(entry), sectionIcon(entry), entry == section, busy), "nav:" + entry.name());
         }
+        // Adventure Records open in their own page, after the Journal's sections.
+        if (journal) bind(events, JournalChrome.navTab(commands, desk.sections.size(), "Records", "board", false, busy), "records");
         if (deskHome) { buildDeskHome(commands, events, ref, store); return; }
         commands.append("#ServicesBody", "EterniaMod/" + layout() + ".ui");
         JournalChrome.section(commands, sectionName(section), sectionIcon(section), sectionNote(section));
@@ -223,6 +225,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if(route.startsWith("external:")){try{return desk.actions.contains(SocialUiActions.Action.valueOf(route.substring(9)));}catch(IllegalArgumentException unknown){return false;}}
         if(route.startsWith("shop_visit:"))return desk==Desk.BROKER;
         if(route.equals("intro_toolkit"))return desk==Desk.GUIDE;
+        if(route.equals("records"))return desk==Desk.JOURNAL;
         return true;
     }
 
@@ -287,6 +290,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if(!allowed(route))return;
         if(route.equals("desk_home")&&desk!=Desk.JOURNAL){deskHome=true;section=desk.sections.getFirst();mode="";focus="";page=0;one=two=three="";draftCapabilities=null;pending=null;refresh(ref,store,"");return;}
         if(route.equals("return_parent")){store.getExternalData().getWorld().execute(()->{if(ref.isValid()&&!isDismissed())returnOrClose(ref,store);});return;}
+        if(route.equals("records")){store.getExternalData().getWorld().execute(()->{if(ref.isValid()&&!isDismissed())com.hexvane.eterniamod.stats.StatsPage.open(ref,store,playerRef,playerRef.getUuid(),playerRef.getUsername());});return;}
         if (route.startsWith("nav:")) {
             if(route.equals("nav:WORLDS")){registration.actions.perform(SocialUiActions.Action.WORLD_SELECT,ref,store,playerRef);return;}
             section = Section.valueOf(route.substring(4)); deskHome = false; previewContent = ""; mode = ""; focus = ""; page = 0; one = two = three = ""; draftCapabilities = null; pending = null;

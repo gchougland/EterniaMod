@@ -1,28 +1,36 @@
 # Changelog
 
-## [1.0.0] - Unreleased
+## [1.1.0] - Unreleased
 
 ### Added
-
-- Eternia runs on Hytale Update 7 (0.7.0).
 
 - Housing plots are hexagons. A cottage stands on one, a manor on three and a guild keep on seven, and you can grow your plot one hexagon at a time.
 - The Claim Map: use your deed, ask Bramble or open Home in your Journal to see the land around you as a map with every hexagon coloured. Roads stand out, free land beside a road glows green, and clicking a hexagon tells you whose it is, what it costs and whether you can claim it. No more walking a deed around.
 - Add a hexagon from My Plots on the same map. Each hexagon you add costs a little more than the last.
-- Your plot, your guild's land, your neighbours and other guilds show on the world map in their own colours, and plot borders glow in those colours in the world.
+- Your plot, your guild's land, your neighbours and other guilds show on the world map in their own colours with each plot's name written inside it, and plot borders glow in those colours in the world.
 - Holding your deed shows faint green marks on free hexagons beside the road nearby.
 - A packed home can be set down again on any free hexagons of the same shape, chosen on the Claim Map.
 - Each hexagon holds up to 24 decorations. Grow your plot to place more.
 - Varek Dawnmantle, an Outlander who keeps the Gatehouse, looks after season passes. See all your passes at once, switch your active pass or claim every reward with one click, take on daily and weekly bounties, and find the premium track.
 - Season passes and season items in the Crown Store can be bought only while their season runs. The store and the website show when each one opens or closes, and anything you already own stays yours forever.
 - Chat channels: talk to everyone, your world, your party, your guild or players nearby. Type `/e c` to see them, `/e c p` to switch to party chat, or `/e c p hello` to send just one message. Starting a line with `@p` sends it to your party without switching. Your channel is remembered next time you log in.
-- Adventure Records: type `/e stats` to see your chests opened, blocks travelled, creatures and bosses defeated, times fallen and time in Eternia. Add a name to see another adventurer's records.
+- Adventure Records: type `/e stats` to see your chests opened, blocks travelled, creatures and bosses defeated, times fallen and time in Eternia. Add a name to see another adventurer's records, or open them from the Records button in your Journal.
 - The first adventurer to defeat each boss on each difficulty is announced to everyone and remembered as a Server First.
 - 33 new titles inspired by the creatures of Orbis, from the Trork Slayer to the Chicken Whisperer.
 - Staff can ban rule breakers for a set time or for good, lift bans and look up ban records. Repeat offences get longer bans, and banned players see why and when they can return.
 - The website home page shows how many adventurers are online right now.
 - The Crown treasury says clearly, before you pay, that Crowns are digital goods and all sales are final.
 - The website now sends visitors who type www in front of the address to the main site.
+
+### Fixed
+
+- The game is less likely to crash right after joining near busy parts of town.
+
+## [1.0.0]
+
+### Added
+
+- Eternia runs on Hytale Update 7 (0.7.0).
 
 - Loot chests found out in the world now hold separate loot for every player. Your chest stays as you left it, and it does not refill. These chests can no longer be broken. Chests that had already appeared in explored areas stay shared.
 

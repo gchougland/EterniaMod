@@ -165,6 +165,9 @@ public final class HexLand {
         NAMES.putAll(found);
     }
 
+    /** Puts known names in the cache directly (fixtures, pictures and tests). */
+    public static void rememberNames(Map<UUID, String> names) { NAMES.putAll(names); }
+
     /** Player text for a rule result: {@code eternia_hexplots.reason.*} with {@code {count}} filled in. */
     public static com.hypixel.hytale.server.core.Message message(HexClaimRules.Result result) {
         return com.hypixel.hytale.server.core.Message.translation(result.reason().langKey())
