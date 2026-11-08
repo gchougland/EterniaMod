@@ -19,6 +19,13 @@ public final class GameBridgeServer implements AutoCloseable {
     public void setOffers(List<StoreOffers.Offer> values){offers=List.copyOf(values);}
     private Map<String,Integer> tebexPackages=Map.of();
     public void setTebexPackages(Map<String,Integer> values){tebexPackages=Map.copyOf(values);}
+    /** Online player count for the public website. Only a number leaves the game: never names or ids. */
+    private java.util.function.IntSupplier onlinePlayers=GameBridgeServer::universePlayerCount;
+    public void setOnlinePlayers(java.util.function.IntSupplier source){onlinePlayers=Objects.requireNonNull(source);}
+    private static int universePlayerCount(){
+        var universe=com.hypixel.hytale.server.core.universe.Universe.get();
+        return universe==null?-1:universe.getPlayerCount();
+    }
     public GameBridgeServer(EterniaServices services,RuntimeConfig config)throws IOException {
         this.services=services;token=("Bearer "+config.bridgeToken()).getBytes(StandardCharsets.UTF_8);
         if(config.bridgeToken().length()<32)throw new IllegalArgumentException("Bridge requires a strong service token");
@@ -46,6 +53,11 @@ public final class GameBridgeServer implements AutoCloseable {
             }
             String path=exchange.getRequestURI().getPath();
             if(path.equals("/v1/health")){reply(exchange,200,Map.of("status","ready"));return;}
+            if(path.equals("/v1/status/players")){
+                int online=onlinePlayers.getAsInt();
+                if(online<0){reply(exchange,503,Map.of("error","The realm is not ready yet."));return;}
+                reply(exchange,200,Map.of("source","game","online",online,"updatedAt",Instant.now()));return;
+            }
             if(path.equals("/v1/store/offers")){reply(exchange,200,Map.of("source","game","offers",offers));return;}
             if(path.equals("/v1/store/crowns")){
                 var products=services.readView(GameBridgeServer.class,java.time.Duration.ofSeconds(10),()->services.commerce().products()).stream()

@@ -53,6 +53,11 @@ Set `GAME_BRIDGE_URL` and `GAME_BRIDGE_TOKEN` for authenticated server-to-server
 
 - `GET /v1/players/{uuid}/overview` returns `{updatedAt,account,stats,owned,seasons,housing}`.
 - `GET /v1/store/offers` returns `{offers:[{id,name,description,checkoutUrl}]}`.
+- `GET /v1/status/players` returns `{source,online,updatedAt}`: only the number of players online, never names or IDs. It returns 503 before the game universe is ready.
+
+The welcome page shows the online count from the public `GET /api/v1/players-online`, which returns `{status:'online',online,updatedAt}` or `{status:'resting',updatedAt}`. The website keeps one shared answer for 30 seconds (15 seconds while the game is unreachable), so visitors never reach the game server directly. In fixture mode, `FIXTURE_PLAYERS_ONLINE` sets the count (default 42; a negative number shows the resting state).
+
+**Canonical address.** Requests whose host is the `www.` twin of `PUBLIC_BASE_URL` (or the bare twin of a `www.` address) are redirected to `PUBLIC_BASE_URL` with the same path and query (301 for page loads, 308 for other methods). Sessions, the OAuth callback and the form origin check all depend on that single address. The `www` hostname still needs its own DNS record and Railway custom domain to reach the service at all.
 
 The game server also pushes admin content to the website with the same token:
 

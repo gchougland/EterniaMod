@@ -46,6 +46,23 @@ class GameBridgeServerTest {
             assertTrue(warnings.isEmpty(),warnings.toString());
         }finally{logger.removeHandler(handler);}
     }
+    @Test void onlinePlayerCountIsPrivateNumberOnlyAndUnavailableBeforeTheRealmIsReady() throws Exception {
+        String token="test-service-token-12345678901234567890";
+        var config=new RuntimeConfig(true,"","","","127.0.0.1",0,token,"http://127.0.0.1:3000");
+        try(var bridge=new GameBridgeServer(new EterniaServices(new InMemoryStore()),config);var client=HttpClient.newHttpClient()){
+            var online=new java.util.concurrent.atomic.AtomicInteger(-1);bridge.setOnlinePlayers(online::get);bridge.start();
+            var uri=URI.create("http://127.0.0.1:"+bridge.port()+"/v1/status/players");
+            assertEquals(401,client.send(HttpRequest.newBuilder(uri).build(),HttpResponse.BodyHandlers.ofString()).statusCode());
+            var request=HttpRequest.newBuilder(uri).header("Authorization","Bearer "+token).build();
+            assertEquals(503,client.send(request,HttpResponse.BodyHandlers.ofString()).statusCode());
+            online.set(42);
+            var response=client.send(request,HttpResponse.BodyHandlers.ofString());assertEquals(200,response.statusCode());
+            var body=JsonParser.parseString(response.body()).getAsJsonObject();
+            assertEquals(java.util.Set.of("source","online","updatedAt"),body.keySet());
+            assertEquals("game",body.get("source").getAsString());assertEquals(42,body.get("online").getAsInt());
+            assertEquals(405,client.send(HttpRequest.newBuilder(uri).header("Authorization","Bearer "+token).POST(HttpRequest.BodyPublishers.noBody()).build(),HttpResponse.BodyHandlers.ofString()).statusCode());
+        }
+    }
     @Test void crownCatalogContainsOnlyActiveMappedPermanentCurrencyProducts() throws Exception {
         String token="test-service-token-12345678901234567890";
         var config=new RuntimeConfig(true,"","","","127.0.0.1",0,token,"http://127.0.0.1:3000");

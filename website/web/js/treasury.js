@@ -1,7 +1,10 @@
 import {api,el,link,notice} from './api.js';
 const money=(amount,currency)=>new Intl.NumberFormat(undefined,{style:'currency',currency}).format(amount);
-function purchaseNotice(){
- const note=el('p');note.append(el('strong','All purchases are final.'),document.createTextNode(' Refunds are only available where required by law. '),link('Read Tebex terms','https://checkout.tebex.io/terms'));return note;
+export function purchaseNotice(){
+ const note=el('p',undefined,'sales-final'),icon=el('img'),copy=el('span'),terms=link('Read the Tebex terms','https://checkout.tebex.io/terms','');
+ icon.src='/icons/crown.svg';icon.alt='';icon.width=20;icon.height=20;terms.target='_blank';terms.rel='noopener noreferrer';
+ copy.append(el('strong','All sales are final.'),document.createTextNode(' Crowns are digital goods, so we cannot offer refunds except where the law requires it. '),terms);
+ note.append(icon,copy);return note;
 }
 let sdk;
 function loadCheckout(){
@@ -49,7 +52,7 @@ export async function treasury(view,state){
   grid.append(card);
  }
  if(!data.offers.length)grid.append(el('div','Crown packages will appear here once the treasury is connected.','empty'));
- view.append(el('p','Crowns do not expire and cannot be traded. They are separate from the Coins earned through play.','muted'));
+ view.append(el('p','Crowns do not expire and cannot be traded. They are separate from the Coins earned through play.','muted crown-fineprint'));
  view.append(el('p','Secure payments powered by Tebex.','muted'));
  if(state.user){
   const actions=el('div',undefined,'actions'),refresh=el('button','Refresh balance');
