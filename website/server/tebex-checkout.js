@@ -2,9 +2,17 @@ import crypto from 'node:crypto';
 import {route,requireUser,requireAdmin,HttpError} from './errors.js';
 import {saveSession,UUID} from './auth.js';
 import {checkoutView} from './tebex-headless.js';
+import {saleWindow,closedReason} from '../web/js/season-sale.js';
 
-export function mountTebexCheckout(app,cfg,headless,bridge){
+/** `seasons` lists published passes ({id,name,startsOn,endsOn}). A package mapped to a season sells only inside its window. */
+export function mountTebexCheckout(app,cfg,headless,bridge,seasons=async()=>[]){
  const packages=cfg.tebexPackages||[],busy=new Set();
+ // A package tied to a season the website does not know is closed, not open: fail safe.
+ async function sale(mapping){
+  if(!mapping.season)return null;
+  const pass=(await seasons().catch(()=>[])).find(s=>s.id===mapping.season);
+  return pass?{...saleWindow(pass),season:pass.name}:{state:'unknown',startsOn:null,endsOn:null,purchasable:false,season:''};
+ }
  const enabled=()=>Boolean(cfg.tebexCheckoutEnabled&&headless.configured&&!cfg.fixtures&&cfg.clientId&&cfg.clientSecret&&cfg.bridgeUrl&&cfg.bridgeToken);
  let listing,expires=0,inflight;
  async function catalog(){
@@ -15,7 +23,9 @@ export function mountTebexCheckout(app,cfg,headless,bridge){
  }
  app.get('/api/store',route(async(req,res)=>{
   const live=await catalog();
-  const offers=packages.map(p=>{const listing=live.find(l=>l.id===p.id&&l.type==='single'&&!l.requiresOptions);return listing?{...p,name:listing.name,price:listing.price,currency:listing.currency}:null;}).filter(p=>p&&Number.isFinite(p.price)&&p.price>=0&&/^[A-Z]{3}$/.test(p.currency));
+  const offers=(await Promise.all(packages.map(async p=>{const listing=live.find(l=>l.id===p.id&&l.type==='single'&&!l.requiresOptions);if(!listing)return null;
+   const offer={...p,name:listing.name,price:listing.price,currency:listing.currency};const window=await sale(p);if(window)offer.sale=window;return offer;})))
+   .filter(p=>p&&Number.isFinite(p.price)&&p.price>=0&&/^[A-Z]{3}$/.test(p.currency));
   res.set('Cache-Control','no-store').json({offers,checkoutEnabled:enabled()&&(!cfg.tebexAdminOnly||Boolean(req.session.user?.admin)),configured:headless.configured});
  }));
  app.get('/api/admin/commerce',requireAdmin,route(async(req,res)=>{
@@ -47,6 +57,8 @@ export function mountTebexCheckout(app,cfg,headless,bridge){
  }
  async function delivery(req,id){
   const mapping=packages.find(p=>p.id===id);if(!mapping)throw new HttpError(400,'Choose one of the available Crown packages.');
+  // Checked every time a checkout starts or resumes, never at delivery: a payment begun in time is always delivered.
+  const window=await sale(mapping);if(window&&!window.purchasable)throw new HttpError(409,closedReason(window.season,window));
   const live=(await catalog()).find(p=>p.id===id&&p.type==='single'&&!p.requiresOptions);if(!live)throw new HttpError(409,'This Crown package is unavailable.');
   const offers=await bridge.getCrownProducts();
   if(offers.source!=='game'||!offers.products?.some(p=>p.id===id&&p.revision===mapping.revision&&p.crowns===mapping.crowns))throw new HttpError(503,'Delivery for this package is not ready yet.');

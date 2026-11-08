@@ -1,6 +1,6 @@
 import express from 'express';import session from 'express-session';import connectPg from 'connect-pg-simple';import crypto from 'node:crypto';import path from 'node:path';
 import {root} from './config.js';import {createOidc,isAdmin,regenerate,saveSession,UUID} from './auth.js';import {createBridge,FIXTURE_UUID} from './bridge.js';import {createCatalog} from './catalog.js';import {createRenderQueue} from './render-queue.js';import {route,requireUser,requireAdmin,HttpError,errorHandler} from './errors.js';
-import {mountTebexRelay} from './tebex-relay.js';import {mountGameSync,mountUploadedArt} from './game-sync.js';import {exportNativeBundle} from './native-export.js';
+import {mountTebexRelay} from './tebex-relay.js';import {mountGameSync,mountUploadedArt,publicSeasons} from './game-sync.js';import {exportNativeBundle} from './native-export.js';
 import {createHeadless} from './tebex-headless.js';import {mountTebexCheckout} from './tebex-checkout.js';
 import {canonicalHost} from './canonical-host.js';import {mountPlayersOnline} from './players-online.js';
 export function createApp(cfg,repo){
@@ -29,7 +29,7 @@ export function createApp(cfg,repo){
  app.post('/auth/logout',route(async(req,res)=>{await new Promise((resolve,reject)=>req.session.destroy(e=>e?reject(e):resolve()));res.clearCookie('eternia.sid');res.json({ok:true});}));
  if(cfg.fixtures)app.post('/api/dev/login',route(async(req,res)=>{if(!['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress))throw new HttpError(403,'Local fixture login only');await regenerate(req);req.session.user={uuid:FIXTURE_UUID,name:'Local Explorer',admin:true,fixture:true};await saveSession(req);res.json({ok:true});}));
  app.get('/api/account',requireUser,route(async(req,res)=>res.set('Cache-Control','no-store').json(await bridge.getOverview(req.session.user.uuid))));
- mountTebexCheckout(app,cfg,createHeadless(cfg),bridge);
+ mountTebexCheckout(app,cfg,createHeadless(cfg),bridge,()=>publicSeasons(catalog));
  app.get('/api/admin/content',requireAdmin,route(async(req,res)=>res.json((await catalog.list()).map(({prefab,...rest})=>rest))));
  app.post('/api/admin/exports/native',requireAdmin,route(async(req,res)=>{
   const keys=req.body.contentKeys;if(!Array.isArray(keys)||!keys.length||keys.length>100||keys.some(k=>!UUID.test(k))||new Set(keys).size!==keys.length)throw new HttpError(400,'Choose 1–100 unique revision keys');

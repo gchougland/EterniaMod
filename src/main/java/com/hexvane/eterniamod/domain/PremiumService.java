@@ -10,9 +10,13 @@ import static com.hexvane.eterniamod.domain.DomainException.Code.*;
 public final class PremiumService extends DomainSupport {
     public static final String CROWNS="eternia:currency/crowns";
     public record Balance(long available,long owed) {}
+    /** {@code season} ties an item to a season's sale window (empty for ordinary items). A paid pass
+     * entitlement benefit ties the item to its season automatically. */
     public record Item(String id,int revision,String name,String description,String category,long price,
-                       List<CommerceService.Benefit> benefits) {
+                       List<CommerceService.Benefit> benefits,String season) {
+        public Item(String id,int revision,String name,String description,String category,long price,List<CommerceService.Benefit> benefits){this(id,revision,name,description,category,price,benefits,"");}
         public Item {
+            season=season==null?"":season.strip();if(!season.isEmpty())content(season);
             content(id);require(revision>0,INVALID_INPUT,"Invalid store revision");text(name,"item name",80);
             text(description,"description",240);text(category,"category",40);positive(price);
             benefits=List.copyOf(benefits);require(!benefits.isEmpty()&&benefits.size()<=20,INVALID_INPUT,"Invalid item benefits");
@@ -50,14 +54,28 @@ public final class PremiumService extends DomainSupport {
             require(tx.scan("premium_item").stream().map(PremiumService::decode).noneMatch(i->i.id().equals(itemId)&&i.revision()>revision),CONFLICT,"This item has changed. Reopen the store to review its current price.");
             require(item.price()==expectedPrice,CONFLICT,"This price has changed. Reopen the store.");
             require(!owned(tx,player,item),INVALID_STATE,"You already own this item.");
+            // Season items sell only inside their season's window. Retries of an earlier order returned above.
+            var season=seasonOf(item);
+            if(season.isPresent()){var sale=SeasonService.statusIn(tx,season.get(),clock.instant());require(sale.purchasable(),INVALID_STATE,com.hexvane.eterniamod.seasonsales.SeasonSaleText.rejection(sale));}
             require(net(tx,player)>=item.price(),INSUFFICIENT_BALANCE,"You need more Crowns for this item.");
             adjust(tx,player,-item.price());int n=0;var grants=new ArrayList<String>();
             for(var b:item.benefits()){String grant="crown-order:"+orderId+":"+(n++);ownership.grantIn(tx,new OwnershipService.GrantRequest(grant,Owner.player(player),b.contentId(),b.kind(),b.quantity(),null));grants.add(grant);}
             input.putAll(fields("name",item.name(),"state","DELIVERED","at",clock.instant(),"grants",String.join("\n",grants)));return order(tx.save("premium_order",orderId,0,input));
         });
     }
+    /** The season whose sale window governs this item, if any. */
+    public static Optional<String> seasonOf(Item item){
+        if(!item.season().isEmpty())return Optional.of(item.season());
+        return item.benefits().stream().map(b->SeasonService.seasonOfPaidEntitlement(b.contentId())).flatMap(Optional::stream).findFirst();
+    }
+    /** Sale status for each season item, keyed by item ID. Ordinary items are absent. */
+    public Map<String,SeasonService.SaleStatus> sales(Collection<Item> items,java.time.Instant now){
+        return store.transaction(tx->{var result=new TreeMap<String,SeasonService.SaleStatus>();
+            for(var item:items)seasonOf(item).ifPresent(season->result.put(item.id(),SeasonService.statusIn(tx,season,now)));
+            return Collections.unmodifiableMap(result);});
+    }
     public List<Order> orders(UUID player){return store.transaction(tx->tx.scan("premium_order").stream().filter(r->r.value("player").equals(player.toString())).map(PremiumService::order).toList());}
     private static Order order(TransactionalStore.Row r){return new Order(r.key(),r.value("item"),r.value("name"),r.number("price"),r.value("state"));}
-    private static Map<String,String> encode(Item i){var f=fields("id",i.id(),"revision",i.revision(),"name",i.name(),"description",i.description(),"category",i.category(),"price",i.price(),"count",i.benefits().size());for(int n=0;n<i.benefits().size();n++){var b=i.benefits().get(n);f.putAll(fields("b"+n+".id",b.contentId(),"b"+n+".kind",b.kind(),"b"+n+".quantity",b.quantity()));}return f;}
-    private static Item decode(TransactionalStore.Row r){var bs=new ArrayList<CommerceService.Benefit>();for(int n=0;n<r.number("count");n++)bs.add(new CommerceService.Benefit(r.value("b"+n+".id"),OwnershipService.Kind.valueOf(r.value("b"+n+".kind")),r.number("b"+n+".quantity"),false));return new Item(r.value("id"),(int)r.number("revision"),r.value("name"),r.value("description"),r.value("category"),r.number("price"),bs);}
+    private static Map<String,String> encode(Item i){var f=fields("id",i.id(),"revision",i.revision(),"name",i.name(),"description",i.description(),"category",i.category(),"price",i.price(),"count",i.benefits().size());if(!i.season().isEmpty())f.put("season",i.season());for(int n=0;n<i.benefits().size();n++){var b=i.benefits().get(n);f.putAll(fields("b"+n+".id",b.contentId(),"b"+n+".kind",b.kind(),"b"+n+".quantity",b.quantity()));}return f;}
+    private static Item decode(TransactionalStore.Row r){var bs=new ArrayList<CommerceService.Benefit>();for(int n=0;n<r.number("count");n++)bs.add(new CommerceService.Benefit(r.value("b"+n+".id"),OwnershipService.Kind.valueOf(r.value("b"+n+".kind")),r.number("b"+n+".quantity"),false));return new Item(r.value("id"),(int)r.number("revision"),r.value("name"),r.value("description"),r.value("category"),r.number("price"),bs,r.value("season"));}
 }

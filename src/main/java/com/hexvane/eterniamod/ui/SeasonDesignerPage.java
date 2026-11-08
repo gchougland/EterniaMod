@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.hexvane.eterniamod.EterniaModPlugin;
 import com.hexvane.eterniamod.authoring.*;
 import com.hexvane.eterniamod.domain.*;
+import com.hexvane.eterniamod.seasonsales.SeasonSaleText;
 import com.hexvane.eterniamod.setup.SetupAccess;
 import com.hexvane.eterniamod.socialui.SocialUiBootstrap;
 import com.hypixel.hytale.codec.*;
@@ -36,6 +37,7 @@ public final class SeasonDesignerPage extends EterniaInteractiveCustomUIPage<Sea
         c.set("#PassName.Value",has?selected.name:"");c.set("#PassName.IsReadOnly",!has||live);
         c.set("#PassDescription.Value",has?selected.description:"");c.set("#PassDescription.IsReadOnly",!has);
         c.set("#StartsOn.Value",has?selected.startsOn:"");c.set("#StartsOn.IsReadOnly",!has);c.set("#EndsOn.Value",has?selected.endsOn:"");c.set("#EndsOn.IsReadOnly",!has);
+        c.set("#SaleBox.Visible",has);if(has)showSale(c);
         c.set("#Levels.Value",has?Integer.toString(selected.thresholds.size()):"");c.set("#Levels.IsReadOnly",!has||live);
         c.set("#XpPerLevel.Value",has&&!selected.thresholds.isEmpty()?Long.toString(selected.thresholds.getFirst()):"");c.set("#XpPerLevel.IsReadOnly",!has||live);
         c.set("#PassState.Text",!has?"":live?"This pass is live. Its name, levels and rewards are fixed so players keep what they earned. You can still change the description and dates.":
@@ -50,10 +52,18 @@ public final class SeasonDesignerPage extends EterniaInteractiveCustomUIPage<Sea
         c.set("#SaveDraft.Disabled",!has||busy);c.set("#GoLive.Disabled",!has||live||busy);c.set("#GoLive.Text",confirmLive?"Confirm go live":"Go live");
         c.set("#Status.Text",message);
         for(String action:new String[]{"NewPass","RewardTrack","AddReward","CloseDesigner","SaveDraft","GoLive"})bind(e,"#"+action,action);
+        // Typing a date updates the sale summary at once, without rebuilding the fields being typed in.
+        if(has)for(String field:new String[]{"#StartsOn","#EndsOn"})bind(e,CustomUIEventBindingType.ValueChanged,field,"Dates");
         if(!loaded)load(ref,store,null);
     }
-    private void bind(UIEventBuilder e,String selector,String action){
-        e.addEventBinding(CustomUIEventBindingType.Activating,selector,new EventData().append("Action",action).append("@PassId","#PassId.Value").append("@PassName","#PassName.Value")
+    /** The sale window as written in the date fields: when Premium and this season's store items can be bought. */
+    private void showSale(UICommandBuilder c){
+        var summary=SeasonSaleText.designer(selected.startsOn,selected.endsOn,java.time.Instant.now());
+        c.set("#SaleHeadline.Text",summary.headline());c.set("#SaleDetail.Text",summary.detail());
+    }
+    private void bind(UIEventBuilder e,String selector,String action){bind(e,CustomUIEventBindingType.Activating,selector,action);}
+    private void bind(UIEventBuilder e,CustomUIEventBindingType type,String selector,String action){
+        e.addEventBinding(type,selector,new EventData().append("Action",action).append("@PassId","#PassId.Value").append("@PassName","#PassName.Value")
             .append("@PassDescription","#PassDescription.Value").append("@StartsOn","#StartsOn.Value").append("@EndsOn","#EndsOn.Value").append("@Levels","#Levels.Value")
             .append("@XpPerLevel","#XpPerLevel.Value").append("@RewardContent","#RewardContent.Value").append("@RewardLevel","#RewardLevel.Value").append("@RewardQty","#RewardQty.Value"),false);
     }
@@ -76,7 +86,9 @@ public final class SeasonDesignerPage extends EterniaInteractiveCustomUIPage<Sea
     @Override public void handleDataEvent(Ref<EntityStore> ref,Store<EntityStore> store,Data data){
         if(data.action==null||isDismissed())return;
         store.getExternalData().getWorld().execute(()->{if(!ref.isValid()||isDismissed())return;try{
-            SetupAccess.require(playerRef.getUuid());read(data);String action=data.action;
+            SetupAccess.require(playerRef.getUuid());String action=data.action;
+            if(action.equals("Dates")){if(selected==null)return;readDates(data);var update=new UICommandBuilder();showSale(update);sendUpdate(update,null,false);return;}
+            read(data);
             if(!action.equals("GoLive"))confirmLive=false;
             if(action.startsWith("Pick:")){int i=Integer.parseInt(action.substring(5));if(i<0||i>=passes.size())return;selected=copy(passes.get(i));unsaved=false;message=selected.live?"Live pass opened.":"Draft opened.";}
             else if(action.startsWith("Remove:")){int i=Integer.parseInt(action.substring(7));if(selected==null||selected.live||i<0||i>=selected.rewards.size())return;selected.rewards.remove(i);message="Reward removed. Save to keep the change.";}
@@ -97,7 +109,7 @@ public final class SeasonDesignerPage extends EterniaInteractiveCustomUIPage<Sea
         if(selected==null)return;
         if(unsaved&&d.passId!=null){String id=d.passId.strip().toLowerCase(Locale.ROOT);selected.id=id.contains(":")?id:"eternia:"+id;}
         if(d.description!=null)selected.description=d.description.strip();
-        if(d.startsOn!=null)selected.startsOn=d.startsOn.strip();if(d.endsOn!=null)selected.endsOn=d.endsOn.strip();
+        readDates(d);
         if(selected.live)return;
         if(d.name!=null)selected.name=d.name.strip();
         if(d.levels!=null&&d.xp!=null&&!d.levels.isBlank()&&!d.xp.isBlank()){
@@ -105,6 +117,7 @@ public final class SeasonDesignerPage extends EterniaInteractiveCustomUIPage<Sea
             if(levels!=selected.thresholds.size()||selected.thresholds.isEmpty()||xp!=selected.thresholds.getFirst())selected.thresholds=new ArrayList<>(ContentAuthoring.thresholds(levels,xp));
         }
     }
+    private void readDates(Data d){if(d.startsOn!=null)selected.startsOn=d.startsOn.strip();if(d.endsOn!=null)selected.endsOn=d.endsOn.strip();}
     private void addReward(){
         if(selected==null||selected.live)return;
         if(!rewardContent.matches("[a-z0-9_.-]+:[a-z0-9_./-]{1,150}"))throw new IllegalArgumentException("Write the content ID, like eternia:prop/aqua_lamp.");
@@ -137,9 +150,12 @@ public final class SeasonDesignerPage extends EterniaInteractiveCustomUIPage<Sea
                 pass.live=true;
             }
             try{drafts.save(pass);}catch(java.io.IOException e){throw new IllegalStateException("The pass could not be saved on the server.");}
+            // The game enforces the dates from now on: Premium and season items sell only inside them.
+            services.seasons().setSaleWindow(pass.id,SeasonService.SaleWindow.parse(pass.startsOn,pass.endsOn));
             return pass;
         }).thenCompose(saved->{
-            String done=goLive?"The pass is live in game.":"Saved in game.";
+            var sale=SeasonSaleText.designer(saved.startsOn,saved.endsOn,java.time.Instant.now());
+            String done=(goLive?"The pass is live in game. ":"Saved in game. ")+sale.headline()+".";
             if(!sync.configured())return CompletableFuture.completedFuture(done+" The website is not connected on this server.");
             return sync.season(ContentAuthoring.seasonUpload(saved,actor,actorName)).thenApply(r->{
                 saved.websiteRevision=r.revision();try{drafts.save(saved);}catch(java.io.IOException ignored){/* The upload already succeeded. */}

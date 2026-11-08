@@ -39,6 +39,76 @@ public final class SeasonService extends DomainSupport {
     private final EconomyService economy;
     SeasonService(TransactionalStore s,Clock c,Supplier<UUID> i,OwnershipService ownership,EconomyService economy){super(s,c,i);this.ownership=ownership;this.economy=economy;}
     public static String paidEntitlementId(String seasonId){content(seasonId);return "eternia:season_paid/"+seasonId.replace(':','/');}
+    /** The season whose premium track this content unlocks, if it is a paid pass entitlement. */
+    public static Optional<String> seasonOfPaidEntitlement(String contentId){
+        String prefix="eternia:season_paid/";if(contentId==null||!contentId.startsWith(prefix))return Optional.empty();
+        String rest=contentId.substring(prefix.length());int slash=rest.indexOf('/');if(slash<1||slash==rest.length()-1)return Optional.empty();
+        return Optional.of(rest.substring(0,slash)+":"+rest.substring(slash+1));
+    }
+
+    // ---- Sale windows: when a season's premium track and season store items can be bought ----
+
+    /** Where a season is in its sale period. Owned passes and items are never affected; this only gates new purchases. */
+    public enum SaleState {
+        /** No dates set: always on sale, as before sale windows existed. */ UNSCHEDULED,
+        /** Before the first day. */ UPCOMING,
+        /** Between the first and last day, inclusive. */ ON_SALE,
+        /** After the last day. */ ENDED;
+        public boolean purchasable(){return this==UNSCHEDULED||this==ON_SALE;}
+    }
+    /** Whole calendar days in UTC, the same clock as quest resets: open from 00:00 UTC on {@code startsOn}
+     * until 00:00 UTC the day after {@code endsOn}. Either end may be open (null). */
+    public record SaleWindow(LocalDate startsOn,LocalDate endsOn) {
+        public static final SaleWindow NONE=new SaleWindow(null,null);
+        public SaleWindow{require(startsOn==null||endsOn==null||!endsOn.isBefore(startsOn),INVALID_INPUT,"The end date is before the start date.");}
+        public static SaleWindow parse(String startsOn,String endsOn){return new SaleWindow(day(startsOn),day(endsOn));}
+        private static LocalDate day(String value){
+            if(value==null||value.isBlank())return null;
+            try{return LocalDate.parse(value.strip());}catch(DateTimeException e){throw new DomainException(INVALID_INPUT,"Write dates like 2026-12-01.");}
+        }
+        public boolean scheduled(){return startsOn!=null||endsOn!=null;}
+        public Instant opensAt(){return startsOn==null?null:startsOn.atStartOfDay(ZoneOffset.UTC).toInstant();}
+        /** The first instant that is no longer on sale. */
+        public Instant closesAt(){return endsOn==null?null:endsOn.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();}
+        public SaleState state(Instant now){
+            Objects.requireNonNull(now);if(!scheduled())return SaleState.UNSCHEDULED;
+            if(opensAt()!=null&&now.isBefore(opensAt()))return SaleState.UPCOMING;
+            if(closesAt()!=null&&!now.isBefore(closesAt()))return SaleState.ENDED;
+            return SaleState.ON_SALE;
+        }
+    }
+    /** What views show. {@code name} is the season's display name, or empty when the pass is not registered yet. */
+    public record SaleStatus(String seasonId,String name,SaleState state,SaleWindow window) {
+        public boolean purchasable(){return state.purchasable();}
+    }
+    private static final String WINDOW="seasonsales_window";
+    /** Admin set. Dates may change while a season is live; a blank window removes the limit. */
+    public void setSaleWindow(String seasonId,SaleWindow window){
+        content(seasonId);Objects.requireNonNull(window);
+        var data=fields("startsOn",window.startsOn,"endsOn",window.endsOn);
+        store.transaction(tx->{var old=tx.find(WINDOW,seasonId);if(old.isEmpty()||!old.get().fields().equals(data))tx.save(WINDOW,seasonId,old.map(TransactionalStore.Row::revision).orElse(0L),data);return null;});
+    }
+    /** The authority clock, so views judge sale windows by the same time the purchase check uses. */
+    public Instant now(){return clock.instant();}
+    public SaleWindow saleWindow(String seasonId){return store.transaction(tx->windowIn(tx,seasonId));}
+    public SaleStatus saleStatus(String seasonId){return saleStatus(seasonId,clock.instant());}
+    public SaleStatus saleStatus(String seasonId,Instant now){return store.transaction(tx->statusIn(tx,seasonId,now));}
+    /** Whether the premium track and season items of this season can be bought at {@code now}. */
+    public boolean purchasable(String seasonId,Instant now){return saleStatus(seasonId,now).purchasable();}
+    /** Every registered season plus any season with dates, for views that list many at once. */
+    public Map<String,SaleStatus> saleStatuses(Instant now){
+        return store.transaction(tx->{var result=new TreeMap<String,SaleStatus>();
+            for(var row:tx.scan("season_definition"))result.put(row.key(),statusIn(tx,row.key(),now));
+            for(var row:tx.scan(WINDOW))result.computeIfAbsent(row.key(),id->statusIn(tx,id,now));
+            return Collections.unmodifiableMap(result);});
+    }
+    static SaleWindow windowIn(TransactionalStore.Transaction tx,String seasonId){
+        return tx.find(WINDOW,seasonId).map(r->SaleWindow.parse(r.value("startsOn"),r.value("endsOn"))).orElse(SaleWindow.NONE);
+    }
+    static SaleStatus statusIn(TransactionalStore.Transaction tx,String seasonId,Instant now){
+        var window=windowIn(tx,seasonId);String name=tx.find("season_definition",seasonId).map(r->r.value("name")).orElse("");
+        return new SaleStatus(seasonId,name,window.state(now),window);
+    }
     /** Requirements and rewards are immutable; quest display text can be revised. */
     public void register(Definition definition){
         store.transaction(tx->{Map<String,String> encoded=encode(definition);var previous=tx.find("season_definition",definition.id);

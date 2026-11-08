@@ -47,6 +47,7 @@ $T.@CodexScreen {
             Label { Anchor: (Height: 30); Text: "YOUR NEXT FIND"; Style: $T.@CodexKickerStyle; }
             Label #SelectedName { Anchor: (Height: 58); Style: (...$T.@TitleStyle, FontSize: 30, Wrap: true); }
             Label #SelectedDescription { Anchor: (Height: 100); Style: (...$T.@DefaultLabelStyle, FontSize: 17); }
+            Label #SaleNote { Visible: false; Anchor: (Height: 54, Bottom: 6); Style: (...$T.@DefaultLabelStyle, FontSize: 16, TextColor: $T.@Primary); }
             Label { Anchor: (Height: 70); Text: "Your item is delivered right away. Crowns are separate from the Coins used in player shops."; Style: $T.@MutedStyle; }
           }
           Group #PriceSummary { Anchor: (Height: 104, Bottom: 14); Padding: (Full: 16); Background: $T.@JournalInsetSurface; LayoutMode: Left;

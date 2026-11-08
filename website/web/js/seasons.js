@@ -1,4 +1,5 @@
 import {api,el} from './api.js';
+import {saleWindow,saleBadge,premiumNote} from './season-sale.js';
 
 // Season passes in the same Codex layout as the in-game Journal: passes on the left, the open pass and its reward track on the right.
 const ICONS={plot:'plot',prop:'furnishing',addition:'addition',house:'housing',title:'title',wearable:'wardrobe',outfit:'wardrobe',pet:'pet',mount:'mount',palette:'palette',path:'path',plot_move_credit:'move',move:'move',season:'season',season_paid:'season',guild_voucher:'charter',convenience:'worlds',currency:'crown',crowns:'crown'};
@@ -13,6 +14,8 @@ export function picture(contentId,alt){
  img.onerror=()=>{img.onerror=null;img.src=fallback;img.classList.add('art-icon');};return img;
 }
 function icon(name,size){const img=el('img');img.src='/media/catalog/icons/'+name+'.svg';img.alt='';img.width=size;img.height=size;return img;}
+
+function badge(sale,cls){const b=saleBadge(sale);if(!b)return null;const tag=el('span',b.text,cls+' '+b.tone);tag.title=b.title;return tag;}
 
 function levelOf(pass,progress){
  if(progress?.level!=null)return progress.level;
@@ -47,9 +50,13 @@ function passView(pass,progress){
   fill.style.width=Math.min(100,Math.round(xp/Math.max(1,pass.totalXp)*100))+'%';bar.append(fill);bar.setAttribute('role','img');bar.setAttribute('aria-label',number.format(xp)+' of '+number.format(pass.totalXp)+' season points');
   const row=el('div',undefined,'pass-bar-text');row.append(el('span',number.format(xp)+' season points'),el('span',next?number.format(next-xp)+' to level '+(level+1):'Every level reached'));
   const meta=el('div',undefined,'pass-progress');meta.append(bar,row);
-  meta.append(el('p',progress.paid?'Both tracks are yours.':'The free track is yours. A Premium pass unlocks the second track.','muted'));
+  meta.append(el('p',progress.paid?'Both tracks are yours, forever.':'The free track is yours. A Premium pass unlocks the second track.','muted'));
   panel.append(meta);
  }else panel.append(el('p','Sign in with Hytale to see your level and progress on this pass.','pass-signin'));
+ if(!progress?.paid){
+  const sale=saleWindow(pass),strip=el('div',undefined,'pass-sale '+sale.state),tag=badge(sale,'sale-badge');
+  if(tag)strip.append(tag);strip.append(el('p',premiumNote(pass,sale)));panel.append(strip);
+ }
  const tracks=el('div',undefined,'track-head');tracks.append(el('span','Level'),el('span','Free track','free'),el('span','Premium track','paid'));panel.append(tracks);
  const byLevel=new Map();for(const r of pass.rewards||[]){const tier=byLevel.get(r.level)||{free:[],paid:[]};tier[r.track==='PAID'?'paid':'free'].push(r);byLevel.set(r.level,tier);}
  const rows=el('ol',undefined,'reward-rows');
@@ -59,7 +66,7 @@ function passView(pass,progress){
   row.append(label,rewardCard(tier.free[i],'free',progress,level),rewardCard(tier.paid[i],'paid',progress,level));rows.append(row);
  }}
  panel.append(rows.children.length?rows:el('p','Rewards for this pass have not been published yet.','muted'));
- panel.append(el('p','Every season pass stays available forever. Earn points through quests and everyday play in Eternia.','pass-footnote'));
+ panel.append(el('p','A season pass you own stays yours forever. Premium can be bought only while its season runs. Earn points through quests and everyday play in Eternia.','pass-footnote'));
  return panel;
 }
 
@@ -75,8 +82,10 @@ function banner(pass,index,progress,link){
   const level=levelOf(pass,progress),bar=el('div',undefined,'banner-bar'),fill=el('span');
   fill.style.width=Math.min(100,Math.round((progress.xp||0)/Math.max(1,pass.totalXp)*100))+'%';bar.append(fill);
   cloth.append(el('strong','Level '+level+' of '+pass.levels,'banner-level'),bar);
-  const tags=el('div',undefined,'banner-tags');if(progress.active)tags.append(el('span','Active','banner-tag'));if(progress.paid)tags.append(el('span','Premium','banner-tag gold'));cloth.append(tags);
- }else cloth.append(el('strong',pass.levels+' levels','banner-level'));
+  const tags=el('div',undefined,'banner-tags');if(progress.active)tags.append(el('span','Active','banner-tag'));if(progress.paid)tags.append(el('span','Premium','banner-tag gold'));
+  else{const tag=badge(saleWindow(pass),'banner-tag');if(tag)tags.append(tag);}
+  cloth.append(tags);
+ }else{cloth.append(el('strong',pass.levels+' levels','banner-level'));const tag=badge(saleWindow(pass),'banner-tag');if(tag){const tags=el('div',undefined,'banner-tags');tags.append(tag);cloth.append(tags);}}
  if(link)cloth.append(el('span','View pass','banner-cta'));
  b.append(el('span',undefined,'banner-rod'),cloth);return b;
 }
@@ -88,7 +97,7 @@ export async function seasons(view,state){
  const mine=pass=>state.user?progress.get(key(pass.id))||{xp:0,paid:false}:null;
  const wanted=new URLSearchParams(location.search).get('pass'),index=passes.findIndex(p=>key(p.id)===wanted);
  if(index<0){
-  view.append(el('div','Season passes','eyebrow'),el('h1','Your next chapter.'),el('p','Choose a pass to see every reward. Passes never expire, and your progress on each one is kept.','muted'));
+  view.append(el('div','Season passes','eyebrow'),el('h1','Your next chapter.'),el('p','Choose a pass to see every reward. Passes you own never expire, and your progress on each one is kept.','muted'));
   if(error)view.append(el('div',error,'notice error'));
   if(!passes.length){view.append(el('div','Season passes will appear here when the first one opens.','empty'));return;}
   const row=el('div',undefined,'banner-row');passes.forEach((pass,i)=>row.append(banner(pass,i,mine(pass),true)));view.append(row);
