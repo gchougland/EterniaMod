@@ -17,7 +17,7 @@ public enum HexShape {
     TRIANGLE("Manor", List.of(HexCoord.ORIGIN, new HexCoord(1, 0), new HexCoord(0, 1)), 22),
     /** Tightest shape for a 38 x 38 keep, with no room to nudge it. Kept as an option. */
     DIAMOND("Hall", List.of(HexCoord.ORIGIN, new HexCoord(1, 0), new HexCoord(-1, 1), new HexCoord(0, 1)), 38),
-    /** Proposed guild keep: a centre cell and its six neighbours, up to 38 x 38 with room to spare. */
+    /** Guild keep and estate start shape: a centre cell and its six neighbours, up to 38 x 38 with room to spare. */
     FLOWER("Keep", HexCoord.disk(HexCoord.ORIGIN, 1), 38);
 
     private final String displayName;

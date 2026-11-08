@@ -88,12 +88,85 @@ class HexClaimRulesTest {
 
     @Test void yardAllowanceIsPerCell() {
         Set<HexCoord> plotCells = Set.of(SOUTH, new HexCoord(0, 2));
-        Map<HexCoord, Integer> used = Map.of(SOUTH, HexClaimRules.PROPS_PER_CELL);
+        Map<HexCoord, Integer> used = Map.of(SOUTH, HexPlotSettings.DEFAULTS.propsPerCell());
         assertEquals("cellFull", HexClaimRules.placeProp(plotCells, used, SOUTH).code());
         assertTrue(HexClaimRules.placeProp(plotCells, used, new HexCoord(0, 2)).valid());
         assertEquals("outside", HexClaimRules.placeProp(plotCells, used, FAR).code());
-        assertEquals(1, HexClaimRules.startCells(HexClaimRules.Kind.PUBLIC, false));
-        assertEquals(3, HexClaimRules.startCells(HexClaimRules.Kind.GUILD_MEMBER, true));
-        assertEquals(7, HexClaimRules.startCells(HexClaimRules.Kind.GUILD_ESTATE, false));
+        assertEquals(1, HexPlotSettings.DEFAULTS.startCells(HexClaimRules.Kind.PUBLIC, false));
+        assertEquals(3, HexPlotSettings.DEFAULTS.startCells(HexClaimRules.Kind.GUILD_MEMBER, true));
+        assertEquals(7, HexPlotSettings.DEFAULTS.startCells(HexClaimRules.Kind.GUILD_ESTATE, false));
+    }
+
+    // Ported from HousingRulesTest: the same intent, in cells.
+
+    @Test void soloGuildTestingKeepsProductionThresholdAndPlacementRules() {
+        var land = land(Map.of());
+        Set<HexCoord> flower = Set.copyOf(HexCoord.disk(new HexCoord(0, 2), 1));
+        var settings = HexPlotSettings.DEFAULTS;
+        var solo = new HexClaimRules.Candidate(HexClaimRules.Kind.GUILD_ESTATE, false, 1, false, false);
+        assertEquals(HexClaimRules.Reason.MEMBERS, HexClaimRules.claim(land, solo, flower, Set.of(), settings).reason());
+        assertEquals(5, HexClaimRules.claim(land, solo, flower, Set.of(), settings).count());
+        var local = new HexClaimRules.Candidate(HexClaimRules.Kind.GUILD_ESTATE, false, 1, false, true);
+        assertTrue(HexClaimRules.claim(land, local, flower, Set.of(), settings).valid());
+        Set<HexCoord> farFlower = Set.copyOf(HexCoord.disk(new HexCoord(0, 6), 1));
+        assertEquals(HexClaimRules.Reason.ROAD, HexClaimRules.claim(land, local, farFlower, Set.of(), settings).reason(), "estates still need frontage");
+        var already = new HexClaimRules.Candidate(HexClaimRules.Kind.GUILD_ESTATE, false, 9, true, false);
+        assertEquals(HexClaimRules.Reason.GUILD_SLOT, HexClaimRules.claim(land, already, flower, Set.of(), settings).reason());
+        var occupied = land(Map.of(new HexCoord(0, 2), UUID.randomUUID()));
+        assertEquals(HexClaimRules.Reason.TAKEN, HexClaimRules.claim(occupied, local, flower, Set.of(), settings).reason());
+    }
+
+    @Test void startShapeMustBeTheEntitledShape() {
+        var land = land(Map.of());
+        Set<HexCoord> line = Set.of(SOUTH, new HexCoord(1, 1), new HexCoord(2, 1));
+        assertEquals(HexClaimRules.Reason.SHAPE, HexClaimRules.claim(land, HexClaimRules.Kind.PUBLIC, true, line, Set.of()).reason());
+        Set<HexCoord> notFlower = Set.of(new HexCoord(0, 1), new HexCoord(1, 1), new HexCoord(0, 2), new HexCoord(-1, 2), new HexCoord(1, 2), new HexCoord(0, 3), new HexCoord(0, 4));
+        assertEquals(HexClaimRules.Reason.SHAPE, HexClaimRules.claim(land, HexClaimRules.Kind.GUILD_ESTATE, false, notFlower, Set.of()).reason(), "seven cells but not a flower");
+        for (Set<HexCoord> turn : HexShape.TRIANGLE.variants()) {
+            Set<HexCoord> placed = new java.util.HashSet<>();
+            for (HexCoord c : turn) placed.add(c.plus(new HexCoord(0, 1)));
+            if (placed.stream().noneMatch(land.street()::contains))
+                assertTrue(HexClaimRules.claim(land, HexClaimRules.Kind.PUBLIC, true, placed, Set.of()).valid(), "every turn of the triangle: " + placed);
+        }
+        assertTrue(HexClaimRules.sameShape(Set.of(HexCoord.ORIGIN, new HexCoord(1, 0)), Set.of(new HexCoord(5, 5), new HexCoord(6, 5))));
+        assertFalse(HexClaimRules.sameShape(Set.of(HexCoord.ORIGIN, new HexCoord(1, 0)), Set.of(new HexCoord(5, 5), new HexCoord(5, 6))), "turned is not the same");
+    }
+
+    @Test void guildMemberChainCannotBeUsedByPublicOrDifferentGuild() {
+        var land = land(Map.of());
+        Set<HexCoord> estate = Set.copyOf(HexCoord.disk(new HexCoord(0, 2), 1));
+        Set<HexCoord> joinedMember = Set.of(new HexCoord(0, 4));
+        Set<HexCoord> floating = Set.of(new HexCoord(5, 6));
+        Set<HexCoord> anchors = HexClaimRules.joinedGuildLand(estate, List.of(joinedMember, floating));
+        assertTrue(anchors.containsAll(joinedMember));
+        assertFalse(anchors.containsAll(floating), "a member plot not touching guild land does not extend it");
+        HexCoord next = new HexCoord(0, 5);
+        assertTrue(HexClaimRules.claim(land, HexClaimRules.Kind.GUILD_MEMBER, false, Set.of(next), anchors).valid(), "touches a joined member plot");
+        assertEquals(HexClaimRules.Reason.ANCHOR, HexClaimRules.claim(land, HexClaimRules.Kind.GUILD_MEMBER, false, Set.of(next), HexClaimRules.joinedGuildLand(Set.of(), List.of(joinedMember))).reason(), "no estate, no chain");
+        assertEquals(HexClaimRules.Reason.ROAD, HexClaimRules.claim(land, HexClaimRules.Kind.PUBLIC, false, Set.of(next), anchors).reason(), "public plots ignore guild land");
+        assertEquals(HexClaimRules.Reason.ANCHOR, HexClaimRules.claim(land, HexClaimRules.Kind.GUILD_MEMBER, false, Set.of(new HexCoord(5, 7)), anchors).reason());
+    }
+
+    @Test void roadsMayRunBesidePlotsButNeverStructures() {
+        var plot = PlotCells.of(L, List.of(SOUTH));
+        var box = L.bounds(SOUTH);
+        var house = new PlotRect(box.x() + 9, box.z() + 11, 14, 14);
+        assertTrue(HexClaimRules.structure(plot, house, ROAD, HexPlotSettings.DEFAULTS).valid(), "the 14 block house fits one cell with the setback");
+        assertEquals(HexClaimRules.Reason.SETBACK, HexClaimRules.structure(plot, new PlotRect(box.x() + 9, box.z() + 11, 14, 15), ROAD, HexPlotSettings.DEFAULTS).reason());
+        var roadBeside = List.of(new PlotRect(box.x() + 9, house.endZ() + 2, 14, 1));
+        assertEquals(HexClaimRules.Reason.ROAD_SETBACK, HexClaimRules.structure(plot, house, roadBeside, HexPlotSettings.DEFAULTS).reason());
+    }
+
+    @Test void expansionUsesDataCapsAndReportsCount() {
+        UUID plot = UUID.randomUUID();
+        Map<HexCoord, UUID> owners = new HashMap<>();
+        for (HexCoord c : List.of(SOUTH, new HexCoord(1, 1), new HexCoord(0, 2))) owners.put(c, plot);
+        var tight = new HexPlotSettings(32, 20, null, 1, 19, 0, 0, 1000, 24, 2, 5, 5);
+        assertEquals(3, tight.maxCells(HexClaimRules.Kind.PUBLIC), "a cap never drops below the largest start shape");
+        var result = HexClaimRules.expand(land(owners), HexClaimRules.Kind.PUBLIC, plot, new HexCoord(-1, 2), tight);
+        assertEquals(HexClaimRules.Reason.LIMIT, result.reason());
+        assertEquals("Your plot is as large as it can grow.", result.message());
+        assertEquals("You need 3,000 coins for this hexagon.", HexClaimRules.Result.of(HexClaimRules.Reason.COINS, 3000).message());
+        assertTrue(HexClaimRules.expand(land(owners), HexClaimRules.Kind.PUBLIC, plot, new HexCoord(-1, 2), HexPlotSettings.DEFAULTS).valid());
     }
 }

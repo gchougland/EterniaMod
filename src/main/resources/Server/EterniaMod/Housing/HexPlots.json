@@ -1,0 +1,17 @@
+{
+  "Lattice": { "CellWidth": 32, "BodyDepth": 20 },
+  "StartShapes": {
+    "Public": "Single",
+    "PublicUpgraded": "Triangle",
+    "GuildEstate": "Flower",
+    "GuildEstateUpgraded": "Flower",
+    "GuildMember": "Single",
+    "GuildMemberUpgraded": "Triangle"
+  },
+  "MaxCells": { "Personal": 7, "GuildEstate": 19 },
+  "ClaimPrice": { "Coins": 0 },
+  "ExpansionPrice": { "Coins": 0, "CoinsPerOwnedCell": 1000 },
+  "PerCell": { "Props": 24, "Generators": 2 },
+  "HouseSetback": 5,
+  "GuildEstateMembers": 5
+}

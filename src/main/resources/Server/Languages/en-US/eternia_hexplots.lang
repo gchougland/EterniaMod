@@ -1,0 +1,54 @@
+# Hex plot rule results. {count} is a number of hexagons, members, coins or blocks.
+
+reason.allowed=This plot can be claimed.
+reason.expandAllowed=This hexagon can join your plot.
+reason.placeAllowed=There is room here.
+reason.lattice=This world does not use hexagon plots.
+reason.world=Use your plot deed in a world with housing.
+reason.hasPlot=You already have a plot. Open My Plots to find it or move it.
+reason.recovery=Your plot needs a moment to recover. Open My Plots to see how it is doing.
+reason.permission=Your guild role cannot claim the guild estate.
+reason.upgrade=Unlock the larger plot before claiming it.
+reason.packed=Your packed plot is waiting. Open My Plots to set it down again.
+reason.legacy=Your old house needs to move before you can claim another plot.
+reason.roadWork=Builders are still finishing a road here. Try again soon.
+reason.sizeOne=Choose one hexagon for your plot.
+reason.size=Choose {count} hexagons that touch each other.
+reason.shape=Your hexagons need to make the shape your plot allows.
+reason.restoreShape=Your packed plot needs the same shape it had before. Pick hexagons in that shape.
+reason.contiguous=Your hexagons must all touch each other.
+reason.street=Streets and plazas stay open to everyone. Pick a hexagon beside the road.
+reason.taken=Someone already lives on this hexagon.
+reason.reserved=Someone is claiming this hexagon right now. Pick another one.
+reason.blocked=Builders are working on this ground. Pick another hexagon for now.
+reason.road=Your plot needs a hexagon right beside a public road.
+reason.anchor=Pick a hexagon touching your guild's land.
+reason.members=A guild needs at least {count} members to claim its estate.
+reason.guildSlot=Your guild already has an estate.
+reason.noPlot=You need a plot before you can grow it.
+reason.limit=Your plot is as large as it can grow.
+reason.owned=This hexagon is already part of your plot.
+reason.touch=New hexagons must share a side with your plot.
+reason.changed=Your plot changed a moment ago. Look again and try once more.
+reason.coins=You need {count} coins for this hexagon.
+reason.outside=This goes on your own plot.
+reason.cellFull=This hexagon is full. Try another part of your plot, or grow your plot.
+reason.generatorsFull=This hexagon has all the generators it can hold. Try another part of your plot.
+reason.setback=Houses need {count} clear blocks inside the plot border.
+reason.roadSetback=Houses need five clear blocks from roads.
+
+# What a hexagon is to the player looking at it (claim map legend, map overlay tooltips).
+state.street=Street
+state.frontage_free=Free to claim
+state.free=Open land
+state.mine=Your plot
+state.my_guild=Your guild
+state.other_player=A neighbour
+state.other_guild=Another guild
+state.reserved=Being claimed
+
+# Plot shapes, named by the house they hold.
+shape.single=Cottage plot
+shape.triangle=Manor plot
+shape.diamond=Hall plot
+shape.flower=Keep plot

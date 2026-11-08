@@ -20,6 +20,16 @@ record ClaimEligibility(UUID actor,HousingRules.Scope scope,boolean paid,UUID gu
         });
     }
     boolean matches(HousingRules.Scope wantedScope,boolean wantedPaid){return scope==wantedScope&&paid==wantedPaid;}
+    /** Hex form of {@link #check}: account level reasons a hex claim is refused before any land rule, or null. */
+    com.hexvane.eterniamod.hexplots.HexClaimRules.Result checkCells(com.hexvane.eterniamod.hexplots.PlotCells cells){
+        if(slot!=null&&slot.state()!=HousingService.State.PACKED)return com.hexvane.eterniamod.hexplots.HexClaimRules.Result.of(slot.state()==HousingService.State.ACTIVE?com.hexvane.eterniamod.hexplots.HexClaimRules.Reason.HAS_PLOT:com.hexvane.eterniamod.hexplots.HexClaimRules.Reason.RECOVERY);
+        if(location!=null&&(location.cells()==null||!com.hexvane.eterniamod.hexplots.HexClaimRules.sameShape(location.cells().cells(),cells.cells())))return com.hexvane.eterniamod.hexplots.HexClaimRules.Result.of(com.hexvane.eterniamod.hexplots.HexClaimRules.Reason.RESTORE_SHAPE);
+        if(!canClaim)return com.hexvane.eterniamod.hexplots.HexClaimRules.Result.of(com.hexvane.eterniamod.hexplots.HexClaimRules.Reason.PERMISSION);
+        if(!hasUpgrade)return com.hexvane.eterniamod.hexplots.HexClaimRules.Result.of(com.hexvane.eterniamod.hexplots.HexClaimRules.Reason.UPGRADE);
+        return null;
+    }
+    /** The hex rule kind for this claim scope. */
+    com.hexvane.eterniamod.hexplots.HexClaimRules.Kind hexKind(){return HexClaimCheck.kind(scope);}
     HousingRules.Result check(PlotRect rect){
         if(slot!=null&&slot.state()!=HousingService.State.PACKED)return new HousingRules.Result(false,"slot",slot.state()==HousingService.State.ACTIVE?"You already have a plot. Open My plots to find it or move it.":"Your plot needs recovery. Open My plots to see its status.");
         if(location!=null&&(rect.width()<location.width()||rect.depth()<location.depth()||(rect.width()-location.width())%2!=0||(rect.depth()-location.depth())%2!=0))return new HousingRules.Result(false,"restoreSize","Choose your packed plot's size or a larger size that fits its contents.");

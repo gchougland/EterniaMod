@@ -17,6 +17,7 @@ public final class InfrastructureRules {
     public static void validate(HousingInfrastructure.WorldPlan before,HousingInfrastructure.WorldPlan after,List<HousingRules.Anchor> claims,List<PlotRect> pending,PublicRoadNetwork oldNetwork,PublicRoadNetwork newNetwork) {
         Objects.requireNonNull(after);
         if(!claims.isEmpty()&&!after.supportsHousing())throw new IllegalArgumentException("This world has housing claims. Move them before disabling housing.");
+        if(!claims.isEmpty()&&before!=null&&(before.shape()!=after.shape()||!Objects.equals(before.lattice(),after.lattice())))throw new IllegalArgumentException("This world has plots. Pack or unclaim every plot before changing its plot shape or hexagon grid.");
         if(!pending.isEmpty()&&(before==null||!before.role().equals(after.role())||before.supportsHousing()!=after.supportsHousing()))throw new IllegalArgumentException("Finish or remove protected construction operations before changing this world's role or housing policy.");
         Map<String,HousingInfrastructure.Area> oldAreas=before==null?Map.of():before.areas();
         var ids=new HashSet<>(oldAreas.keySet());ids.addAll(after.areas().keySet());

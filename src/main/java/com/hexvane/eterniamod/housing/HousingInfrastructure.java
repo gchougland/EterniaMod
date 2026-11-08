@@ -21,8 +21,15 @@ public final class HousingInfrastructure {
     public record Area(AreaKind kind, PlotRect rect) {
         public Area { Objects.requireNonNull(kind); Objects.requireNonNull(rect); }
     }
-    public record WorldPlan(String role, List<PlotRect> roads, List<PlotRect> portals, Point arrival, boolean housingEnabled, Map<String,Area> areas, String description) {
+    /**
+     * One world's setup. {@code plotShape} and {@code lattice} are optional in the file: a world saved before hex
+     * plots reads as {@link com.hexvane.eterniamod.hexplots.PlotShape#RECT} with no lattice. A hex world always has a
+     * lattice. Use {@link #shape()} and {@link #hexLattice()} rather than the raw components.
+     */
+    public record WorldPlan(String role, List<PlotRect> roads, List<PlotRect> portals, Point arrival, boolean housingEnabled, Map<String,Area> areas, String description,
+                            com.hexvane.eterniamod.hexplots.PlotShape plotShape, com.hexvane.eterniamod.hexplots.HexLattice lattice) {
         public WorldPlan {
+            if (plotShape == com.hexvane.eterniamod.hexplots.PlotShape.HEX && lattice == null) throw new IllegalArgumentException("A hex plot world needs a lattice");
             description = normalizeDescription(description);
             if (!Set.of("hub", "housing", "adventure").contains(role)) throw new IllegalArgumentException("Unknown world role: " + role);
             if (housingEnabled && role.equals("adventure")) throw new IllegalArgumentException("Housing cannot be enabled in an adventure world");
@@ -48,9 +55,26 @@ public final class HousingInfrastructure {
         }
         public WorldPlan(String role, List<PlotRect> roads, List<PlotRect> portals, Point arrival, boolean housingEnabled) { this(role,roads,portals,arrival,housingEnabled,null); }
         public WorldPlan(String role, List<PlotRect> roads, List<PlotRect> portals, Point arrival, boolean housingEnabled, Map<String,Area> areas) { this(role,roads,portals,arrival,housingEnabled,areas,""); }
-        public WorldPlan withRole(String role,boolean housing) { return new WorldPlan(role,roads,portals,arrival,housing,areas,description); }
-        public WorldPlan withArrival(Point point) { return new WorldPlan(role,roads,portals,point,housingEnabled,areas,description); }
-        public WorldPlan withDescription(String value) { return new WorldPlan(role,roads,portals,arrival,housingEnabled,areas,value); }
+        public WorldPlan(String role, List<PlotRect> roads, List<PlotRect> portals, Point arrival, boolean housingEnabled, Map<String,Area> areas, String description) { this(role,roads,portals,arrival,housingEnabled,areas,description,null,null); }
+        public WorldPlan withRole(String role,boolean housing) { return new WorldPlan(role,roads,portals,arrival,housing,areas,description,plotShape,lattice); }
+        public WorldPlan withArrival(Point point) { return new WorldPlan(role,roads,portals,point,housingEnabled,areas,description,plotShape,lattice); }
+        public WorldPlan withDescription(String value) { return new WorldPlan(role,roads,portals,arrival,housingEnabled,areas,value,plotShape,lattice); }
+        /** How this world cuts plots; {@code RECT} for every world saved before hex plots. */
+        public com.hexvane.eterniamod.hexplots.PlotShape shape() { return plotShape == null ? com.hexvane.eterniamod.hexplots.PlotShape.RECT : plotShape; }
+        /** True when housing is on and plots here are hexagons. */
+        public boolean hexPlots() { return supportsHousing() && shape() == com.hexvane.eterniamod.hexplots.PlotShape.HEX; }
+        /** The world's lattice, present for every hex world and for rect worlds an admin has previewed one in. */
+        public Optional<com.hexvane.eterniamod.hexplots.HexLattice> hexLattice() { return Optional.ofNullable(lattice); }
+        /** Same plan with another plot shape and lattice. Admin setup refuses this while the world has claims. */
+        public WorldPlan withPlots(com.hexvane.eterniamod.hexplots.PlotShape shape,com.hexvane.eterniamod.hexplots.HexLattice value) { return new WorldPlan(role,roads,portals,arrival,housingEnabled,areas,description,shape,value); }
+        /**
+         * A world becoming a housing world for the first time gets hex plots on the default lattice. A plan that
+         * already chose a shape (including an explicit {@code rect}) keeps it.
+         */
+        public WorldPlan withHousingDefaults(com.hexvane.eterniamod.hexplots.HexLattice defaultLattice) {
+            if (!supportsHousing() || plotShape != null) return this;
+            return withPlots(com.hexvane.eterniamod.hexplots.PlotShape.HEX, lattice != null ? lattice : Objects.requireNonNull(defaultLattice));
+        }
         public static String normalizeDescription(String value) {
             if (value == null) return "";
             if (value.length() > 160 || value.codePoints().anyMatch(c -> Character.isISOControl(c) && c != '\n' && c != '\r' && c != '\t'))
@@ -59,7 +83,7 @@ public final class HousingInfrastructure {
         }
         public WorldPlan withAreas(Map<String,Area> values) {
             var sorted=new TreeMap<>(values);
-            return new WorldPlan(role,sorted.values().stream().filter(a->a.kind==AreaKind.ROAD).map(Area::rect).toList(),sorted.values().stream().filter(a->a.kind==AreaKind.PORTAL).map(Area::rect).toList(),arrival,housingEnabled,sorted,description);
+            return new WorldPlan(role,sorted.values().stream().filter(a->a.kind==AreaKind.ROAD).map(Area::rect).toList(),sorted.values().stream().filter(a->a.kind==AreaKind.PORTAL).map(Area::rect).toList(),arrival,housingEnabled,sorted,description,plotShape,lattice);
         }
         public boolean supportsHousing() { return role.equals("housing") || housingEnabled; }
         /** A residential hub keeps public travel at its portals; distant homes still need their convenience unlock. */
@@ -99,7 +123,25 @@ public final class HousingInfrastructure {
             }
             Files.move(pending,file,StandardCopyOption.ATOMIC_MOVE,StandardCopyOption.REPLACE_EXISTING);
         }finally{Files.deleteIfExists(pending);}
+        var previous=worlds.get(name);
         worlds=Map.copyOf(validated.worlds);revision=validated.revision;loadedHash=hash(bytes);
+        announceLandChange(name,previous,validated.worlds.get(name));
+    }
+    /** Tells hex land listeners which street cells a setup change touched (or the whole world for a new grid). */
+    private static void announceLandChange(String world,WorldPlan before,WorldPlan after) {
+        if(after==null)return;
+        if(before==null||before.shape()!=after.shape()||!Objects.equals(before.lattice(),after.lattice())) {
+            if(after.lattice()!=null||before!=null&&before.lattice()!=null)com.hexvane.eterniamod.hexplots.HexLandEvents.fire(world,Set.of(),com.hexvane.eterniamod.hexplots.HexLandEvents.Cause.LATTICE);
+            return;
+        }
+        if(after.lattice()==null||before.roads().equals(after.roads())&&before.portals().equals(after.portals()))return;
+        var lattice=after.lattice();
+        var old=com.hexvane.eterniamod.hexplots.HexClaimRules.streetCells(lattice,before.roads(),before.portals());
+        var next=com.hexvane.eterniamod.hexplots.HexClaimRules.streetCells(lattice,after.roads(),after.portals());
+        var changed=new HashSet<com.hexvane.eterniamod.hexplots.HexCoord>(old);changed.addAll(next);
+        var same=new HashSet<>(old);same.retainAll(next);changed.removeAll(same);
+        for(var cell:List.copyOf(changed))changed.addAll(cell.neighbors()); // frontage of neighbours changes too
+        com.hexvane.eterniamod.hexplots.HexLandEvents.fire(world,changed,com.hexvane.eterniamod.hexplots.HexLandEvents.Cause.ROADS);
     }
     private byte[] readFile() throws IOException {
         if(Files.isSymbolicLink(file)||Files.size(file)>8_388_608)throw new IOException("Unsafe infrastructure file");

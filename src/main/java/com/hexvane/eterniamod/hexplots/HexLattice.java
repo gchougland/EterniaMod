@@ -18,9 +18,12 @@ import java.util.Set;
  *
  * <p>Rows step {@link #rowPitch()} blocks south; odd rows are shifted half a cell east (odd-r offset).
  * Block coordinates are column indices (block {@code x} spans {@code [x, x + 1)}).
+ *
+ * <p>Pure value type: safe on any thread. Each housing world saves one lattice in its infrastructure plan
+ * ({@code HousingInfrastructure.WorldPlan#lattice()}).
  */
 public record HexLattice(int cellWidth, int bodyDepth, int originX, int originZ) {
-    /** Proposed live size: one cell holds today's 14 x 14 free house with today's five block setback. */
+    /** Live size (accepted plan): one cell holds today's 14 x 14 free house with today's five block setback. */
     public static final HexLattice DEFAULT = new HexLattice(32, 20, 0, 0);
     /** Today's border setback for houses, kept unchanged and measured from the plot's outer border only. */
     public static final int HOUSE_SETBACK = 5;
@@ -28,7 +31,31 @@ public record HexLattice(int cellWidth, int bodyDepth, int originX, int originZ)
     public HexLattice {
         if (cellWidth < 8 || cellWidth > 256 || cellWidth % 4 != 0) throw new IllegalArgumentException("cellWidth must be a multiple of 4 in [8, 256]");
         if (bodyDepth < 1 || bodyDepth > 256) throw new IllegalArgumentException("bodyDepth must be in [1, 256]");
+        if (Math.abs((long) originX) > 30_000_000 || Math.abs((long) originZ) > 30_000_000) throw new IllegalArgumentException("Lattice origin is outside the world");
     }
+
+    /**
+     * Stable text id of this lattice, saved next to every plot's cells ({@code hex:32:20:0:0}). Two lattices with
+     * the same id are the same lattice, so cells saved under one id always mean the same block columns.
+     */
+    public String id() { return "hex:" + cellWidth + ":" + bodyDepth + ":" + originX + ":" + originZ; }
+
+    /** Inverse of {@link #id()}. */
+    public static HexLattice parseId(String id) {
+        if (id == null || !id.startsWith("hex:")) throw new IllegalArgumentException("Not a hex lattice id: " + id);
+        String[] parts = id.substring(4).split(":");
+        if (parts.length != 4) throw new IllegalArgumentException("Not a hex lattice id: " + id);
+        return new HexLattice(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
+    }
+
+    /** The same cell size with another origin. */
+    public HexLattice withOrigin(int x, int z) { return new HexLattice(cellWidth, bodyDepth, x, z); }
+
+    /**
+     * The same cell size, shifted so the cell holding block column (x, z) is centred on that column (as near as
+     * whole blocks allow). Used by the admin "lattice here" preview to line cells up with an existing road.
+     */
+    public HexLattice centredOn(int x, int z) { return new HexLattice(cellWidth, bodyDepth, x - cellWidth / 2, z - cellDepth() / 2); }
 
     /** Rows in each pointed tip; the 2:1 stair needs width / 4 rows to close. */
     public int tipDepth() { return cellWidth / 4; }
@@ -123,6 +150,13 @@ public record HexLattice(int cellWidth, int bodyDepth, int originX, int originZ)
         int hw = halfWidthAt(lz);
         int mid = minX(cell) + cellWidth / 2;
         return hw > 0 && x >= mid - hw && x < mid + hw;
+    }
+
+    /** Cells that own at least one block column of any of {@code rects}. */
+    public Set<HexCoord> cellsTouching(Collection<PlotRect> rects) {
+        Set<HexCoord> out = new LinkedHashSet<>();
+        for (PlotRect r : rects) out.addAll(cellsTouching(r));
+        return out;
     }
 
     /** Cells that own at least one block column of {@code rect}. */

@@ -61,7 +61,9 @@ public final class InfrastructureSetup {
         String role=value.equals("hub-housing")?"hub":value;boolean housing=value.equals("hub-housing");
         if(role.equals("hub")&&snapshot.worlds().entrySet().stream().anyMatch(e->!e.getKey().equals(world)&&e.getValue().role().equals("hub")))throw input("A Hub is already configured. Change its role before assigning a different Hub.");
         var next=old==null?new HousingInfrastructure.WorldPlan(role,List.of(),List.of(),null,housing):old.withRole(role,housing);
-        review(plugin,ref,store,player,snapshot,old,next,"Set "+world+" to "+value+". "+(next.supportsHousing()?"This enables the whole-world housing construction policy. ":"")+(next.arrival()==null?"Set a safe arrival point next.":"Existing roads, plazas and arrival are retained."),null,0);
+        // A world gaining housing for the first time cuts its land into hexagons (see /e admin setup lattice).
+        if(old==null||!old.supportsHousing())next=next.withHousingDefaults(com.hexvane.eterniamod.hexplots.HexPlotSettings.current().defaultLattice());
+        review(plugin,ref,store,player,snapshot,old,next,"Set "+world+" to "+value+". "+(next.supportsHousing()?"This enables the whole-world housing construction policy. ":"")+(next.hexPlots()&&(old==null||!old.hexPlots())?"Plots here are hexagons; use /e admin setup lattice show to see the grid. ":"")+(next.arrival()==null?"Set a safe arrival point next.":"Existing roads, plazas and arrival are retained."),null,0);
     }
     public static void arrival(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
         SetupAccess.require(player.getUuid());var pos=position(ref,store);var point=new HousingInfrastructure.Point(pos.x+.5,pos.y,pos.z+.5);var snapshot=plugin.getInfrastructure().snapshot();var old=requirePlan(snapshot,pos.world);
@@ -121,7 +123,8 @@ public final class InfrastructureSetup {
         }));});
         ChoicePage.open(ref,store,player,"Roads and public plazas · "+world,"Area names remain stable across reloads. To choose your own name, use /e admin setup road <name> or portal <name> after marking both corners.",choices);
     }
-    private static void review(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,HousingInfrastructure.Snapshot snapshot,HousingInfrastructure.WorldPlan before,HousingInfrastructure.WorldPlan after,String description,PlotRect rect,int y) {
+    /** Opens the shared review and confirm page for a setup change (also used by {@link LatticeSetup}). */
+    static void review(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,HousingInfrastructure.Snapshot snapshot,HousingInfrastructure.WorldPlan before,HousingInfrastructure.WorldPlan after,String description,PlotRect rect,int y) {
         SetupAccess.require(player.getUuid());clean();World world=store.getExternalData().getWorld();validate(plugin,world,before,after);
         if(DRAFTS.size()>=256&&!DRAFTS.containsKey(player.getUuid()))throw input("Too many setup reviews are open. Try again shortly.");
         var draft=new Draft(UUID.randomUUID(),world.getName(),snapshot.revision(),before,after,description,rect,y,System.currentTimeMillis()+300_000);DRAFTS.put(player.getUuid(),draft);

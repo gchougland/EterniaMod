@@ -29,6 +29,13 @@ public final class EconomyService extends DomainSupport {
         write(tx,from,a.available-amount,a.reserved);write(tx,to,Math.addExact(b.available,amount),b.reserved);
         tx.save("ledger",key(receipt),0,fields("kind","TRANSFER","from",from.key(),"to",to.key(),"amount",amount,"at",clock.instant()));return true;
     }
+    /** Coins leave the economy: a purchase from the game itself (for example a plot hexagon). Idempotent per receipt. */
+    boolean spendIn(TransactionalStore.Transaction tx,Owner owner,long amount,String receipt) {
+        positive(amount);if(!receipt(tx,"ledger_receipt",receipt,fields("kind","SPEND","from",owner.key(),"amount",amount)))return false;
+        var balance=balanceIn(tx,owner);require(balance.available>=amount,INSUFFICIENT_BALANCE,"Insufficient coins");
+        write(tx,owner,balance.available-amount,balance.reserved);
+        tx.save("ledger",key(receipt),0,fields("kind","SPEND","from",owner.key(),"amount",amount,"at",clock.instant()));return true;
+    }
     public String reserve(Owner owner,long amount,String receipt) { return store.transaction(tx->reserveIn(tx,owner,amount,receipt)); }
     String reserveIn(TransactionalStore.Transaction tx,Owner owner,long amount,String receipt) {
         positive(amount);String id=key(receipt);

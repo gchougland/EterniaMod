@@ -17,7 +17,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 public final class EterniaSetupCommand extends AbstractPlayerCommand {
     public EterniaSetupCommand() {
         super("setup","Set up this world's housing, roads, portals and Hub services in game");setPermissionGroups("hytale:WorldEditor");
-        for(String name:new String[]{"world","arrival","firstjoin","newcomer","corner","road","portal","remove","list","show","confirm"})addSubCommand(new Action(name));
+        for(String name:new String[]{"world","arrival","firstjoin","newcomer","corner","road","portal","remove","list","show","confirm","lattice"})addSubCommand(new Action(name));
         addSubCommand(new Spawns());
     }
     @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world) {
@@ -35,7 +35,7 @@ public final class EterniaSetupCommand extends AbstractPlayerCommand {
     }
     private static final class Action extends AbstractPlayerCommand {
         private final String action;private final RequiredArg<String> value;
-        Action(String name){super(name,"Eternia setup "+name);action=name;setPermissionGroups("hytale:WorldEditor");value=switch(name){case "world"->withRequiredArg("role","hub-housing, hub, housing or adventure",ArgTypes.STRING);case "corner"->withRequiredArg("number","1 or 2 at the current player position",ArgTypes.STRING);case "road","portal","remove"->withRequiredArg("name","Stable lowercase area name",ArgTypes.STRING);default->null;};}
+        Action(String name){super(name,"Eternia setup "+name);action=name;setPermissionGroups("hytale:WorldEditor");value=switch(name){case "world"->withRequiredArg("role","hub-housing, hub, housing or adventure",ArgTypes.STRING);case "corner"->withRequiredArg("number","1 or 2 at the current player position",ArgTypes.STRING);case "road","portal","remove"->withRequiredArg("name","Stable lowercase area name",ArgTypes.STRING);case "lattice"->withRequiredArg("mode","show, here, origin, hex or rect",ArgTypes.STRING);default->null;};}
         @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world) {
             try{
                 SetupAccess.require(player.getUuid());var plugin=EterniaModPlugin.get();
@@ -51,6 +51,7 @@ public final class EterniaSetupCommand extends AbstractPlayerCommand {
                     case "list"->InfrastructureSetup.list(plugin,ref,store,player);
                     case "show"->InfrastructureSetup.show(ref,store,player);
                     case "confirm"->InfrastructureSetup.confirm(plugin,ref,store,player);
+                    case "lattice"->LatticeSetup.run(plugin,ref,store,player,value.get(context));
                     default->throw new IllegalArgumentException("Unknown setup command");
                 }
             }catch(RuntimeException failure){context.sendMessage(Message.raw(failure.getMessage()));}

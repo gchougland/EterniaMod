@@ -9,7 +9,7 @@ import java.util.Set;
 
 /**
  * Axial hex coordinate. {@code r} is the row (world +Z is the next row south), {@code q} the column
- * along world +X. Prototype only: nothing in live housing uses this yet.
+ * along world +X. Pure value type, safe on any thread.
  *
  * <p>Neighbour directions, in order: east, north east, north west, west, south west, south east.
  */

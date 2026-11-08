@@ -66,6 +66,26 @@ public final class HubPlotRecord {
         return footprint;
     }
 
+    /** Replaces the plot's land (hex expansion commit). Call {@link HubPlotManager#updatePlot} afterwards. */
+    public void setFootprint(@Nonnull HubPlotFootprint footprint) {
+        this.footprint = footprint;
+    }
+
+    /** True when column (x, z) is part of this plot: its cells for a hex plot, its rectangle otherwise. */
+    public boolean containsColumn(int x, int z) {
+        return footprint.containsHorizontal(x, z);
+    }
+
+    /** The plot's hex cells, or null for a rectangle plot. */
+    @Nullable
+    public com.hexvane.eterniamod.hexplots.PlotCells getCells() {
+        return footprint.getCells();
+    }
+
+    public boolean isHex() {
+        return footprint.isHex();
+    }
+
     @Nullable
     public UUID getOwnerUuid() {
         return ownerUuid;

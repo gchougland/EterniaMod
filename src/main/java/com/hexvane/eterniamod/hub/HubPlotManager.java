@@ -12,7 +12,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import com.hexvane.eterniamod.hexplots.HexCoord;
+import com.hexvane.eterniamod.hexplots.HexLandEvents;
+import com.hexvane.eterniamod.hexplots.HexLattice;
+import com.hexvane.eterniamod.hexplots.PlotCellIndex;
+import com.hexvane.eterniamod.hexplots.PlotCells;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +36,8 @@ public final class HubPlotManager {
     private final World world;
     private final Path saveFile;
     private final Map<UUID, HubPlotRecord> byPlotId = new LinkedHashMap<>();
+    /** Hex plots only: cell to plot, kept in step with {@link #byPlotId} by every mutation below. */
+    private final PlotCellIndex cellIndex = new PlotCellIndex();
     private boolean dirty;
     private long revision;
 
@@ -57,9 +67,12 @@ public final class HubPlotManager {
         try {
             HubPlotWorldFile file = HubPlotWorldFile.readOrEmpty(saveFile);
             byPlotId.clear();
+            cellIndex.clear();
             revision++;
             for (HubPlotRecord plot : file.getPlots()) {
                 if (plot.getPlotId() != null) {
+                    PlotCells cells = plot.getCells();
+                    if (cells != null) cellIndex.put(plot.getPlotId(), cells);
                     byPlotId.put(plot.getPlotId(), plot);
                 }
             }
@@ -93,26 +106,79 @@ public final class HubPlotManager {
     @Nonnull
     public HubPlotRecord addPlot(@Nonnull HubPlotRecord plot) {
         if (byPlotId.containsKey(plot.getPlotId())) throw new IllegalStateException("Duplicate plot id");
+        PlotCells cells = plot.getCells();
+        if (cells != null) cellIndex.put(plot.getPlotId(), cells);
         byPlotId.put(plot.getPlotId(), plot);
         revision++;
         dirty = true;
+        if (cells != null) HexLandEvents.fire(world.getName(), cells.asSet(), HexLandEvents.Cause.CLAIM);
         return plot;
     }
 
     public boolean removePlot(@Nonnull UUID plotId) {
         HubPlotRecord removed = byPlotId.remove(plotId);
         if (removed != null) {
+            PlotCells cells = cellIndex.remove(plotId);
             revision++;
             dirty = true;
+            if (cells != null) HexLandEvents.fire(world.getName(), cells.asSet(), HexLandEvents.Cause.UNCLAIM);
             return true;
         }
         return false;
     }
 
     public void updatePlot(@Nonnull HubPlotRecord plot) {
+        PlotCells before = cellIndex.cellsOf(plot.getPlotId());
+        PlotCells after = plot.getCells();
+        if (after != null) cellIndex.put(plot.getPlotId(), after);
+        else cellIndex.remove(plot.getPlotId());
         byPlotId.put(plot.getPlotId(), plot);
         revision++;
         dirty = true;
+        if (!Objects.equals(before, after)) {
+            Set<HexCoord> changed = new HashSet<>();
+            if (before != null) changed.addAll(before.asSet());
+            if (after != null) changed.addAll(after.asSet());
+            if (before != null && after != null) {
+                Set<HexCoord> same = new HashSet<>(before.asSet());
+                same.retainAll(after.asSet());
+                changed.removeAll(same);
+            }
+            HexLandEvents.fire(world.getName(), changed, HexLandEvents.Cause.EXPAND);
+        }
+    }
+
+    /** Plot owning a hex cell, or null. O(1). World thread. */
+    @Nullable
+    public HubPlotRecord plotAtCell(@Nonnull HexCoord cell) {
+        UUID id = cellIndex.plotAt(cell);
+        return id == null ? null : byPlotId.get(id);
+    }
+
+    /**
+     * Plot owning block column (x, z): the cell index for hex plots (O(1)), then a box scan of rectangle plots.
+     * World thread.
+     */
+    @Nullable
+    public HubPlotRecord plotAtColumn(int x, int z) {
+        UUID id = cellIndex.plotAtColumn(x, z);
+        if (id != null) return byPlotId.get(id);
+        for (HubPlotRecord plot : byPlotId.values()) {
+            if (!plot.isHex() && plot.getFootprint().containsHorizontal(x, z)) return plot;
+        }
+        return null;
+    }
+
+    /** Read-only cell to plot map of this world's hex plots. World thread. */
+    @Nonnull
+    public Map<HexCoord, UUID> cellOwners() {
+        return cellIndex.owners();
+    }
+
+    /** Lattice of this world's hex plots, or null when it has none. */
+    @Nullable
+    public HexLattice indexedLattice() {
+        return cellIndex.lattice();
     }
 
     @Nullable
@@ -142,6 +208,8 @@ public final class HubPlotManager {
 
     @Nullable
     public HubPlotRecord findPlotContaining(int x, int y, int z) {
+        HubPlotRecord hex = plotAtCellColumn(x, z);
+        if (hex != null) return hex.getFootprint().containsBlock(x, y, z) ? hex : null;
         for (HubPlotRecord plot : byPlotId.values()) {
             if (plot.getFootprint().containsBlock(x, y, z)) {
                 return plot;
@@ -152,12 +220,13 @@ public final class HubPlotManager {
 
     @Nullable
     public HubPlotRecord findPlotContainingHorizontal(int x, int z) {
-        for (HubPlotRecord plot : byPlotId.values()) {
-            if (plot.getFootprint().containsHorizontal(x, z)) {
-                return plot;
-            }
-        }
-        return null;
+        return plotAtColumn(x, z);
+    }
+
+    @Nullable
+    private HubPlotRecord plotAtCellColumn(int x, int z) {
+        UUID id = cellIndex.plotAtColumn(x, z);
+        return id == null ? null : byPlotId.get(id);
     }
 
     /** Resolves a plot from the player's feet, horizontal position, or look target. */
