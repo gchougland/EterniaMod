@@ -47,6 +47,11 @@ public final class LocalFileStore implements TransactionalStore,AutoCloseable {
                 if((old==null?0:old.revision())!=revision)throw new DomainException(DomainException.Code.CONFLICT,"Record revision changed");
                 var row=new Row(ns,key,Math.addExact(revision,1),fields);copy.put(ns+"\0"+key,row);dirty=true;return row;
             }
+            public void delete(String ns,String key,long revision){
+                check();RecordCodec.validateKey(ns,key);var old=copy.get(ns+"\0"+key);
+                if(old==null||old.revision()!=revision)throw new DomainException(DomainException.Code.CONFLICT,"Record revision changed");
+                copy.remove(ns+"\0"+key);dirty=true;
+            }
         }
         var tx=new Tx();
         try{T result=work.apply(tx);if(tx.dirty)persist(copy);records=copy;return result;}

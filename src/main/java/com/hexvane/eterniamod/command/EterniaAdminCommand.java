@@ -18,13 +18,25 @@ public final class EterniaAdminCommand extends AbstractCommandCollection {
     public EterniaAdminCommand(){
         super("admin","Eternia administration");setPermissionGroups("hytale:WorldEditor");
         addSubCommand(new CurrencyGrantCommand(CurrencyGrantService.Currency.CROWNS));addSubCommand(new CurrencyGrantCommand(CurrencyGrantService.Currency.COINS));
-        addSubCommand(new Status());addSubCommand(new Reload());addSubCommand(new Inspect());addSubCommand(new Recover());addSubCommand(new Grant());addSubCommand(new EterniaSetupCommand());addSubCommand(new RoadTool());addSubCommand(new HubBuildCommand());addSubCommand(new TownCommand());
+        addSubCommand(new Status());addSubCommand(new Reload());addSubCommand(new Inspect());addSubCommand(new Recover());addSubCommand(new Grant());addSubCommand(new EterniaSetupCommand());addSubCommand(new RoadTool());addSubCommand(new WipePlots());addSubCommand(new HubBuildCommand());addSubCommand(new TownCommand());
         com.hexvane.eterniamod.moderation.ModerationCommands.addTo(this);
         addSubCommand(new com.hexvane.eterniamod.stats.StatsAdminCommand());
     }
     private static final class RoadTool extends AbstractPlayerCommand {
         RoadTool(){super("roadtool","Get the held spline Road Designer");setPermissionGroups("hytale:WorldEditor");}
         @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){com.hexvane.eterniamod.pathtool.SplineRoadTool.give(ref,store,player);}
+    }
+    /** Test worlds: removes every plot in this world, saved and placed, so its plot shape can change. Old blocks stay. */
+    private static final class WipePlots extends AbstractPlayerCommand {
+        WipePlots(){super("wipeplots","Remove every plot in this world (test worlds only)");setPermissionGroups("hytale:WorldEditor");}
+        @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){
+            var p=EterniaModPlugin.get();if(p==null)return;
+            var manager=com.hexvane.eterniamod.hub.EterniaWorldRegistries.getOrCreateHubPlotManager(world,p);
+            int placed=0;for(var plot:manager.listPlots())if(manager.removePlot(plot.getPlotId()))placed++;
+            manager.saveIfDirty();
+            int saved=p.getServices().housing().wipeWorld(world.getName());
+            player.sendMessage(Message.raw("Removed "+Math.max(placed,saved)+" plot(s) from "+world.getName()+". You can now change its plot shape."));
+        }
     }
     private static final class Status extends CommandBase {
         Status(){super("status","Show configured systems and pending recovery");}

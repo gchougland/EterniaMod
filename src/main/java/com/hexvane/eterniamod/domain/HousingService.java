@@ -72,6 +72,10 @@ public final class HousingService extends DomainSupport {
         var frozenCells=new HashMap<String,Set<HexCoord>>();reserved.forEach((k,v)->frozenCells.put(k,Set.copyOf(v)));
         view=new GroundView(rows,Map.copyOf(frozen),Map.copyOf(frozenCells));groundView=view;return view;
     }
+    /** Admin reset of a test world: deletes every saved home slot in {@code world}, whatever its state. Returns how many. */
+    public int wipeWorld(String world) {
+        return store.transaction(tx->{int count=0;for(var r:tx.scan("housing_slot"))if(r.value("world").equals(world)){tx.delete("housing_slot",r.key(),r.revision());count++;}return count;});
+    }
     public Optional<Slot> find(Owner owner) { return store.transaction(tx->tx.find("housing_slot",owner.key()).map(HousingService::slot)); }
     public List<Slot> allSlots() { return store.transaction(tx->tx.scan("housing_slot").stream().map(HousingService::slot).toList()); }
     public record Property(Slot slot,ClaimLocation location) {}

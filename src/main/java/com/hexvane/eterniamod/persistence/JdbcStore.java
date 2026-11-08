@@ -86,5 +86,12 @@ public final class JdbcStore implements TransactionalStore, AutoCloseable {
                 return new Row(ns,key,Math.addExact(revision,1),fields);
             } catch(SQLException e) { throw storage(e); }
         }
+        public void delete(String ns,String key,long revision) {
+            check(); RecordCodec.validateKey(ns,key);
+            try(var q=connection.prepareStatement("DELETE FROM eternia_records WHERE namespace=? AND record_key=? AND revision=?")) {
+                q.setString(1,ns);q.setString(2,key);q.setLong(3,revision);
+                if(q.executeUpdate()!=1) throw new DomainException(DomainException.Code.CONFLICT,"Record revision changed");
+            } catch(SQLException e) { throw storage(e); }
+        }
     }
 }

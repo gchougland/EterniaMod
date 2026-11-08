@@ -25,6 +25,8 @@ public interface TransactionalStore {
         List<Row> scan(String namespace);
         /** expectedRevision 0 inserts. Existing records require their exact current revision. */
         Row save(String namespace, String key, long expectedRevision, Map<String, String> fields);
+        /** Removes a record at its exact current revision. Admin resets only. */
+        default void delete(String namespace, String key, long expectedRevision) { throw new UnsupportedOperationException("This store cannot delete records"); }
     }
     <T> T transaction(Function<Transaction, T> work);
 }

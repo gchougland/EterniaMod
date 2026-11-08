@@ -25,6 +25,11 @@ public final class InMemoryStore implements TransactionalStore {
                 Row row = new Row(ns, key, Math.addExact(revision, 1), fields);
                 copy.put(ns + "\0" + key, row); return row;
             }
+            public void delete(String ns, String key, long revision) {
+                check(); RecordCodec.validateKey(ns, key); Row old = copy.get(ns + "\0" + key);
+                if (old == null || old.revision() != revision) throw new DomainException(DomainException.Code.CONFLICT, "Record revision changed");
+                copy.remove(ns + "\0" + key);
+            }
         }
         var tx = new Tx();
         try { T result = work.apply(tx); records = copy; return result; }

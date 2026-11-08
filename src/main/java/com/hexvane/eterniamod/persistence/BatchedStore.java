@@ -37,6 +37,7 @@ public final class BatchedStore implements TransactionalStore {
             for(var row:updates)byKey.merge(row.key(),row,(before,next)->before.revision()>next.revision()?before:next);
             rows=List.copyOf(byKey.values());
         }
+        synchronized void remove(Collection<String> keys) { keys.forEach(byKey::remove);rows=List.copyOf(byKey.values()); }
         List<Row> snapshot(){return rows;}
     }
 
@@ -85,6 +86,7 @@ public final class BatchedStore implements TransactionalStore {
         var scope=completed[0];var capture=reading.get();if(capture!=null)capture.namespaces.addAll(scope.reads);
         if(!scope.writes.isEmpty())synchronized(views){generation++;scope.writes.forEach(ns->versions.merge(ns,1L,Long::sum));}
         scope.savedRows.forEach((namespace,rows)->{var index=committed.get(namespace);if(index!=null)index.merge(rows.values());});
+        scope.deletedKeys.forEach((namespace,keys)->{var index=committed.get(namespace);if(index!=null)index.remove(keys);});
         return result;
     }
 
@@ -104,6 +106,7 @@ public final class BatchedStore implements TransactionalStore {
             public Row save(String ns,String key,long revision,Map<String,String> fields) {
                 check(); return scope.save(ns,key,revision,fields);
             }
+            public void delete(String ns,String key,long revision) { check(); scope.delete(ns,key,revision); }
         }
         var view = new View();
         try { return work.apply(view); }
@@ -117,6 +120,7 @@ public final class BatchedStore implements TransactionalStore {
         private final Map<String,SortedMap<String,Row>> scans = new HashMap<>();
         final Set<String> reads=new HashSet<>(),writes=new HashSet<>();final boolean readOnly;
         final Map<String,Map<String,Row>> savedRows=new HashMap<>();
+        final Map<String,Set<String>> deletedKeys=new HashMap<>();
         boolean inCallback, failed;
         Scope(Transaction tx,boolean readOnly) { this.tx = tx;this.readOnly=readOnly; }
         Optional<Row> find(String ns,String key) {
@@ -153,7 +157,16 @@ public final class BatchedStore implements TransactionalStore {
             savedRows.computeIfAbsent(ns,ignored->new HashMap<>()).put(key,saved);
             writes.add(ns);finds.computeIfAbsent(ns,n -> new HashMap<>()).put(key,Optional.of(saved));
             if (scans.containsKey(ns)) scans.get(ns).put(key,saved);
+            var deleted=deletedKeys.get(ns);if(deleted!=null)deleted.remove(key);
             return saved;
+        }
+        void delete(String ns,String key,long revision) {
+            if(readOnly)throw new IllegalStateException("Cached read views cannot write records");
+            tx.delete(ns,key,revision);
+            var saved=savedRows.get(ns);if(saved!=null)saved.remove(key);
+            deletedKeys.computeIfAbsent(ns,ignored->new HashSet<>()).add(key);
+            writes.add(ns);finds.computeIfAbsent(ns,n -> new HashMap<>()).put(key,Optional.empty());
+            if (scans.containsKey(ns)) scans.get(ns).remove(key);
         }
     }
 }
