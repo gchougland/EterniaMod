@@ -730,7 +730,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             .sorted(Comparator.comparing(SeasonService.QuestProgress::completed))
             .limit(4).map(q -> SeasonHall.quest(q, UiPresentation.questTitle(q.quest()), UiPresentation.questGoal(q.quest()))).toList();
         var screen = new SeasonHall.Screen(List.of(), SeasonHall.banner(definition, current, claimed, name), SeasonHall.tiles(definition, current, claimed, name), quests);
-        return new View(current.name(), (current.active() ? "This is your active pass." : "Activate this pass to earn XP for it.") + (current.paid() ? " Both tracks are yours." : " The premium pass unlocks the second track."),
+        return new View(current.name(), (current.active() ? "This is your active pass." : "Activate this pass to earn XP for it.") + (current.paid() ? " Both tracks are yours." : (" The premium pass unlocks the second track. " + com.hexvane.eterniamod.seasonsales.SeasonSaleText.note(services.seasons().saleStatus(current.id()))).stripTrailing()),
             List.of(), noFields(), buttons(current.active() ? "" : "Activate pass", current.active() ? "" : "season_activate", "", "", "", ""), null).season(screen);
     }
 

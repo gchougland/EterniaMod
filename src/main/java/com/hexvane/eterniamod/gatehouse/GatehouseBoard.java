@@ -49,7 +49,12 @@ public record GatehouseBoard(String greeting, List<SeasonHall.Banner> passes, Bo
         var active = progress.stream().filter(SeasonService.Progress::active).findFirst();
         List<SeasonService.QuestProgress> quests = active.isPresent() && definitions.stream().anyMatch(d -> d.id().equals(active.get().id()))
             ? seasons.quests(actor, active.get().id()) : List.of();
-        return of(definitions, progress, id -> claimed.getOrDefault(id, Set.of()), quests, names, now);
+        var board = of(definitions, progress, id -> claimed.getOrDefault(id, Set.of()), quests, names, now);
+        if (board.premium == null || board.premium.owned()) return board;
+        var status = seasons.saleStatus(board.premium.passId(), now);
+        var premium = board.premium.sale(com.hexvane.eterniamod.seasonsales.SeasonSaleText.note(status),
+            status.purchasable() ? "" : com.hexvane.eterniamod.seasonsales.SeasonSaleText.closedButton(status.state()));
+        return new GatehouseBoard(board.greeting, board.passes, board.bounties, premium);
     }
 
     /** Pure: the same data in, the same board out. */
