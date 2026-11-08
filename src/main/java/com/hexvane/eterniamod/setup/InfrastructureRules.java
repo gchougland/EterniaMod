@@ -65,7 +65,7 @@ public final class InfrastructureRules {
         for(var claim:claims){
             if(!claim.cells().lattice().equals(lattice))continue;
             var paved=claim.cells().cells().stream().filter(street::contains).findFirst();
-            if(paved.isPresent())throw new IllegalArgumentException("This road or plaza would cover "+claim.label()+" (hexagon "+paved.get()+"). Move it so it only touches free hexagons, or move the plot first.");
+            if(paved.isPresent())throw new IllegalArgumentException("This road or plaza would cover hexagon "+paved.get()+" of "+claim.label()+". Move it so it only touches free hexagons, or move the plot first.");
         }
         if(before==null)return;
         for(var claim:claims){
