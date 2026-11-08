@@ -52,3 +52,12 @@ shape.single=Cottage plot
 shape.triangle=Manor plot
 shape.diamond=Hall plot
 shape.flower=Keep plot
+
+# Plots engine (claim and expansion commits, placement). {shape} is a plot shape name, {coins} and {cells} numbers.
+plots.claim.done=Your {shape} is ready! Open your housing menu to place a house.
+plots.claim.paid=Your {shape} is ready! {coins} coins paid. Open your housing menu to place a house.
+plots.claim.retry=The land here is still loading. Try again in a moment.
+plots.expand.done=Your plot grew to {cells} hexagons.
+plots.expand.paid=Your plot grew to {cells} hexagons. {coins} coins paid.
+plots.expand.retry=Your plot could not grow just now. Open My Plots to check it, then try again.
+plots.expand.guildRole=Only your guild leader can grow the guild estate.
