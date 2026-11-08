@@ -4,7 +4,10 @@ $T = "Theme/Citadel.ui";
   Group { Anchor: (Height: 150, Bottom: 10); Background: $T.@JournalInsetSurface; LayoutMode: Middle;
     Group #ItemImage { Anchor: (Width: 136, Height: 136); }
   }
-  Label #ItemCategory { Anchor: (Height: 20); Style: (...$T.@CodexKickerStyle, FontSize: 12); }
+  Group { Anchor: (Height: 20); LayoutMode: Left;
+    Label #ItemCategory { FlexWeight: 1; Style: (...$T.@CodexKickerStyle, FontSize: 12); }
+    Label #SaleBadge { Anchor: (Width: 132); Style: (...$T.@CodexKickerStyle, FontSize: 12, TextColor: $T.@Primary, HorizontalAlignment: End); }
+  }
   Label #ItemName { Anchor: (Height: 28); Style: (...$T.@SubtitleStyle, FontSize: 19, Wrap: false); }
   Label #ItemDescription { FlexWeight: 1; Style: (...$T.@MutedStyle, FontSize: 14); }
   Group { Anchor: (Height: 44, Top: 6); LayoutMode: Left;

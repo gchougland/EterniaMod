@@ -1,4 +1,5 @@
 import {api,el,link,notice} from './api.js';
+import {saleBadge,closedReason} from './season-sale.js';
 const money=(amount,currency)=>new Intl.NumberFormat(undefined,{style:'currency',currency}).format(amount);
 function purchaseNotice(){
  const note=el('p');note.append(el('strong','All purchases are final.'),document.createTextNode(' Refunds are only available where required by law. '),link('Read Tebex terms','https://checkout.tebex.io/terms'));return note;
@@ -42,8 +43,14 @@ export async function treasury(view,state){
  if(!data.checkoutEnabled)view.insertBefore(el('p','The treasury is being prepared. Purchases will open soon.','notice'),grid);
  for(const [index,pack] of data.offers.entries()){
   const card=el('article',undefined,'card crown-package tier-'+index),icon=el('img');icon.src='/icons/crown.svg';icon.alt='';icon.width=100;icon.height=100;
-  card.append(icon,el('h2',pack.name),el('div',new Intl.NumberFormat().format(pack.crowns),'number'),el('div','Crowns','eyebrow'),el('p','Spend on your next favorite in Eternia.'),el('strong',money(pack.price,pack.currency),'crown-price'));
-  if(!state.user&&state.authConfigured)card.append(link('Sign in to purchase','/auth/login?returnTo=store','button primary'));
+  // Seasonal packages sell only while their season runs; the server refuses them outside it too.
+  const tag=saleBadge(pack.sale),closed=pack.sale&&!pack.sale.purchasable;
+  if(tag){const badge=el('span',tag.text,'sale-badge '+tag.tone);badge.title=tag.title;card.append(badge);}
+  card.append(icon,el('h2',pack.name),el('div',new Intl.NumberFormat().format(pack.crowns),'number'),el('div','Crowns','eyebrow'),el('p','Spend on your next favorite in Eternia.'));
+  if(closed)card.append(el('p',closedReason(pack.sale.season,pack.sale),'sale-note'));
+  card.append(el('strong',money(pack.price,pack.currency),'crown-price'));
+  if(closed){const shut=el('button',pack.sale.state==='upcoming'?'Coming soon':pack.sale.state==='ended'?'No longer sold':'Not on sale','primary');shut.disabled=true;card.append(shut);}
+  else if(!state.user&&state.authConfigured)card.append(link('Sign in to purchase','/auth/login?returnTo=store','button primary'));
   else{const buy=el('button','Choose package','primary');buy.disabled=!data.checkoutEnabled||!state.user;
    buy.onclick=async()=>{if(loading)return;loading=true;buy.disabled=true;buy.textContent='Preparing checkout…';try{await showCheckout(await api('/api/store/checkout',{method:'POST',body:JSON.stringify({packageId:pack.id})}));}catch(e){notice(e.message,true);}finally{loading=false;buy.disabled=false;buy.textContent='Choose package';}};card.append(buy);}
   grid.append(card);

@@ -22,6 +22,8 @@ public final class CommerceService extends DomainSupport {
     CommerceService(TransactionalStore s,Clock c,Supplier<UUID> i,OwnershipService ownership,PremiumService premium){super(s,c,i);this.ownership=ownership;this.premium=premium;}
     public void register(Product product){store.transaction(tx->{var data=encode(product);String id=product.packageId+":"+product.revision;var old=tx.find("commerce_product",id);if(old.isPresent())require(old.get().fields().equals(data),CONFLICT,"Product revision is immutable");else tx.save("commerce_product",id,0,data);return null;});}
     public List<Product> products(){return store.transaction(tx->tx.scan("commerce_product").stream().map(CommerceService::product).toList());}
+    /** Season sale windows are checked when a checkout starts, never here: a verified payment is the player's
+     * money, so a purchase begun inside a season's window and confirmed after it closes is still delivered. */
     public Purchase fulfill(VerifiedPurchase request){
         return store.transaction(tx->{String id=key(request.provider,request.transactionId,request.lineId);var input=purchaseInput(request);
             var old=tx.find("commerce_purchase",id);if(old.isPresent())for(var e:input.entrySet())require(old.get().value(e.getKey()).equals(e.getValue()),CONFLICT,"Purchase identity reused with different input");

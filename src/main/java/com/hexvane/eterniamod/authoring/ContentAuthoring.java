@@ -36,8 +36,9 @@ public final class ContentAuthoring {
     /** The next Crown store revision, or empty when the latest revision already matches. */
     public static Optional<PremiumService.Item> storeItem(AuthoringDrafts.Content d,PremiumService.Item latest){
         var benefit=new CommerceService.Benefit(contentId(d),rewardKind(d),1,false);
-        var next=new PremiumService.Item(storeItemId(d),latest==null?1:latest.revision()+1,d.displayName.strip(),d.description.strip(),d.category,d.crowns,List.of(benefit));
-        if(latest!=null&&latest.name().equals(next.name())&&latest.description().equals(next.description())&&latest.category().equals(next.category())&&latest.price()==next.price()&&latest.benefits().equals(next.benefits()))return Optional.empty();
+        // Sold and on a pass: a season item, sold only while that season runs.
+        var next=new PremiumService.Item(storeItemId(d),latest==null?1:latest.revision()+1,d.displayName.strip(),d.description.strip(),d.category,d.crowns,List.of(benefit),d.passId.strip());
+        if(latest!=null&&latest.name().equals(next.name())&&latest.description().equals(next.description())&&latest.category().equals(next.category())&&latest.price()==next.price()&&latest.benefits().equals(next.benefits())&&latest.season().equals(next.season()))return Optional.empty();
         return Optional.of(next);
     }
 

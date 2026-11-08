@@ -93,6 +93,7 @@ public final class EterniaModPlugin extends JavaPlugin {
             com.hexvane.eterniamod.runtime.ServerSettings.source("ETERNIA_DATABASE_URL", System.getenv(), serverEnvironment));
         runtime = new com.hexvane.eterniamod.runtime.EterniaRuntime(dataDirectory,
             com.hexvane.eterniamod.runtime.RuntimeConfig.from(serverEnvironment));
+        com.hexvane.eterniamod.seasonsales.SeasonSaleSync.sync(getServices(), dataDirectory, warning -> getLogger().atWarning().log("%s", warning));
         infrastructure = new com.hexvane.eterniamod.housing.HousingInfrastructure(dataDirectory.resolve("housing-infrastructure.json"));
         try { infrastructure.load(); } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
         claims = new com.hexvane.eterniamod.housing.NativeClaimCoordinator(this);

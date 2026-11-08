@@ -17,14 +17,18 @@ Group {
    Label { Text: "Name"; Anchor: (Height: 22); Style: $T.@MutedStyle; }
    $T.@TextField #PassName { Anchor: (Height: 40, Bottom: 8); MaxLength: 100; }
    Label { Text: "Description"; Anchor: (Height: 22); Style: $T.@MutedStyle; }
-   MultilineTextField #PassDescription { Anchor: (Height: 96, Bottom: 8); AutoGrow: false; MaxLength: 600; Background: $T.@HeaderSurface; Padding: (Full: 10); Style: (FontSize: 15, TextColor: $T.@Text); PlaceholderStyle: (FontSize: 15, TextColor: $T.@Muted); ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+   MultilineTextField #PassDescription { Anchor: (Height: 76, Bottom: 8); AutoGrow: false; MaxLength: 600; Background: $T.@HeaderSurface; Padding: (Full: 10); Style: (FontSize: 15, TextColor: $T.@Text); PlaceholderStyle: (FontSize: 15, TextColor: $T.@Muted); ScrollbarStyle: $C.@DefaultScrollbarStyle; }
    Group { Anchor: (Height: 22); LayoutMode: Left;
-    Label { Text: "Starts"; FlexWeight: 1; Anchor: (Right: 10); Style: $T.@MutedStyle; }
-    Label { Text: "Ends"; FlexWeight: 1; Style: $T.@MutedStyle; }
+    Label { Text: "First day (UTC)"; FlexWeight: 1; Anchor: (Right: 10); Style: $T.@MutedStyle; }
+    Label { Text: "Last day (UTC)"; FlexWeight: 1; Style: $T.@MutedStyle; }
    }
    Group { Anchor: (Height: 40, Bottom: 8); LayoutMode: Left;
     $T.@TextField #StartsOn { FlexWeight: 1; Anchor: (Height: 40, Right: 10); MaxLength: 10; PlaceholderText: "2026-11-01"; }
     $T.@TextField #EndsOn { FlexWeight: 1; Anchor: (Height: 40); MaxLength: 10; PlaceholderText: "2027-01-31"; }
+   }
+   Group #SaleBox { Anchor: (Height: 72, Bottom: 8); Background: $T.@HeaderSurface; Padding: (Left: 12, Right: 12, Top: 8, Bottom: 6); LayoutMode: Top;
+    Label #SaleHeadline { Anchor: (Height: 22); Style: (...$T.@DefaultLabelStyle, FontSize: 15, RenderBold: true, TextColor: $T.@Primary); }
+    Label #SaleDetail { FlexWeight: 1; Style: (...$T.@MutedStyle, FontSize: 13); }
    }
    Group { Anchor: (Height: 22); LayoutMode: Left;
     Label { Text: "Levels"; FlexWeight: 1; Anchor: (Right: 10); Style: $T.@MutedStyle; }
