@@ -49,6 +49,7 @@ public final class EterniaModPlugin extends JavaPlugin {
     private com.hexvane.eterniamod.loot.LootChests lootChests;
     private AutoCloseable managedHubServices;
     private com.hexvane.eterniamod.memories.PersonalMemories memories;
+    private com.hexvane.eterniamod.stats.StatsRuntime stats;
 
     public com.hexvane.eterniamod.memories.PersonalMemories getMemories() { return memories; }
     public com.hexvane.eterniamod.housing.HousingInfrastructure getInfrastructure() { return infrastructure; }
@@ -130,6 +131,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         try { discoveries = new com.hexvane.eterniamod.discovery.DiscoveryBootstrap(this,getServices(),infrastructure,dataDirectory.resolve("discoveries.json")); }
         catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
         lootChests = com.hexvane.eterniamod.loot.LootChests.register(this);
+        stats = com.hexvane.eterniamod.stats.StatsRuntime.register(this);
         getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.runtime.GuildWaygateEntrySystem(this));
         getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.setup.DisabledWorldEvents());
         memories = com.hexvane.eterniamod.memories.MemoryBootstrap.register(this);
@@ -158,6 +160,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         if (discoveries != null) discoveries.close();
         if (collectionRuntime != null) collectionRuntime.close();
         if (gameplayAdapters != null) gameplayAdapters.close();
+        if (stats != null) stats.close();
         if (lifecycle != null) lifecycle.close();
         if (lootChests != null) lootChests.close();
         if (runtime != null) runtime.close();
