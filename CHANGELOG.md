@@ -6,6 +6,17 @@
 
 - Eternia runs on Hytale Update 7 (0.7.0).
 
+- Varek Dawnmantle, an Outlander who keeps the Gatehouse, looks after season passes. See all your passes at once, switch your active pass or claim every reward with one click, take on daily and weekly bounties, and find the premium track.
+- Season passes and season items in the Crown Store can be bought only while their season runs. The store and the website show when each one opens or closes, and anything you already own stays yours forever.
+- Chat channels: talk to everyone, your world, your party, your guild or players nearby. Type `/e c` to see them, `/e c p` to switch to party chat, or `/e c p hello` to send just one message. Starting a line with `@p` sends it to your party without switching. Your channel is remembered next time you log in.
+- Adventure Records: type `/e stats` to see your chests opened, blocks travelled, creatures and bosses defeated, times fallen and time in Eternia. Add a name to see another adventurer's records.
+- The first adventurer to defeat each boss on each difficulty is announced to everyone and remembered as a Server First.
+- 33 new titles inspired by the creatures of Orbis, from the Trork Slayer to the Chicken Whisperer.
+- Staff can ban rule breakers for a set time or for good, lift bans and look up ban records. Repeat offences get longer bans, and banned players see why and when they can return.
+- The website home page shows how many adventurers are online right now.
+- The Crown treasury says clearly, before you pay, that Crowns are digital goods and all sales are final.
+- The website now sends visitors who type www in front of the address to the main site.
+
 - Loot chests found out in the world now hold separate loot for every player. Your chest stays as you left it, and it does not refill. These chests can no longer be broken. Chests that had already appeared in explored areas stay shared.
 
 - Road Designer includes node markers, saved road outlines, selection and deletion, and a paving style workshop. Roads can overlap and cross, and NPCs or dropped items do not block building. Any public road supports nearby plots without a portal connection; house paths do not count.
