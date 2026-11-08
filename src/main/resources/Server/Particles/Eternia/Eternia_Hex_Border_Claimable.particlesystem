@@ -1,0 +1,11 @@
+{
+  "Spawners": [
+    {
+      "SpawnerId": "Eternia_Hex_Border_Claimable_Rune"
+    }
+  ],
+  "LifeSpan": 3.7,
+  "CullDistance": 14,
+  "BoundingRadius": 1,
+  "IsImportant": false
+}

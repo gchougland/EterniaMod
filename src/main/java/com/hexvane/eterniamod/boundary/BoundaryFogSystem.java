@@ -1,6 +1,9 @@
 package com.hexvane.eterniamod.boundary;
 
 import com.hexvane.eterniamod.EterniaModPlugin;
+import com.hexvane.eterniamod.customization.CustomizationTools;
+import com.hexvane.eterniamod.hexplots.HexCoord;
+import com.hexvane.eterniamod.hexplots.HexLandView;
 import com.hexvane.eterniamod.hub.EterniaWorldRegistries;
 import com.hexvane.eterniamod.hub.HubPlotFootprint;
 import com.hexvane.eterniamod.hub.HubPlotRecord;
@@ -11,6 +14,8 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
+import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -38,11 +43,14 @@ public final class BoundaryFogSystem extends EntityTickingSystem<EntityStore> im
     private final BoundaryGroundSampler sampler;
     private final Map<UUID, BoundaryEmissionSchedule> schedules = new ConcurrentHashMap<>();
     private final Map<String, Index> indexes = new ConcurrentHashMap<>();
+    private final HexBorderWorlds hexWorlds;
+    private final List<AutoCloseable> alsoClose = new java.util.concurrent.CopyOnWriteArrayList<>();
     private volatile boolean closed;
 
     BoundaryFogSystem(EterniaModPlugin plugin, BoundarySurfacePolicy policy) {
         this.plugin = plugin;
         this.sampler = new BoundaryGroundSampler(policy);
+        this.hexWorlds = new HexBorderWorlds(plugin);
     }
 
     @Nonnull
@@ -63,24 +71,64 @@ public final class BoundaryFogSystem extends EntityTickingSystem<EntityStore> im
         World world = store.getExternalData().getWorld();
         var position = transform.getPosition();
         if (!Double.isFinite(position.x) || !Double.isFinite(position.y) || !Double.isFinite(position.z)) return;
+        HexBorderWorlds.Snapshot hex = hexWorlds.get(world);
+        if (hex != null) {
+            tickHex(hex, ref, store, viewer.getUuid(), world, position.x, position.y, position.z, schedule, commandBuffer);
+            return;
+        }
         List<BoundaryGeometry.Rectangle> rectangles = nearbyRectangles(world, position.x, position.z);
         for (BoundaryGeometry.Sample sample : BoundaryGeometry.nearby(rectangles, position.x, position.z)) {
-            if (!schedule.ready(world.getName(), sample.x(), sample.z())) continue;
-            double ground = sampler.sample(world, sample);
-            if (!Double.isFinite(ground) || Math.abs(position.y - ground) > 3) continue;
             double strength = BoundaryGeometry.intensity(sample.distance());
-            if (strength <= 0) continue;
-            // Immediate ground ribbon plus drifting lights, with bounded overlapping lifetimes.
             String particle = strength > .66 ? PARTICLE_SYSTEM : strength > .25 ? PARTICLE_SYSTEM + "_Soft" : PARTICLE_SYSTEM + "_Faint";
-            ParticleUtil.spawnParticleEffect(particle, sample.x(), ground + EMITTER_HEIGHT, sample.z(),
-                sample.horizontal()?0:(float)(Math.PI/2), 0, 0, 1, null, null, List.of(ref), commandBuffer, MAX_EFFECT_SECONDS);
-            schedule.emitted(world.getName(), sample.x(), sample.z());
+            emit(world, ref, position.y, sample, strength, particle, schedule, commandBuffer);
         }
     }
 
-    public void forgetPlayer(UUID player) { schedules.remove(player); }
-    public void invalidate(World world) { indexes.remove(world.getName()); }
-    @Override public void close() { closed = true; schedules.clear(); indexes.clear(); }
+    /** Hex plots: staircase borders coloured by relation, plus faint claimable outlines while choosing land. */
+    private void tickHex(HexBorderWorlds.Snapshot hex, Ref<EntityStore> ref, Store<EntityStore> store, UUID player, World world,
+                         double x, double y, double z, BoundaryEmissionSchedule schedule, CommandBuffer<EntityStore> commandBuffer) {
+        HexLandView.Viewer viewer = HexViewers.viewer(player);
+        List<BoundaryGeometry.Sample> plotSamples = HexBorderPlanner.plotSamples(hex.view(), hex.index(), viewer, x, z);
+        HexBorderRelation[] relations = HexBorderRelation.values();
+        for (BoundaryGeometry.Sample sample : plotSamples) {
+            double strength = BoundaryGeometry.intensity(sample.distance());
+            emit(world, ref, y, sample, strength, relations[sample.style()].particle(strength), schedule, commandBuffer);
+        }
+        Set<HexCoord> focus = HexBorderFocus.cells(player, world.getName());
+        boolean deed = focus == null && holdingDeed(ref, store);
+        if (focus == null && !deed) return;
+        Set<HexCoord> cells = HexBorderPlanner.claimableCells(hex.view(), viewer, x, z, focus, deed);
+        int ground = (int) Math.floor(y) - 1;
+        for (BoundaryGeometry.Sample sample : HexBorderPlanner.claimableSamples(hex.view(), cells, ground, plotSamples, x, z))
+            emit(world, ref, y, sample, 1, HexBorderRelation.CLAIMABLE.particle(1), schedule, commandBuffer);
+    }
+
+    private void emit(World world, Ref<EntityStore> ref, double viewerY, BoundaryGeometry.Sample sample, double strength, String particle,
+                      BoundaryEmissionSchedule schedule, CommandBuffer<EntityStore> commandBuffer) {
+        if (strength <= 0 || !schedule.ready(world.getName(), sample.x(), sample.z())) return;
+        double ground = sampler.sample(world, sample);
+        if (!Double.isFinite(ground) || Math.abs(viewerY - ground) > 3) return;
+        // Immediate ground ribbon plus drifting lights, with bounded overlapping lifetimes.
+        ParticleUtil.spawnParticleEffect(particle, sample.x(), ground + EMITTER_HEIGHT, sample.z(),
+            sample.horizontal()?0:(float)(Math.PI/2), 0, 0, 1, null, null, List.of(ref), commandBuffer, MAX_EFFECT_SECONDS);
+        schedule.emitted(world.getName(), sample.x(), sample.z());
+    }
+
+    private static boolean holdingDeed(Ref<EntityStore> ref, Store<EntityStore> store) {
+        ItemStack held = InventoryComponent.getItemInHand(store, ref);
+        return !ItemStack.isEmpty(held) && CustomizationTools.DEED.equals(held.getItemId());
+    }
+
+    public void forgetPlayer(UUID player) { schedules.remove(player); HexBorderFocus.clear(player); }
+    public void invalidate(World world) { indexes.remove(world.getName()); hexWorlds.forget(world); }
+    @Override public void close() {
+        closed = true; schedules.clear(); indexes.clear(); hexWorlds.close();
+        for (AutoCloseable other : alsoClose) { try { other.close(); } catch (Exception ignored) { } }
+        alsoClose.clear(); HexViewers.clear(); HexBorderFocus.clearAll();
+    }
+
+    /** Closes {@code other} together with this system (the world map overlay). */
+    public void closeAlso(AutoCloseable other) { alsoClose.add(other); }
 
     private List<BoundaryGeometry.Rectangle> nearbyRectangles(World world, double x, double z) {
         long revision = EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin).getRevision();
