@@ -138,3 +138,22 @@ a.pass-banner:hover .banner-cta{background:linear-gradient(#f0d394,#cbae6d)}
 .collection-card.used-up .collection-art img{opacity:.35}
 @media(max-width:900px){.collection{grid-template-columns:1fr}.collection-side{position:static;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:600px){.collection-side{grid-template-columns:repeat(2,minmax(0,1fr))}.collection-tab{padding-inline:8px;gap:8px}.collection-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.collection-card h3{font-size:15px}}
+/* Live adventurer count in the welcome hero */
+.realm-online{display:inline-flex;align-items:center;gap:11px;min-height:34px;margin:0 0 26px;padding:7px 16px 7px 13px;border:1px solid #45615d99;background:#0d1d2099;backdrop-filter:blur(4px);color:#dedcc3;font-size:14px;letter-spacing:.3px;line-height:1.3;max-width:100%;transition:opacity .4s}
+.realm-online[data-state=loading]{opacity:0}
+.online-dot{position:relative;flex:none;width:9px;height:9px;border-radius:50%;background:var(--et-success);box-shadow:0 0 8px #91c98b99}
+.realm-online[data-state=quiet] .online-dot{background:var(--et-accent);box-shadow:0 0 8px #85c5b366}
+.realm-online[data-state=resting]{color:#9ab3a8}
+.realm-online[data-state=resting] .online-dot{background:#7c8f86;box-shadow:none}
+@media(prefers-reduced-motion:no-preference){.realm-online[data-state=online] .online-dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--et-success);animation:online-pulse 2.4s ease-out infinite}}
+@keyframes online-pulse{from{transform:scale(1);opacity:.7}to{transform:scale(2.8);opacity:0}}
+@media(max-width:600px){.realm-online{font-size:12px;gap:9px;padding:6px 13px 6px 11px;margin-bottom:18px}}
+/* "All sales are final" note beside Crown purchases */
+.sales-final{display:flex;gap:12px;align-items:flex-start;max-width:640px;margin:16px 0 0;padding:12px 16px;border:1px solid #45615d;border-left:3px solid var(--et-primary);background:#0d1d2066;color:var(--et-muted);font-size:15px;line-height:1.55}
+.sales-final img{flex:none;width:20px;height:20px;margin-top:2px}
+.sales-final strong{color:var(--et-text);font-weight:600}
+.sales-final a{color:var(--et-primary);white-space:nowrap}
+.checkout-review .sales-final{margin:4px 0;width:100%;max-width:none;box-sizing:border-box}
+.crown-fineprint{margin-top:28px}
+@media(max-width:600px){.sales-final{font-size:14px;padding:11px 13px}.sales-final a{white-space:normal}}
+.realm-online strong{color:var(--et-primary);font-weight:700;font-variant-numeric:tabular-nums}

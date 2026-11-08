@@ -4,7 +4,7 @@ export function landing(view){
  view.innerHTML=`
  <section class="realm-hero" aria-labelledby="welcome-title">
   <img class="realm-landscape" src="/media/eternia-valley.svg" alt="An illustrated valley of cottages, a guild hall, and a glowing gateway beneath the mountains" width="1400" height="880" fetchpriority="high">
-  <div class="realm-copy"><div class="eyebrow"><span class="tiny-diamond"></span> A shared adventure in Hytale</div>
+  <div class="realm-copy"><p class="realm-online" data-state="loading"><span class="online-dot" aria-hidden="true"></span><span data-online-text></span></p><div class="eyebrow"><span class="tiny-diamond"></span> A shared adventure in Hytale</div>
    <h1 id="welcome-title">Go far.<br>Come <em>home.</em></h1>
    <p>For the explorers who stay a little longer.<br>The builders who make a place their own.<br>And the friends who turn a world into home.</p>
    <div class="actions"><a class="button primary" href="#discover">Discover Eternia <span aria-hidden="true">↓</span></a><a class="realm-link" href="/account">Your adventurer profile <span aria-hidden="true">↗</span></a></div>
@@ -24,5 +24,6 @@ export function landing(view){
  </section>
  <section class="realm-chapter" id="chapters" aria-labelledby="chapter-title"><div class="chapter-seal" aria-hidden="true"><img src="/icons/eternia.svg" alt="" width="128" height="128"><span>I</span></div><div><p class="eyebrow">Every season is another chapter</p><h2 id="chapter-title">Life happens.<br>Your adventure can wait.</h2><p>Quest, explore, and earn rewards through ordinary play. Earlier season passes stay available, so you can return to your story whenever you are ready.</p><a class="button" href="/seasons">Explore season passes <span aria-hidden="true">↗</span></a></div><div class="chapter-detail" aria-hidden="true"><span>EXPLORE</span><i>✦</i><span>COLLECT</span><i>✦</i><span>BELONG</span></div></section>
  <section class="realm-invitation"><img src="/icons/eternia.svg" alt="" width="54" height="54"><p class="eyebrow">The next chapter is yours</p><h2>Every great adventure<br>needs a place to come back to.</h2><a class="button primary" href="/account">Visit your account <span aria-hidden="true">↗</span></a><p class="muted">Hytale sign in connects your character, collection, and progress.</p></section>`;
+ import('./players-online.js').then(({mountPlayersOnline})=>mountPlayersOnline(view.querySelector('.realm-online'))).catch(()=>{});
  import('./guild-build.js').then(({mountGuildBuild})=>mountGuildBuild(view.querySelector('.guild-story'))).catch(()=>{view.querySelector('.guild-story').dataset.fallback='true';});
 }
