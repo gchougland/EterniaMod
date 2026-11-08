@@ -30,10 +30,6 @@
       "Texture": "Characters/Body_Attachments/Ears/Ears1_Textures/Outlander_1.png"
     },
     {
-      "Model": "Characters/Body_Attachments/Faces/Player_Face_Detached.blockymodel",
-      "Texture": "Characters/Body_Attachments/Faces/Faces_Detached_Textures/Face_Outlander.png"
-    },
-    {
       "Model": "Characters/Haircuts/Berserker.blockymodel",
       "Texture": "Characters/Haircuts/Berserker_Greyscale.png",
       "GradientSet": "Hair",
