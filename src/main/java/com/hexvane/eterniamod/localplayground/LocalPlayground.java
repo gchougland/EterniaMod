@@ -43,7 +43,7 @@ public final class LocalPlayground {
     public static void require(EterniaModPlugin plugin,UUID actor){if(plugin==null||!plugin.getRuntimeConfig().local())throw new DomainException(DomainException.Code.FORBIDDEN,"The playground is available only on a local test server.");SetupAccess.require(actor);}
     public static void open(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player){
         require(plugin,player.getUuid());var choices=new ArrayList<ChoicePage.Choice>();
-        choices.add(new ChoicePage.Choice("Create or visit the village: six NPCs, a shop house, guild hall and claimable land","Visit village",(r,s)->visit(plugin,player)));
+        choices.add(new ChoicePage.Choice("Create or visit the village: seven NPCs, a shop house, guild hall and claimable land","Visit village",(r,s)->visit(plugin,player)));
         choices.add(new ChoicePage.Choice("Collect 5,000 Crowns, 2,000 coins, mail and housing supplies once","Starter supplies",(r,s)->supplies(plugin,r,s,player,false)));
         choices.add(new ChoicePage.Choice("Get another local test allowance and item parcel","More supplies",(r,s)->ChoicePage.open(r,s,player,"More test supplies","Add another 5,000 Crowns, 2,000 coins and sample items to this local profile.",List.of(new ChoicePage.Choice("Issue another local testing allowance","Confirm",(rr,ss)->supplies(plugin,rr,ss,player,true))))));
         choices.add(new ChoicePage.Choice("Try real combat, mining and crop XP in the adventure test world","Activity trials",(r,s)->visitTrials(plugin,player)));
@@ -56,7 +56,7 @@ public final class LocalPlayground {
         ChoicePage.open(ref,store,player,"Eternia playground","A persistent local testing village. Create it once, then keep your changes between sessions. Your current home and guild are retained.",choices);
     }
     private static void guide(Ref<EntityStore> r,Store<EntityStore>s,PlayerRef p){ChoicePage.open(r,s,p,"Your testing route","Use Adventure mode for activity XP. The village is a housing world: use the housing and road tools to build.",List.of(
-        new ChoicePage.Choice("1. Talk to all six NPCs; check names, professions and your interaction key","Village",(rr,ss)->visit(EterniaModPlugin.get(),p)),
+        new ChoicePage.Choice("1. Talk to all seven NPCs; check names, professions and your interaction key","Village",(rr,ss)->visit(EterniaModPlugin.get(),p)),
         new ChoicePage.Choice("2. Collect supplies, then buy a pet, decoration or plot upgrade from Lyra","Crown Store",(rr,ss)->com.hexvane.eterniamod.premium.PremiumShopPage.open(EterniaModPlugin.get(),rr,ss,p)),
         new ChoicePage.Choice("3. Visit Iris Wren’s player shop, buy with coins and collect your delivery","Player shops",(rr,ss)->EterniaModPlugin.get().getMenuActions().perform(com.hexvane.eterniamod.socialui.SocialUiActions.Action.SHOP_BROWSE,rr,ss,p)),
         new ChoicePage.Choice("4. Claim west of the main lane near (-19, 34); place your free house","Housing",(rr,ss)->HousingInventory.open(EterniaModPlugin.get(),rr,ss,p)),
@@ -108,7 +108,7 @@ public final class LocalPlayground {
                 if(!safe)throw new IllegalStateException("The example shop has no clear arrival near its configured entrance");
             }).join();
             PlaygroundActivities.nativeSmoke(plugin,Universe.get().getWorld(TRIALS),actor).join();
-            plugin.getLogger().atInfo().log("ETERNIA_NATIVE_PLAYGROUND_PASS: persistent village, actual spline road, six distinct NPCs, managed portal, furnished seller and guild house, finite native-item listings, mineral and harvest stations; repeat setup retains state");
+            plugin.getLogger().atInfo().log("ETERNIA_NATIVE_PLAYGROUND_PASS: persistent village, actual spline road, seven distinct NPCs, managed portal, furnished seller and guild house, finite native-item listings, mineral and harvest stations; repeat setup retains state");
         }finally{permissions.removeUserPermission(actor,permission);}
     }
     private static synchronized World world(EterniaModPlugin plugin,String name)throws Exception{
@@ -162,7 +162,7 @@ public final class LocalPlayground {
             register(plugin,w,hasHub?"housing":"hub",true,new HousingInfrastructure.Point(.5,1,.5),Map.of("village-plaza",new HousingInfrastructure.Area(HousingInfrastructure.AreaKind.PORTAL,new PlotRect(-20,-20,40,40))));
         }
         com.hexvane.eterniamod.pathtool.SplineRoadTool.ensureExample(w,actor);
-        int n=0;for(var identity:HubNpcIdentity.values()){int x=-12+(n%3)*12,z=n<3?-10:10;ManagedHubServices.ensureNpc(plugin,w,actor,identity,x,1,z,n<3?0:(float)Math.PI);n++;}
+        int n=0;for(var identity:HubNpcIdentity.values()){int x=-15+(n%4)*10,z=n<4?-10:10;ManagedHubServices.ensureNpc(plugin,w,actor,identity,x,1,z,n<4?0:(float)Math.PI);n++;}
         ManagedHubServices.ensurePortal(plugin,w,actor,16,1,0,0);
         plugin.getRuntime().welcome(SELLER,"Iris Wren");// Hex villages: the shop takes the hexagon east of the plaza, the guild estate a flower beside the example road.
         var shop=house(plugin,w,SELLER,Owner.player(SELLER),new PlotRect(8,22,24,24),List.of(SHOP_CELL),"hub_house",HousingRules.Scope.PUBLIC);

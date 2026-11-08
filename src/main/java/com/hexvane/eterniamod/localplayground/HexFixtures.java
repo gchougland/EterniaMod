@@ -65,6 +65,8 @@ public final class HexFixtures {
             services.housing().activate(owner, out.slot().operationId());
             return null;
         });
+        // Same starter grants as a real estate claim (claimCellsNow): the guild's house, path and mailbox unlocks.
+        if (scope == HousingRules.Scope.GUILD_ROOT) plugin.getRuntime().welcomeGuild(guild);
         return out.slot().propertyId();
     }
 
