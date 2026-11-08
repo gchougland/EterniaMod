@@ -238,6 +238,9 @@ public final class TownBuilder {
             m.previousRole=before.role();m.previousHousing=before.housingEnabled();var a=before.arrival();m.previousArrival=a==null?null:new double[]{a.x(),a.y(),a.z()};
             var areas=new TreeMap<>(before.areas());areas.put(m.plazaArea,new HousingInfrastructure.Area(HousingInfrastructure.AreaKind.PORTAL,rect));
             next=before.withRole(before.role(),true).withAreas(areas).withArrival(arrival);}
+        // A world gaining housing here cuts its land into hexagons on the data default grid (move it with
+        // /e admin setup lattice before anyone claims); a world that already had housing keeps its plot shape.
+        if(before==null||!before.supportsHousing())next=next.withHousingDefaults(com.hexvane.eterniamod.hexplots.HexPlotSettings.current().defaultLattice());
         infra.saveWorld(snapshot.revision(),world.getName(),next);m.registered=true;
     }
     /** The Waygate's world portal and the six Hub NPCs at their desk spots, unless the world has them already. */
