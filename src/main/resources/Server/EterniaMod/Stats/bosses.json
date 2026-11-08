@@ -1,0 +1,12 @@
+{
+  "$Comment": "Bosses tracked by player stats and the server firsts. Roles are the NPC roles whose death ends the fight, each with its difficulty. Players within CreditRange blocks share the victory.",
+  "CreditRange": 64,
+  "Bosses": [
+    { "Id": "gobliterator", "Name": "The Gobliterator", "Roles": { "Goblin_Gobliterator_Phase3": "normal", "Goblin_Gobliterator_Phase3_HM": "hard" } },
+    { "Id": "feastmaster", "Name": "The Feastmaster", "Roles": { "Dungeon_Feastmaster_Boss": "normal", "Dungeon_Feastmaster_Feeding": "normal" } },
+    { "Id": "broodmother", "Name": "Scarak Broodmother", "Roles": { "Dungeon_Scarak_Broodmother": "normal" } },
+    { "Id": "voidtaken_bear", "Name": "Voidtaken Bear", "Roles": { "Bear_Voidtaken": "normal" } },
+    { "Id": "fire_dragon", "Name": "Fire Dragon", "Roles": { "Dragon_Fire": "normal" } },
+    { "Id": "frost_dragon", "Name": "Frost Dragon", "Roles": { "Dragon_Frost": "normal" } }
+  ]
+}

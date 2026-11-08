@@ -1,0 +1,123 @@
+$T = "Theme/Citadel.ui";
+@ValueStyle = LabelStyle(FontName: "Secondary", FontSize: 30, TextColor: $T.@Primary, RenderBold: true, VerticalAlignment: Center);
+@NoteStyle = LabelStyle(FontSize: 14, TextColor: $T.@Muted, VerticalAlignment: Center);
+@KickerStyle = LabelStyle(FontSize: 13, TextColor: $T.@Accent, RenderBold: true, RenderUppercase: true, VerticalAlignment: Center);
+@RowNameStyle = LabelStyle(FontSize: 16, TextColor: $T.@Text, RenderBold: true, VerticalAlignment: Center);
+@RowCountStyle = LabelStyle(FontSize: 16, TextColor: $T.@Primary, RenderBold: true, HorizontalAlignment: End, VerticalAlignment: Center);
+
+@Tile = Group {
+  FlexWeight: 1; Background: $T.@CodexCardSurface; Padding: (Horizontal: 18, Vertical: 14); LayoutMode: Left;
+  Group { Anchor: (Width: 76, Height: 76, Right: 16); Background: $T.@IconTileSurface;
+    Group #TileIcon { Anchor: (Width: 54, Height: 54); }
+  }
+  Group { FlexWeight: 1; LayoutMode: Middle;
+    Label #TileLabel { Anchor: (Height: 22); Style: @KickerStyle; }
+    Label #TileValue { Anchor: (Height: 42); Style: @ValueStyle; }
+    Label #TileNote { Anchor: (Height: 20); Style: @NoteStyle; }
+  }
+};
+
+@FoeRow = Group { Anchor: (Height: 38, Bottom: 4); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 14); LayoutMode: Left; Visible: false;
+  Label #FoeRank { Anchor: (Width: 30); Style: (...@NoteStyle, RenderBold: true); }
+  Label #FoeName { FlexWeight: 1; Style: @RowNameStyle; }
+  Label #FoeCount { Anchor: (Width: 120); Style: @RowCountStyle; }
+};
+
+@BossRow = Group { Anchor: (Height: 58, Bottom: 6); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 12); LayoutMode: Left; Visible: false;
+  Group #BossIcon { Anchor: (Width: 40, Height: 40, Right: 12); Background: "Icons/StatsBoss.png"; }
+  Group { FlexWeight: 1; LayoutMode: Middle;
+    Label #BossName { Anchor: (Height: 24); Style: @RowNameStyle; }
+    Label #BossDate { Anchor: (Height: 18); Style: @NoteStyle; }
+  }
+  Group { Anchor: (Width: 120); LayoutMode: Middle;
+    Label #BossLevel { Anchor: (Height: 22); Style: (...@KickerStyle, HorizontalAlignment: End); }
+    Label #BossCount { Anchor: (Height: 20); Style: (...@NoteStyle, HorizontalAlignment: End); }
+  }
+};
+
+@FirstRow = Group { Anchor: (Height: 52, Bottom: 6); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 12); LayoutMode: Left; Visible: false;
+  Group { Anchor: (Width: 34, Height: 34, Right: 12); Background: "Icons/StatsFirst.png"; }
+  Group { FlexWeight: 1; LayoutMode: Middle;
+    Label #FirstText { Anchor: (Height: 22); Style: (...@RowNameStyle, FontSize: 15); }
+    Label #FirstDate { Anchor: (Height: 18); Style: @NoteStyle; }
+  }
+};
+
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    Group { Anchor: (Width: 420); LayoutMode: Middle;
+      Group { Anchor: (Width: 180, Height: 40, Left: 0); Background: "Theme/Surfaces/EterniaWordmark.png"; }
+      Label #Kicker { Anchor: (Height: 22); Style: @KickerStyle; }
+    }
+    Group { FlexWeight: 1; }
+    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30, Right: 10); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+    $T.@CodexClose #Close {}
+  }
+  $T.@CodexBody {
+    $T.@CodexPanel #Profile { Anchor: (Width: 420, Right: 24);
+      Group { Anchor: (Height: 96, Bottom: 14); LayoutMode: Left;
+        Group { Anchor: (Width: 96, Height: 96, Right: 16); Background: $T.@IconTilePrimarySurface;
+          Group { Anchor: (Width: 68, Height: 68); Background: "Icons/StatsJourney.png"; }
+        }
+        Group { FlexWeight: 1; LayoutMode: Middle;
+          Label #PlayerTitle { Anchor: (Height: 36); Style: (...$T.@TitleStyle, FontSize: 22); }
+          Label #Subtitle { Anchor: (Height: 22); Style: @KickerStyle; }
+        }
+      }
+      Label #Intro { Anchor: (Height: 46, Bottom: 16); Style: (...$T.@MutedStyle, FontSize: 15); }
+      Group #PlaytimeCard { Anchor: (Height: 104, Bottom: 22); Background: $T.@CodexCardSurface; Padding: (Horizontal: 18); LayoutMode: Left;
+        Group { Anchor: (Width: 64, Height: 64, Right: 16); Background: "Icons/StatsTime.png"; }
+        Group { FlexWeight: 1; LayoutMode: Middle;
+          Label #PlaytimeLabel { Anchor: (Height: 22); Style: @KickerStyle; }
+          Label #PlaytimeValue { Anchor: (Height: 46); Style: (...@ValueStyle, FontSize: 36); }
+        }
+      }
+      Label #FirstsTitle { Anchor: (Height: 30, Bottom: 8); Style: $T.@SubtitleStyle; }
+      @FirstRow #First0 {}
+      @FirstRow #First1 {}
+      @FirstRow #First2 {}
+      @FirstRow #First3 {}
+      Label #FirstsEmpty { Anchor: (Height: 66); Style: (...$T.@MutedStyle, FontSize: 15); }
+      Group { FlexWeight: 1; }
+      Label #Notice { Anchor: (Height: 44); Style: (...$T.@MutedStyle, FontSize: 15, TextColor: $T.@Accent); }
+    }
+    $T.@CodexPanel #Records { FlexWeight: 1;
+      Label #HighlightsTitle { Anchor: (Height: 34, Bottom: 10); Style: $T.@TitleStyle; }
+      Group { Anchor: (Height: 120, Bottom: 14); LayoutMode: Left;
+        @Tile #TileChests { Anchor: (Right: 14); }
+        @Tile #TileBlocks { Anchor: (Right: 14); }
+        @Tile #TileWorlds {}
+      }
+      Group { Anchor: (Height: 120, Bottom: 22); LayoutMode: Left;
+        @Tile #TileKills { Anchor: (Right: 14); }
+        @Tile #TileBosses { Anchor: (Right: 14); }
+        @Tile #TileDeaths {}
+      }
+      Group { FlexWeight: 1; LayoutMode: Left;
+        Group { FlexWeight: 1; Anchor: (Right: 24); LayoutMode: Top;
+          Label #FoesTitle { Anchor: (Height: 30, Bottom: 10); Style: $T.@SubtitleStyle; }
+          @FoeRow #Foe0 {}
+          @FoeRow #Foe1 {}
+          @FoeRow #Foe2 {}
+          @FoeRow #Foe3 {}
+          @FoeRow #Foe4 {}
+          @FoeRow #Foe5 {}
+          @FoeRow #Foe6 {}
+          @FoeRow #Foe7 {}
+          Label #FoesEmpty { Anchor: (Height: 48); Style: (...$T.@MutedStyle, FontSize: 15); }
+        }
+        Group { FlexWeight: 1; LayoutMode: Top;
+          Label #BossesTitle { Anchor: (Height: 30, Bottom: 10); Style: $T.@SubtitleStyle; }
+          @BossRow #Boss0 {}
+          @BossRow #Boss1 {}
+          @BossRow #Boss2 {}
+          @BossRow #Boss3 {}
+          @BossRow #Boss4 {}
+          @BossRow #Boss5 {}
+          Label #BossesEmpty { Anchor: (Height: 48); Style: (...$T.@MutedStyle, FontSize: 15); }
+        }
+      }
+    }
+  }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
+}
