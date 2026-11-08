@@ -132,6 +132,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.runtime.GuildWaygateEntrySystem(this));
         getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.setup.DisabledWorldEvents());
         memories = com.hexvane.eterniamod.memories.MemoryBootstrap.register(this);
+        com.hexvane.eterniamod.moderation.ModerationBootstrap.register(this);
         com.hexvane.eterniamod.runtime.NativeSmoke.register(this);
         departures = new com.hexvane.eterniamod.housing.relocation.GuildDepartureWorker(this,
             error -> getLogger().atWarning().withCause(error).log("Guild property return needs recovery"));
@@ -142,6 +143,7 @@ public final class EterniaModPlugin extends JavaPlugin {
 
     @Override
     protected void shutdown() {
+        com.hexvane.eterniamod.moderation.ModerationBootstrap.shutdown();
         if (boundaryFog != null) boundaryFog.close();
         if (socialUi != null) socialUi.close();
         if (departures != null) departures.close();

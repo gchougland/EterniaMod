@@ -19,6 +19,7 @@ public final class EterniaAdminCommand extends AbstractCommandCollection {
         super("admin","Eternia administration");setPermissionGroups("hytale:WorldEditor");
         addSubCommand(new CurrencyGrantCommand(CurrencyGrantService.Currency.CROWNS));addSubCommand(new CurrencyGrantCommand(CurrencyGrantService.Currency.COINS));
         addSubCommand(new Status());addSubCommand(new Reload());addSubCommand(new Inspect());addSubCommand(new Recover());addSubCommand(new Grant());addSubCommand(new EterniaSetupCommand());addSubCommand(new RoadTool());addSubCommand(new HubBuildCommand());addSubCommand(new TownCommand());
+        com.hexvane.eterniamod.moderation.ModerationCommands.addTo(this);
     }
     private static final class RoadTool extends AbstractPlayerCommand {
         RoadTool(){super("roadtool","Get the held spline Road Designer");setPermissionGroups("hytale:WorldEditor");}

@@ -1,0 +1,51 @@
+notice.title = You are banned from Eternia.
+notice.reason = Reason: {reason}
+notice.noReason = No reason was given.
+notice.ends = Your ban ends in {time}.
+notice.permanent = This ban is permanent.
+notice.appeal = If you think this is a mistake, please contact the Eternia team.
+
+staffOnly = Only Eternia staff can do that.
+failed = Something went wrong, so nothing was changed. Please try again in a moment.
+unknown = Nobody called {name} has played on Eternia. Check the spelling, or use their player ID.
+ambiguous = More than one player has used the name {name}. Use their player ID instead.
+noReason = no reason given
+
+ban.done = {name} is banned for {time}.
+ban.donePermanent = {name} is banned permanently.
+ban.reason = Reason: {reason}
+ban.ladder = This is their offence number {offence}, so the usual length for it was used.
+ban.removed = They were online and have been sent off the server.
+ban.self = You cannot ban yourself.
+ban.already = {name} is already banned ({ends}). Unban them first if you want to set a new ban.
+ban.badTime = "{input}" is not a length of time I can read. Try 30m, 2h, 7d or perm.
+
+unban.done = {name} is no longer banned. They can join again now.
+unban.notBanned = {name} is not banned right now.
+
+ends.in = ends in {time}
+ends.never = permanent
+
+info.title = Ban record for {name}
+info.activeTimed = Banned now: ends in {time}.
+info.activePermanent = Banned now: permanent.
+info.activeDetail = Banned by {by} on {date}. Reason: {reason}
+info.clear = Not banned right now.
+info.offences = Bans so far: {count}. A ban with no length given would be {next}.
+info.historyTitle = History, newest first:
+info.historyMore = ...and {count} older entries.
+info.ban = {date}: banned for {length} by {by}. Reason: {reason}
+info.banPermanent = {date}: banned permanently by {by}. Reason: {reason}
+info.unban = {date}: unbanned by {by}. {reason}
+info.expire = {date}: the ban ended on its own.
+info.empty = No bans on record. Use /eternia admin ban {name} to ban them.
+
+list.title = Active bans: {count}
+list.row = {name}: {ends}. Banned by {by}. Reason: {reason}
+list.more = ...and {count} more.
+list.empty = Nobody is banned right now.
+
+args.player.name = Player
+args.player.usage = PlayerName
+args.time.name = Ban length
+args.time.usage = 30m, 2h, 7d or perm
