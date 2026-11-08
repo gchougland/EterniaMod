@@ -68,6 +68,8 @@ public final class EterniaServices {
         });
     }
     public AccountService accounts(){return accounts;}
+    /** The batched domain store, for feature services outside this package (moderation_ namespaces). */
+    public com.hexvane.eterniamod.persistence.TransactionalStore store(){return batched;}
     public OwnershipService ownership(){return ownership;}
     public EconomyService economy(){return economy;}
     public JournalService journal(){return journal;}
