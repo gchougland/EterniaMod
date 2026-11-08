@@ -1,0 +1,129 @@
+$T = "Theme/Citadel.ui";
+
+// The claim map: a picture of the land around the player with the hexagon grid on it (drawn at run time by
+// ClaimMapRenderer and sent as a per player asset), clickable cells over it, and a side panel that explains the
+// selected hexagon. Sizes follow ClaimMapGeometry: the map is 880 x 770 (11 x 11 cells at 2.5 pixels per block).
+
+@MapWidth = 880;
+@MapHeight = 770;
+@MarkWidth = 92;
+@MarkHeight = 102;
+@Mark = Group { Anchor: (Left: 0, Top: 0, Width: @MarkWidth, Height: @MarkHeight); Background: "ClaimMap/HexPick.png"; HitTestVisible: false; Visible: false; };
+@PanButton = Button { Anchor: (Width: 44, Height: 44); Style: $T.@IconButtonStyle; TextTooltipStyle: $T.@DefaultTextTooltipStyle; };
+@PanIcon = Group { Anchor: (Width: 20, Height: 20); HitTestVisible: false; };
+@FactLabel = LabelStyle(FontSize: 14, TextColor: $T.@Muted, RenderBold: true, RenderUppercase: true, VerticalAlignment: Center);
+@FactValue = LabelStyle(FontSize: 16, TextColor: $T.@Text, RenderBold: true, VerticalAlignment: Center, Wrap: true);
+@LegendText = LabelStyle(FontSize: 14, TextColor: $T.@Text, VerticalAlignment: Center);
+@Swatch = Group { Anchor: (Width: 20, Height: 22, Right: 8); HitTestVisible: false; };
+@TitleSwatch = Group { Anchor: (Width: 26, Height: 29, Top: 6, Right: 12); Visible: false; };
+@ScopeTabStyle = TextButtonStyle(
+  Default: (Background: $T.@SecondarySurface, LabelStyle: (FontSize: 15, TextColor: $T.@Muted, HorizontalAlignment: Center, VerticalAlignment: Center)),
+  Hovered: (Background: $T.@SecondaryHoverSurface, LabelStyle: (FontSize: 15, TextColor: $T.@Text, HorizontalAlignment: Center, VerticalAlignment: Center)),
+  Pressed: (Background: $T.@SecondaryPressedSurface, LabelStyle: (FontSize: 15, TextColor: $T.@Accent, HorizontalAlignment: Center, VerticalAlignment: Center)),
+  Disabled: (Background: $T.@PrimarySurface, LabelStyle: (FontSize: 15, TextColor: #142528, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center))
+);
+
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    $T.@CodexEmblem { Group { Anchor: (Width: 44, Height: 44); Background: "Icons/plot.png"; } }
+    Group { FlexWeight: 1; LayoutMode: Middle;
+      Label #MapTitle { Anchor: (Height: 34); Text: "Claim Map"; Style: $T.@CodexTitleStyle; }
+      Label #MapKicker { Anchor: (Height: 22); Text: ""; Style: $T.@CodexKickerStyle; }
+    }
+    Group #CurrencyWallet { Anchor: (Width: 220, Height: 64, Top: 20, Right: 12); LayoutMode: Left; }
+    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30, Right: 10); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+    $T.@CodexClose #Close {}
+  }
+  $T.@CodexBody { LayoutMode: Center;
+    $T.@CodexPanel #MapPanel { Anchor: (Width: 912, Right: 24); Padding: (Full: 16); LayoutMode: Middle;
+      Group #MapStage { Anchor: (Width: @MapWidth, Height: @MapHeight); Background: #1b2a2b;
+        AssetImage #MapImage { Anchor: (Full: 0); AssetPath: ""; FallbackTexturePath: "UI/Custom/EterniaMod/ClaimMap/MapLoading.png"; HitTestVisible: false; }
+        // A scrolling box is the only thing that clips: it keeps marks of cells cut by the map edge inside the map.
+        Group #MarksClip { Anchor: (Full: 0); LayoutMode: TopScrolling; ScrollbarStyle: (Spacing: 0, Size: 0); HitTestVisible: false;
+        Group #Marks { Anchor: (Height: @MapHeight); HitTestVisible: false;
+          @Mark #Pick0 {} @Mark #Pick1 {} @Mark #Pick2 {} @Mark #Pick3 {} @Mark #Pick4 {} @Mark #Pick5 {} @Mark #Pick6 {}
+          @Mark #Bad0 { Background: "ClaimMap/HexPickBad.png"; } @Mark #Bad1 { Background: "ClaimMap/HexPickBad.png"; } @Mark #Bad2 { Background: "ClaimMap/HexPickBad.png"; }
+          @Mark #Bad3 { Background: "ClaimMap/HexPickBad.png"; } @Mark #Bad4 { Background: "ClaimMap/HexPickBad.png"; } @Mark #Bad5 { Background: "ClaimMap/HexPickBad.png"; }
+          @Mark #Bad6 { Background: "ClaimMap/HexPickBad.png"; }
+          @Mark #Selected { Background: "ClaimMap/HexSelected.png"; }
+        }
+        }
+        Group #Cells { Anchor: (Full: 0); }
+        Group #MapFrame { Anchor: (Full: 0); HitTestVisible: false; OutlineSize: 2; OutlineColor: #d8b66b(0.55); }
+        Group #MapLoading { Anchor: (Width: 260, Height: 52); Background: $T.@JournalPanelSurface; Padding: (Horizontal: 16); HitTestVisible: false;
+          Label #MapLoadingText { Anchor: (Full: 0); Text: ""; Style: (FontSize: 16, TextColor: $T.@Text, HorizontalAlignment: Center, VerticalAlignment: Center); }
+        }
+        Group #Compass { Anchor: (Left: 12, Top: 12, Width: 40, Height: 54); Background: PatchStyle(TexturePath: "Theme/Surfaces/Chip.png", Border: 6); LayoutMode: Top; Padding: (Top: 6); HitTestVisible: false;
+          Group { Anchor: (Width: 18, Height: 18); Background: "ClaimMap/ArrowN.png"; }
+          Label { Anchor: (Height: 22); Text: "N"; Style: (FontName: "Secondary", FontSize: 16, TextColor: $T.@Primary, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+        }
+        @PanButton #PanNorth { Anchor: (Top: 10, Width: 44, Height: 44); TooltipText: "Look north"; @PanIcon { Background: "ClaimMap/ArrowN.png"; } }
+        @PanButton #PanSouth { Anchor: (Bottom: 10, Width: 44, Height: 44); TooltipText: "Look south"; @PanIcon { Background: "ClaimMap/ArrowS.png"; } }
+        @PanButton #PanWest { Anchor: (Left: 10, Width: 44, Height: 44); TooltipText: "Look west"; @PanIcon { Background: "ClaimMap/ArrowW.png"; } }
+        @PanButton #PanEast { Anchor: (Right: 10, Width: 44, Height: 44); TooltipText: "Look east"; @PanIcon { Background: "ClaimMap/ArrowE.png"; } }
+        Button #Recentre { Anchor: (Left: 12, Bottom: 12, Width: 152, Height: 40); Style: $T.@IconButtonStyle; Padding: (Horizontal: 12); LayoutMode: Left;
+          Group { Anchor: (Width: 20, Height: 20, Top: 10, Right: 8); Background: "ClaimMap/Recentre.png"; HitTestVisible: false; }
+          Label #RecentreText { FlexWeight: 1; Text: ""; HitTestVisible: false; Style: (FontSize: 15, TextColor: $T.@Text, RenderBold: true, VerticalAlignment: Center); }
+        }
+      }
+    }
+    $T.@CodexPanel #SidePanel { Anchor: (Width: 420); Padding: (Full: 24);
+      Group #ScopeTabs { Anchor: (Height: 40, Bottom: 16); LayoutMode: Left; Visible: false;
+        TextButton #ScopeMine { FlexWeight: 1; Anchor: (Right: 8); Text: ""; Style: @ScopeTabStyle; }
+        TextButton #ScopeGuild { FlexWeight: 1; Text: ""; Style: @ScopeTabStyle; }
+      }
+      Label #SideKicker { Anchor: (Height: 20, Bottom: 2); Text: ""; Style: $T.@CodexKickerStyle; }
+      Group { LayoutMode: Left;
+        @TitleSwatch #SwMine { Background: "ClaimMap/SwatchMine.png"; }
+        @TitleSwatch #SwMyGuild { Background: "ClaimMap/SwatchMyGuild.png"; }
+        @TitleSwatch #SwOtherPlayer { Background: "ClaimMap/SwatchOtherPlayer.png"; }
+        @TitleSwatch #SwOtherGuild { Background: "ClaimMap/SwatchOtherGuild.png"; }
+        @TitleSwatch #SwFrontageFree { Background: "ClaimMap/SwatchFrontageFree.png"; }
+        @TitleSwatch #SwFree { Background: "ClaimMap/SwatchFree.png"; }
+        @TitleSwatch #SwStreet { Background: "ClaimMap/SwatchStreet.png"; }
+        @TitleSwatch #SwReserved { Background: "ClaimMap/SwatchReserved.png"; }
+        Label #CellTitle { FlexWeight: 1; Anchor: (Top: 4); Text: ""; Style: (...$T.@TitleStyle, FontSize: 22, Wrap: true, WrapMaxLines: 2); }
+      }
+      Label #CellBody { Anchor: (Height: 66, Top: 4, Bottom: 12); Text: ""; Style: (...$T.@DefaultLabelStyle, FontSize: 15, TextColor: $T.@Muted); }
+      Group #ShapeBox { Anchor: (Height: 104, Bottom: 12); Background: $T.@JournalInsetSurface; Padding: (Full: 12); LayoutMode: Top; Visible: false;
+        Label #ShapeName { Anchor: (Height: 26, Bottom: 6); Text: ""; Style: (...$T.@SubtitleStyle, FontSize: 17); }
+        Group { Anchor: (Height: 44); LayoutMode: Left;
+          @PanButton #ShapePrev { TooltipText: "Previous shape"; @PanIcon { Background: "ClaimMap/ArrowW.png"; } }
+          Label #ShapeText { FlexWeight: 1; Text: ""; Style: (FontSize: 15, TextColor: $T.@Text, HorizontalAlignment: Center, VerticalAlignment: Center); }
+          @PanButton #ShapeNext { TooltipText: "Next shape"; @PanIcon { Background: "ClaimMap/ArrowE.png"; } }
+        }
+      }
+      Group #Facts { Anchor: (Height: 100, Bottom: 12); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 14, Vertical: 10); LayoutMode: Top;
+        Group { Anchor: (Height: 40); LayoutMode: Left;
+          Label #CostLabel { Anchor: (Width: 104); Text: ""; Style: @FactLabel; }
+          Label #CostText { FlexWeight: 1; Text: ""; Style: (...@FactValue, TextColor: $T.@Primary); }
+        }
+        Group { Anchor: (Height: 40); LayoutMode: Left;
+          Label #OwnLabel { Anchor: (Width: 104); Text: ""; Style: @FactLabel; }
+          Label #OwnText { FlexWeight: 1; Text: ""; Style: @FactValue; }
+        }
+      }
+      Group { FlexWeight: 1; }
+      Label #Status { Anchor: (Height: 66, Bottom: 8); Text: ""; Style: (...$T.@DefaultLabelStyle, FontSize: 15); }
+      $T.@TextButton #Claim { Anchor: (Height: 48, Bottom: 8); Text: ""; }
+      $T.@SecondaryTextButton #Back { Anchor: (Height: 44, Bottom: 8); Text: ""; Visible: false; }
+      Group { Anchor: (Height: 1, Top: 8, Bottom: 12); Background: #85c5b3(0.25); }
+      Label #LegendTitle { Anchor: (Height: 20, Bottom: 6); Text: ""; Style: $T.@CodexKickerStyle; }
+      Group { Anchor: (Height: 104); LayoutMode: Left;
+        Group { FlexWeight: 1; LayoutMode: Top;
+          Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchFrontageFree.png"; } Label #LegendFrontageFree { FlexWeight: 1; Text: ""; Style: @LegendText; } }
+          Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchMine.png"; } Label #LegendMine { FlexWeight: 1; Text: ""; Style: @LegendText; } }
+          Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchMyGuild.png"; } Label #LegendMyGuild { FlexWeight: 1; Text: ""; Style: @LegendText; } }
+          Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchReserved.png"; } Label #LegendReserved { FlexWeight: 1; Text: ""; Style: @LegendText; } }
+        }
+        Group { FlexWeight: 1; LayoutMode: Top;
+          Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchStreet.png"; } Label #LegendStreet { FlexWeight: 1; Text: ""; Style: @LegendText; } }
+          Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchOtherPlayer.png"; } Label #LegendOtherPlayer { FlexWeight: 1; Text: ""; Style: @LegendText; } }
+          Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchOtherGuild.png"; } Label #LegendOtherGuild { FlexWeight: 1; Text: ""; Style: @LegendText; } }
+          Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchFree.png"; } Label #LegendFree { FlexWeight: 1; Text: ""; Style: @LegendText; } }
+        }
+      }
+    }
+  }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
+}

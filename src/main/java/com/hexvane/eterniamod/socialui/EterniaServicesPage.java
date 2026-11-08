@@ -480,7 +480,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 if (request.desk == Desk.JOURNAL && housing == null) rows.add(Row.info("Visit Bramble Hearthleaf in the Hub to claim your free plot."));
                 yield new View("Housing Ledger", "Build and personalize your home. Purchases and placement tokens stay linked to your account.", rows, noFields(),
                     request.desk == Desk.JOURNAL
-                        ? buttons("Housing inventory", "external:HOUSING_INVENTORY", "Refresh", "refresh", "", "")
+                        ? (housing == null ? buttons("Claim a plot", "external:HOUSING_CLAIM", "Housing inventory", "external:HOUSING_INVENTORY", "Refresh", "refresh")
+                            : buttons("Housing inventory", "external:HOUSING_INVENTORY", "Refresh", "refresh", "", ""))
                         : buttons(housing == null ? "Claim a plot" : "Furnish my home", housing == null ? "external:HOUSING_CLAIM" : "external:HOUSING_MANAGE", "Architect's Ledger", "external:ARCHITECT_LEDGER", "Refresh", "refresh"), null);
             }
             case GUILD -> guildView(input);
