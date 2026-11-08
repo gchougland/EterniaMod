@@ -116,7 +116,7 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
         var manager=plugin==null?null:EterniaWorldRegistries.getOrCreateHubPlotManager(store.getExternalData().getWorld(),plugin);
         var plot=manager==null?null:manager.getPlot(session.getPlotId());
         String problem=plot==null||def==null?"unavailable":BuildingPlacementValidator.preview(store.getExternalData().getWorld(),manager,plot,playerRef.getUuid(),sign,session.getPrefabYaw(),def,plugin);
-        commandBuilder.set("#Details.TextSpans",problem==null?Message.raw("Ready to place. You can adjust the position or rotate the house before confirming."):Message.translation("eterniamod_common.eterniamod.common."+problem));
+        commandBuilder.set("#Details.TextSpans",problem==null?Message.raw("Ready to place. You can adjust the position or rotate the house before confirming."):com.hexvane.eterniamod.placement.PlacementText.message(problem));
         bind(eventBuilder,"#FindValidPosition","FindValidPosition");
         commandBuilder.set("#PlotTypeDropdown.Visible", false);
         commandBuilder.set("#PlotTypeLabel.Visible", false);
@@ -256,7 +256,7 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
             }
             case "FindValidPosition" -> {
                 var plugin=EterniaModPlugin.get();var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(store.getExternalData().getWorld(),plugin).getPlot(session.getPlotId());var def=plugin.getBuildingCatalog().get(session.getBuildingId());
-                if(plot!=null&&def!=null&&!BuildingPlacementValidator.findValidPosition(store.getExternalData().getWorld(),plot,playerRef.getUuid(),session,def,plugin))playerRef.sendMessage(Message.raw("No valid position for this orientation. Try rotating the house; it needs five clear blocks from plot borders and road edges."));
+                if(plot!=null&&def!=null&&!BuildingPlacementValidator.findValidPosition(store.getExternalData().getWorld(),plot,playerRef.getUuid(),session,def,plugin))playerRef.sendMessage(plot.isHex()?Message.translation("eternia_hexplots.plots.place.findNone"):Message.raw("No valid position for this orientation. Try rotating the house; it needs five clear blocks from plot borders and road edges."));
                 scheduleApplyCameraAndRebuild(ref,store);return;
             }
             case "SnapToLocation" -> {
@@ -508,7 +508,7 @@ public final class BuildingPlacementPage extends EterniaInteractiveCustomUIPage<
                 world, plotManager, plot, uc.getUuid(), session.getAnchor(), session.getPrefabYaw(), def, plugin
             );
         if (errKey != null) {
-            sendError(store, ref, Message.translation("eterniamod_common.eterniamod.common." + errKey));
+            sendError(store, ref, com.hexvane.eterniamod.placement.PlacementText.message(errKey));
             return PlacementResult.FAILED;
         }
         if (!BuildingPlacementCommit.place(ref, store, session, plugin)) {

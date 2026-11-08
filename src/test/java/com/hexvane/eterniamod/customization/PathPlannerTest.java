@@ -55,4 +55,16 @@ class PathPlannerTest {
         for(int i=2;i<line.size();i++){var a=line.get(i-2);var b=line.get(i-1);var c=line.get(i);if(b.x()-a.x()!=c.x()-b.x()||b.z()-a.z()!=c.z()-b.z())turns++;}
         assertTrue(turns>=4,"A roomy bend should use several small steps instead of two hard corners");
     }
+    @Test void hexPlotPathsStayOnThePlotsHexagons() {
+        var lattice=com.hexvane.eterniamod.hexplots.HexLattice.DEFAULT;
+        var cells=com.hexvane.eterniamod.hexplots.PlotCells.of(lattice,List.of(com.hexvane.eterniamod.hexplots.HexCoord.ORIGIN));
+        var box=cells.bounds();
+        // A road beside the cell's north tip: the straight route along the box would cut through a neighbour's corner.
+        var road=new PlotRect(box.x()-10,box.z()-3,box.width()+20,2);
+        var start=new PathPlanner.Cell((int)lattice.centerX(com.hexvane.eterniamod.hexplots.HexCoord.ORIGIN)+8,(int)lattice.centerZ(com.hexvane.eterniamod.hexplots.HexCoord.ORIGIN));
+        var plan=PathPlanner.plan(cells::containsColumn,start,List.of(road),1,cell->true,List.of());
+        assertFalse(plan.blocks().isEmpty());
+        for(var cell:plan.blocks())assertTrue(cells.containsColumn(cell.x(),cell.z()),"path block "+cell+" left the hexagon");
+        assertFalse(cells.containsColumn(box.x(),box.z()),"the box corner is a neighbour's land");
+    }
 }

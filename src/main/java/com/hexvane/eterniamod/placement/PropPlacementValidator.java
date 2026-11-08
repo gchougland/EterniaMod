@@ -49,17 +49,29 @@ public final class PropPlacementValidator {
         if (def.getCategory().equals("addition")) {
             if (!plot.hasBuilding()) return "needsHouse";
             if (!(preview?com.hexvane.eterniamod.housing.HousingAccess.previewCan(plugin,plot,playerUuid,"housing.addition"):com.hexvane.eterniamod.housing.HousingAccess.can(plugin,plot,playerUuid,"housing.addition"))) return "notYourPlot";
+            if (plot.isHex()) {
+                String hex = HexPlacement.structure(plot.getCells(), HexPlacement.rect(propFp), plugin.getInfrastructure().structureRoads(world.getName()), com.hexvane.eterniamod.hexplots.HexPlotSettings.current().houseSetback());
+                if (hex != null) return hex;
+            } else {
             var result = com.hexvane.eterniamod.housing.HousingRules.structure(
                 com.hexvane.eterniamod.housing.NativeHousingChecks.rect(plotFp),com.hexvane.eterniamod.housing.NativeHousingChecks.rect(propFp),
                 plugin.getInfrastructure().structureRoads(world.getName()));
             if (!result.valid()) return result.code();
+            }
             var house = plot.getBuilding();var houseDef = plugin.getBuildingCatalog().get(house.getBuildingId());
             var houseBuffer = houseDef == null ? null : PrefabResolveUtil.resolvePrefabBuffer(houseDef.getPrefabPath());
             if (houseBuffer == null) return "prefabMissing";
             var houseFp = PlotFootprintUtil.computeFootprint(new Vector3i(house.getAnchorX(),house.getAnchorY(),house.getAnchorZ()),house.resolveRotationYaw(),houseBuffer);
             if (com.hexvane.eterniamod.housing.NativeHousingChecks.rect(houseFp).gap(com.hexvane.eterniamod.housing.NativeHousingChecks.rect(propFp)) > 0) return "additionDetached";
         }
-        if (!plotFp.containsFootprintHorizontal(propFp)) {
+        if (plot.isHex()) {
+            if (!def.getCategory().equals("addition")) {
+                var cells = plot.getCells();var rect = HexPlacement.rect(propFp);boolean generator = HexPlacement.isGenerator(def);
+                String hex = HexPlacement.prop(cells, rect, HexPlacement.standingCell(cells.lattice(), rect), generator,
+                    HexPlacement.countPerCell(plugin, plot, generator), com.hexvane.eterniamod.hexplots.HexPlotSettings.current());
+                if (hex != null) return hex;
+            }
+        } else if (!plotFp.containsFootprintHorizontal(propFp)) {
             return "outsidePlot";
         }
         if (!PlotFootprintUtil.hasSolidVoxels(prefabYaw, buf)) {

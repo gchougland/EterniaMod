@@ -38,12 +38,12 @@ public final class CustomizationService implements AutoCloseable {
         var files=snapshots();var expected=files.load(pointer(instance.nativeData(),"after"));
         var base=files.load(instance.nativeData().containsKey("paletteBase")?pointer(instance.nativeData(),"paletteBase"):pointer(instance.nativeData(),"after"));
         var expectedCells=CellEdits.index(expected.document(),"blocks");var mask=new BsonArray();
-        var bounds=expected.bounds();var footprint=rect(plot);var roads=plugin.getInfrastructure().structureRoads(world.getName());
+        var bounds=expected.bounds();var roads=plugin.getInfrastructure().structureRoads(world.getName());
         for(var entry:CellEdits.index(base.document(),"blocks").entrySet()) {
             String name=entry.getValue().getString("name").getValue();String replacement=palette.blocks().get(name);if(replacement==null)continue;
             var current=expectedCells.get(entry.getKey());if(current==null||current.containsKey("components")||current.getInt32("filler",new BsonInt32(0)).getValue()!=0)throw new IllegalStateException("Palette surfaces must be simple blocks");
             simpleBlock(name);simpleBlock(replacement);int x=bounds.minX()+current.getInt32("x").getValue(),z=bounds.minZ()+current.getInt32("z").getValue();
-            if(!HousingRules.structure(footprint,new PlotRect(x,z,1,1),roads).valid()||plugin.getInfrastructure().protectedColumn(world.getName(),x,z))throw new IllegalStateException("A palette surface crosses protected setbacks");
+            if(!clearOfEdges(plot,x,z,roads)||plugin.getInfrastructure().protectedColumn(world.getName(),x,z))throw new IllegalStateException("A palette surface crosses protected setbacks");
             var changed=current.clone();changed.put("name",new BsonString(replacement));if(!CellEdits.sameCell(current,changed))mask.add(changed);
         }
         if(mask.isEmpty())throw new IllegalStateException("This palette is already applied or has no matching authored surfaces");
@@ -68,7 +68,7 @@ public final class CustomizationService implements AutoCloseable {
         for(var placed:instances)if(placed.state().equals("PLACED"))occupied.add(snapshots().load(pointer(placed.nativeData(),"after")).bounds());
         int ground=surface(world,startX,startZ,startY);if(ground==Integer.MIN_VALUE)throw new IllegalStateException("Stand on level natural ground outside your door");
         var obstacles=occupied.stream().map(b->new PlotRect(b.minX(),b.minZ(),b.maxX()-b.minX(),b.maxZ()-b.minZ())).toList();
-        var route=PathPlanner.plan(rect(plot),new PathPlanner.Cell(startX,startZ),plugin.getInfrastructure().structureRoads(world.getName()),width,cell->
+        var route=PathPlanner.plan(plot::containsColumn,new PathPlanner.Cell(startX,startZ),plugin.getInfrastructure().structureRoads(world.getName()),width,cell->
             !plugin.getInfrastructure().protectedColumn(world.getName(),cell.x(),cell.z())&&surface(world,cell.x(),cell.z(),ground+1)==ground,obstacles).blocks();
         int minX=route.stream().mapToInt(PathPlanner.Cell::x).min().orElseThrow(),maxX=route.stream().mapToInt(PathPlanner.Cell::x).max().orElseThrow()+1;
         int minZ=route.stream().mapToInt(PathPlanner.Cell::z).min().orElseThrow(),maxZ=route.stream().mapToInt(PathPlanner.Cell::z).max().orElseThrow()+1;
@@ -115,8 +115,8 @@ public final class CustomizationService implements AutoCloseable {
         var currentRoads=plugin.getInfrastructure().structureRoads(world.getName());
         for(var cell:preview.after.document().getArray("blocks")){
             var c=cell.asDocument();int x=preview.after.bounds().minX()+c.getInt32("x").getValue(),z=preview.after.bounds().minZ()+c.getInt32("z").getValue();
-            if(!rect(plot).contains(x,z)||plugin.getInfrastructure().protectedColumn(world.getName(),x,z))throw new IllegalStateException("Protected columns changed after preview");
-            if(preview.kind.equals("PALETTE")&&!HousingRules.structure(rect(plot),new PlotRect(x,z,1,1),currentRoads).valid())throw new IllegalStateException("Road or border setbacks changed after preview");
+            if(!plot.containsColumn(x,z)||plugin.getInfrastructure().protectedColumn(world.getName(),x,z))throw new IllegalStateException("Protected columns changed after preview");
+            if(preview.kind.equals("PALETTE")&&!clearOfEdges(plot,x,z,currentRoads))throw new IllegalStateException("Road or border setbacks changed after preview");
         }
         CellEdits.requireSame(files.capture(world,preview.before.bounds(),Set.of(),false,false),preview.before.document());
         var journal=services.journal();var op=journal.prepare(preview.operation,"CUSTOMIZE_"+preview.kind,HousingAccess.owner(plot),preview.property.toString());
@@ -167,6 +167,11 @@ public final class CustomizationService implements AutoCloseable {
         op=journal.find(operation).orElseThrow();journal.advance(operation,op.revision(),JournalService.State.CANCELLED);
     }
     private static SnapshotFiles.Saved pointer(Map<String,String> data,String key){return new SnapshotFiles.Saved(data.get(key),data.get(key+"Hash"));}
+    /** Palette blocks keep the house setback from the plot's outer edges (cell edges on hex plots) and five blocks from roads. */
+    private static boolean clearOfEdges(HubPlotRecord plot,int x,int z,java.util.List<PlotRect> roads){
+        if(plot.isHex())return com.hexvane.eterniamod.placement.HexPlacement.structure(plot.getCells(),new PlotRect(x,z,1,1),roads,com.hexvane.eterniamod.hexplots.HexPlotSettings.current().houseSetback())==null;
+        return HousingRules.structure(rect(plot),new PlotRect(x,z,1,1),roads).valid();
+    }
     private static PlotRect rect(HubPlotRecord plot){var p=plot.getFootprint();return new PlotRect(p.getMinX(),p.getMinZ(),p.getMaxX()-p.getMinX()+1,p.getMaxZ()-p.getMinZ()+1);}
     private static void simpleBlock(String id){var block=BlockType.getAssetMap().getAsset(id);if(block==null||!block.isCubeDrawType()||block.getBlockEntity()!=null)throw new IllegalStateException("Customization requires a valid plain cube block: "+id);}
     private int surface(World world,int x,int z,int baseline){

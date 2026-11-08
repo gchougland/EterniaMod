@@ -89,6 +89,15 @@ public final class BuildingPlacementOpenHelper {
             playerRef.sendMessage(Message.translation("eterniamod_common.eterniamod.common.plotAlreadyHasBuilding"));
             return null;
         }
+        if (plot.isHex()) {
+            // Say it before the preview opens: a manor never fits a one hexagon plot, whatever the turn.
+            var house = HexPlacement.footprint(def.getPrefabPath(), new Vector3i(), def.getDefaultRotationYaw());
+            var needed = house == null ? null : HexPlacement.shapeFor(HexPlacement.rect(house));
+            if (needed != null && plot.getCells().size() < needed.size()) {
+                playerRef.sendMessage(PlacementText.message(HexPlacement.HOUSE_SHAPE + ":" + needed.size()));
+                return null;
+            }
+        }
         Vector3i anchor = null;
         if (tb != null && plot.getFootprint().containsHorizontal(tb.x, tb.z)) {
             anchor = BuildingPlacementAnchorUtil.pickAnchor(world, tb);
