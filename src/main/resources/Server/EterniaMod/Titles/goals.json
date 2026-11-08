@@ -1,0 +1,247 @@
+{
+  "titles": [
+    {
+      "title": "eternia:title/trork_slayer",
+      "source": "FREE",
+      "targets": [
+        "npc:Trork"
+      ],
+      "required": 100
+    },
+    {
+      "title": "eternia:title/of_the_trork_warband",
+      "source": "SEASON_PASS"
+    },
+    {
+      "title": "eternia:title/chieftain_breaker",
+      "source": "FREE",
+      "targets": [
+        "npc:Trork_Chieftain"
+      ],
+      "required": 10
+    },
+    {
+      "title": "eternia:title/goblin_bane",
+      "source": "FREE",
+      "targets": [
+        "npc:Goblin"
+      ],
+      "required": 100
+    },
+    {
+      "title": "eternia:title/of_the_scrap_heap",
+      "source": "CROWN_STORE"
+    },
+    {
+      "title": "eternia:title/gobliterators_end",
+      "source": "FREE",
+      "targets": [
+        "npc:Goblin_Gobliterator"
+      ],
+      "required": 1
+    },
+    {
+      "title": "eternia:title/thief_catcher",
+      "source": "FREE",
+      "targets": [
+        "npc:Goblin_Thief"
+      ],
+      "required": 10
+    },
+    {
+      "title": "eternia:title/kweebec_friend",
+      "source": "SEASON_PASS"
+    },
+    {
+      "title": "eternia:title/of_the_kweebec_grove",
+      "source": "CROWN_STORE"
+    },
+    {
+      "title": "eternia:title/windwalker",
+      "source": "SEASON_PASS",
+      "targets": [
+        "npc:Feran_Windwalker"
+      ],
+      "required": 25
+    },
+    {
+      "title": "eternia:title/feran_tracker",
+      "source": "FREE",
+      "targets": [
+        "npc:Feran_Burrower",
+        "npc:Feran_Longtooth",
+        "npc:Feran_Sharptooth",
+        "npc:Feran_Windwalker"
+      ],
+      "required": 50
+    },
+    {
+      "title": "eternia:title/outlander_hunter",
+      "source": "FREE",
+      "targets": [
+        "npc:Outlander"
+      ],
+      "required": 100
+    },
+    {
+      "title": "eternia:title/cultbreaker",
+      "source": "SEASON_PASS",
+      "targets": [
+        "npc:Outlander_Cultist",
+        "npc:Outlander_Priest"
+      ],
+      "required": 25
+    },
+    {
+      "title": "eternia:title/bonebreaker",
+      "source": "FREE",
+      "targets": [
+        "npc:Skeleton"
+      ],
+      "required": 200
+    },
+    {
+      "title": "eternia:title/gravewarden",
+      "source": "SEASON_PASS",
+      "targets": [
+        "group:undead"
+      ],
+      "required": 500
+    },
+    {
+      "title": "eternia:title/pirates_bane",
+      "source": "FREE",
+      "targets": [
+        "npc:Skeleton_Pirate_Captain"
+      ],
+      "required": 1
+    },
+    {
+      "title": "eternia:title/ghoulhunter",
+      "source": "FREE",
+      "targets": [
+        "npc:Ghoul",
+        "npc:Zombie"
+      ],
+      "required": 50
+    },
+    {
+      "title": "eternia:title/of_the_shadow_vigil",
+      "source": "SEASON_PASS",
+      "targets": [
+        "npc:Shadow_Knight"
+      ],
+      "required": 1
+    },
+    {
+      "title": "eternia:title/scarak_hunter",
+      "source": "FREE",
+      "targets": [
+        "npc:Scarak"
+      ],
+      "required": 100
+    },
+    {
+      "title": "eternia:title/broodbreaker",
+      "source": "SEASON_PASS",
+      "targets": [
+        "npc:Scarak_Broodmother"
+      ],
+      "required": 1
+    },
+    {
+      "title": "eternia:title/voidwarden",
+      "source": "SEASON_PASS",
+      "targets": [
+        "npc:Void_Spawn",
+        "npc:Crawler_Void",
+        "npc:Eye_Void",
+        "npc:Larva_Void",
+        "npc:Void_Spectre"
+      ],
+      "required": 50
+    },
+    {
+      "title": "eternia:title/dragonslayer",
+      "source": "FREE",
+      "targets": [
+        "npc:Dragon_Fire",
+        "npc:Dragon_Frost"
+      ],
+      "required": 1
+    },
+    {
+      "title": "eternia:title/feastbreaker",
+      "source": "FREE",
+      "targets": [
+        "npc:Dungeon_Feastmaster_Boss"
+      ],
+      "required": 1
+    },
+    {
+      "title": "eternia:title/of_the_wolf_pack",
+      "source": "CROWN_STORE"
+    },
+    {
+      "title": "eternia:title/of_the_yeti_peaks",
+      "source": "SEASON_PASS",
+      "targets": [
+        "npc:Yeti"
+      ],
+      "required": 1
+    },
+    {
+      "title": "eternia:title/bearwrestler",
+      "source": "FREE",
+      "targets": [
+        "npc:Bear_Grizzly",
+        "npc:Bear_Polar"
+      ],
+      "required": 25
+    },
+    {
+      "title": "eternia:title/spiderbane",
+      "source": "FREE",
+      "targets": [
+        "npc:Spider"
+      ],
+      "required": 100
+    },
+    {
+      "title": "eternia:title/sabertooth_stalker",
+      "source": "FREE",
+      "targets": [
+        "npc:Tiger_Sabertooth"
+      ],
+      "required": 10
+    },
+    {
+      "title": "eternia:title/of_the_emberwulf",
+      "source": "CROWN_STORE"
+    },
+    {
+      "title": "eternia:title/crocodile_wrangler",
+      "source": "SEASON_PASS",
+      "targets": [
+        "npc:Crocodile"
+      ],
+      "required": 25
+    },
+    {
+      "title": "eternia:title/golem_breaker",
+      "source": "FREE",
+      "targets": [
+        "npc:Golem_Crystal"
+      ],
+      "required": 25
+    },
+    {
+      "title": "eternia:title/slothians_friend",
+      "source": "CROWN_STORE"
+    },
+    {
+      "title": "eternia:title/chicken_whisperer",
+      "source": "CROWN_STORE"
+    }
+  ]
+}

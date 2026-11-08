@@ -1,0 +1,4972 @@
+{
+ "cases": [
+  {
+   "name": "titles collection empty",
+   "steps": [
+    {
+     "tool": "ui_render",
+     "arguments": {
+      "root": "projects",
+      "path": "_worktrees/EterniaMod-titles/src/main/resources/Common/UI/Custom/EterniaMod/ServicesPage.ui",
+      "commands": [
+       {
+        "type": "Append",
+        "selector": "#CurrencyWallet",
+        "text": "EterniaMod/Wallet.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#WalletCoins.Text",
+        "data": "2,000 Coins"
+       },
+       {
+        "type": "Set",
+        "selector": "#WalletCrowns.Text",
+        "data": "5,000 Crowns"
+       },
+       {
+        "type": "Set",
+        "selector": "#DeskEmblem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Wordmark.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#ServicesTitle.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#ServicesTitle.TextSpans",
+        "data": "Journal"
+       },
+       {
+        "type": "Set",
+        "selector": "#ServicesSubtitle.TextSpans",
+        "data": "Journal"
+       },
+       {
+        "type": "Set",
+        "selector": "#JournalShortcut.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#HintJournal.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#HintCloseText.TextSpans",
+        "data": "Close"
+       },
+       {
+        "type": "Set",
+        "selector": "#Return.Visible",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTabActive.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[0] #NavLabel.TextSpans",
+        "data": "Collection"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[0] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/collection.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[0].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[1] #NavLabel.TextSpans",
+        "data": "Quests"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[1] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/questsMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[1].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[2] #NavLabel.TextSpans",
+        "data": "Seasons"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[2] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/seasonMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[2].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[3] #NavLabel.TextSpans",
+        "data": "Mail"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[3] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/mailMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[3].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[4] #NavLabel.TextSpans",
+        "data": "Guild"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[4] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/guildMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[4].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[5] #NavLabel.TextSpans",
+        "data": "Home"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[5] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/housingMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[5].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#ServicesBody",
+        "text": "EterniaMod/ServicesCollection.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#SectionName.TextSpans",
+        "data": "Collection"
+       },
+       {
+        "type": "Set",
+        "selector": "#SideNote.TextSpans",
+        "data": "Everything you have earned, bought or unlocked."
+       },
+       {
+        "type": "Set",
+        "selector": "#SectionIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/collection.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Previous.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Next.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Pagination.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#PageControls.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#PageControls.Anchor",
+        "data": {
+         "Height": 0
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Pagination.Anchor",
+        "data": {
+         "Height": 0,
+         "Bottom": 0
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Previous.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Next.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Pagination.Text",
+        "data": "Page 1 / 1"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs.Visible",
+        "data": true
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0] #SideTabLabel.TextSpans",
+        "data": "Houses"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/housing.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1] #SideTabLabel.TextSpans",
+        "data": "Decorations"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/furnishing.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[2] #SideTabLabel.TextSpans",
+        "data": "Materials"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[2] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/palette.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[2].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTabSelected.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[3] #SideTabLabel.TextSpans",
+        "data": "Titles"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[3] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[3].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[4] #SideTabLabel.TextSpans",
+        "data": "Wardrobe"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[4] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/wardrobe.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[4].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[5] #SideTabLabel.TextSpans",
+        "data": "Pets"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[5] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/pet.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[5].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[6] #SideTabLabel.TextSpans",
+        "data": "Mounts"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[6] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/mount.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[6].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[7] #SideTabLabel.TextSpans",
+        "data": "Upgrades"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[7] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/addition.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[7].Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#SectionTitle.TextSpans",
+        "data": "Your titles"
+       },
+       {
+        "type": "Set",
+        "selector": "#Description.TextSpans",
+        "data": "Pair a prefix and suffix to make your name your own."
+       },
+       {
+        "type": "Set",
+        "selector": "#Description.Anchor",
+        "data": {
+         "Height": 50,
+         "Bottom": 8
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Status.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Append",
+        "selector": "#Rows",
+        "text": "EterniaMod/ServiceRow.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #RowImage.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #RowPrice.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #RowText.TextSpans",
+        "data": "Nothing in this collection yet."
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #RowAction.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #RowAction.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #RowAction.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #RowAction.Anchor",
+        "data": {
+         "Width": 168,
+         "Height": 44,
+         "Left": 12,
+         "Top": 16
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0].Anchor",
+        "data": {
+         "Height": 76,
+         "Bottom": 8
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Fields.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Fields.Anchor",
+        "data": {
+         "Height": 0,
+         "Bottom": 10
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldOneGroup.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldOneLabel.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldOne.Value",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldTwoGroup.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldTwoLabel.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldTwo.Value",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldThreeGroup.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldThreeLabel.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldThree.Value",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#CollectionBanner.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#CollectionSummary.Text",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#CollectionPreview.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Primary.TextSpans",
+        "data": "Refresh"
+       },
+       {
+        "type": "Set",
+        "selector": "#Primary.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Primary.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Secondary.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#Secondary.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Secondary.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Tertiary.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#Tertiary.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Tertiary.Disabled",
+        "data": true
+       }
+      ],
+      "output": "_worktrees/EterniaMod-titles/notes/pictures/titles/collection-empty.png"
+     },
+     "expect": {
+      "valid": true
+     }
+    }
+   ]
+  },
+  {
+   "name": "titles collection typical",
+   "steps": [
+    {
+     "tool": "ui_render",
+     "arguments": {
+      "root": "projects",
+      "path": "_worktrees/EterniaMod-titles/src/main/resources/Common/UI/Custom/EterniaMod/ServicesPage.ui",
+      "commands": [
+       {
+        "type": "Append",
+        "selector": "#CurrencyWallet",
+        "text": "EterniaMod/Wallet.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#WalletCoins.Text",
+        "data": "2,000 Coins"
+       },
+       {
+        "type": "Set",
+        "selector": "#WalletCrowns.Text",
+        "data": "5,000 Crowns"
+       },
+       {
+        "type": "Set",
+        "selector": "#DeskEmblem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Wordmark.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#ServicesTitle.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#ServicesTitle.TextSpans",
+        "data": "Journal"
+       },
+       {
+        "type": "Set",
+        "selector": "#ServicesSubtitle.TextSpans",
+        "data": "Journal"
+       },
+       {
+        "type": "Set",
+        "selector": "#JournalShortcut.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#HintJournal.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#HintCloseText.TextSpans",
+        "data": "Close"
+       },
+       {
+        "type": "Set",
+        "selector": "#Return.Visible",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTabActive.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[0] #NavLabel.TextSpans",
+        "data": "Collection"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[0] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/collection.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[0].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[1] #NavLabel.TextSpans",
+        "data": "Quests"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[1] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/questsMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[1].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[2] #NavLabel.TextSpans",
+        "data": "Seasons"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[2] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/seasonMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[2].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[3] #NavLabel.TextSpans",
+        "data": "Mail"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[3] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/mailMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[3].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[4] #NavLabel.TextSpans",
+        "data": "Guild"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[4] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/guildMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[4].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[5] #NavLabel.TextSpans",
+        "data": "Home"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[5] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/housingMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[5].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#ServicesBody",
+        "text": "EterniaMod/ServicesCollection.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#SectionName.TextSpans",
+        "data": "Collection"
+       },
+       {
+        "type": "Set",
+        "selector": "#SideNote.TextSpans",
+        "data": "Everything you have earned, bought or unlocked."
+       },
+       {
+        "type": "Set",
+        "selector": "#SectionIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/collection.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Previous.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Next.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Pagination.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#PageControls.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#PageControls.Anchor",
+        "data": {
+         "Height": 0
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Pagination.Anchor",
+        "data": {
+         "Height": 0,
+         "Bottom": 0
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Previous.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Next.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Pagination.Text",
+        "data": "Page 1 / 1"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs.Visible",
+        "data": true
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0] #SideTabLabel.TextSpans",
+        "data": "Houses"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/housing.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1] #SideTabLabel.TextSpans",
+        "data": "Decorations"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/furnishing.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[2] #SideTabLabel.TextSpans",
+        "data": "Materials"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[2] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/palette.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[2].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTabSelected.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[3] #SideTabLabel.TextSpans",
+        "data": "Titles"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[3] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[3].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[4] #SideTabLabel.TextSpans",
+        "data": "Wardrobe"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[4] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/wardrobe.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[4].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[5] #SideTabLabel.TextSpans",
+        "data": "Pets"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[5] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/pet.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[5].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[6] #SideTabLabel.TextSpans",
+        "data": "Mounts"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[6] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/mount.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[6].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[7] #SideTabLabel.TextSpans",
+        "data": "Upgrades"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[7] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/addition.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[7].Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#SectionTitle.TextSpans",
+        "data": "Your titles"
+       },
+       {
+        "type": "Set",
+        "selector": "#Description.TextSpans",
+        "data": "Pair a prefix and suffix to make your name your own."
+       },
+       {
+        "type": "Set",
+        "selector": "#Description.Anchor",
+        "data": {
+         "Height": 50,
+         "Bottom": 8
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Status.TextSpans",
+        "data": "Title equipped. Your name updates in a moment."
+       },
+       {
+        "type": "Append",
+        "selector": "#Rows",
+        "text": "EterniaMod/CollectionCardRow.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #CardName.Text",
+        "data": "Wayfarer"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #CardDetail.Text",
+        "data": "Prefix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #CardName.Text",
+        "data": "of the Hearth"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #CardName.Text",
+        "data": "the Trork Slayer"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #CardDetail.Text",
+        "data": "Equipped"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowAction.Text",
+        "data": "Unequip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #CardName.Text",
+        "data": "the Goblin Bane"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #CardName.Text",
+        "data": "the Kweebec Friend"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #CardName.Text",
+        "data": "the Scarak Hunter"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Fields.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Fields.Anchor",
+        "data": {
+         "Height": 0,
+         "Bottom": 10
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldOneGroup.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldOneLabel.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldOne.Value",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldTwoGroup.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldTwoLabel.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldTwo.Value",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldThreeGroup.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldThreeLabel.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldThree.Value",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#CollectionBanner.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#CollectionSummary.Text",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#CollectionPreview.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Primary.TextSpans",
+        "data": "Refresh"
+       },
+       {
+        "type": "Set",
+        "selector": "#Primary.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Primary.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Secondary.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#Secondary.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Secondary.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Tertiary.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#Tertiary.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Tertiary.Disabled",
+        "data": true
+       }
+      ],
+      "output": "_worktrees/EterniaMod-titles/notes/pictures/titles/collection-typical.png"
+     },
+     "expect": {
+      "valid": true
+     }
+    }
+   ]
+  },
+  {
+   "name": "titles collection overfull",
+   "steps": [
+    {
+     "tool": "ui_render",
+     "arguments": {
+      "root": "projects",
+      "path": "_worktrees/EterniaMod-titles/src/main/resources/Common/UI/Custom/EterniaMod/ServicesPage.ui",
+      "commands": [
+       {
+        "type": "Append",
+        "selector": "#CurrencyWallet",
+        "text": "EterniaMod/Wallet.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#WalletCoins.Text",
+        "data": "2,000 Coins"
+       },
+       {
+        "type": "Set",
+        "selector": "#WalletCrowns.Text",
+        "data": "5,000 Crowns"
+       },
+       {
+        "type": "Set",
+        "selector": "#DeskEmblem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Wordmark.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#ServicesTitle.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#ServicesTitle.TextSpans",
+        "data": "Journal"
+       },
+       {
+        "type": "Set",
+        "selector": "#ServicesSubtitle.TextSpans",
+        "data": "Journal"
+       },
+       {
+        "type": "Set",
+        "selector": "#JournalShortcut.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#HintJournal.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#HintCloseText.TextSpans",
+        "data": "Close"
+       },
+       {
+        "type": "Set",
+        "selector": "#Return.Visible",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTabActive.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[0] #NavLabel.TextSpans",
+        "data": "Collection"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[0] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/collection.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[0].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[1] #NavLabel.TextSpans",
+        "data": "Quests"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[1] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/questsMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[1].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[2] #NavLabel.TextSpans",
+        "data": "Seasons"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[2] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/seasonMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[2].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[3] #NavLabel.TextSpans",
+        "data": "Mail"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[3] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/mailMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[3].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[4] #NavLabel.TextSpans",
+        "data": "Guild"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[4] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/guildMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[4].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[5] #NavLabel.TextSpans",
+        "data": "Home"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[5] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/housingMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[5].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#ServicesBody",
+        "text": "EterniaMod/ServicesCollection.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#SectionName.TextSpans",
+        "data": "Collection"
+       },
+       {
+        "type": "Set",
+        "selector": "#SideNote.TextSpans",
+        "data": "Everything you have earned, bought or unlocked."
+       },
+       {
+        "type": "Set",
+        "selector": "#SectionIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/collection.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Previous.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Next.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Pagination.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#PageControls.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#PageControls.Anchor",
+        "data": {
+         "Height": 0
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Pagination.Anchor",
+        "data": {
+         "Height": 0,
+         "Bottom": 0
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Previous.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Next.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Pagination.Text",
+        "data": "Page 1 / 1"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs.Visible",
+        "data": true
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0] #SideTabLabel.TextSpans",
+        "data": "Houses"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/housing.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1] #SideTabLabel.TextSpans",
+        "data": "Decorations"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/furnishing.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[2] #SideTabLabel.TextSpans",
+        "data": "Materials"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[2] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/palette.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[2].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTabSelected.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[3] #SideTabLabel.TextSpans",
+        "data": "Titles"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[3] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[3].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[4] #SideTabLabel.TextSpans",
+        "data": "Wardrobe"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[4] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/wardrobe.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[4].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[5] #SideTabLabel.TextSpans",
+        "data": "Pets"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[5] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/pet.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[5].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[6] #SideTabLabel.TextSpans",
+        "data": "Mounts"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[6] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/mount.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[6].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[7] #SideTabLabel.TextSpans",
+        "data": "Upgrades"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[7] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/addition.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[7].Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#SectionTitle.TextSpans",
+        "data": "Your titles"
+       },
+       {
+        "type": "Set",
+        "selector": "#Description.TextSpans",
+        "data": "Pair a prefix and suffix to make your name your own."
+       },
+       {
+        "type": "Set",
+        "selector": "#Description.Anchor",
+        "data": {
+         "Height": 50,
+         "Bottom": 8
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Status.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Append",
+        "selector": "#Rows",
+        "text": "EterniaMod/CollectionCardRow.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #CardName.Text",
+        "data": "the Bearwrestler"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #CardName.Text",
+        "data": "the Bonebreaker"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #CardName.Text",
+        "data": "the Broodbreaker"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #CardName.Text",
+        "data": "the Chicken Whisperer"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #CardName.Text",
+        "data": "the Chieftain Breaker"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #CardName.Text",
+        "data": "the Crocodile Wrangler"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #CardDetail.Text",
+        "data": "Equipped"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowAction.Text",
+        "data": "Unequip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Rows",
+        "text": "EterniaMod/CollectionCardRow.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Slot0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Slot1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Slot2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Slot3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Slot4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Slot5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card0 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card0 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card0 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card0 #CardName.Text",
+        "data": "the Cultbreaker"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card0 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card0 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card0 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card0 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card1 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card1 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card1 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card1 #CardName.Text",
+        "data": "the Dragonslayer"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card1 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card1 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card1 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card1 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card2 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card2 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card2 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card2 #CardName.Text",
+        "data": "the Feastbreaker"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card2 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card2 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card2 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card2 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card3 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card3 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card3 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card3 #CardName.Text",
+        "data": "the Feran Tracker"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card3 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card3 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card3 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card3 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card4 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card4 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card4 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card4 #CardName.Text",
+        "data": "the Ghoulhunter"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card4 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card4 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card4 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card4 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card5 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card5 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card5 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card5 #CardName.Text",
+        "data": "the Goblin Bane"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card5 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card5 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card5 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[1] #Card5 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Rows",
+        "text": "EterniaMod/CollectionCardRow.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Slot0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Slot1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Slot2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Slot3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Slot4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Slot5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card0 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card0 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card0 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card0 #CardName.Text",
+        "data": "the Gobliterator's End"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card0 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card0 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card0 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card0 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card1 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card1 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card1 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card1 #CardName.Text",
+        "data": "the Golem Breaker"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card1 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card1 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card1 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card1 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card2 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card2 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card2 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card2 #CardName.Text",
+        "data": "the Gravewarden"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card2 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card2 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card2 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card2 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card3 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card3 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card3 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card3 #CardName.Text",
+        "data": "the Kweebec Friend"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card3 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card3 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card3 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card3 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card4 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card4 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card4 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card4 #CardName.Text",
+        "data": "of the Emberwulf"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card4 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card4 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card4 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card4 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card5 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card5 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card5 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card5 #CardName.Text",
+        "data": "of the Hearth"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card5 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card5 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card5 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[2] #Card5 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Rows",
+        "text": "EterniaMod/CollectionCardRow.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Slot0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Slot1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Slot2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Slot3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Slot4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Slot5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card0 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card0 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card0 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card0 #CardName.Text",
+        "data": "of the Kweebec Grove"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card0 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card0 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card0 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card0 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card1 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card1 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card1 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card1 #CardName.Text",
+        "data": "of the Scrap Heap"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card1 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card1 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card1 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card1 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card2 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card2 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card2 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card2 #CardName.Text",
+        "data": "of the Shadow Vigil"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card2 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card2 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card2 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card2 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card3 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card3 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card3 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card3 #CardName.Text",
+        "data": "of the Trork Warband"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card3 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card3 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card3 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card3 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card4 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card4 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card4 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card4 #CardName.Text",
+        "data": "of the Wolf Pack"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card4 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card4 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card4 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card4 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card5 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card5 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card5 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card5 #CardName.Text",
+        "data": "of the Yeti Peaks"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card5 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card5 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card5 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[3] #Card5 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Rows",
+        "text": "EterniaMod/CollectionCardRow.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Slot0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Slot1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Slot2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Slot3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Slot4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Slot5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card0 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card0 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card0 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card0 #CardName.Text",
+        "data": "the Outlander Hunter"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card0 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card0 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card0 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card0 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card1 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card1 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card1 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card1 #CardName.Text",
+        "data": "the Pirate's Bane"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card1 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card1 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card1 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card1 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card2 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card2 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card2 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card2 #CardName.Text",
+        "data": "the Sabertooth Stalker"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card2 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card2 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card2 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card2 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card3 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card3 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card3 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card3 #CardName.Text",
+        "data": "the Scarak Hunter"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card3 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card3 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card3 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card3 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card4 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card4 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card4 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card4 #CardName.Text",
+        "data": "the Slothian's Friend"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card4 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card4 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card4 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card4 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card5 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card5 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card5 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card5 #CardName.Text",
+        "data": "the Spiderbane"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card5 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card5 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card5 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[4] #Card5 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Rows",
+        "text": "EterniaMod/CollectionCardRow.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Slot0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Slot1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Slot2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Slot3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Slot4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Slot5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card5.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card0 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card0 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card0 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card0 #CardName.Text",
+        "data": "the Thief Catcher"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card0 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card0 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card0 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card0 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card1 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card1 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card1 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card1 #CardName.Text",
+        "data": "the Trork Slayer"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card1 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card1 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card1 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card1 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card2 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card2 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card2 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card2 #CardName.Text",
+        "data": "the Voidwarden"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card2 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card2 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card2 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card2 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card3 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card3 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card3 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card3 #CardName.Text",
+        "data": "Wayfarer"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card3 #CardDetail.Text",
+        "data": "Equipped"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card3 #RowAction.Text",
+        "data": "Unequip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card3 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card3 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card4 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card4 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card4 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card4 #CardName.Text",
+        "data": "the Windwalker"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card4 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card4 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card4 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[5] #Card4 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Fields.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Fields.Anchor",
+        "data": {
+         "Height": 0,
+         "Bottom": 10
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldOneGroup.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldOneLabel.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldOne.Value",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldTwoGroup.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldTwoLabel.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldTwo.Value",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldThreeGroup.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldThreeLabel.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldThree.Value",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#CollectionBanner.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#CollectionSummary.Text",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#CollectionPreview.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Primary.TextSpans",
+        "data": "Refresh"
+       },
+       {
+        "type": "Set",
+        "selector": "#Primary.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Primary.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Secondary.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#Secondary.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Secondary.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Tertiary.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#Tertiary.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Tertiary.Disabled",
+        "data": true
+       }
+      ],
+      "output": "_worktrees/EterniaMod-titles/notes/pictures/titles/collection-overfull.png"
+     },
+     "expect": {
+      "valid": true
+     }
+    }
+   ]
+  },
+  {
+   "name": "titles collection longest",
+   "steps": [
+    {
+     "tool": "ui_render",
+     "arguments": {
+      "root": "projects",
+      "path": "_worktrees/EterniaMod-titles/src/main/resources/Common/UI/Custom/EterniaMod/ServicesPage.ui",
+      "commands": [
+       {
+        "type": "Append",
+        "selector": "#CurrencyWallet",
+        "text": "EterniaMod/Wallet.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#WalletCoins.Text",
+        "data": "2,000 Coins"
+       },
+       {
+        "type": "Set",
+        "selector": "#WalletCrowns.Text",
+        "data": "5,000 Crowns"
+       },
+       {
+        "type": "Set",
+        "selector": "#DeskEmblem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Wordmark.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#ServicesTitle.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#ServicesTitle.TextSpans",
+        "data": "Journal"
+       },
+       {
+        "type": "Set",
+        "selector": "#ServicesSubtitle.TextSpans",
+        "data": "Journal"
+       },
+       {
+        "type": "Set",
+        "selector": "#JournalShortcut.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#HintJournal.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#HintCloseText.TextSpans",
+        "data": "Close"
+       },
+       {
+        "type": "Set",
+        "selector": "#Return.Visible",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTabActive.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[0] #NavLabel.TextSpans",
+        "data": "Collection"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[0] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/collection.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[0].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[1] #NavLabel.TextSpans",
+        "data": "Quests"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[1] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/questsMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[1].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[2] #NavLabel.TextSpans",
+        "data": "Seasons"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[2] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/seasonMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[2].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[3] #NavLabel.TextSpans",
+        "data": "Mail"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[3] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/mailMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[3].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[4] #NavLabel.TextSpans",
+        "data": "Guild"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[4] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/guildMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[4].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Navigation",
+        "text": "EterniaMod/JournalTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[5] #NavLabel.TextSpans",
+        "data": "Home"
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[5] #NavIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/housingMuted.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Navigation[5].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#ServicesBody",
+        "text": "EterniaMod/ServicesCollection.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#SectionName.TextSpans",
+        "data": "Collection"
+       },
+       {
+        "type": "Set",
+        "selector": "#SideNote.TextSpans",
+        "data": "Everything you have earned, bought or unlocked."
+       },
+       {
+        "type": "Set",
+        "selector": "#SectionIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/collection.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Previous.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Next.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Pagination.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#PageControls.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#PageControls.Anchor",
+        "data": {
+         "Height": 0
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Pagination.Anchor",
+        "data": {
+         "Height": 0,
+         "Bottom": 0
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Previous.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Next.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Pagination.Text",
+        "data": "Page 1 / 1"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs.Visible",
+        "data": true
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0] #SideTabLabel.TextSpans",
+        "data": "Houses"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/housing.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1] #SideTabLabel.TextSpans",
+        "data": "Decorations"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/furnishing.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[2] #SideTabLabel.TextSpans",
+        "data": "Materials"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[2] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/palette.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[2].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTabSelected.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[3] #SideTabLabel.TextSpans",
+        "data": "Titles"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[3] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[3].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[4] #SideTabLabel.TextSpans",
+        "data": "Wardrobe"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[4] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/wardrobe.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[4].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[5] #SideTabLabel.TextSpans",
+        "data": "Pets"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[5] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/pet.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[5].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[6] #SideTabLabel.TextSpans",
+        "data": "Mounts"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[6] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/mount.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[6].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[7] #SideTabLabel.TextSpans",
+        "data": "Upgrades"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[7] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/addition.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[7].Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#SectionTitle.TextSpans",
+        "data": "Your titles"
+       },
+       {
+        "type": "Set",
+        "selector": "#Description.TextSpans",
+        "data": "Pair a prefix and suffix to make your name your own."
+       },
+       {
+        "type": "Set",
+        "selector": "#Description.Anchor",
+        "data": {
+         "Height": 50,
+         "Bottom": 8
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Status.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Append",
+        "selector": "#Rows",
+        "text": "EterniaMod/CollectionCardRow.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Slot5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #CardName.Text",
+        "data": "the Crocodile Wrangler"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #CardDetail.Text",
+        "data": "Equipped"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowAction.Text",
+        "data": "Unequip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card0 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #CardName.Text",
+        "data": "the Gobliterator's End"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card1 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #CardName.Text",
+        "data": "the Sabertooth Stalker"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card2 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #CardName.Text",
+        "data": "the Chicken Whisperer"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card3 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #CardName.Text",
+        "data": "the Chieftain Breaker"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card4 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowImage.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowImage.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/title.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowItem.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #CardName.Text",
+        "data": "the Slothian's Friend"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #CardDetail.Text",
+        "data": "Suffix title"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowAction.Text",
+        "data": "Equip"
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowAction.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Rows[0] #Card5 #RowAction.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Fields.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Fields.Anchor",
+        "data": {
+         "Height": 0,
+         "Bottom": 10
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldOneGroup.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldOneLabel.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldOne.Value",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldTwoGroup.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldTwoLabel.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldTwo.Value",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldThreeGroup.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldThreeLabel.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#FieldThree.Value",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#CollectionBanner.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#CollectionSummary.Text",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#CollectionPreview.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Primary.TextSpans",
+        "data": "Refresh"
+       },
+       {
+        "type": "Set",
+        "selector": "#Primary.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Primary.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Secondary.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#Secondary.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Secondary.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Tertiary.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#Tertiary.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Tertiary.Disabled",
+        "data": true
+       }
+      ],
+      "output": "_worktrees/EterniaMod-titles/notes/pictures/titles/collection-longest.png"
+     },
+     "expect": {
+      "valid": true
+     }
+    }
+   ]
+  }
+ ]
+}
