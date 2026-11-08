@@ -99,6 +99,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         infrastructure = new com.hexvane.eterniamod.housing.HousingInfrastructure(dataDirectory.resolve("housing-infrastructure.json"));
         try { infrastructure.load(); } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
         claims = new com.hexvane.eterniamod.housing.NativeClaimCoordinator(this);
+        installClaimMapHooks();
         joinSpawns = new com.hexvane.eterniamod.runtime.JoinSpawns(dataDirectory.resolve("join-spots.json"));
         try { joinSpawns.load(); } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
         travel = new com.hexvane.eterniamod.runtime.NativeTravelService(this);
@@ -212,6 +213,21 @@ public final class EterniaModPlugin extends JavaPlugin {
      * Ensures joining clients receive this mod's {@code Common/} blobs (UI layout, icons). Without this, the client
      * may never acknowledge the custom page and server-side UI events (birds-eye toggle, nudge buttons) are ignored.
      */
+    /** Connects the Claim Map to the plots engine (commits), relocation (packed homes) and the in world border focus. */
+    private void installClaimMapHooks() {
+        com.hexvane.eterniamod.claimmap.HexClaimCommits.install(com.hexvane.eterniamod.claimmap.HexClaimCommits.adapt(
+            getClaims()::claimCells, getClaims()::expandPlot,
+            r -> new com.hexvane.eterniamod.claimmap.HexClaimCommits.Result(r.ok(), r.message(), r.plotId(), r.reason())));
+        com.hexvane.eterniamod.claimmap.ClaimMapRestore.install(new com.hexvane.eterniamod.claimmap.ClaimMapRestore() {
+            public com.hexvane.eterniamod.hexplots.HexClaimRules.Result check(com.hypixel.hytale.server.core.universe.world.World w, com.hexvane.eterniamod.domain.Owner o, java.util.UUID a, com.hexvane.eterniamod.housing.HousingRules.Scope s, java.util.Collection<com.hexvane.eterniamod.hexplots.HexCoord> c) { return getRelocation().restoreCheck(w, o, a, s, c); }
+            public java.util.List<com.hexvane.eterniamod.hexplots.PlotCells> destinations(com.hypixel.hytale.server.core.universe.world.World w, com.hexvane.eterniamod.domain.Owner o, java.util.UUID a, com.hexvane.eterniamod.housing.HousingRules.Scope s, int x, int z, int r, int n) { return getRelocation().restoreDestinations(w, o, a, s, x, z, r, n); }
+        });
+        com.hexvane.eterniamod.claimmap.ClaimMapFocus.install(new com.hexvane.eterniamod.claimmap.ClaimMapFocus() {
+            public void show(java.util.UUID p, String w, java.util.Set<com.hexvane.eterniamod.hexplots.HexCoord> c, long ms) { com.hexvane.eterniamod.boundary.HexBorderFocus.show(p, w, c, ms); }
+            public void clear(java.util.UUID p) { com.hexvane.eterniamod.boundary.HexBorderFocus.clear(p); }
+        });
+    }
+
     private void registerModCommonAssetDelivery() {
         if (!getManifest().includesAssetPack()) {
             return;
