@@ -1,0 +1,14 @@
+{
+  "Spawners": [
+    {
+      "SpawnerId": "Eternia_Hex_Border_Guild_Soft_Rune"
+    },
+    {
+      "SpawnerId": "Eternia_Hex_Border_Guild_Soft_Spawner"
+    }
+  ],
+  "LifeSpan": 3.7,
+  "CullDistance": 8,
+  "BoundingRadius": 1,
+  "IsImportant": false
+}

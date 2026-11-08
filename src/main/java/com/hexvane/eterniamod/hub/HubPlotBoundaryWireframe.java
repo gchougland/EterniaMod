@@ -1,5 +1,6 @@
 package com.hexvane.eterniamod.hub;
 
+import com.hexvane.eterniamod.boundary.BoundaryGeometry;
 import com.hexvane.eterniamod.debug.DebugLineCylinderUtil;
 import com.hypixel.hytale.math.matrix.Matrix4dUtil;
 import com.hypixel.hytale.protocol.DebugShape;
@@ -10,7 +11,7 @@ import javax.annotation.Nonnull;
 import org.joml.Matrix4d;
 import org.joml.Vector3f;
 
-/** Draws plot boundary boxes with edge outlines and a diagonal on each face for readability. */
+/** Draws plot boundaries: boxes with face diagonals for rectangle plots, staircase or six line outlines for hex plots. */
 public final class HubPlotBoundaryWireframe {
     private static final float OUTLINE_DISPLAY_SECONDS = 6f * 60f * 60f;
     private static final double LINE_THICKNESS = 0.04;
@@ -23,6 +24,11 @@ public final class HubPlotBoundaryWireframe {
         @Nonnull HubPlotFootprint footprint,
         @Nonnull Vector3f color
     ) {
+        // Hex plots (placement previews included) show their real outline, not the bounding box.
+        if (footprint.isHex() && footprint.getCells() != null) {
+            sendHexPlot(player, footprint, color, true);
+            return;
+        }
         double minX = footprint.getMinX();
         double minZ = footprint.getMinZ();
         double maxX = footprint.getMaxX() + 1.0;
@@ -30,6 +36,39 @@ public final class HubPlotBoundaryWireframe {
         double minY = footprint.getVisualMinY();
         double maxY = footprint.getVisualMaxY() + 1.0;
         sendBox(player, minX, minY, minZ, maxX, maxY, maxZ, color);
+    }
+
+    /**
+     * A hex plot outline: the exact block staircase on the ground when {@code staircase} (nearby or selected plots),
+     * otherwise the six line hexagon sides; a straight outline at the top of the visual box; posts where the straight
+     * outline turns. Returns the number of debug lines sent (budget numbers are in notes/hex-borders.md).
+     */
+    public static int sendHexPlot(
+        @Nonnull PlayerRef player,
+        @Nonnull HubPlotFootprint footprint,
+        @Nonnull Vector3f color,
+        boolean staircase
+    ) {
+        var cells = footprint.getCells();
+        if (cells == null) {
+            sendPlotBoundary(player, footprint, color);
+            return 18;
+        }
+        double minY = footprint.getVisualMinY();
+        double maxY = footprint.getVisualMaxY() + 1.0;
+        var straight = BoundaryGeometry.outline(cells, false);
+        var ground = BoundaryGeometry.outline(cells, staircase);
+        int sent = 0;
+        for (var line : ground) {
+            sendLine(player, line.x1(), minY, line.z1(), line.x2(), minY, line.z2(), color);
+            sent++;
+        }
+        for (var line : straight) {
+            sendLine(player, line.x1(), maxY, line.z1(), line.x2(), maxY, line.z2(), color);
+            sendLine(player, line.x1(), minY, line.z1(), line.x1(), maxY, line.z1(), color);
+            sent += 2;
+        }
+        return sent;
     }
 
     public static void sendBox(
