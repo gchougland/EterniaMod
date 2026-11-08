@@ -222,10 +222,10 @@ public final class ManagedHubServices implements AutoCloseable {
         loaded(world,pose);var plan=plugin.getInfrastructure().world(world.getName()).orElseThrow(()->new IllegalStateException("Register this world in setup first"));var area=pose.footprint();
         if(plan.portals().stream().noneMatch(rect->rect.contains(area)))throw new IllegalStateException("Place services inside a registered public portal / services plaza with a clear 3 × 3 footprint.");
         if(plan.roads().stream().anyMatch(rect->rect.overlaps(area))||com.hexvane.eterniamod.guildroads.GuildRoads.roadRects(world.getName()).stream().anyMatch(rect->rect.overlaps(area)))throw new IllegalStateException("Keep service objects off road columns");
-        if(EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots().stream().anyMatch(plot->area.overlaps(NativeHousingChecks.rect(plot.getFootprint()))))throw new IllegalStateException("Public services cannot occupy a player or guild plot");
+        if(EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots().stream().anyMatch(plot->com.hexvane.eterniamod.housing.PlotAreas.overlaps(plot,area)))throw new IllegalStateException("Public services cannot occupy a player or guild plot");
         for(var property:plugin.getServices().housing().properties())if(property.slot().state()!=com.hexvane.eterniamod.domain.HousingService.State.PACKED){
             var location=property.location();
-            if(location!=null&&location.worldId().equals(world.getName())&&area.overlaps(new PlotRect(location.minX(),location.minZ(),location.width(),location.depth())))throw new IllegalStateException("Public services cannot occupy a reserved housing plot");
+            if(location!=null&&location.worldId().equals(world.getName())&&com.hexvane.eterniamod.housing.PlotAreas.overlaps(location,area))throw new IllegalStateException("Public services cannot occupy a reserved housing plot");
         }
         if(com.hexvane.eterniamod.setup.paving.RoadPaving.protectedRects(world.getName()).stream().anyMatch(area::overlaps))throw new IllegalStateException("Finish or undo pending paving before placing services here");
         for(var entry:registry.entries())if(entry.live()&&entry.world().equals(world.getName())&&!entry.id().equals(ignore)&&entry.footprints().stream().anyMatch(area::overlaps))throw new IllegalStateException("Another managed service uses this space");

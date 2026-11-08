@@ -135,8 +135,8 @@ public final class RoadPaving {
         if(!plugin.getInfrastructure().world(world.getName()).map(plan->!plan.role().equals("adventure")).orElse(false))throw new IllegalStateException("Configure this world as Hub or Housing before paving");
         var forbidden=new ArrayList<PlotRect>();var plan=plugin.getInfrastructure().world(world.getName()).orElseThrow();forbidden.addAll(plan.roads());forbidden.addAll(plan.portals());forbidden.addAll(com.hexvane.eterniamod.guildroads.GuildRoads.roadRects(world.getName()));
         registry.all().stream().filter(op->op.state()==State.PENDING&&!op.id().equals(ignore)&&op.world().equals(world.getName())).map(Operation::rect).forEach(forbidden::add);
-        EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots().forEach(plot->forbidden.add(NativeHousingChecks.rect(plot.getFootprint())));
-        for(var property:plugin.getServices().housing().properties())if(property.slot().state()!=HousingService.State.PACKED&&property.location()!=null){var location=property.location();if(location.worldId().equals(world.getName()))forbidden.add(new PlotRect(location.minX(),location.minZ(),location.width(),location.depth()));}
+        EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots().forEach(plot->forbidden.addAll(com.hexvane.eterniamod.housing.PlotAreas.rects(plot)));
+        for(var property:plugin.getServices().housing().properties())if(property.slot().state()!=HousingService.State.PACKED&&property.location()!=null){var location=property.location();if(location.worldId().equals(world.getName()))forbidden.addAll(com.hexvane.eterniamod.housing.PlotAreas.rects(location));}
         PavingRegistry.requireClear(rect,forbidden);
         for(int x=rect.x();x<rect.endX();x++)for(int z=rect.z();z<rect.endZ();z++){
             if(ChunkSectionBlockUtil.sectionRefAt(world,x,y,z)==null)throw new IllegalStateException("Load the complete road area before paving");
