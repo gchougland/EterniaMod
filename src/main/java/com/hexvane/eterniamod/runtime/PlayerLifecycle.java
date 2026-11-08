@@ -28,6 +28,8 @@ public final class PlayerLifecycle implements AutoCloseable {
     private static final long TRIGGER_SETTLE_SECONDS=3;
     /** Entity range while a player enters a world; the full range returns {@link #TRIGGER_SETTLE_SECONDS} after they are ready. */
     private static final int ENTRY_ENTITY_RANGE_BLOCKS=32;
+    private static final int WIDEN_STEP_BLOCKS=16;
+    private static final long WIDEN_STEP_MILLIS=400;
     private final ScheduledExecutorService timer=Executors.newSingleThreadScheduledExecutor(Thread.ofPlatform().daemon(true).name("eternia-join-settle").factory());
     private final Map<UUID,Long> latestSettle=new ConcurrentHashMap<>();private final AtomicLong settleTurn=new AtomicLong();
     public PlayerLifecycle(EterniaModPlugin plugin) {
@@ -96,11 +98,26 @@ public final class PlayerLifecycle implements AutoCloseable {
     private void settle(Ref<EntityStore> ref,Store<EntityStore> store,UUID id) {
         long turn=settleTurn.incrementAndGet();latestSettle.put(id,turn);var world=store.getExternalData().getWorld();
         timer.schedule(()->world.execute(()->{
-            if(!latestSettle.remove(id,turn)||!ref.isValid())return;
+            if(!Objects.equals(latestSettle.get(id),turn)||!ref.isValid())return;
             store.tryRemoveComponent(ref,IgnoreTriggerVolumes.getComponentType());
-            var viewer=store.getComponent(ref,EntityTrackerSystems.EntityViewer.getComponentType());var playerComponent=store.getComponent(ref,Player.getComponentType());
-            if(viewer!=null&&playerComponent!=null)viewer.viewRadiusBlocks=playerComponent.getViewRadius()*ChunkUtil.SIZE;
+            widen(ref,store,id,turn);
         }),TRIGGER_SETTLE_SECONDS,TimeUnit.SECONDS);
+    }
+    /**
+     * Opens the entity range a step at a time. Restoring it in one go sends every entity in view in the same instant, and
+     * the 0.7.6 client still overran its occlusion results that way (a join crash 1.5 s after the old one-step restore,
+     * 2026-11-08). A newer settle for the player (a teleport) cancels the ramp by taking the turn.
+     */
+    private void widen(Ref<EntityStore> ref,Store<EntityStore> store,UUID id,long turn) {
+        var world=store.getExternalData().getWorld();
+        if(!Objects.equals(latestSettle.get(id),turn)||!ref.isValid())return;
+        var viewer=store.getComponent(ref,EntityTrackerSystems.EntityViewer.getComponentType());var playerComponent=store.getComponent(ref,Player.getComponentType());
+        if(viewer==null||playerComponent==null){latestSettle.remove(id,turn);return;}
+        int full=playerComponent.getViewRadius()*ChunkUtil.SIZE;
+        int next=Math.min(full,viewer.viewRadiusBlocks+WIDEN_STEP_BLOCKS);
+        viewer.viewRadiusBlocks=next;
+        if(next>=full){latestSettle.remove(id,turn);return;}
+        timer.schedule(()->world.execute(()->widen(ref,store,id,turn)),WIDEN_STEP_MILLIS,TimeUnit.MILLISECONDS);
     }
     /** A teleport restarts the client's occlusion warm-up too, even inside one world, where no world entry event fires. */
     private final class TeleportEntityRange extends RefChangeSystem<EntityStore,Teleport> {
