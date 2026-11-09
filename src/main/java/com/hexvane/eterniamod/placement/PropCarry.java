@@ -206,10 +206,12 @@ public final class PropCarry {
         Vector3i origin = def.resolvePrefabAnchorWorld(session.getAnchor(), session.getPrefabYaw());
         boolean moved = !view.shown || !origin.equals(view.shownOrigin) || view.shownSteps != session.getRotationSteps()
             || !session.getPropId().equals(view.shownProp);
+        // Lit copies of the decoration, not the client's paste preview, which only takes sky light and goes black
+        // indoors at night. Cheap when nothing changed.
+        PropCarryGhost.show(session.getWorld(), player.getUuid(), def.getPrefabPath(), buffer, session.getRotationSteps(),
+            session.getPrefabYaw(), origin, error == null);
         if (moved) {
-            if (view.shown) BuildingPlacementClientPrefabPreview.hide(player);
-            view.shown = BuildingPlacementClientPrefabPreview.sendFull(
-                player, def.getPrefabPath(), session.getRotationSteps(), origin, session.getPrefabYaw(), session);
+            view.shown = true;
             view.shownOrigin = origin;
             view.shownSteps = session.getRotationSteps();
             view.shownProp = session.getPropId();
@@ -271,6 +273,8 @@ public final class PropCarry {
             if (why != null) player.sendMessage(why);
             return;
         }
+        // The copies go before the real thing is placed where they stand; the next follow brings them back on failure.
+        PropCarryGhost.clear(store.getExternalData().getWorld(), player.getUuid());
         if (!PropPlacementCommit.place(ref, store, session, plugin)) {
             player.sendMessage(Message.translation("eterniamod_common.eterniamod.common.propPlaceFailed"));
             return;
@@ -296,12 +300,14 @@ public final class PropCarry {
     /** Clears the session and everything drawn for it, leaving any carried block alone. */
     static void stop(@Nullable Ref<EntityStore> ref, @Nullable Store<EntityStore> store, @Nonnull PlayerRef player) {
         VIEWS.remove(player.getUuid());
+        if (store != null) PropCarryGhost.clear(store.getExternalData().getWorld(), player.getUuid());
         PropPlacementOpenHelper.cancelActive(player, player.getUuid());
         if (ref != null && store != null && ref.isValid()) PropCarryHud.hide(ref, store, player);
     }
 
     /** Session cleanup when the player leaves or dies; the carried box itself is handled by the game. */
-    static void forget(@Nonnull UUID player) {
+    static void forget(@Nonnull com.hypixel.hytale.server.core.universe.world.World world, @Nonnull UUID player) {
         VIEWS.remove(player);
+        world.execute(() -> PropCarryGhost.clear(world, player));
     }
 }
