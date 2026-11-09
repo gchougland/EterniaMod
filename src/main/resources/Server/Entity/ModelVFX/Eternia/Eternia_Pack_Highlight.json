@@ -2,7 +2,7 @@
   "SwitchTo": "PostColor",
   "EffectDirection": "BottomUp",
   "PostColor": "#ffcf5a",
-  "PostColorOpacity": 0.55,
+  "PostColorOpacity": 0.0,
   "HighlightColor": "#ffe7a3",
   "HighlightThickness": 1.0,
   "UseBloomOnHighlight": true,

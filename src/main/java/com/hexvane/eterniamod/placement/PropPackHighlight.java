@@ -46,16 +46,20 @@ import javax.annotation.Nullable;
 import org.joml.Vector3d;
 
 /**
- * The Packaging Wand's highlight: a gold, glowing copy of the decoration you aim at, a little larger than it, made of
+ * The Packaging Wand's highlight: glowing gold lines over the decoration you aim at, drawn by a same size copy made of
  * temporary entities (one per block, plus a copy of each of its entity parts). Copies carry a {@link Ghost} marker:
  * placement snapshots skip them and any left over after a crash are removed when their area loads. World thread only.
  */
 public final class PropPackHighlight {
     static final String EFFECT = "Eternia_Pack_Highlight";
     static final String VANISH = "Teleport";
-    private static final float GROW = 1.08f;
-    /** Block copies grow from the middle of their block, so thin parts near it barely move: grow them more to stop flicker. */
-    private static final float GROW_BLOCKS = 1.15f;
+    /**
+     * Copies are the decoration's own size: they grow from a pivot that is not the model's middle, so any enlargement
+     * reads as a doubled image. With no colour fill the copy draws the same texture as the real thing, so where the two
+     * overlap nothing can be seen to flicker, and only the glowing lines show.
+     */
+    private static final float GROW = 1.0f;
+    private static final float GROW_BLOCKS = 1.0f;
     private static final int MAX_GHOSTS = 256;
 
     /** Marks a highlight copy. */
