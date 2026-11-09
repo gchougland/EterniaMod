@@ -39,8 +39,8 @@ public final class PropRecoveryMenu {
                         return;}
                     int count=house?(FailedHouseRecovery.recover(plugin,world,plot,player.getUuid())?1:0):FailedPropRecovery.recover(plugin,world,plot,player.getUuid());
                     success=count>0;
-                    message=success?(house?"Your house placement is complete. Your plot is unlocked, and you can use or pack your house.":"The interrupted decoration is back in your housing build inventory. Your plot is unlocked."):"This placement needs administrator review before recovery can finish. Your house and belongings remain saved.";
-                }catch(Exception error){plugin.getLogger().atWarning().withCause(error).log("Placement recovery did not complete for property %s",plot.getPlotId());message="Recovery could not finish. Your plot remains protected. An administrator can check the server log for details.";}
+                    message=success?(house?"Your house placement is complete. Your plot is unlocked, and you can use or pack your house.":"The interrupted decoration is back in your housing build inventory. Your plot is unlocked."):"This could not be fixed automatically yet. Nothing was lost: your house and belongings are saved. The server log has the details.";
+                }catch(Exception error){plugin.getLogger().atWarning().withCause(error).log("Placement recovery did not complete for property %s",plot.getPlotId());message="This could not be fixed automatically yet. Nothing was lost: your house and belongings are saved. The server log has the details.";}
                 player.sendMessage(Message.raw(message));
                 if(ref.isValid()&&ref.equals(player.getReference())&&store.getComponent(ref,Player.getComponentType()).getPageManager().getCustomPage()==progress)result(plugin,ref,store,player,owner,message,success);
             }));

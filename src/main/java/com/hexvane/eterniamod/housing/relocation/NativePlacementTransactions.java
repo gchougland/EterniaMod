@@ -44,8 +44,16 @@ public final class NativePlacementTransactions {
         int resolved=0;
         for(var op:locked){
             try{
-                var changed=changedObjects(plugin,world,plot);
                 var current=services.journal().find(op.id()).orElseThrow();
+                var target=target(plugin,current);
+                if(target!=null){
+                    var item=services.provenance().find(target).orElse(null);
+                    // Already packed, or no longer on this plot: nothing in the world is waiting on this pickup.
+                    if(item==null||!item.state().equals("PLACED")||!item.propertyId().equals(plot.getPlotId())){services.journal().advance(op.id(),current.revision(),JournalService.State.CANCELLED);resolved++;continue;}
+                    if(!changed(plugin,world,item)){services.journal().advance(op.id(),current.revision(),JournalService.State.CANCELLED);resolved++;continue;}
+                    finishPickup(plugin,world,plot,current,item);resolved++;continue;
+                }
+                var changed=changedObjects(plugin,world,plot);
                 if(changed.isEmpty()){services.journal().advance(op.id(),current.revision(),JournalService.State.CANCELLED);resolved++;continue;}
                 if(changed.size()!=1||op.snapshotRef().isEmpty())continue;
                 finishPickup(plugin,world,plot,current,changed.getFirst());resolved++;
@@ -54,22 +62,56 @@ public final class NativePlacementTransactions {
         if(resolved>0)plugin.getLogger().atInfo().log("Resolved %d interrupted pickups on plot %s",resolved,property);
         return resolved;
     }
+    /** The object a pickup was packing, read from the snapshot it saved before changing anything; null when unknown. */
+    private static UUID target(EterniaModPlugin plugin,JournalService.Operation op){
+        if(op.snapshotRef().isEmpty())return null;
+        try{
+            var packed=snapshots(plugin).load(new SnapshotFiles.Saved(op.snapshotRef(),op.snapshotHash()));
+            var found=new HashSet<UUID>();
+            for(var value:packed.document().getArray("entities",new org.bson.BsonArray()))try{found.add(NativeDecorativeEntities.instance(value));}catch(IllegalStateException unlinked){}
+            return found.size()==1?found.iterator().next():null;
+        }catch(Exception unreadable){return null;}
+    }
     /** Placed objects on the plot whose blocks or entities no longer match how they were placed. */
     private static List<ProvenanceService.Instance> changedObjects(EterniaModPlugin plugin,World world,HubPlotRecord plot) throws IOException {
-        var store=snapshots(plugin);var changed=new ArrayList<ProvenanceService.Instance>();
-        for(var item:plugin.getServices().provenance().instances(plot.getPlotId())){
-            if(!item.state().equals("PLACED")||!item.nativeData().containsKey("after"))continue;
-            var before=store.load(new SnapshotFiles.Saved(item.nativeData().get("before"),item.nativeData().get("beforeHash")));
-            var placedAfter=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));
-            var mask=NativeRelocationCoordinator.difference(placedAfter.document(),before.document());
-            // An unloaded chunk throws here and stops the whole check: only a real mismatch below marks an object changed.
-            var captured=store.capture(world,before.bounds(),before.mask(),Set.of(item.id()),true,false);
-            try{
-                NativeDecorativeEntities.requireIdentity(placedAfter.document(),captured,item.id());
-                NativeRelocationCoordinator.requireSameBlocks(captured,placedAfter.document(),mask);
-            }catch(IllegalStateException differs){changed.add(item);}
-        }
+        var changed=new ArrayList<ProvenanceService.Instance>();
+        for(var item:plugin.getServices().provenance().instances(plot.getPlotId()))
+            if(item.state().equals("PLACED")&&item.nativeData().containsKey("after")&&changed(plugin,world,item))changed.add(item);
         return changed;
+    }
+    /**
+     * Whether a placed object's blocks or its own entities differ from how it was placed. Other objects' entities in the
+     * same area (a shelf inside a house) are ignored. An unloaded chunk throws rather than answering.
+     */
+    private static boolean changed(EterniaModPlugin plugin,World world,ProvenanceService.Instance item) throws IOException {
+        var store=snapshots(plugin);
+        var before=store.load(new SnapshotFiles.Saved(item.nativeData().get("before"),item.nativeData().get("beforeHash")));
+        var placedAfter=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));
+        var mask=NativeRelocationCoordinator.difference(placedAfter.document(),before.document());
+        var captured=store.capture(world,before.bounds(),before.mask(),Set.of(),false,false);
+        try{NativeRelocationCoordinator.requireSameBlocks(captured,placedAfter.document(),mask);}catch(IllegalStateException differs){return true;}
+        return !entityIds(placedAfter.document(),item.id()).equals(liveEntityIds(world,before,item.id()));
+    }
+    /** UUIDs of an object's entities as recorded when it was placed. */
+    private static Set<UUID> entityIds(org.bson.BsonDocument placed,UUID instance){
+        var ids=new HashSet<UUID>();
+        for(var value:placed.getArray("entities",new org.bson.BsonArray())){
+            UUID owner;try{owner=NativeDecorativeEntities.instance(value);}catch(IllegalStateException unlinked){continue;}
+            if(!owner.equals(instance))continue;
+            ids.add(value.asDocument().getDocument("Components").getDocument("UUID").get("UUID").asBinary().asUuid());
+        }
+        return ids;
+    }
+    /** UUIDs of the entities in the world that belong to this object. */
+    private static Set<UUID> liveEntityIds(World world,NativeSnapshotStore.Snapshot before,UUID instance){
+        var ids=new HashSet<UUID>();var store=world.getEntityStore().getStore();
+        for(var ref:NativeSnapshotStore.entities(world,before.bounds(),before.mask())){
+            var link=store.getComponent(ref,EterniaPlacedInstance.getComponentType());
+            if(link==null||!link.getInstanceId().equals(instance))continue;
+            var uuid=store.getComponent(ref,com.hypixel.hytale.server.core.entity.UUIDComponent.getComponentType());
+            if(uuid!=null)ids.add(uuid.getUuid());
+        }
+        return ids;
     }
     /** Completes an interrupted pickup: removes what is left of the object, restores the ground under it, and packs it. */
     private static void finishPickup(EterniaModPlugin plugin,World world,HubPlotRecord plot,JournalService.Operation op,ProvenanceService.Instance item) throws IOException {
@@ -199,7 +241,9 @@ public final class NativePlacementTransactions {
         }
         var placedAfter=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));
         var mask=NativeRelocationCoordinator.difference(placedAfter.document(),before.document());
-        var captured=store.capture(world,b,before.mask(),Set.of(instanceId),true,false);
+        // Other placed objects on the plot may share this area (a shelf inside a house); their entities are known, not strangers.
+        var known=new HashSet<UUID>();for(var other:services.provenance().instances(plot.getPlotId()))if(other.state().equals("PLACED"))known.add(other.id());known.add(instanceId);
+        var captured=store.capture(world,b,before.mask(),known,true,false);
         NativeDecorativeEntities.requireIdentity(placedAfter.document(),captured,instanceId);
         NativeRelocationCoordinator.requireSameBlocks(captured,placedAfter.document(),mask);
         if(item.owner().kind()==Owner.Kind.GUILD&&!item.owner().equals(owner(plot)))NativeRelocationCoordinator.requireEmptyGuildContainers(NativeRelocationCoordinator.onlyCapturedCells(captured,mask));
