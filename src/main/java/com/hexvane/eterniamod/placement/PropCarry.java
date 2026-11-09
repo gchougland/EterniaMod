@@ -143,8 +143,10 @@ public final class PropCarry {
         var world = store.getExternalData().getWorld();
         Vector3i normal = face(look.getPosition(), look.getDirection(), hit);
         Vector3i free = new Vector3i(hit.x + normal.x, hit.y + normal.y, hit.z + normal.z);
+        // On a wall the decoration stays at the height you aim at, against the wall. Only aiming at the underside of
+        // something (a ceiling) drops it to the floor below.
         Vector3i floor = new Vector3i(free);
-        for (int down = 0; down < 6 && !solid(world, floor.x, floor.y - 1, floor.z); down++) floor.y--;
+        if (normal.y < 0) for (int down = 0; down < 6 && !solid(world, floor.x, floor.y - 1, floor.z); down++) floor.y--;
         return new Aim(hit, free, floor);
     }
 
