@@ -72,7 +72,8 @@ public final class TutorialRuntime {
         var services = plugin.getServices();
         UUID id = player.getUuid();
         World world = store.getExternalData().getWorld();
-        SocialUiBootstrap.supply(services, () -> services.tutorial().meet(id, npc)).whenComplete((meeting, failure) -> {
+        var required = townspeople(world);
+        SocialUiBootstrap.supply(services, () -> services.tutorial().meet(id, npc, required)).whenComplete((meeting, failure) -> {
             try {
                 world.execute(() -> {
                     if (!ref.isValid()) return;
@@ -109,9 +110,23 @@ public final class TutorialRuntime {
         });
     }
 
+    /** The Hub world, or any world where the Hub's guide stands (a town built inside another world). */
     static boolean inHub(World world) {
         EterniaModPlugin plugin = EterniaModPlugin.get();
-        return plugin != null && plugin.getInfrastructure().world(world.getName()).map(plan -> plan.role().equals("hub")).orElse(false);
+        if (plugin == null) return false;
+        if (plugin.getInfrastructure().world(world.getName()).map(plan -> plan.role().equals("hub")).orElse(false)) return true;
+        return com.hexvane.eterniamod.setup.ManagedHubServices.live(world, com.hexvane.eterniamod.setup.HubNpcIdentity.GREETER.role()).isPresent();
+    }
+
+    /** The townspeople who stand in this world, in walkthrough order; every one when none are placed yet. */
+    static java.util.List<String> townspeople(World world) {
+        var present = new java.util.ArrayList<String>();
+        for (var identity : com.hexvane.eterniamod.setup.HubNpcIdentity.values()) {
+            String npc = HubDialogue.npcKey(identity);
+            if (TutorialService.TOWNSPEOPLE.contains(npc) && com.hexvane.eterniamod.setup.ManagedHubServices.live(world, identity.role()).isPresent()) present.add(npc);
+        }
+        if (present.isEmpty()) return TutorialService.TOWNSPEOPLE;
+        return TutorialService.TOWNSPEOPLE.stream().filter(present::contains).toList();
     }
 
     /** Shows, updates or removes the panel for where the player is and what they have done. */
@@ -128,7 +143,7 @@ public final class TutorialRuntime {
         TutorialHud hud;
         if (huds.getCustomHud(TutorialHud.ID) instanceof TutorialHud existing) hud = existing;
         else { hud = new TutorialHud(player); huds.addCustomHud(player, hud); }
-        hud.refresh(state);
+        hud.refresh(state, townspeople(store.getExternalData().getWorld()));
     }
 
     /** Once a second per player: load progress the first time, then keep the panel matching the world they are in. */

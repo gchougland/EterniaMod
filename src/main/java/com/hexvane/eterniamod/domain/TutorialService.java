@@ -20,10 +20,13 @@ public final class TutorialService extends DomainSupport {
     public record State(Set<String> met, boolean finished, boolean skipped, boolean hidden) {
         public State { met = Set.copyOf(met); }
         static final State NEW = new State(Set.of(), false, false, false);
-        public boolean metEveryone() { return met.contains(GUIDE) && met.containsAll(TOWNSPEOPLE); }
+        public boolean metEveryone() { return metEveryone(TOWNSPEOPLE); }
+        /** Met the guide and every townsperson in {@code required} (the ones who stand in this Hub). */
+        public boolean metEveryone(Collection<String> required) { return met.contains(GUIDE) && met.containsAll(required); }
         /** The walkthrough panel is wanted: not finished, skipped or hidden. */
         public boolean active() { return !finished && !skipped && !hidden; }
-        public int townspeopleMet() { return (int) TOWNSPEOPLE.stream().filter(met::contains).count(); }
+        public int townspeopleMet() { return townspeopleMet(TOWNSPEOPLE); }
+        public int townspeopleMet(Collection<String> required) { return (int) required.stream().filter(met::contains).count(); }
     }
 
     /** What a meeting changed: whether this was the first time, whether it finished the tutorial, and the new state. */
@@ -40,15 +43,19 @@ public final class TutorialService extends DomainSupport {
      * Records talking to {@code npc}. Talking to the guide after meeting every townsperson finishes the tutorial.
      * Unknown NPC keys are ignored.
      */
-    public Meeting meet(UUID player, String npc) {
+    public Meeting meet(UUID player, String npc) { return meet(player, npc, TOWNSPEOPLE); }
+
+    /** As {@link #meet(UUID, String)}, finishing once the guide is met after everyone in {@code required}. */
+    public Meeting meet(UUID player, String npc, Collection<String> required) {
         Objects.requireNonNull(player);
+        var needed = List.copyOf(required);
         if (!npc.equals(GUIDE) && !TOWNSPEOPLE.contains(npc)) { State s = state(player); return new Meeting(false, false, s); }
         return store.transaction(tx -> {
             var row = tx.find(NAMESPACE, player.toString());
             State before = row.map(TutorialService::state).orElse(State.NEW);
             var met = new TreeSet<>(before.met());
             boolean first = met.add(npc);
-            boolean finishedNow = npc.equals(GUIDE) && !before.finished() && !first && before.metEveryone();
+            boolean finishedNow = npc.equals(GUIDE) && !before.finished() && !first && before.metEveryone(needed);
             State after = new State(met, before.finished() || finishedNow, before.skipped(), before.hidden());
             if (first || finishedNow) write(tx, row, player, after);
             return new Meeting(first, finishedNow, after);

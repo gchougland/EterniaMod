@@ -49,8 +49,11 @@ public final class TutorialCommand extends AbstractCommandCollection {
                 TutorialRuntime.changed(ref, store, player, state);
                 if (done != null) player.sendMessage(Message.translation(HubDialogue.text(done)));
                 else if (state.finished()) player.sendMessage(Message.translation(HubDialogue.text("command.done")));
-                else player.sendMessage(Message.translation(HubDialogue.text("command.status"))
-                    .param("count", String.valueOf(state.townspeopleMet())).param("total", String.valueOf(TutorialService.TOWNSPEOPLE.size())));
+                else {
+                    var people = TutorialRuntime.townspeople(world);
+                    player.sendMessage(Message.translation(HubDialogue.text("command.status"))
+                        .param("count", String.valueOf(state.townspeopleMet(people))).param("total", String.valueOf(people.size())));
+                }
             });
         }
     }

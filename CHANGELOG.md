@@ -33,7 +33,8 @@
 
 - The game is less likely to crash right after joining near busy parts of town.
 - Accept invite on the Guild page works without typing a code and joins the guild that invited you.
-- Packing a decoration with the Packaging Wand no longer gets stuck. A decoration left stuck by an earlier try sorts itself out the next time you place or pack on that plot.
+- Packing a decoration with the Packaging Wand no longer gets stuck. If packing was interrupted earlier, it finishes on its own when you open your housing menu, place or pack something, or press Fix my plot in My Plots. The decoration goes back to your Decorations.
+- Doors, beds and benches in your own home keep working even while something on your plot is unfinished.
 - The Change shape button on the plot claim page now switches a guild estate between square and long shapes. Personal plots say they are always square.
 
 ## [1.0.0]

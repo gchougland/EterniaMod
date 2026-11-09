@@ -35,7 +35,7 @@ public final class HousingProtection {
         var player=chunk.getComponent(index,PlayerRef.getComponentType());
         // A disconnected visitor must still be able to leave a personal house.
         // Door use grants no storage/build rights; guild estates keep role checks.
-        if(player!=null&&capability.equals("housing.door.use")&&plot.getGuildOwnerUuid()==null&&plot.hasBuilding()&&!HousingAccess.locked(plugin,plot)){
+        if(player!=null&&capability.equals("housing.door.use")&&plot.getGuildOwnerUuid()==null&&plot.hasBuilding()){
             var visitor=chunk.getComponent(index,com.hypixel.hytale.server.core.modules.entity.component.TransformComponent.getComponentType());
             if(visitor!=null&&plot.getFootprint().containsHorizontal((int)Math.floor(visitor.getPosition().x),(int)Math.floor(visitor.getPosition().z)))return false;
         }

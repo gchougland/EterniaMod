@@ -18,6 +18,7 @@ public final class HousingInventory {
     private record Stock(List<ProvenanceService.Instance> instances,Map<String,Long> available) {}
     private HousingInventory(){}
     public static void open(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
+        healStuckPickups(plugin,store,player);
         if(resume(plugin,ref,store,player))return;
         var cards=new ArrayList<IllustratedMenuPage.Card>();
         Owner personal=Owner.player(player.getUuid());
@@ -57,6 +58,16 @@ public final class HousingInventory {
         // A decoration being carried stays in hand while the menus are open; an orphaned session is cleared.
         if(PropPlacementSessions.get(player.getUuid())!=null&&!PropCarry.carrying(ref,store))PropPlacementOpenHelper.cancelActive(player,player.getUuid());
         return PlotClaimPage.resumeDraft(ref,store,player,plugin);
+    }
+    /** A pickup that stopped part way on the player's plot in this world is finished or cancelled before the menu opens. */
+    private static void healStuckPickups(EterniaModPlugin plugin,Store<EntityStore> store,PlayerRef player){
+        try{
+            var world=store.getExternalData().getWorld();var owner=Owner.player(player.getUuid());
+            if(plugin.getServices().journal().unfinished().stream().noneMatch(op->op.owner().equals(owner)&&op.kind().equals("PICKUP")))return;
+            var slot=plugin.getServices().housing().find(owner).orElse(null);if(slot==null)return;
+            var plot=plot(plugin,store,slot.propertyId());if(plot==null)return;
+            if(com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions.healPickups(plugin,world,plot)>0)player.sendMessage(Message.raw("Something left unfinished on your plot has been sorted out. Nothing was lost."));
+        }catch(RuntimeException failure){plugin.getLogger().atWarning().withCause(failure).log("Could not check for unfinished pickups");}
     }
     private static HubPlotRecord plot(EterniaModPlugin p,Store<EntityStore>s,UUID id){return EterniaWorldRegistries.getOrCreateHubPlotManager(s.getExternalData().getWorld(),p).getPlot(id);}
     private static void houses(EterniaModPlugin p,Ref<EntityStore> r,Store<EntityStore>s,PlayerRef player,Owner owner) {

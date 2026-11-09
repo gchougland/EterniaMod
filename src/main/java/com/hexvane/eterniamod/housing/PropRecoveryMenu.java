@@ -31,6 +31,12 @@ public final class PropRecoveryMenu {
                 String message;boolean success=false;
                 try {
                     if(failure!=null)throw new IllegalStateException("The plot could not be loaded. Please retry.",failure);
+                    int packed=com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions.healPickups(plugin,world,plot);
+                    boolean stillLocked=plugin.getServices().journal().unfinished().stream().anyMatch(op->op.owner().equals(owner));
+                    if(packed>0&&!stillLocked){message="Your plot is unlocked. Nothing was lost: anything that was being packed is back in your Decorations.";success=true;
+                        player.sendMessage(Message.raw(message));
+                        if(ref.isValid()&&ref.equals(player.getReference())&&store.getComponent(ref,Player.getComponentType()).getPageManager().getCustomPage()==progress)result(plugin,ref,store,player,owner,message,true);
+                        return;}
                     int count=house?(FailedHouseRecovery.recover(plugin,world,plot,player.getUuid())?1:0):FailedPropRecovery.recover(plugin,world,plot,player.getUuid());
                     success=count>0;
                     message=success?(house?"Your house placement is complete. Your plot is unlocked, and you can use or pack your house.":"The interrupted decoration is back in your housing build inventory. Your plot is unlocked."):"This placement needs administrator review before recovery can finish. Your house and belongings remain saved.";

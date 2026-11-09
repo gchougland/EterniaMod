@@ -32,29 +32,62 @@ public final class NativePlacementTransactions {
         if(plugin.getServices().journal().unfinished().stream().anyMatch(o->o.owner().equals(owner(plot))&&!o.state().equals(JournalService.State.PACKED)))throw new IllegalStateException("Unfinished native operation requires recovery");
     }
     /**
-     * Clears pickup locks on this plot when nothing needs recovering: every placed object still matches the world
-     * exactly as it was placed, so the failed pickup changed nothing. Anything that does not match stays locked.
-     * World thread. Returns the number of locks cleared.
+     * Resolves pickups that stopped part way, so a plot never stays locked by one. For each locked pickup on this plot:
+     * if every placed object still matches the world exactly, the pickup changed nothing and is cancelled; if exactly
+     * one object no longer matches, that is the one being packed, so packing is finished from the snapshot saved before
+     * anything changed and the object goes back to its owner's inventory. Anything else stays locked. World thread.
+     * Returns the number of pickups resolved.
      */
     public static int healPickups(EterniaModPlugin plugin,World world,HubPlotRecord plot){
         var services=plugin.getServices();Owner owner=owner(plot);String property=plot.getPlotId().toString();
         var locked=services.journal().unfinished().stream().filter(o->o.owner().equals(owner)&&o.kind().equals("PICKUP")&&o.detail().equals(property)&&o.state()==JournalService.State.RECOVERY_REQUIRED).toList();
-        if(locked.isEmpty())return 0;
-        try{
-            var store=snapshots(plugin);
-            for(var item:services.provenance().instances(plot.getPlotId())){
-                if(!item.state().equals("PLACED")||!item.nativeData().containsKey("after"))continue;
-                var before=store.load(new SnapshotFiles.Saved(item.nativeData().get("before"),item.nativeData().get("beforeHash")));
-                var placedAfter=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));
-                var mask=NativeRelocationCoordinator.difference(placedAfter.document(),before.document());
-                var captured=store.capture(world,before.bounds(),before.mask(),Set.of(item.id()),true,false);
+        int resolved=0;
+        for(var op:locked){
+            try{
+                var changed=changedObjects(plugin,world,plot);
+                var current=services.journal().find(op.id()).orElseThrow();
+                if(changed.isEmpty()){services.journal().advance(op.id(),current.revision(),JournalService.State.CANCELLED);resolved++;continue;}
+                if(changed.size()!=1||op.snapshotRef().isEmpty())continue;
+                finishPickup(plugin,world,plot,current,changed.getFirst());resolved++;
+            }catch(Exception failure){plugin.getLogger().atWarning().withCause(failure).log("Could not resolve pickup %s",op.id());}
+        }
+        if(resolved>0)plugin.getLogger().atInfo().log("Resolved %d interrupted pickups on plot %s",resolved,property);
+        return resolved;
+    }
+    /** Placed objects on the plot whose blocks or entities no longer match how they were placed. */
+    private static List<ProvenanceService.Instance> changedObjects(EterniaModPlugin plugin,World world,HubPlotRecord plot) throws IOException {
+        var store=snapshots(plugin);var changed=new ArrayList<ProvenanceService.Instance>();
+        for(var item:plugin.getServices().provenance().instances(plot.getPlotId())){
+            if(!item.state().equals("PLACED")||!item.nativeData().containsKey("after"))continue;
+            var before=store.load(new SnapshotFiles.Saved(item.nativeData().get("before"),item.nativeData().get("beforeHash")));
+            var placedAfter=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));
+            var mask=NativeRelocationCoordinator.difference(placedAfter.document(),before.document());
+            // An unloaded chunk throws here and stops the whole check: only a real mismatch below marks an object changed.
+            var captured=store.capture(world,before.bounds(),before.mask(),Set.of(item.id()),true,false);
+            try{
                 NativeDecorativeEntities.requireIdentity(placedAfter.document(),captured,item.id());
                 NativeRelocationCoordinator.requireSameBlocks(captured,placedAfter.document(),mask);
-            }
-        }catch(Exception changed){return 0;}
-        for(var op:locked)services.journal().advance(op.id(),op.revision(),JournalService.State.CANCELLED);
-        plugin.getLogger().atInfo().log("Cleared %d pickup locks on plot %s: every placed object was still intact",locked.size(),property);
-        return locked.size();
+            }catch(IllegalStateException differs){changed.add(item);}
+        }
+        return changed;
+    }
+    /** Completes an interrupted pickup: removes what is left of the object, restores the ground under it, and packs it. */
+    private static void finishPickup(EterniaModPlugin plugin,World world,HubPlotRecord plot,JournalService.Operation op,ProvenanceService.Instance item) throws IOException {
+        var services=plugin.getServices();var store=snapshots(plugin);
+        var before=store.load(new SnapshotFiles.Saved(item.nativeData().get("before"),item.nativeData().get("beforeHash")));var b=before.bounds();
+        var placedAfter=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));
+        var mask=NativeRelocationCoordinator.difference(placedAfter.document(),before.document());
+        store.load(new SnapshotFiles.Saved(op.snapshotRef(),op.snapshotHash()));
+        var restore=store.save(op.id()+"-pickup-finish.json",b,before.cells(),NativeRelocationCoordinator.onlyCapturedCells(before.document(),mask));
+        for(var ref:NativeSnapshotStore.entities(world,b,before.mask())){
+            var link=world.getEntityStore().getStore().getComponent(ref,EterniaPlacedInstance.getComponentType());
+            if(link!=null&&link.getInstanceId().equals(item.id()))NativeDecorativeEntities.remove(world,ref);
+        }
+        store.apply(world,restore,b.origin());store.verify(world,restore,b.origin(),Set.of(),false);flush(world,b);
+        services.provenance().acknowledgePacked(item.id(),item.revision(),NativeRelocationCoordinator.reference(new SnapshotFiles.Saved(op.snapshotRef(),op.snapshotHash())));
+        var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);plot.removeProp(item.id());manager.updatePlot(plot);manager.saveIfDirty();
+        var applied=services.journal().advance(op.id(),op.revision(),JournalService.State.WORLD_APPLIED);
+        services.journal().advance(op.id(),applied.revision(),JournalService.State.COMPLETED);
     }
     public record Placed(UUID instanceId,NativeSnapshotStore.Snapshot before,NativeSnapshotStore.Snapshot after,UUID operation,Owner contentOwner,String source) {}
     public static Placed place(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID actor,String catalogId,Vector3i origin,Rotation yaw,IPrefabBuffer buffer,boolean house) throws IOException {

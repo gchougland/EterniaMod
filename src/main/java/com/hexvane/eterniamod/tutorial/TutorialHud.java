@@ -12,27 +12,28 @@ final class TutorialHud extends CustomUIHud {
     static final String ID = "eternia:tutorial";
     private static final String MET = "#7fbf8a", TODO = "#e6dcc6";
     private TutorialService.State shown;
+    private java.util.List<String> shownPeople;
 
     TutorialHud(PlayerRef player) { super(player, ID, 0); }
 
     @Override
     protected void build(@Nonnull UICommandBuilder commands) { commands.append("EterniaMod/TutorialHud.ui"); }
 
-    void refresh(TutorialService.State state) {
-        if (state.equals(shown)) return;
+    void refresh(TutorialService.State state, java.util.List<String> people) {
+        if (state.equals(shown) && people.equals(shownPeople)) return;
         shown = state;
-        update(false, commands(state));
+        shownPeople = people;
+        update(false, commands(state, people));
     }
 
     /** The panel's commands for a state. Package private for the render check in tests. */
-    static UICommandBuilder commands(TutorialService.State state) {
+    static UICommandBuilder commands(TutorialService.State state, java.util.List<String> people) {
         var c = new UICommandBuilder();
         c.set("#Title.TextSpans", Message.translation(HubDialogue.text("hud.title")));
-        var people = TutorialService.TOWNSPEOPLE;
         Message step;
         if (!state.met().contains(TutorialService.GUIDE)) step = Message.translation(HubDialogue.text("hud.meetGuide"));
-        else if (!state.metEveryone()) step = Message.translation(HubDialogue.text("hud.meetTown"))
-            .param("count", String.valueOf(state.townspeopleMet())).param("total", String.valueOf(people.size()));
+        else if (!state.metEveryone(people)) step = Message.translation(HubDialogue.text("hud.meetTown"))
+            .param("count", String.valueOf(state.townspeopleMet(people))).param("total", String.valueOf(people.size()));
         else step = Message.translation(HubDialogue.text("hud.returnGuide"));
         c.set("#Step.TextSpans", step);
         for (int i = 0; i < 7; i++) {
@@ -40,6 +41,7 @@ final class TutorialHud extends CustomUIHud {
             if (i >= people.size()) { c.set(selector + ".Visible", false); continue; }
             String npc = people.get(i);
             boolean met = state.met().contains(npc);
+            c.set(selector + ".Visible", true);
             c.set(selector + ".TextSpans", Message.raw((met ? "Met  " : "")).color(MET)
                 .insert(Message.raw(HubDialogue.name(npc) + ", " + HubDialogue.profession(npc)).color(met ? MET : TODO)));
         }
