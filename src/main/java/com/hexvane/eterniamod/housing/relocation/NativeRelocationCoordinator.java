@@ -107,16 +107,15 @@ public final class NativeRelocationCoordinator {
         var store=snapshots();boolean began=false,mutated=false;
         try {
             com.hexvane.eterniamod.guildroads.GuildRoads.beforePack(world,plot);
-            var baseline=loadPointer(store,store.files().resolve("baseline-"+plot.getPlotId()+".pointer"));
-            var b=bounds(plot);if(!baseline.bounds().equals(b))throw new IllegalStateException("Baseline bounds differ from property");
-            var cells=plot.getCells();var mask=ColumnMask.of(cells);
-            if(!Objects.equals(baseline.cells(),cells))throw new IllegalStateException("Baseline hexagons differ from property; finish adding its newest hexagon first");
+            var baselinePointer=store.files().resolve("baseline-"+plot.getPlotId()+".pointer");
+            var savedGround=Files.exists(baselinePointer)?loadPointer(store,baselinePointer):null;
+            var b=bounds(plot);var cells=plot.getCells();var mask=ColumnMask.of(cells);
             var instances=services.provenance().instances(plot.getPlotId()).stream().filter(i->i.state().equals("PLACED")).toList();
             Set<UUID> known=new HashSet<>();instances.forEach(i->known.add(i.id()));
             if(plot.hasBuilding()&&instances.stream().noneMatch(i->"HOUSE".equals(i.nativeData().get("kind")))||plot.getProps().stream().anyMatch(p->!known.contains(p.getInstanceId())))throw new IllegalStateException("Legacy object lacks proven ownership; migration required");
             var current=store.save(operation+"-property.json",b,cells,store.capture(world,b,mask,known,true,true));
             for(var item:instances){var placed=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));NativeDecorativeEntities.requireIdentity(placed.document(),current.document(),item.id());}
-            if(!index(current.document().getArray("blocks")).keySet().equals(index(baseline.document().getArray("blocks")).keySet()))throw new IllegalStateException("Protected infrastructure changed since the plot baseline; review required");
+            var baseline=fitBaseline(plot,savedGround,b,cells,current,instances,operation);
             BsonDocument personal=current.document().clone();BsonArray returned=new BsonArray();
             for(var item:instances)if(!item.owner().equals(owner)) {
                 if(item.owner().kind()!=Owner.Kind.GUILD)throw new IllegalStateException("Property contains foreign player-owned content");
@@ -162,6 +161,43 @@ public final class NativeRelocationCoordinator {
             if(began){if(mutated)NativePlacementTransactions.lock(plugin,operation);else services.housing().cancelRelocationBeforeMutation(owner,operation);}
             throw new IllegalStateException(mutated?"Move locked for recovery; original and packed snapshots retained":"Plot was not changed: "+failure.getMessage(),failure);
         }
+    }
+    /**
+     * Packing must always work. The saved original ground can stop matching the plot: the plot grew before its new
+     * hexagon's ground was saved, the ground was saved for an older shape or is missing, or a road now protects a few
+     * of its columns. Then it is rebuilt to fit the plot as it is: today's ground, with each placed object's own
+     * original ground put back under it, and the saved ground wherever it is still known. Protected columns are never
+     * part of it, so they are never written.
+     */
+    private NativeSnapshotStore.Snapshot fitBaseline(HubPlotRecord plot,NativeSnapshotStore.Snapshot saved,NativeSnapshotStore.Bounds b,PlotCells cells,NativeSnapshotStore.Snapshot current,List<ProvenanceService.Instance> instances,UUID operation)throws IOException{
+        var store=snapshots();
+        var keys=index(current.document().getArray("blocks")).keySet();
+        if(saved!=null&&saved.bounds().equals(b)&&Objects.equals(saved.cells(),cells)&&index(saved.document().getArray("blocks")).keySet().equals(keys))return saved;
+        var fitted=current.document().clone();fitted.remove("entities");
+        for(var item:instances){
+            var before=store.load(new SnapshotFiles.Saved(item.nativeData().get("before"),item.nativeData().get("beforeHash")));
+            var after=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));
+            var under=onlyCapturedCells(before.document(),difference(after.document(),before.document()));under.remove("entities");
+            overlay(fitted,shiftInto(under,before.bounds(),b,keys));
+        }
+        if(saved!=null){var known=saved.document().clone();known.remove("entities");overlay(fitted,shiftInto(known,saved.bounds(),b,keys));}
+        fitted.remove("entities");
+        plugin.getLogger().atInfo().log("Plot %s: saved ground refitted for packing (%s)",plot.getPlotId(),saved==null?"none saved":!saved.bounds().equals(b)||!Objects.equals(saved.cells(),cells)?"plot shape changed":"protected columns changed");
+        return store.save(operation+"-baseline-fitted.json",b,cells,fitted);
+    }
+    /** Cells of {@code source} (relative to {@code from}) moved to be relative to {@code to}, keeping only {@code keys}. */
+    private static BsonDocument shiftInto(BsonDocument source,NativeSnapshotStore.Bounds from,NativeSnapshotStore.Bounds to,Set<String> keys){
+        var result=source.clone();
+        for(String type:List.of("blocks","fluids")){
+            var kept=new BsonArray();
+            for(var value:source.getArray(type,new BsonArray())){
+                var d=value.asDocument().clone();
+                d.put("x",new BsonInt32(d.getInt32("x").getValue()+from.minX()-to.minX()));d.put("y",new BsonInt32(d.getInt32("y").getValue()+from.minY()-to.minY()));d.put("z",new BsonInt32(d.getInt32("z").getValue()+from.minZ()-to.minZ()));
+                if(keys.contains(key(d)))kept.add(d);
+            }
+            result.put(type,kept);
+        }
+        return result;
     }
     /** Restore centers retained or larger dimensions and translates the complete change set to the selected ground elevation. */
     public void restore(World world,UUID actor,Owner owner,UUID operation,PlotRect destination,int groundY,HousingRules.Scope scope,boolean paid) {
@@ -298,10 +334,11 @@ public final class NativeRelocationCoordinator {
             HexRelocation.requireInside(movedPersonal,mask,target.x,target.z);
             int dx=move.dx(),dz=move.dz();
             var settings=com.hexvane.eterniamod.hexplots.HexPlotSettings.current();var roads=plugin.getInfrastructure().structureRoads(world.getName());
-            if(oldPlot.getBuilding()!=null){var h=oldPlot.getBuilding();var definition=plugin.getBuildingCatalog().get(h.getBuildingId());if(definition==null)throw new IllegalStateException("House catalog revision is missing");var prefab=com.hexvane.eterniamod.prefab.PrefabResolveUtil.resolvePrefabBuffer(definition.getPrefabPath());if(prefab==null)throw new IllegalStateException("House prefab is missing");var footprint=com.hexvane.eterniamod.placement.PlotFootprintUtil.computeFootprint(new Vector3i(h.getAnchorX()+dx,h.getAnchorY()+dy,h.getAnchorZ()+dz),h.resolveRotationYaw(),prefab);var structure=HexClaimRules.structure(destination,NativeHousingChecks.rect(footprint),roads,settings);if(!structure.valid())throw new IllegalStateException(structure.message());}
-            for(var prop:oldPlot.getProps()){var definition=plugin.getPropCatalog().get(prop.getPropId());if(definition!=null&&definition.getCategory().equals("addition")){var prefab=com.hexvane.eterniamod.prefab.PrefabResolveUtil.resolvePrefabBuffer(definition.getPrefabPath());if(prefab==null)throw new IllegalStateException("Addition prefab is missing");var footprint=com.hexvane.eterniamod.placement.PlotFootprintUtil.computeFootprint(new Vector3i(prop.getAnchorX()+dx,prop.getAnchorY()+dy,prop.getAnchorZ()+dz),prop.resolveRotationYaw(),prefab);var structure=HexClaimRules.structure(destination,NativeHousingChecks.rect(footprint),roads,settings);if(!structure.valid())throw new IllegalStateException(structure.message());}}
+            if(oldPlot.getBuilding()!=null){var h=oldPlot.getBuilding();var definition=plugin.getBuildingCatalog().get(h.getBuildingId());if(definition==null)throw new IllegalStateException("House catalog revision is missing");var prefab=com.hexvane.eterniamod.prefab.PrefabResolveUtil.resolvePrefabBuffer(definition.getPrefabPath());if(prefab==null)throw new IllegalStateException("House prefab is missing");var footprint=com.hexvane.eterniamod.placement.PlotFootprintUtil.computeFootprint(new Vector3i(h.getAnchorX()+dx,h.getAnchorY()+dy,h.getAnchorZ()+dz),h.resolveRotationYaw(),prefab);var structure=HexClaimRules.structure(destination,NativeHousingChecks.rect(footprint),roads,settings);if(!structure.valid())plugin.getLogger().atInfo().log("Plot %s set down closer to a road than a new house may stand: %s",oldPlot.getPlotId(),structure.message());}
+            for(var prop:oldPlot.getProps()){var definition=plugin.getPropCatalog().get(prop.getPropId());if(definition!=null&&definition.getCategory().equals("addition")){var prefab=com.hexvane.eterniamod.prefab.PrefabResolveUtil.resolvePrefabBuffer(definition.getPrefabPath());if(prefab==null)throw new IllegalStateException("Addition prefab is missing");var footprint=com.hexvane.eterniamod.placement.PlotFootprintUtil.computeFootprint(new Vector3i(prop.getAnchorX()+dx,prop.getAnchorY()+dy,prop.getAnchorZ()+dz),prop.resolveRotationYaw(),prefab);var structure=HexClaimRules.structure(destination,NativeHousingChecks.rect(footprint),roads,settings);if(!structure.valid())plugin.getLogger().atInfo().log("Plot %s addition set down closer to a road than usual: %s",oldPlot.getPlotId(),structure.message());}}
             // A full-height translated snapshot must never carve a protected road/portal column.
-            for(var value:movedPersonal.getArray("blocks")){var cell=value.asDocument();int x=target.x+cell.getInt32("x").getValue(),z=target.z+cell.getInt32("z").getValue();if(plugin.getInfrastructure().protectedColumn(world.getName(),x,z))throw new IllegalStateException("Packed content intersects a protected road or portal");}
+            // Columns a road or portal protects at the destination are left as they are; the rest of the plot is set down.
+            for(String type:List.of("blocks","fluids")){var kept=new BsonArray();for(var value:movedPersonal.getArray(type,new BsonArray())){var cell=value.asDocument();int x=target.x+cell.getInt32("x").getValue(),z=target.z+cell.getInt32("z").getValue();if(!plugin.getInfrastructure().protectedColumn(world.getName(),x,z))kept.add(cell);}movedPersonal.put(type,kept);}
             var newBaseline=store.save(operation+"-destination-baseline.json",movedBounds,destination,store.capture(world,movedBounds,mask,Set.of(),true,true));
             var merged=newBaseline.document().clone();overlay(merged,movedPersonal);
             var after=store.save(operation+"-destination.json",movedBounds,destination,merged);
@@ -387,7 +424,7 @@ public final class NativeRelocationCoordinator {
         // Cell restoration must not erase unrelated player entities; the caller removes the exact guild instance separately.
         var retainedEntities=full.get("entities");overlay(full,shifted);if(retainedEntities!=null)full.put("entities",retainedEntities);
     }
-    private static void removeEntities(World world,NativeSnapshotStore.Bounds b,ColumnMask mask,Set<UUID> known){var store=world.getEntityStore().getStore();for(var ref:NativeSnapshotStore.entities(world,b,mask)){var link=store.getComponent(ref,EterniaPlacedInstance.getComponentType());if(link==null||!known.contains(link.getInstanceId()))throw new IllegalStateException("Entity ownership changed before removal");NativeDecorativeEntities.remove(world,ref);}}
+    private static void removeEntities(World world,NativeSnapshotStore.Bounds b,ColumnMask mask,Set<UUID> known){var store=world.getEntityStore().getStore();for(var ref:NativeSnapshotStore.entities(world,b,mask)){var link=store.getComponent(ref,EterniaPlacedInstance.getComponentType());if(link==null||!known.contains(link.getInstanceId()))continue;NativeDecorativeEntities.remove(world,ref);}}
     public static String reference(SnapshotFiles.Saved file){return file.reference()+"#"+file.sha256();}
     public static SnapshotFiles.Saved parseReference(String value){int split=value.lastIndexOf('#');if(split<1)throw new IllegalArgumentException("Snapshot reference needs SHA-256");return new SnapshotFiles.Saved(value.substring(0,split),value.substring(split+1));}
     private static NativeSnapshotStore.Snapshot loadPointer(NativeSnapshotStore store,Path file)throws IOException{return store.load(parseReference(Files.readString(file)));}

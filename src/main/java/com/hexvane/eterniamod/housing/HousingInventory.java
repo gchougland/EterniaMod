@@ -74,14 +74,7 @@ public final class HousingInventory {
         var choices=new ArrayList<ChoicePage.Choice>();
         var definitions=List.copyOf(p.getBuildingCatalog().asMap().values());
         var owned=p.getServices().readView(new InventoryKey(owner,"houses",definitions.stream().map(d->d.getId()).toList()),java.time.Duration.ofSeconds(2),()->definitions.stream().filter(d->p.getServices().ownership().owns(owner,"eternia:house/"+d.getId())).map(d->d.getId()).collect(java.util.stream.Collectors.toUnmodifiableSet()));
-        for(var def:definitions)if(owned.contains(def.getId()))choices.add(new ChoicePage.Choice(def.getDisplayName()==null?com.hexvane.eterniamod.ui.UiPresentation.friendlyId(def.getId()):def.getDisplayName(),"Place",(ref,store)->{
-            var current=placementPlot(p,ref,store,player,owner,true);if(current==null)return;
-            if(!p.getServices().ownership().owns(owner,"eternia:house/"+def.getId()))return;
-            if(current.hasBuilding()){player.sendMessage(Message.raw("Pack the existing house before placing another style."));return;}
-            Vector3i anchor=BuildingPlacementSnapUtil.anchorAtPlayerFeet(ref,store);if(anchor==null)return;
-            var session=new BuildingPlacementSession(store.getExternalData().getWorld(),current.getPlotId(),anchor,0,def.getId());
-            BuildingPlacementValidator.findValidPosition(store.getExternalData().getWorld(),current,player.getUuid(),session,def,p);BuildingPlacementSessions.put(player.getUuid(),session);store.getComponent(ref,Player.getComponentType()).getPageManager().openCustomPage(ref,store,new BuildingPlacementPage(player,session).withReturnFrom(store.getComponent(ref,Player.getComponentType()).getPageManager().getCustomPage()));
-        },"eternia:house/"+def.getId()));
+        for(var def:definitions)if(owned.contains(def.getId()))choices.add(new ChoicePage.Choice(def.getDisplayName()==null?com.hexvane.eterniamod.ui.UiPresentation.friendlyId(def.getId()):def.getDisplayName(),"Place",(ref,store)->placeHouse(p,ref,store,player,owner,def.getId()),"eternia:house/"+def.getId()));
         ChoicePage.open(r,s,player,owner.kind()==Owner.Kind.GUILD?"Guild house styles":"Your house styles","Browse from anywhere. Stand on your "+(owner.kind()==Owner.Kind.GUILD?"guild estate":"personal plot")+" to place a house. Leave five blocks inside borders and away from roads.",choices);
     }
     private static void props(EterniaModPlugin p,Ref<EntityStore>r,Store<EntityStore>s,PlayerRef player,Owner owner) {
@@ -96,16 +89,30 @@ public final class HousingInventory {
                 if(placed>0)choices.add(new ChoicePage.Choice((def.getDisplayName()==null?UiPresentation.friendlyId(def.getId()):def.getDisplayName())+" · "+placed+" placed. Use the Packaging Wand to recover it.","My plots",(rr,ss)->MyPlotsPage.open(p,rr,ss,player),content));
                 continue;
             }
-            choices.add(new ChoicePage.Choice((def.getDisplayName()==null?com.hexvane.eterniamod.ui.UiPresentation.friendlyId(def.getId()):def.getDisplayName())+"  ·  "+available+" available, "+stored+" packed","Place",(ref,store)->{
-                var current=placementPlot(p,ref,store,player,owner,false);if(current==null)return;
-                if(def.getId().equals("guild_waygate")&&!com.hexvane.eterniamod.runtime.GuildWaygate.canPlace(p,current,owner)){player.sendMessage(Message.raw("Place one Guild Waygate on your guild estate after unlocking guild travel."));return;}
-                Vector3i anchor=BuildingPlacementSnapUtil.anchorInFrontOfPlayer(ref,store);if(anchor==null)return;
-                var session=new PropPlacementSession(store.getExternalData().getWorld(),current.getPlotId(),anchor,0,def.getId(),owner);
-                PropCarry.start(ref,store,player,session);
-            },content));
+            choices.add(new ChoicePage.Choice((def.getDisplayName()==null?com.hexvane.eterniamod.ui.UiPresentation.friendlyId(def.getId()):def.getDisplayName())+"  ·  "+available+" available, "+stored+" packed","Place",(ref,store)->placeProp(p,ref,store,player,owner,def.getId()),content));
         }
         boolean guild=owner.kind()==Owner.Kind.GUILD;
         ChoicePage.open(r,s,player,guild?"Guild decorations":"Decorations",guild?"Browse from anywhere. Stand on your guild estate or an attached member plot to place these, with permission from your guild.":"Browse from anywhere. Stand on your personal plot to place these decorations. Packed decorations keep their contents.",choices);
+    }
+    /** Starts placing house style {@code id} on the plot the player stands on (the placement page). */
+    public static void placeHouse(EterniaModPlugin p,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,Owner owner,String id){
+        var def=p.getBuildingCatalog().get(id);if(def==null)return;
+        var current=placementPlot(p,ref,store,player,owner,true);if(current==null)return;
+        if(!p.getServices().ownership().owns(owner,"eternia:house/"+id)){player.sendMessage(Message.raw("You do not own this house style yet."));return;}
+        if(current.hasBuilding()){player.sendMessage(Message.raw("Pack the existing house before placing another style."));return;}
+        Vector3i anchor=BuildingPlacementSnapUtil.anchorAtPlayerFeet(ref,store);if(anchor==null)return;
+        var session=new BuildingPlacementSession(store.getExternalData().getWorld(),current.getPlotId(),anchor,0,id);
+        BuildingPlacementValidator.findValidPosition(store.getExternalData().getWorld(),current,player.getUuid(),session,def,p);BuildingPlacementSessions.put(player.getUuid(),session);
+        var pages=store.getComponent(ref,Player.getComponentType()).getPageManager();
+        pages.openCustomPage(ref,store,new BuildingPlacementPage(player,session).withReturnFrom(pages.getCustomPage()));
+    }
+    /** Starts carrying decoration {@code id} on the plot the player stands on. */
+    public static void placeProp(EterniaModPlugin p,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,Owner owner,String id){
+        var def=p.getPropCatalog().get(id);if(def==null)return;
+        var current=placementPlot(p,ref,store,player,owner,false);if(current==null)return;
+        if(id.equals("guild_waygate")&&!com.hexvane.eterniamod.runtime.GuildWaygate.canPlace(p,current,owner)){player.sendMessage(Message.raw("Place one Guild Waygate on your guild estate after unlocking guild travel."));return;}
+        Vector3i anchor=BuildingPlacementSnapUtil.anchorInFrontOfPlayer(ref,store);if(anchor==null)return;
+        PropCarry.start(ref,store,player,new PropPlacementSession(store.getExternalData().getWorld(),current.getPlotId(),anchor,0,id,owner));
     }
     private static HubPlotRecord placementPlot(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,Owner owner,boolean house){
         var transform=store.getComponent(ref,com.hypixel.hytale.server.core.modules.entity.component.TransformComponent.getComponentType());

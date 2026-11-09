@@ -11,6 +11,14 @@
 - Packing up a building or plot no longer refuses because a door was opened, a light was lit or a crop grew. If a block really was swapped out, the message now says where.
 - Packing up your house now packs the decorations and additions inside it for you first, instead of asking you to do it.
 - Plot borders glow all the way around, including over paths, planks and paving, along small steps in the ground and beside fences.
+- Moving your plot no longer fails because the land changed shape, a road was built next to it, or an animal or dropped item was standing on it.
+- Moving your plot steps you onto the road beside it instead of sending you to another world.
+- Records now shows the Journal tabs along the top, like every other page.
+
+### Changed
+
+- Houses and decorations in Collections have a Place button. Stand on your plot and press it to start placing.
+- The Home tab in the Journal opens your housing menu straight away.
 
 ## [1.1.0]
 

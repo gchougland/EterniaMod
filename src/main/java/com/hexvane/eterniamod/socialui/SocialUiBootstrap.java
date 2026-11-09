@@ -64,6 +64,14 @@ public final class SocialUiBootstrap {
         if (registration != null && !registration.closed) registration.show(ref, store, player, EterniaServicesPage.Desk.JOURNAL, EterniaServicesPage.Section.COLLECTION, false, false);
     }
 
+    /** The Journal open at {@code section}; Home opens the housing menu, as the Journal's own Home tab does. */
+    public static void openJournal(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServicesPage.Section section) {
+        Registration registration = active;
+        if (registration == null || registration.closed) return;
+        if (section == EterniaServicesPage.Section.HOUSING) { registration.actions.perform(SocialUiActions.Action.HOUSING_INVENTORY, ref, store, player); return; }
+        registration.show(ref, store, player, EterniaServicesPage.Desk.JOURNAL, section, false, false);
+    }
+
     public static final class Registration implements AutoCloseable {
         final EterniaServices services;
         final SocialUiActions actions;

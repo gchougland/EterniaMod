@@ -103,6 +103,8 @@ public final class NativeTravelService {
     /** Home first, then the empty plot, then wherever a player without a plot belongs. */
     public void returnHome(PlayerRef player){travel(player,homeLanding(player.getUuid()));}
     public void returnHub(PlayerRef player){travel(player,hubLanding());}
+    /** Steps a player to the nearest safe spot by {@code point} in {@code world} (no world change). */
+    public CompletableFuture<Boolean> stepTo(PlayerRef player,World world,Vector3d point){return arrive(player,world,point,null);}
     private CompletableFuture<Landing> homeLanding(UUID player) {
         var property=plugin.getServices().housing().property(Owner.player(player)).orElse(null);
         var slot=property==null?null:property.slot();var location=property==null?null:property.location();

@@ -49,7 +49,7 @@ $T.@CodexScreen {
       Group { Anchor: (Width: 180, Height: 40, Left: 0); Background: "Theme/Surfaces/EterniaWordmark.png"; }
       Label #Kicker { Anchor: (Height: 22); Style: @KickerStyle; }
     }
-    Group { FlexWeight: 1; }
+    Group #Navigation { FlexWeight: 1; LayoutMode: Center; }
     Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30, Right: 10); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
     $T.@CodexClose #Close {}
   }

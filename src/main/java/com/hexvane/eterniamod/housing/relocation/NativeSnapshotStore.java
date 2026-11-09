@@ -85,7 +85,8 @@ public final class NativeSnapshotStore {
             // Packing Wand highlights are temporary copies, never part of a plot.
             if(store.getComponent(ref,com.hexvane.eterniamod.placement.PropPackHighlight.Ghost.getComponentType())!=null)continue;
             var link=store.getComponent(ref,EterniaPlacedInstance.getComponentType());
-            if(link==null||!allowedInstances.contains(link.getInstanceId()))throw new IllegalStateException("Unproven entity in snapshot; relocate it or record its provenance first");
+            // Creatures, dropped items and anything else that is not one of this plot's decorations stay where they are.
+            if(link==null||!allowedInstances.contains(link.getInstanceId()))continue;
             var dirty=store.getComponent(ref,com.hypixel.hytale.server.core.entity.Dirty.getComponentType());if(dirty!=null&&dirty.isSaving())throw new StorageBusy("Decorative entity storage is in flight; retry after it completes");
             Holder<EntityStore> holder=NativeDecorativeEntities.capture(store.copyEntity(ref));selection.addEntityFromWorld(holder);
         }

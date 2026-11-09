@@ -256,6 +256,10 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         return view.document.isEmpty() ? Message.raw(view.description) : Message.translation(view.document).param("player", playerRef.getUsername());
     }
 
+    /** The Journal's top tabs in order, for pages outside the Journal frame (Records) that show the same bar. */
+    public static List<Section> journalSections(){return Desk.JOURNAL.sections;}
+    public static String journalTabLabel(Section entry){return switch(entry){case HOUSING->"Home";case MAIL->"Mail";case SEASON->"Seasons";default->entry.title;};}
+    public static String journalTabIcon(Section entry){return sectionIcon(entry);}
     private String tabLabel(Section entry){return switch(entry){case HOUSING->"Home";case MAIL->"Mail";case SEASON->"Seasons";default->entry.title;};}
     private String sectionName(Section entry){return desk==Desk.JOURNAL?tabLabel(entry):entry.title;}
     private static String sectionIcon(Section entry){return switch(entry){case GREETER,WORLDS->"worlds";case HOUSING->"housing";case GUILD->"guild";case MAIL->"mail";case SHOP->"market";case QUESTS->"quests";case SEASON->"season";case COLLECTION->"collection";case STORE->"crown";case COMING_SOON->"games";case RULES->"charter";};}
@@ -301,6 +305,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if(route.equals("records")){store.getExternalData().getWorld().execute(()->{if(ref.isValid()&&!isDismissed())com.hexvane.eterniamod.stats.StatsPage.open(ref,store,playerRef,playerRef.getUuid(),playerRef.getUsername());});return;}
         if (route.startsWith("nav:")) {
             if(route.equals("nav:WORLDS")){registration.actions.perform(SocialUiActions.Action.WORLD_SELECT,ref,store,playerRef);return;}
+            // Home goes straight to the housing menu; the old summary screen was an extra click.
+            if(route.equals("nav:HOUSING")&&desk==Desk.JOURNAL){registration.actions.perform(SocialUiActions.Action.HOUSING_INVENTORY,ref,store,playerRef);return;}
             section = Section.valueOf(route.substring(4)); deskHome = false; previewContent = ""; mode = ""; focus = ""; page = 0; one = two = three = ""; draftCapabilities = null; pending = null;
             refresh(ref, store, ""); return;
         }
@@ -345,6 +351,14 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (route.startsWith("collection_view:")) { mode = route.substring(16); focus = ""; previewContent = ""; page = 0; refresh(ref, store, ""); return; }
         if (route.startsWith("collection_preview:")) { previewContent = route.substring(19); generation++; rebuild(); return; }
         if (route.equals("collection_preview_close")) { previewContent = ""; generation++; rebuild(); return; }
+        if (route.startsWith("collection_place:")) {
+            String content = route.substring(17), id = content.substring(content.indexOf('/') + 1);
+            Owner owner = Owner.player(playerRef.getUuid());
+            var plugin = com.hexvane.eterniamod.EterniaModPlugin.get();
+            if (content.startsWith("eternia:house/")) com.hexvane.eterniamod.housing.HousingInventory.placeHouse(plugin, ref, store, playerRef, owner, id);
+            else com.hexvane.eterniamod.housing.HousingInventory.placeProp(plugin, ref, store, playerRef, owner, id);
+            return;
+        }
         if (route.startsWith("pet_view:")) { mode = "pet"; focus = route.substring(9); page = 0; refresh(ref, store, ""); return; }
         if (Set.of("guild_leave", "guild_assign", "guild_remove", "guild_transfer", "role_save", "mail_archive").contains(route)) {
             String explanation = switch (route) {
@@ -588,13 +602,15 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 String detail=item.contentId().equals("eternia:convenience/teleporter")?"\nUse Home Waygate in the Architect's Ledger while on your plot. Nothing needs placing.":"";
                 String name=definition == null ? UiPresentation.contentName(item.contentId()) : definition.name();
                 String availability=item.status()+(item.earliestExpiry()==null?"":" • Some expire on "+item.earliestExpiry());
-                boolean model=com.hexvane.eterniamod.ui.PrefabCardPreview.supports(item.contentId());
-                rows.add(Row.card(name,availability,model?"Preview":"",model?"collection_preview:"+item.contentId():"",item.contentId()));
+                // Houses and decorations are placed straight from here, on the plot the player stands on.
+                boolean house=item.contentId().startsWith("eternia:house/")&&item.unlocked();
+                boolean prop=item.contentId().startsWith("eternia:prop/")&&item.available()+item.packed()>0;
+                rows.add(Row.card(name,availability,house||prop?"Place":"",house||prop?"collection_place:"+item.contentId():"",item.contentId()));
             }
             String category=input.mode.isEmpty()?"houses":input.mode;
             return new View("Your "+category, switch(category){
-                case "houses"->"Homes you can build. Open Housing inventory to choose one for your plot.";
-                case "decorations"->"Furniture, garden treasures and additions for your home.";
+                case "houses"->"Homes you can build. Stand on your plot and press Place.";
+                case "decorations"->"Furniture, garden treasures and additions for your home. Stand on your plot and press Place.";
                 case "materials"->"Palettes and paths to make your home your own.";
                 default->"Your plot upgrades, waygates and passes.";
             }, rows.isEmpty()?List.of(Row.info("Nothing in this collection yet.")):rows,noFields(),

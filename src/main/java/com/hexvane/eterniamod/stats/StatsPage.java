@@ -64,11 +64,26 @@ public final class StatsPage extends EterniaInteractiveCustomUIPage<ChoicePage.D
         bindHome(events);
         apply(commands, StatsView.commands(model, catalog, WorldDisplayNames::name));
         events.addEventBinding(CustomUIEventBindingType.Activating, "#Close", new EventData().append("Action", "Close"), false);
+        // The same tabs as the Journal, with Records selected.
+        var sections = com.hexvane.eterniamod.socialui.EterniaServicesPage.journalSections();
+        for (int i = 0; i < sections.size(); i++) {
+            var section = sections.get(i);
+            String tab = com.hexvane.eterniamod.ui.JournalChrome.navTab(commands, i, com.hexvane.eterniamod.socialui.EterniaServicesPage.journalTabLabel(section), com.hexvane.eterniamod.socialui.EterniaServicesPage.journalTabIcon(section), false, false);
+            events.addEventBinding(CustomUIEventBindingType.Activating, tab, new EventData().append("Action", "nav:" + section.name()), false);
+        }
+        com.hexvane.eterniamod.ui.JournalChrome.navTab(commands, sections.size(), "Records", "board", true, false);
     }
 
     @Override public void handleDataEvent(Ref<EntityStore> ref, Store<EntityStore> store, ChoicePage.Data data) {
         if (data.action == null || isDismissed()) return;
-        store.getExternalData().getWorld().execute(() -> { if (!isDismissed() && ref.isValid() && "Close".equals(data.action)) close(); });
+        store.getExternalData().getWorld().execute(() -> {
+            if (isDismissed() || !ref.isValid()) return;
+            if ("Close".equals(data.action)) { close(); return; }
+            if (data.action.startsWith("nav:")) {
+                try { com.hexvane.eterniamod.socialui.SocialUiBootstrap.openJournal(ref, store, playerRef, com.hexvane.eterniamod.socialui.EterniaServicesPage.Section.valueOf(data.action.substring(4))); }
+                catch (IllegalArgumentException unknown) { /* not a Journal section */ }
+            }
+        });
     }
 
     /** Turns the view's plain values into UI commands. */

@@ -31,16 +31,41 @@ public final class VoluntaryPlotMover implements AutoCloseable {
             boolean occupied=false;
             for(var ref:NativeSnapshotStore.entities(world,NativeRelocationCoordinator.bounds(plot))){
                 var player=ref.getStore().getComponent(ref,PlayerRef.getComponentType());
-                if(player!=null){plugin.getTravel().returnHub(player);occupied=true;}
+                if(player!=null){stepOff(world,plot,player);occupied=true;}
             }
             if(occupied){
-                if(attempt>=15)throw new IllegalStateException("The plot could not be cleared. Check the hub arrival point and try again.");
-                if(attempt==0)actor.sendMessage(Message.raw("Returning everyone in the plot to the hub before packing."));
+                if(attempt>=15)throw new IllegalStateException("Everyone needs to step off the plot before it can be packed. Walk onto the road and try again.");
+                if(attempt==0)actor.sendMessage(Message.raw("Stepping everyone onto the road beside the plot before packing."));
                 scheduler.schedule(()->world.execute(()->step(world,owner,actor,operation,attempt+1)),1,TimeUnit.SECONDS);return;
             }
             plugin.getRelocation().pack(world,owner,operation,false);
             actor.sendMessage(Message.raw("Your furnished plot is packed. Use your plot deed in a world with housing enabled to restore it."));pending.remove(owner);
         }catch(RuntimeException failure){pending.remove(owner);actor.sendMessage(Message.raw(failure.getMessage()==null?"The plot could not be moved.":failure.getMessage()));}
+    }
+    /**
+     * Moves a player standing on the plot onto the nearest road beside it, in the same world. Falls back to the hub
+     * only when the world has no road to stand on.
+     */
+    private void stepOff(World world,com.hexvane.eterniamod.hub.HubPlotRecord plot,PlayerRef player){
+        var ref=player.getReference();
+        var transform=ref==null?null:ref.getStore().getComponent(ref,com.hypixel.hytale.server.core.modules.entity.component.TransformComponent.getComponentType());
+        var view=com.hexvane.eterniamod.hexplots.HexLand.view(plugin,world).orElse(null);
+        if(transform==null||view==null||view.streetCells().isEmpty()){plugin.getTravel().returnHub(player);return;}
+        var at=transform.getPosition();var lattice=view.lattice();
+        com.hexvane.eterniamod.hexplots.HexCoord best=null;double bestDistance=Double.MAX_VALUE;
+        for(var cell:view.streetCells()){double dx=lattice.centerX(cell)-at.x,dz=lattice.centerZ(cell)-at.z,d=dx*dx+dz*dz;if(d<bestDistance){bestDistance=d;best=cell;}}
+        int x=(int)Math.floor(lattice.centerX(best)),z=(int)Math.floor(lattice.centerZ(best));
+        int y=surface(world,x,z,(int)Math.floor(at.y));
+        var point=new org.joml.Vector3d(x+.5,y,z+.5);
+        plugin.getTravel().stepTo(player,world,point).thenAccept(ok->{if(!ok)plugin.getTravel().returnHub(player);});
+    }
+    /** The first free cell above solid ground near {@code fromY} at column (x, z). */
+    private static int surface(World world,int x,int z,int fromY){
+        for(int y=Math.min(fromY+24,318);y>Math.max(fromY-40,1);y--){
+            var below=com.hexvane.eterniamod.world.ChunkSectionBlockUtil.blockType(world,x,y-1,z);
+            if(below!=null&&below.getMaterial().name().equals("Solid")&&com.hexvane.eterniamod.world.ChunkSectionBlockUtil.blockId(world,x,y,z)==0)return y;
+        }
+        return fromY;
     }
     @Override public void close(){scheduler.shutdownNow();pending.clear();}
 }
