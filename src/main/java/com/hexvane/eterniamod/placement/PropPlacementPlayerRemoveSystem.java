@@ -41,6 +41,7 @@ public final class PropPlacementPlayerRemoveSystem extends RefSystem<EntityStore
             return;
         }
         UUID placerUuid = uc.getUuid();
+        PropCarry.forget(placerUuid);
         PropPlacementSession session = PropPlacementSessions.get(placerUuid);
         if (session != null) {
             PlayerRef pr = store.getComponent(ref, PlayerRef.getComponentType());

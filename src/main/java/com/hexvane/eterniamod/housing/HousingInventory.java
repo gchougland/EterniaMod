@@ -54,14 +54,8 @@ public final class HousingInventory {
             }
             BuildingPlacementOpenHelper.cancelActive(player,player.getUuid());
         }
-        var prop=PropPlacementSessions.get(player.getUuid());
-        if(prop!=null&&prop.getWorld()==store.getExternalData().getWorld()) {
-            var plot=plot(plugin,store,prop.getPlotId());
-            if(plot!=null&&HousingCustody.can(plugin,plot,player.getUuid(),prop.getCustodyOwner()==null?HousingAccess.owner(plot):prop.getCustodyOwner(),HousingCustody.PLACE)) {
-                store.getComponent(ref,Player.getComponentType()).getPageManager().openCustomPage(ref,store,new PropPlacementPage(player,prop));return true;
-            }
-            PropPlacementOpenHelper.cancelActive(player,player.getUuid());
-        }
+        // A decoration being carried stays in hand while the menus are open; an orphaned session is cleared.
+        if(PropPlacementSessions.get(player.getUuid())!=null&&!PropCarry.carrying(ref,store))PropPlacementOpenHelper.cancelActive(player,player.getUuid());
         return PlotClaimPage.resumeDraft(ref,store,player,plugin);
     }
     private static HubPlotRecord plot(EterniaModPlugin p,Store<EntityStore>s,UUID id){return EterniaWorldRegistries.getOrCreateHubPlotManager(s.getExternalData().getWorld(),p).getPlot(id);}
@@ -96,7 +90,7 @@ public final class HousingInventory {
                 if(def.getId().equals("guild_waygate")&&!com.hexvane.eterniamod.runtime.GuildWaygate.canPlace(p,current,owner)){player.sendMessage(Message.raw("Place one Guild Waygate on your guild estate after unlocking guild travel."));return;}
                 Vector3i anchor=BuildingPlacementSnapUtil.anchorInFrontOfPlayer(ref,store);if(anchor==null)return;
                 var session=new PropPlacementSession(store.getExternalData().getWorld(),current.getPlotId(),anchor,0,def.getId(),owner);
-                PropPlacementSessions.put(player.getUuid(),session);store.getComponent(ref,Player.getComponentType()).getPageManager().openCustomPage(ref,store,new PropPlacementPage(player,session).withReturnFrom(store.getComponent(ref,Player.getComponentType()).getPageManager().getCustomPage()));
+                PropCarry.start(ref,store,player,session);
             },content));
         }
         boolean guild=owner.kind()==Owner.Kind.GUILD;

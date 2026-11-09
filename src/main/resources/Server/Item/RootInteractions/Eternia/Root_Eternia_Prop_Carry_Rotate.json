@@ -1,0 +1,9 @@
+{
+  "RequireNewClick": true,
+  "Interactions": [
+    {
+      "Type": "EterniaPropCarry",
+      "Action": "Rotate"
+    }
+  ]
+}

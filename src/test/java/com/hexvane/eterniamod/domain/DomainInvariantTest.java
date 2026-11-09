@@ -102,6 +102,14 @@ class DomainInvariantTest {
         services.guilds().leave(member);assertFalse(services.guilds().can(member,guild,"guild.view"));clock.advance(Duration.ofHours(48));services.guilds().acceptInvite(member,services.guilds().invite(leader,member));
         assertEquals(1,services.guilds().leaseDueDepartures("worker",10).size());
     }
+    @Test void acceptInviteWithoutCodeJoinsTheOpenInvitation(){
+        UUID leader=account("Leader"),member=account("Member"),stranger=account("Stranger");UUID guild=services.guilds().create(leader,"Guild","create").id();
+        var none=assertThrows(DomainException.class,()->services.guilds().acceptInvite(member,""));assertEquals(DomainException.Code.NOT_FOUND,none.code());
+        services.guilds().invite(leader,member);
+        assertThrows(DomainException.class,()->services.guilds().acceptInvite(stranger,"  "));
+        var bad=assertThrows(DomainException.class,()->services.guilds().acceptInvite(member,"not a code"));assertEquals(DomainException.Code.NOT_FOUND,bad.code());
+        assertEquals(guild,services.guilds().acceptInvite(member,"").guildId());assertTrue(services.guilds().can(member,guild,"guild.view"));
+    }
     @Test void rejoinBeforeDepartureDeadlineCancelsPacking(){
         UUID leader=account("Leader"),member=account("Member");UUID guild=services.guilds().create(leader,"Guild","create").id();services.guilds().acceptInvite(member,services.guilds().invite(leader,member));
         services.housing().beginClaim(Owner.player(member),UUID.randomUUID(),UUID.randomUUID(),guild);services.guilds().leave(member);clock.advance(Duration.ofHours(47));services.guilds().acceptInvite(member,services.guilds().invite(leader,member));clock.advance(Duration.ofHours(2));assertTrue(services.guilds().leaseDueDepartures("worker",10).isEmpty());

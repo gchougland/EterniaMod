@@ -18,7 +18,7 @@ import java.util.concurrent.*;
 
 public final class PlotClaimPage extends EterniaInteractiveCustomUIPage<PlotClaimPage.Data> {
     /** A draft only resumes near where it was left, so the deed always plans land where the player stands. */
-    private record Draft(String world,int x,int y,int z,boolean paid,boolean rectangle,HousingRules.Scope scope){
+    private record Draft(String world,int x,int y,int z,boolean paid,int shape,HousingRules.Scope scope){
         private static final int RESUME_RANGE=48;
         boolean nearby(String worldName,double px,double pz){return world.equals(worldName)&&Math.abs(px-x)<=RESUME_RANGE&&Math.abs(pz-z)<=RESUME_RANGE;}
     }
@@ -31,7 +31,9 @@ public final class PlotClaimPage extends EterniaInteractiveCustomUIPage<PlotClai
     }
     private static final ScheduledExecutorService TIMER=Executors.newSingleThreadScheduledExecutor(Thread.ofPlatform().daemon(true).name("eternia-claim-preview").factory());
     private final EterniaModPlugin plugin;private final NativeClaimCoordinator claims;private final UUID operation=UUID.randomUUID();
-    private PlotRect rect;private int centerX,centerZ,groundY;private boolean paid,rectangle,bird,review,submitted;
+    private PlotRect rect;private int centerX,centerZ,groundY;private boolean paid,bird,review,submitted;
+    /** Guild estate shape: 0 square, 1 long from north to south, 2 long from east to west. Other plots are square. */
+    private int shape;
     private HousingRules.Scope scope=HousingRules.Scope.PUBLIC;
     private HousingRules.Result status=new HousingRules.Result(false,"loading","Checking your plot access. You can position the grid while this loads.");private ScheduledFuture<?> preview;
     private ClaimEligibility eligibility;private boolean loading;private long lastRefresh,revision;private Long reviewRequest;
@@ -49,7 +51,7 @@ public final class PlotClaimPage extends EterniaInteractiveCustomUIPage<PlotClai
         if(transform==null||p==null)return;var pos=transform.getPosition();
         var next=new PlotClaimPage(player,plugin,(int)Math.floor(pos.x),(int)Math.floor(pos.y),(int)Math.floor(pos.z));
         var draft=DRAFTS.get(player.getUuid());
-        if(draft!=null&&draft.nearby(store.getExternalData().getWorld().getName(),pos.x,pos.z)){next.centerX=draft.x;next.groundY=draft.y;next.centerZ=draft.z;next.paid=draft.paid;next.rectangle=draft.rectangle;next.scope=draft.scope;next.resize();}
+        if(draft!=null&&draft.nearby(store.getExternalData().getWorld().getName(),pos.x,pos.z)){next.centerX=draft.x;next.groundY=draft.y;next.centerZ=draft.z;next.paid=draft.paid;next.shape=draft.shape;next.scope=draft.scope;next.resize();}
         p.getPageManager().openCustomPage(ref,store,next);
     }
     public static void openNew(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,EterniaModPlugin plugin,boolean guild){
@@ -57,7 +59,8 @@ public final class PlotClaimPage extends EterniaInteractiveCustomUIPage<PlotClai
         var next=new PlotClaimPage(player,plugin,(int)Math.floor(pos.x),(int)Math.floor(pos.y),(int)Math.floor(pos.z));next.scope=guild?HousingRules.Scope.GUILD_ROOT:HousingRules.Scope.PUBLIC;next.resize();
         DRAFTS.remove(player.getUuid());store.getComponent(ref,Player.getComponentType()).getPageManager().openCustomPage(ref,store,next);
     }
-    private void resize(){int size=scope==HousingRules.Scope.GUILD_ROOT?(paid?64:48):(paid?32:24);rect=scope==HousingRules.Scope.GUILD_ROOT&&rectangle?PlotRect.centered(centerX,centerZ,paid?32:36,paid?128:64):PlotRect.centered(centerX,centerZ,size,size);review=false;reviewRequest=null;revision++;}
+    private void resize(){int size=scope==HousingRules.Scope.GUILD_ROOT?(paid?64:48):(paid?32:24);int shortEdge=paid?32:36,longEdge=paid?128:64;boolean estate=scope==HousingRules.Scope.GUILD_ROOT;
+        rect=estate&&shape==1?PlotRect.centered(centerX,centerZ,shortEdge,longEdge):estate&&shape==2?PlotRect.centered(centerX,centerZ,longEdge,shortEdge):PlotRect.centered(centerX,centerZ,size,size);review=false;reviewRequest=null;revision++;}
     @Override public void build(Ref<EntityStore> ref,UICommandBuilder commands,UIEventBuilder events,Store<EntityStore> store) {
         commands.append("EterniaMod/PlotClaimPage.ui");bindHome(events);
         refreshStatus(store);
@@ -102,6 +105,9 @@ public final class PlotClaimPage extends EterniaInteractiveCustomUIPage<PlotClai
         c.set("#Confirm.Text",submitted?"Claiming...":reviewRequest!=null?"Checking...":review?"Confirm claim":"Review claim");
         c.set("#Confirm.Disabled",submitted||reviewRequest!=null||status==null||!status.valid()&&!status.code().equals("unavailable"));
         c.set("#Size.Text",paid?"Larger size":"Free size");
+        boolean estate=scope==HousingRules.Scope.GUILD_ROOT;
+        c.set("#Shape.Text",!estate?"Square plot":shape==1?"Shape: long north to south":shape==2?"Shape: long east to west":"Shape: square");
+        c.set("#Shape.Disabled",!estate);
         c.set("#Camera.Text",bird?"Return to player":"Bird’s-eye view");
     }
     @Override public void handleDataEvent(Ref<EntityStore> ref,Store<EntityStore> store,Data data) {
@@ -116,7 +122,7 @@ public final class PlotClaimPage extends EterniaInteractiveCustomUIPage<PlotClai
                     case "Member" -> {scope=HousingRules.Scope.GUILD_MEMBER;resize();}
                     case "Guild" -> {scope=HousingRules.Scope.GUILD_ROOT;resize();}
                     case "Size" -> {paid=!paid;resize();}
-                    case "Shape" -> {rectangle=!rectangle;resize();}
+                    case "Shape" -> {if(scope!=HousingRules.Scope.GUILD_ROOT)return;shape=(shape+1)%3;resize();}
                     case "North" -> {centerZ--;resize();} case "South" -> {centerZ++;resize();}
                     case "West" -> {centerX--;resize();} case "East" -> {centerX++;resize();}
                     case "Center" -> {var t=store.getComponent(ref,TransformComponent.getComponentType());if(t!=null){centerX=(int)Math.floor(t.getPosition().x);centerZ=(int)Math.floor(t.getPosition().z);groundY=(int)Math.floor(t.getPosition().y);resize();}}
@@ -148,7 +154,7 @@ public final class PlotClaimPage extends EterniaInteractiveCustomUIPage<PlotClai
             playerRef.sendMessage(Message.raw(status.message()));if(!isDismissed()){var c=new UICommandBuilder();updateText(c);sendUpdate(c,null,false);drawGrid(true);}plugin.getLogger().atWarning().withCause(error).log("Plot claim did not finish");
         }
     }
-    @Override public void onDismiss(Ref<EntityStore> ref,Store<EntityStore> store){if(!discarded&&!submitted)DRAFTS.put(playerRef.getUuid(),new Draft(store.getExternalData().getWorld().getName(),centerX,groundY,centerZ,paid,rectangle,scope));if(preview!=null)preview.cancel(false);playerRef.getPacketHandler().write(new com.hypixel.hytale.protocol.packets.player.ClearDebugShapes());BuildingPlacementCameraUtil.resetToPlayerCamera(playerRef);super.onDismiss(ref,store);}
+    @Override public void onDismiss(Ref<EntityStore> ref,Store<EntityStore> store){if(!discarded&&!submitted)DRAFTS.put(playerRef.getUuid(),new Draft(store.getExternalData().getWorld().getName(),centerX,groundY,centerZ,paid,shape,scope));if(preview!=null)preview.cancel(false);playerRef.getPacketHandler().write(new com.hypixel.hytale.protocol.packets.player.ClearDebugShapes());BuildingPlacementCameraUtil.resetToPlayerCamera(playerRef);super.onDismiss(ref,store);}
     public static final class Data {
         public String action;
         public static final BuilderCodec<Data> CODEC=BuilderCodec.builder(Data.class,Data::new).append(new KeyedCodec<>("Action",Codec.STRING),(d,v)->d.action=v,d->d.action).add().build();

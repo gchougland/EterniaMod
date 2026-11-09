@@ -404,7 +404,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private String mutate(String route, Input input, String receipt) {
         switch (route) {
             case "guild_create" -> { services.guilds().create(actor, input.one.trim(), receipt); return "Guild created. Open Guild again to manage members and permissions."; }
-            case "guild_invite" -> { String invite = services.guilds().invite(actor, account(input.one)); return "Invitation created: " + invite; }
+            case "guild_invite" -> { services.guilds().invite(actor, account(input.one)); return "Invitation sent. They can open Guild in their Journal and press Accept invite."; }
             case "guild_accept" -> { services.guilds().acceptInvite(actor, input.two.trim()); return "Guild invitation accepted. Open Guild to see your membership."; }
             case "guild_assign" -> { services.guilds().assignRole(actor, input.mode.equals("member")?UUID.fromString(input.focus):account(input.one), input.two.trim()); return "Member role updated."; }
             case "guild_remove" -> { services.guilds().remove(actor,UUID.fromString(input.focus));return "Member removed. Any attached-plot return deadline is now recorded."; }
@@ -637,7 +637,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
 
     private View guildView(Input input) {
         var membership = services.guilds().membership(actor);
-        if (membership.isEmpty()) return new View("Find your guild", "Create a guild or accept an invitation. Five current members are needed to claim a guild house plot.",
+        if (membership.isEmpty()) return new View("Find your guild", "Create a guild, or press Accept invite to join the guild that invited you. Five current members are needed to claim a guild house plot.",
             List.of(Row.info("Guilds provide shared housing, roles, trading shortcuts and member conveniences.")), new String[] {"Guild name", "Invitation code", ""},
             buttons("Create guild", "guild_create", "Accept invite", "guild_accept", "Refresh", "refresh"), null);
         UUID guild = membership.get().guildId();

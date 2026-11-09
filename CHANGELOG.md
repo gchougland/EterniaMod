@@ -22,9 +22,15 @@
 - The Crown treasury says clearly, before you pay, that Crowns are digital goods and all sales are final.
 - The website now sends visitors who type www in front of the address to the main site.
 
+### Changed
+
+- Decorations are placed by hand. Choose Place in your Decorations and you carry it as a box while a see through preview follows where you look. Right click sets it down, R turns it and Q puts it away. A small panel shows whether it fits there.
+
 ### Fixed
 
 - The game is less likely to crash right after joining near busy parts of town.
+- Accept invite on the Guild page works without typing a code and joins the guild that invited you.
+- The Change shape button on the plot claim page now switches a guild estate between square and long shapes. Personal plots say they are always square.
 
 ## [1.0.0]
 

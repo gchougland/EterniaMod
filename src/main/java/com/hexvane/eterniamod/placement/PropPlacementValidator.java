@@ -44,7 +44,7 @@ public final class PropPlacementValidator {
             return "prefabMissing";
         }
         Vector3i propAnchor = def.resolvePrefabAnchorWorld(previewSignAnchor, prefabYaw);
-        HubPlotFootprint propFp = PlotFootprintUtil.computeFootprint(propAnchor, prefabYaw, buf);
+        HubPlotFootprint propFp = PlotFootprintUtil.computePropFootprint(propAnchor, prefabYaw, buf);
         HubPlotFootprint plotFp = plot.getFootprint();
         if (def.getCategory().equals("addition")) {
             if (!plot.hasBuilding()) return "needsHouse";

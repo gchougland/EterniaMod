@@ -1,0 +1,12 @@
+$T = "Theme/Citadel.ui";
+Group {
+  Anchor: (Left: 24, Top: 110, Width: 320, Height: 250);
+  Background: $T.@JournalPanelSurface;
+  Padding: (Full: 16);
+  LayoutMode: Top;
+  Label { Anchor: (Height: 22, Bottom: 2); Text: "PLACING"; Style: $T.@SubtitleStyle; }
+  Label #Name { Anchor: (Height: 26, Bottom: 6); Text: ""; Style: (FontSize: 18, TextColor: #d8b66b, RenderBold: true); }
+  Label #Ready { Anchor: (Height: 40, Bottom: 6); Text: "Fits here."; Style: (FontSize: 15, TextColor: #85c5b3, Wrap: true); }
+  Label #Problem { Anchor: (Height: 40, Bottom: 6); Text: ""; Visible: false; Style: (FontSize: 15, TextColor: #e08a6a, Wrap: true); }
+  Group #ControlRows { LayoutMode: Top; }
+}

@@ -8,7 +8,6 @@ import com.hexvane.eterniamod.hub.HubPlotRecord;
 import com.hexvane.eterniamod.hub.HubPlotVisibilityOverlay;
 import com.hexvane.eterniamod.prop.PropDefinition;
 import com.hexvane.eterniamod.prop.PropItemMetadata;
-import com.hexvane.eterniamod.ui.PropPlacementPage;
 import com.hypixel.hytale.component.ComponentAccessor;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
@@ -45,17 +44,6 @@ public final class PropPlacementOpenHelper {
         }
         World world = store.getExternalData().getWorld();
         UUID playerUuid = uc.getUuid();
-        PropPlacementSession existing = PropPlacementSessions.get(playerUuid);
-        if (existing != null && existing.getWorld().getName().equals(world.getName())) {
-            ItemStack heldForSession = InventoryComponent.getItemInHand(store, ref);
-            String heldPropId =
-                !ItemStack.isEmpty(heldForSession) ? PropItemMetadata.readPropId(heldForSession) : null;
-            if (heldPropId == null || heldPropId.equals(existing.getPropId())) {
-                return new PropPlacementPage(playerRef, existing);
-            }
-            PropPlacementSessions.remove(playerUuid);
-            BuildingPlacementClientPrefabPreview.clearSessionCache(existing);
-        }
         EterniaModPlugin plugin = EterniaModPlugin.get();
         if (plugin == null) {
             playerRef.sendMessage(Message.translation("eterniamod_common.eterniamod.common.needPropItem"));
@@ -98,10 +86,11 @@ public final class PropPlacementOpenHelper {
             playerRef.sendMessage(Message.translation("eterniamod_common.eterniamod.common.lookAtBlock"));
             return null;
         }
-        BuildingPlacementClientPrefabPreview.hide(playerRef);
         PropPlacementSession session = new PropPlacementSession(world, plot.getPlotId(), anchor, 0, propId,custody);
-        PropPlacementSessions.put(playerUuid, session);
-        return new PropPlacementPage(playerRef, session);
+        // Old Prop Kit items start the same carry mode as the decorations menu. Runs inside the interaction tick,
+        // so the carried block is added on the world thread afterwards.
+        world.execute(() -> { if (ref.isValid()) PropCarry.start(ref, store, playerRef, session); });
+        return null;
     }
 
     public static void cancelActive(@Nonnull PlayerRef playerRef, @Nonnull UUID playerUuid) {

@@ -27,6 +27,9 @@ public final class PropPlacementBootstrap {
         plugin
             .getCodecRegistry(Interaction.CODEC)
             .register("EterniaPackageProp", EterniaPackagePropInteraction.class, EterniaPackagePropInteraction.CODEC);
+        plugin
+            .getCodecRegistry(Interaction.CODEC)
+            .register("EterniaPropCarry", com.hexvane.eterniamod.interaction.EterniaPropCarryInteraction.class, com.hexvane.eterniamod.interaction.EterniaPropCarryInteraction.CODEC);
         OpenCustomUIInteraction.registerCustomPageSupplier(
             plugin,
             PropPlacementPageSupplier.class,
@@ -35,6 +38,9 @@ public final class PropPlacementBootstrap {
         );
         EterniaPlacedInstance.register(plugin.getEntityStoreRegistry());
         plugin.getEntityStoreRegistry().registerSystem(new PropPlacementPlayerRemoveSystem());
+        plugin.getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.placement.PropCarrySystems.Follow());
+        plugin.getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.placement.PropCarrySystems.RemoveDroppedBox());
+        plugin.getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.placement.PropCarrySystems.EndOnDeath());
         plugin.getEntityStoreRegistry().registerSystem(new PropPackagingWandTickSystem(plugin));
         plugin.getEntityStoreRegistry().registerSystem(new PropBreakBlockSystem(plugin));
     }

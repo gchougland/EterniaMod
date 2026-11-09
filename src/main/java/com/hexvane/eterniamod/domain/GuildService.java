@@ -31,7 +31,7 @@ public final class GuildService extends DomainSupport {
             String invite=ids.get().toString();tx.save("guild_invite",invite,0,fields("guild",member.value("guild"),"target",target,"expires",clock.instant().plus(Duration.ofDays(7)),"state","PENDING"));return invite;});
     }
     public Membership acceptInvite(UUID player,String inviteId) {
-        return store.transaction(tx->{var invite=row(tx,"guild_invite",inviteId);require(invite.value("target").equals(player.toString()),FORBIDDEN,"Invite belongs to another player");
+        return store.transaction(tx->{var invite=pendingInvite(tx,player,inviteId);require(invite.value("target").equals(player.toString()),FORBIDDEN,"Invite belongs to another player");
             if(invite.value("state").equals("ACCEPTED"))return membership(currentMember(tx,player));
             require(invite.value("state").equals("PENDING")&&future(invite.value("expires"),clock.instant()),INVALID_STATE,"Invite expired");
             require(tx.find("guild_member",player.toString()).filter(r->r.value("active").equals("true")).isEmpty(),CONFLICT,"Already in a guild");
@@ -96,6 +96,22 @@ public final class GuildService extends DomainSupport {
     static TransactionalStore.Row requireMember(TransactionalStore.Transaction tx,UUID player,UUID guild) { var r=currentMember(tx,player);require(r.value("guild").equals(guild.toString()),FORBIDDEN,"Not a member of this guild");return r; }
     static void requireCapability(TransactionalStore.Transaction tx,UUID actor,UUID guild,String capability) {var m=requireMember(tx,actor,guild);require(role(tx,guild,m.value("role")).capabilities.contains(capability),FORBIDDEN,"Missing guild permission: "+capability);}
     private static String roleKey(UUID guild,String id) { return guild+":"+id; }
+    /**
+     * The invitation to accept: the one named by its code, or with no code the player's newest open invitation.
+     * A blank or unknown code used to reach storage as an invalid key; now it reads as "no invitation".
+     */
+    private TransactionalStore.Row pendingInvite(TransactionalStore.Transaction tx,UUID player,String inviteId) {
+        String code=inviteId==null?"":inviteId.trim();
+        if(!code.isEmpty()){
+            try{UUID.fromString(code);}catch(IllegalArgumentException e){throw new DomainException(NOT_FOUND,"That invitation code was not found.");}
+            return tx.find("guild_invite",code).orElseThrow(()->new DomainException(NOT_FOUND,"That invitation code was not found."));
+        }
+        Instant now=clock.instant();
+        return tx.scan("guild_invite").stream()
+            .filter(r->r.value("target").equals(player.toString())&&r.value("state").equals("PENDING")&&future(r.value("expires"),now))
+            .max(Comparator.comparing(r->r.value("expires")))
+            .orElseThrow(()->new DomainException(NOT_FOUND,"You have no open guild invitation. Ask a guild member to invite you."));
+    }
     private static Role role(TransactionalStore.Transaction tx,UUID guild,String id) {var r=row(tx,"guild_role",roleKey(guild,id));return new Role(id,r.value("name"),Integer.parseInt(r.value("rank")),new HashSet<>(Arrays.asList(r.value("caps").split("\n"))));}
     private TransactionalStore.Row putMember(TransactionalStore.Transaction tx,UUID player,UUID guild,String role) {var old=tx.find("guild_member",player.toString());return tx.save("guild_member",player.toString(),old.map(TransactionalStore.Row::revision).orElse(0L),fields("guild",guild,"role",role,"active",true,"joinedAt",clock.instant()));}
     private void seedRoles(TransactionalStore.Transaction tx,UUID guild) {

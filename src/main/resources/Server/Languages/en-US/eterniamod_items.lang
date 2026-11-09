@@ -10,3 +10,5 @@ items.Eternia_Prop_Item.instance.name={prop}
 items.Eternia_Prop_Item.instance.description=Place this {prop} in your plot
 items.Eternia_Packaging_Wand.name=Packaging Wand
 items.Eternia_Packaging_Wand.description=Pack up props in your plot
+items.Eternia_Prop_Carry.name=Decoration
+items.Eternia_Prop_Carry.description=A decoration on its way to your plot

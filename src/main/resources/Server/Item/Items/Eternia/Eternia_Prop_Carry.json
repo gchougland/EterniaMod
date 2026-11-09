@@ -1,0 +1,38 @@
+{
+  "TranslationProperties": {
+    "Name": "eterniamod_items.items.Eternia_Prop_Carry.name",
+    "Description": "eterniamod_items.items.Eternia_Prop_Carry.description"
+  },
+  "Quality": "Common",
+  "MaxStack": 1,
+  "Icon": "Icons/ItemsGenerated/Deco_Moving_Box.png",
+  "PlayerAnimationsId": "Block",
+  "CarryInteractions": {
+    "Secondary": "Root_Eternia_Prop_Carry_Place",
+    "Ability3": "Root_Eternia_Prop_Carry_Rotate",
+    "Ability1": "Root_Eternia_Prop_Carry_Put_Away"
+  },
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "Opacity": "Transparent",
+    "HitboxType": "Chest_Small",
+    "BlockParticleSetId": "Dust",
+    "ParticleColor": "#c49a6c",
+    "BlockSoundSetId": "Cloth",
+    "PhysicalMaterialId": "Wool",
+    "CustomModel": "Blocks/Hypixel/Hyspace/Moving_Boxes/Moving_Box_1x1.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/Hypixel/Hyspace/Moving_Boxes/Moving_Box_1x1_Texture.png",
+        "Weight": 1
+      }
+    ],
+    "TextureComputedColor": "#C99164"
+  },
+  "IconProperties": {
+    "Scale": 0.58823,
+    "Rotation": [22.5, 45.0, 22.5],
+    "Translation": [0.0, -13.5]
+  }
+}
