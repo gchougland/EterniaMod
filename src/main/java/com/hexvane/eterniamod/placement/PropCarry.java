@@ -34,7 +34,7 @@ public final class PropCarry {
     public static final String BOX = "Eternia_Prop_Carry";
     static final String HUD = "eternia:prop-carry";
     /** How far the hologram follows the crosshair. */
-    private static final double REACH = 12.0;
+    private static final double REACH = 24.0;
     private static final long FOLLOW_MILLIS = 80;
 
     /** Per player preview state; touched on the world thread only, read by the tick for throttling. */
@@ -136,24 +136,35 @@ public final class PropCarry {
 
     @Nullable
     static Aim aim(Ref<EntityStore> ref, Store<EntityStore> store) {
+        // The game's own target block, the same one the crosshair outlines.
+        Vector3i hit = TargetUtil.getTargetBlock(ref, REACH, store);
         var look = TargetUtil.getLook(ref, store);
-        if (look == null) return null;
+        if (hit == null || look == null) return null;
         var world = store.getExternalData().getWorld();
-        var from = look.getPosition();
-        var dir = look.getDirection();
-        Vector3i previous = null;
-        for (double t = 0; t <= REACH; t += 0.05) {
-            Vector3i cell = new Vector3i((int) Math.floor(from.x + dir.x * t), (int) Math.floor(from.y + dir.y * t), (int) Math.floor(from.z + dir.z * t));
-            if (cell.equals(previous)) continue;
-            if (solid(world, cell.x, cell.y, cell.z)) {
-                if (previous == null) return null;
-                Vector3i floor = new Vector3i(previous);
-                for (int down = 0; down < 6 && !solid(world, floor.x, floor.y - 1, floor.z); down++) floor.y--;
-                return new Aim(cell, previous, floor);
+        Vector3i normal = face(look.getPosition(), look.getDirection(), hit);
+        Vector3i free = new Vector3i(hit.x + normal.x, hit.y + normal.y, hit.z + normal.z);
+        Vector3i floor = new Vector3i(free);
+        for (int down = 0; down < 6 && !solid(world, floor.x, floor.y - 1, floor.z); down++) floor.y--;
+        return new Aim(hit, free, floor);
+    }
+
+    /** The face of block {@code hit} the view ray enters through, as an outward unit vector (top when unsure). */
+    static Vector3i face(org.joml.Vector3d from, org.joml.Vector3d dir, Vector3i hit) {
+        double best = Double.NEGATIVE_INFINITY;
+        Vector3i normal = new Vector3i(0, 1, 0);
+        double[] o = {from.x, from.y, from.z}, d = {dir.x, dir.y, dir.z};
+        int[] lo = {hit.x, hit.y, hit.z};
+        for (int axis = 0; axis < 3; axis++) {
+            if (Math.abs(d[axis]) < 1e-9) continue;
+            double t1 = (lo[axis] - o[axis]) / d[axis], t2 = (lo[axis] + 1 - o[axis]) / d[axis];
+            double enter = Math.min(t1, t2);
+            if (enter > best) {
+                best = enter;
+                int sign = d[axis] > 0 ? -1 : 1;
+                normal = new Vector3i(axis == 0 ? sign : 0, axis == 1 ? sign : 0, axis == 2 ? sign : 0);
             }
-            previous = cell;
         }
-        return null;
+        return normal;
     }
 
     private static boolean solid(com.hypixel.hytale.server.core.universe.world.World world, int x, int y, int z) {
@@ -200,13 +211,14 @@ public final class PropCarry {
             view.shownOrigin = origin;
             view.shownSteps = session.getRotationSteps();
             view.shownProp = session.getPropId();
+        }
+        if (moved || !java.util.Objects.equals(error, view.status)) {
+            // The size cube turns green or red with the fit, so redraw it when either the spot or the verdict changes.
             HubPlotRecord plot = plot(session);
             if (plot != null) {
                 PropPlacementWireframeOverlay.send(
                     player, plot.getFootprint(), PlotFootprintUtil.computePropFootprint(origin, session.getPrefabYaw(), buffer), error == null);
             }
-        }
-        if (moved || !java.util.Objects.equals(error, view.status)) {
             view.status = error;
             PropCarryHud.show(ref, store, player, def, session, error);
         }

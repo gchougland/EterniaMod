@@ -131,6 +131,15 @@ public final class NativePlacementTransactions {
         var applied=services.journal().advance(op.id(),op.revision(),JournalService.State.WORLD_APPLIED);
         services.journal().advance(op.id(),applied.revision(),JournalService.State.COMPLETED);
     }
+    /** Whether any block in a saved snapshot carries an item container with something in it. */
+    static boolean holdsItems(BsonDocument content){
+        for(var value:content.getArray("blocks",new org.bson.BsonArray())){
+            var block=value.asDocument();if(!block.containsKey("components"))continue;
+            String json=block.get("components").toString();
+            if(json.contains("Container")&&json.contains("\"Id\""))return true;
+        }
+        return false;
+    }
     public record Placed(UUID instanceId,NativeSnapshotStore.Snapshot before,NativeSnapshotStore.Snapshot after,UUID operation,Owner contentOwner,String source) {}
     public static Placed place(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID actor,String catalogId,Vector3i origin,Rotation yaw,IPrefabBuffer buffer,boolean house) throws IOException {
         return place(plugin,world,plot,actor,catalogId,origin,yaw,buffer,house,owner(plot));
@@ -191,8 +200,15 @@ public final class NativePlacementTransactions {
                 savedContent=GuildWaygateSnapshot.withoutPlinth(savedContent).orElseThrow(()->new IllegalStateException("This saved portal needs review before it can be placed."));
                 sameBounds=bounds.maxX()-bounds.minX()==1&&bounds.maxY()-bounds.minY()==1&&bounds.maxZ()-bounds.minZ()==1;
             }
-            if(!yaw.name().equals(packed.nativeData().get("yaw"))||!sameBounds)throw new IllegalStateException("Packed object must retain its original orientation and catalog bounds");
-            desiredDocument=before.document().clone();NativeRelocationCoordinator.overlay(desiredDocument,savedContent);
+            boolean turned=!yaw.name().equals(packed.nativeData().get("yaw"));
+            if(turned){
+                // Turned since it was packed: its saved copy only fits the old direction. A decoration holding nothing is
+                // the same as a fresh one from the catalog, so place that at the new direction; one holding items keeps them.
+                if(holdsItems(savedContent))throw new IllegalStateException("This decoration still holds items, so it can only go back facing the way it was packed. Take the items out first to turn it.");
+            }else{
+                if(!sameBounds)throw new IllegalStateException("This decoration changed shape since it was packed. Try placing it again.");
+                desiredDocument=before.document().clone();NativeRelocationCoordinator.overlay(desiredDocument,savedContent);
+            }
         }
         var after=nativeStore.save(operation+"-after.json",bounds,cells,desiredDocument);
         var journal=plugin.getServices().journal();
