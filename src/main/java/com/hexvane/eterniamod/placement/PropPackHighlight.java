@@ -105,8 +105,9 @@ public final class PropPackHighlight {
                 BlockType type = BlockType.getAssetMap().getAsset(blockId);
                 if (type == null) return;
                 keys.add(type.getId());
-                // Entity yaw for a block turned this way, the same conversion the game uses when it turns prefab entities.
-                blocks.add(new double[] {ox + x + 0.5, oy + y - (GROW - 1f) / 2f, oz + z + 0.5, PrefabRotation.fromRotation(RotationTuple.get(rotation).yaw()).getYaw()});
+                // A block entity stands at the middle of its block and faces the opposite way to an entity at the same yaw
+                // (the game adds half a block and half a turn when it drops a carried block), so do the same.
+                blocks.add(new double[] {ox + x + 0.5, oy + y + 0.5, oz + z + 0.5, PrefabRotation.fromRotation(RotationTuple.get(rotation).yaw()).getYaw() + Math.PI});
             }, null, null, new PrefabBufferCall(new FastRandom(), PrefabRotation.fromRotation(yaw)));
         for (int i = 0; i < blocks.size(); i++) {
             double[] b = blocks.get(i);
