@@ -113,6 +113,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         getCommandRegistry().registerCommand(new EterniaModCommand());
         BuildingPlacementBootstrap.register(this);
         PropPlacementBootstrap.register(this);
+        com.hexvane.eterniamod.tutorial.TutorialRuntime.register(this);
         boundaryFog = com.hexvane.eterniamod.boundary.BoundaryBootstrap.register(this,
             (world,x,z) -> infrastructure.protectedColumn(world.getName(),x,z));
         com.hexvane.eterniamod.housing.HousingProtection.register(this);

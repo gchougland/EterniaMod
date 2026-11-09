@@ -21,6 +21,9 @@
 - The website home page shows how many adventurers are online right now.
 - The Crown treasury says clearly, before you pay, that Crowns are digital goods and all sales are final.
 - The website now sends visitors who type www in front of the address to the main site.
+- A Hub walkthrough for new adventurers: meet every townsperson, hear what each one looks after, then return to Prowl to choose your world. A small panel in the Hub shows who you still need to meet. Type `/e tutorial hide`, `skip` or `restart` to change it.
+- Every Hub character greets you in their own words the first time you meet, and with a shorter hello after that.
+- Hexvane, the Master of Arms, explains the rules of the realm.
 
 ### Changed
 
@@ -30,6 +33,7 @@
 
 - The game is less likely to crash right after joining near busy parts of town.
 - Accept invite on the Guild page works without typing a code and joins the guild that invited you.
+- Packing a decoration with the Packaging Wand no longer gets stuck. A decoration left stuck by an earlier try sorts itself out the next time you place or pack on that plot.
 - The Change shape button on the plot claim page now switches a guild estate between square and long shapes. Personal plots say they are always square.
 
 ## [1.0.0]

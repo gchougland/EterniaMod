@@ -32,6 +32,7 @@ public final class EterniaServices {
     private final GuildBenefitService guildBenefits;
     private final GuildCommunicationService guildCommunications;
     private final LootChestService lootChests;
+    private final TutorialService tutorial;
     private final com.hexvane.eterniamod.stats.StatsService stats;
     private final com.hexvane.eterniamod.chat.ChatPreferences chatPreferences;
     public EterniaServices(TransactionalStore store,Clock clock,Supplier<UUID> ids) {
@@ -54,6 +55,7 @@ public final class EterniaServices {
         guildBenefits=new GuildBenefitService(store,clock,ids,ownership);
         guildCommunications=new GuildCommunicationService(store,clock,ids);
         lootChests=new LootChestService(store,clock,ids);
+        tutorial=new TutorialService(store,clock,ids);
         stats=new com.hexvane.eterniamod.stats.StatsService(store,clock);
         chatPreferences=new com.hexvane.eterniamod.chat.ChatPreferences(store);
     }
@@ -97,6 +99,7 @@ public final class EterniaServices {
     public GuildBenefitService guildBenefits(){return guildBenefits;}
     public GuildCommunicationService guildCommunications(){return guildCommunications;}
     public LootChestService lootChests(){return lootChests;}
+    public TutorialService tutorial(){return tutorial;}
     public com.hexvane.eterniamod.stats.StatsService stats(){return stats;}
     public com.hexvane.eterniamod.chat.ChatPreferences chatPreferences(){return chatPreferences;}
     public record Overview(UUID playerId,AccountService.Account account,EconomyService.Balance coins,

@@ -24,7 +24,8 @@ final class ActionOpenEterniaServices extends ActionBase {
             if (!ref.isValid() || !target.isValid()) return;
             Player player = store.getComponent(target, Player.getComponentType());
             PlayerRef playerRef = store.getComponent(target, PlayerRef.getComponentType());
-            if (player == null || playerRef == null || player.getPageManager().getCustomPage() instanceof EterniaServicesPage) return;
+            if (player == null || playerRef == null || player.getPageManager().getCustomPage() instanceof EterniaServicesPage
+                || player.getPageManager().getCustomPage() instanceof com.hexvane.eterniamod.tutorial.NpcDialoguePage) return;
             SocialUiBootstrap.openNpc(target, store, playerRef, section);
         });
         return true;

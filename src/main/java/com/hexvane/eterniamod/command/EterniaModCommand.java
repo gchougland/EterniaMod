@@ -25,5 +25,6 @@ public final class EterniaModCommand extends AbstractCommandCollection {
         this.addSubCommand(new com.hexvane.eterniamod.chat.EterniaChatCommand());
         this.addSubCommand(new EterniaPlaygroundCommand());
         this.addSubCommand(new com.hexvane.eterniamod.stats.StatsCommand());
+        this.addSubCommand(new com.hexvane.eterniamod.tutorial.TutorialCommand());
     }
 }

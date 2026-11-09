@@ -11,7 +11,7 @@ class HubNpcIdentityTest {
     private static final Path RES=Path.of("src/main/resources");
     private static JsonObject read(Path path)throws Exception{return JsonParser.parseString(Files.readString(path)).getAsJsonObject();}
     @Test void sevenCharactersHaveDistinctModelsAndNativeUseHints()throws Exception{
-        assertEquals(7,HubNpcIdentity.values().length);var models=new HashSet<String>();var names=new HashSet<String>();
+        assertEquals(8,HubNpcIdentity.values().length);var models=new HashSet<String>();var names=new HashSet<String>();
         for(var identity:HubNpcIdentity.values()){
             assertTrue(models.add(identity.model()));assertTrue(names.add(identity.characterName()));
             var role=read(RES.resolve("Server/NPC/Roles/Eternia/"+identity.role()+".json"));

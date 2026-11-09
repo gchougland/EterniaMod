@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
 public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<EterniaServicesPage.Data> {
     public enum Section {
         GREETER("Welcome"), HOUSING("Housing"), GUILD("Guild"), MAIL("Mailbox"), SHOP("Player shops"),
-        QUESTS("Quests"), SEASON("Season passes"), COLLECTION("Collection"), STORE("Crown Store"), WORLDS("Worlds"), COMING_SOON("Minigames");
+        QUESTS("Quests"), SEASON("Season passes"), COLLECTION("Collection"), STORE("Crown Store"), WORLDS("Worlds"), COMING_SOON("Minigames"), RULES("Rules of the realm");
         final String title;
         Section(String title) { this.title = title; }
     }
@@ -46,14 +46,15 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         MARSHAL(HubNpcIdentity.GUILD, "guild", List.of(Section.GUILD), Set.of(SocialUiActions.Action.GUILD_HOUSING)),
         BROKER(HubNpcIdentity.SHOP, "market", List.of(Section.SHOP), Set.of(SocialUiActions.Action.SHOP_MANAGE, SocialUiActions.Action.ITEM_DESK, SocialUiActions.Action.TRADE_DESK)),
         GAMES(HubNpcIdentity.MINIGAME, "games", List.of(Section.COMING_SOON), Set.of()),
-        GATEHOUSE(HubNpcIdentity.GATEHOUSE, "season", List.of(Section.SEASON), Set.of(SocialUiActions.Action.STORE_OPEN));
+        GATEHOUSE(HubNpcIdentity.GATEHOUSE, "season", List.of(Section.SEASON), Set.of(SocialUiActions.Action.STORE_OPEN)),
+        ARMS(HubNpcIdentity.RULES, "charter", List.of(Section.RULES), Set.of());
         final HubNpcIdentity identity; final String emblem; final List<Section> sections; final Set<SocialUiActions.Action> actions;
         Desk(HubNpcIdentity identity, String emblem, List<Section> sections, Set<SocialUiActions.Action> actions) {
             this.identity = identity; this.emblem = emblem; this.sections = sections; this.actions = actions;
         }
         /** The desk a Hub NPC's role opens; sections without an NPC of their own belong to the Journal. */
         public static Desk forNpc(Section section) {
-            return switch (section) { case GREETER, WORLDS -> GUIDE; case HOUSING -> STEWARD; case GUILD -> MARSHAL; case SHOP -> BROKER; case COMING_SOON -> GAMES; case SEASON -> GATEHOUSE; default -> JOURNAL; };
+            return switch (section) { case GREETER, WORLDS -> GUIDE; case HOUSING -> STEWARD; case GUILD -> MARSHAL; case SHOP -> BROKER; case COMING_SOON -> GAMES; case SEASON -> GATEHOUSE; case RULES -> ARMS; default -> JOURNAL; };
         }
         /** The desk a menu shortcut in code reaches: personal sections open the Journal, trades open their NPC's desk. */
         public static Desk forShortcut(Section section) {
@@ -234,11 +235,12 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (desk == Desk.GATEHOUSE && view.gate != null) {
             commands.append("#ServicesBody", com.hexvane.eterniamod.gatehouse.GatehouseDesk.DOCUMENT);
             com.hexvane.eterniamod.gatehouse.GatehouseDesk.render(commands, view.gate, (selector, route) -> bind(events, selector, route), busy, status);
+            if (!view.document.isEmpty()) commands.set("#GateGreeting.TextSpans", greeting());
             if (initialLoad) { initialLoad = false; store.getExternalData().getWorld().execute(()->{if(!isDismissed()&&ref.isValid())refresh(ref, store, "");}); }
             return;
         }
         commands.append("#ServicesBody", "EterniaMod/ServicesDesk.ui");
-        commands.set("#DeskGreeting.TextSpans", Message.raw(view.description));
+        commands.set("#DeskGreeting.TextSpans", greeting());
         commands.set("#DeskStatus.TextSpans", Message.raw(busy ? "Working…" : status));
         for (int i = 0; i < view.tiles.size(); i++) {
             Tile tile = view.tiles.get(i);
@@ -249,9 +251,14 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (initialLoad) { initialLoad = false; store.getExternalData().getWorld().execute(()->{if(!isDismissed()&&ref.isValid())refresh(ref, store, "");}); }
     }
 
+    /** The desk's greeting: prowl's line for this NPC when there is one, with the player's name filled in. */
+    private Message greeting() {
+        return view.document.isEmpty() ? Message.raw(view.description) : Message.translation(view.document).param("player", playerRef.getUsername());
+    }
+
     private String tabLabel(Section entry){return switch(entry){case HOUSING->"Home";case MAIL->"Mail";case SEASON->"Seasons";default->entry.title;};}
     private String sectionName(Section entry){return desk==Desk.JOURNAL?tabLabel(entry):entry.title;}
-    private static String sectionIcon(Section entry){return switch(entry){case GREETER,WORLDS->"worlds";case HOUSING->"housing";case GUILD->"guild";case MAIL->"mail";case SHOP->"market";case QUESTS->"quests";case SEASON->"season";case COLLECTION->"collection";case STORE->"crown";case COMING_SOON->"games";};}
+    private static String sectionIcon(Section entry){return switch(entry){case GREETER,WORLDS->"worlds";case HOUSING->"housing";case GUILD->"guild";case MAIL->"mail";case SHOP->"market";case QUESTS->"quests";case SEASON->"season";case COLLECTION->"collection";case STORE->"crown";case COMING_SOON->"games";case RULES->"charter";};}
     private String sectionNote(Section entry){return switch(entry){
         case GREETER->"How life in Eternia works.";
         case HOUSING->desk==Desk.JOURNAL?"Your plot and home at a glance.":"Your plot, moves and building rules.";
@@ -264,6 +271,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         case STORE->"Styles, decorations, titles and pets.";
         case WORLDS->"The worlds beyond the Hub.";
         case COMING_SOON->"Something fun is on the way.";
+        case RULES->"How we keep Eternia fun for everyone.";
     };}
     private static void bar(UICommandBuilder commands,String fill,String rest,long value,long total){int amount=total<=0?0:(int)Math.max(0,Math.min(1000,(double)value/total*1000));commands.set(fill+".Visible",amount>0);commands.set(rest+".Visible",amount<1000);commands.set(fill+".FlexWeight",Math.max(1,amount));commands.set(rest+".FlexWeight",Math.max(1,1000-amount));}
 
@@ -457,7 +465,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private View loadSnapshot(Request request){
         return switch(request.section){
             case COLLECTION,SHOP -> services.readView(new ViewKey(actor,request),java.time.Duration.ofSeconds(2),()->load(request));
-            case GREETER,STORE,WORLDS,COMING_SOON -> load(request);
+            case GREETER,STORE,WORLDS,COMING_SOON,RULES -> load(request);
             default -> services.batch(()->load(request));
         };
     }
@@ -505,12 +513,24 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             case WORLDS -> new View("Choose your destination", "Travel through the hub's world-select portal, or use the destinations made available by the server.",
                 List.of(Row.info("The hub connects housing, player services and adventure worlds."), Row.info("After more than 30 minutes offline, your next login returns you to a safe point in your home.")),
                 noFields(), buttons("Select a world", "external:WORLD_SELECT", "Return to hub", "external:HUB_TRAVEL", "", ""), null);
+            case RULES -> new View("Rules of the realm", "By continuing to play on Eternia, you agree to all of the rules of the realm.",
+                com.hexvane.eterniamod.tutorial.RealmRules.all().stream().map(rule -> Row.info(rule)).toList(), noFields(), buttons("", "", "", "", "", ""), null);
             case COMING_SOON -> new View("Minigames — Coming Soon", "Minigames are being prepared for Eternia. There is no queue or entry fee yet.",
                 List.of(Row.info("Explore, settle into your home, and earn season progress through normal activities while you wait.")), noFields(), buttons("Quest journal", "nav:QUESTS", "", "", "", ""), null);
         };
     }
 
+    /** A Hub NPC's desk with the returning line prowl wrote for them (the guide waits for the tutorial first). */
     private View deskView(Desk desk) {
+        View view = deskViewBase(desk);
+        if (desk.identity == null) return view;
+        String npc = com.hexvane.eterniamod.tutorial.HubDialogue.npcKey(desk.identity);
+        if (npc == null) return view;
+        boolean waiting = npc.equals(com.hexvane.eterniamod.domain.TutorialService.GUIDE) && !services.tutorial().state(actor).finished();
+        return view.document(com.hexvane.eterniamod.tutorial.HubDialogue.key(npc, waiting ? "waiting" : "recurring"));
+    }
+
+    private View deskViewBase(Desk desk) {
         return switch (desk) {
             case GUIDE -> View.desk("Welcome to Eternia! I'm Prowl. Build a home, find your people and explore at your own pace.", List.of(
                 new Tile("Getting started", "How plots, guilds and seasons work.", "charter", "nav:GREETER", true),
@@ -548,6 +568,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             }
             case GAMES -> View.desk("Minigames are on their way! Until then, your home and season pass are ready for you.", List.of(
                 new Tile("Minigames", "Coming soon.", "games", "", true)));
+            case ARMS -> View.desk("Welcome back. There have been no changes to our laws.", List.of(
+                new Tile("Rules of the realm", "Read the rules every adventurer agrees to.", "charter", "nav:RULES", true)));
             case JOURNAL -> throw new IllegalStateException("The Journal has no desk home.");
         };
     }

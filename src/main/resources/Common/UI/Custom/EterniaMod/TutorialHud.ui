@@ -1,0 +1,18 @@
+$T = "Theme/Citadel.ui";
+Group {
+  Anchor: (Top: 64, Right: 24, Width: 330, Height: 356);
+  Background: $T.@JournalPanelSurface;
+  Padding: (Full: 18);
+  LayoutMode: Top;
+  Label #Title { Anchor: (Height: 26, Bottom: 6); Text: "WELCOME TO ETERNIS"; Style: (FontSize: 17, TextColor: #d8b66b, RenderBold: true); }
+  Label #Step { Anchor: (Height: 46, Bottom: 8); Text: ""; Style: (FontSize: 15, TextColor: #85c5b3, Wrap: true); }
+  Group { Anchor: (Height: 2, Bottom: 10); Background: #45615d; }
+  Label #Town0 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
+  Label #Town1 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
+  Label #Town2 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
+  Label #Town3 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
+  Label #Town4 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
+  Label #Town5 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
+  Label #Town6 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
+  Label #Footer { Anchor: (Height: 22, Top: 8); Text: ""; Style: (...$T.@MutedStyle, FontSize: 13); }
+}

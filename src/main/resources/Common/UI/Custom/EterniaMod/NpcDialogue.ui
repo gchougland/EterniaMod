@@ -1,0 +1,16 @@
+$T = "Theme/Citadel.ui";
+Group {
+  Group {
+    Anchor: (Bottom: 110, Width: 860, Height: 346);
+    Background: $T.@JournalPanelSurface;
+    Padding: (Full: 28);
+    LayoutMode: Top;
+    Label #Speaker { Anchor: (Height: 32); Text: ""; Style: (FontSize: 24, TextColor: #d8b66b, RenderBold: true); }
+    Label #Profession { Anchor: (Height: 24, Bottom: 14); Text: ""; Style: $T.@MutedStyle; }
+    Label #Line { Anchor: (Height: 186); Text: ""; Style: (FontSize: 17, TextColor: $T.@Text, Wrap: true, VerticalAlignment: Start); }
+    Group { LayoutMode: Left; Anchor: (Height: 44);
+      Label #PageCount { FlexWeight: 1; Text: ""; Style: (...$T.@MutedStyle, VerticalAlignment: Center); }
+      $T.@TextButton #Continue { Anchor: (Width: 200); Text: "Continue"; }
+    }
+  }
+}

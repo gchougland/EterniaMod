@@ -84,9 +84,15 @@ public final class SocialUiBootstrap {
             if (closed || !ref.isValid()) return;
             UUID id = player.getUuid();
             executor.execute(() -> { try { services.accounts().markIntroduced(id); } catch (RuntimeException ignored) {} });
-            if (section == EterniaServicesPage.Section.STORE) { open(ref, store, player, section); return; }
             var desk = EterniaServicesPage.Desk.forNpc(section);
-            show(ref, store, player, desk, section, true, false);
+            java.util.function.BiConsumer<Ref<EntityStore>, Store<EntityStore>> visit = (r, st) -> {
+                if (section == EterniaServicesPage.Section.STORE) open(r, st, player, section);
+                else show(r, st, player, desk, section, true, false);
+            };
+            // After the Master of Arms first speaks, the rules themselves come next.
+            java.util.function.BiConsumer<Ref<EntityStore>, Store<EntityStore>> afterDialogue = section == EterniaServicesPage.Section.RULES
+                ? (r, st) -> show(r, st, player, desk, section, false, false) : visit;
+            com.hexvane.eterniamod.tutorial.TutorialRuntime.meet(ref, store, player, section, visit, afterDialogue);
         }
         void show(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServicesPage.Desk desk, EterniaServicesPage.Section section, boolean deskHome, boolean returnable) {
             if (closed || !ref.isValid()) return;
