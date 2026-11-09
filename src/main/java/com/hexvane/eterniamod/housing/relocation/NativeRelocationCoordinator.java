@@ -61,7 +61,19 @@ public final class NativeRelocationCoordinator {
             services.housing().cancelRelocationBeforeMutation(owner,operation);
         }catch(Throwable failure){NativePlacementTransactions.lock(plugin,operation);throw new IllegalStateException("Recovery retained its lock: "+failure.getMessage(),failure);}
     }
-    public static NativeSnapshotStore.Bounds bounds(HubPlotRecord plot){var f=plot.getFootprint();return new NativeSnapshotStore.Bounds(f.getMinX(),ChunkUtil.MIN_Y,f.getMinZ(),f.getMaxX()+1,NativeSnapshotStore.MAX_Y,f.getMaxZ()+1);}
+    /** Blocks below the plot's ground level that its saved snapshots cover. */
+    public static final int BELOW_GROUND=12;
+    /** Blocks above the plot's ground level that its saved snapshots cover. */
+    public static final int ABOVE_GROUND=100;
+    /**
+     * The box a plot's snapshots cover: its columns, from a little below its ground to well above it. Not bedrock to
+     * sky: deep stone and high air were most of every snapshot and made buying, selling and moving slow.
+     */
+    public static NativeSnapshotStore.Bounds bounds(HubPlotRecord plot){
+        var f=plot.getFootprint();int ground=f.resolveVisualCenterY();
+        int minY=Math.max(ChunkUtil.MIN_Y,Math.min(ground-BELOW_GROUND,NativeSnapshotStore.MAX_Y-2)),maxY=Math.min(NativeSnapshotStore.MAX_Y,Math.max(ground+ABOVE_GROUND,minY+2));
+        return new NativeSnapshotStore.Bounds(f.getMinX(),minY,f.getMinZ(),f.getMaxX()+1,maxY,f.getMaxZ()+1);
+    }
     /** Before claim activation, while construction is still locked. Existing unproven plots are never auto-baselined. */
     public static void captureBaseline(EterniaModPlugin plugin,World world,HubPlotRecord plot) {
         try {
@@ -91,7 +103,8 @@ public final class NativeRelocationCoordinator {
             var added=cells.cells().stream().filter(c->!old.cells().contains(c)).toList();
             var addedCells=com.hexvane.eterniamod.hexplots.PlotCells.of(cells.lattice(),added);
             var addedBox=addedCells.bounds();var addedBounds=new NativeSnapshotStore.Bounds(addedBox.x(),old.bounds().minY(),addedBox.z(),addedBox.endX(),old.bounds().maxY(),addedBox.endZ());
-            var grown=bounds(plot);
+            // The grown ground keeps the height band it was saved with (older plots were saved bedrock to sky).
+            var box=bounds(plot);var grown=new NativeSnapshotStore.Bounds(box.minX(),old.bounds().minY(),box.minZ(),box.maxX(),old.bounds().maxY(),box.maxZ());
             var capture=store.capture(world,addedBounds,ColumnMask.of(addedCells),Set.of(),true,false);
             var merged=HexRelocation.mergeBaseline(old.document(),old.bounds(),capture,addedBounds,grown);
             var baseline=store.save(plot.getPlotId()+"-baseline-"+cells.size()+"-"+UUID.randomUUID()+".json",grown,cells,merged);
@@ -136,6 +149,11 @@ public final class NativeRelocationCoordinator {
         } catch(IOException e){throw new UncheckedIOException(e);}
     }
     public UUID pack(World world,Owner owner,UUID operation,boolean forced) {
+        long started=System.nanoTime();
+        try{return packTimed(world,owner,operation,forced);}
+        finally{com.hexvane.eterniamod.EterniaModPlugin.get().getLogger().atInfo().log("Housing %s took %d ms","pack",(System.nanoTime()-started)/1_000_000);}
+    }
+    private UUID packTimed(World world,Owner owner,UUID operation,boolean forced) {
         var services=plugin.getServices();var slot=services.housing().find(owner).orElseThrow();
         if(slot.state()==HousingService.State.PACKED&&slot.operationId().equals(operation))return operation;
         var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);var plot=manager.getPlot(slot.propertyId());
@@ -358,15 +376,17 @@ public final class NativeRelocationCoordinator {
             var box=destination.bounds();int width=original.bounds().maxX()-original.bounds().minX(),depth=original.bounds().maxZ()-original.bounds().minZ();
             if(box.width()!=width||box.depth()!=depth)throw new IllegalStateException("Packed snapshot box does not match its hexagons");
             int dy=Math.subtractExact(groundY,oldPlot.getFootprint().resolveVisualCenterY());
-            var movedPersonal=PlotSnapshotTransform.translate(personal.document(),0,dy,0,0,ChunkUtil.MIN_Y,0,width,NativeSnapshotStore.MAX_Y,depth);
+            // The snapshot box moves up or down with the ground; its cells keep their places inside it.
+            var movedPersonal=personal.document().clone();
+            if(original.bounds().minY()+dy<ChunkUtil.MIN_Y||original.bounds().maxY()+dy>NativeSnapshotStore.MAX_Y)throw new IllegalStateException("This spot is too high or too low for your plot");
             UUID guild=scope==HousingRules.Scope.PUBLIC?null:services.guilds().membership(actor).orElseThrow().guildId();
             if(owner.kind()==Owner.Kind.GUILD&&(scope!=HousingRules.Scope.GUILD_ROOT||!owner.id().equals(guild)))throw new IllegalStateException("Guild property owner cannot change");
             if(owner.kind()==Owner.Kind.PLAYER&&scope==HousingRules.Scope.GUILD_ROOT)throw new IllegalStateException("Player plot cannot become guild property");
             var view=HexLand.view(plugin,world).orElseThrow(()->new IllegalStateException("This world has no hexagon grid"));
             var verdict=HexRelocation.check(view.land(),HexClaimCheck.kind(scope),packed,destination.cells(),anchors(view,actor,scope));
             if(!verdict.valid())throw new IllegalStateException(verdict.message());
-            Vector3i target=new Vector3i(box.x(),original.bounds().minY(),box.z());
-            var movedBounds=new NativeSnapshotStore.Bounds(target.x,target.y,target.z,box.endX(),original.bounds().maxY(),box.endZ());
+            Vector3i target=new Vector3i(box.x(),original.bounds().minY()+dy,box.z());
+            var movedBounds=new NativeSnapshotStore.Bounds(target.x,target.y,target.z,box.endX(),original.bounds().maxY()+dy,box.endZ());
             var mask=ColumnMask.of(destination);
             HexRelocation.requireInside(movedPersonal,mask,target.x,target.z);
             int dx=move.dx(),dz=move.dz();

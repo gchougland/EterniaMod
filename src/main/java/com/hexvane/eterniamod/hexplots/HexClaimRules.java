@@ -63,6 +63,7 @@ public final class HexClaimRules {
         TOUCH("touch", "New hexagons must share a side with your plot."),
         CHANGED("changed", "Your plot changed a moment ago. Look again and try once more."),
         COINS("coins", "You need {count} coins for this hexagon."),
+        CROWNS("crowns", "You need {count} Crowns for this hexagon."),
         OUTSIDE("outside", "This goes on your own plot."),
         CELL_FULL("cellFull", "This hexagon is full. Try another part of your plot, or grow your plot."),
         GENERATORS_FULL("generatorsFull", "This hexagon has all the generators it can hold. Try another part of your plot."),

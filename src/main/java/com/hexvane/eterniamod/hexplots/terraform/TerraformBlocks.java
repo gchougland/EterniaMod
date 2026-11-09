@@ -27,6 +27,22 @@ public final class TerraformBlocks {
         return lower.startsWith("rubble_");
     }
 
+    /**
+     * Growth cleared from claimed hexagons: plants, flowers, bushes, leaves, tree trunks, roots and branches, loose
+     * rubble. Never crops or planters.
+     */
+    public static boolean isGrowth(String id) {
+        if (id == null || id.isEmpty()) return false;
+        String lower = id.toLowerCase(Locale.ROOT);
+        if (lower.startsWith("plant_crop") || lower.contains("planter") || lower.contains("pot")) return false;
+        if (lower.startsWith("plant_") || lower.contains("leaves")) return true;
+        if (lower.startsWith("wood_")) return lower.endsWith("_trunk") || lower.endsWith("_trunk_full") || lower.contains("_roots") || lower.contains("_branch");
+        return lower.startsWith("rubble_");
+    }
+
+    /** Grass blades are the one growth that stays on claimed land. */
+    public static boolean isKeptGrass(String id) { return id != null && id.toLowerCase(Locale.ROOT).startsWith("plant_grass"); }
+
     /** A top block worth keeping on shaped ground: grass, dirt, sand or snow (not bare rock). */
     public static boolean isTopsoil(String id) {
         if (!isGround(id)) return false;

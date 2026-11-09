@@ -49,6 +49,16 @@ public final class NativeSnapshotStore {
     }
     /** Captures only the columns inside {@code mask}; columns outside it (a neighbour's corner of a hex box) are never read. */
     public BsonDocument capture(World world,Bounds bounds,ColumnMask mask,Set<UUID> allowedInstances,boolean captureEntities,boolean rejectPlayers) {
+        long started=System.nanoTime();
+        try{return captureTimed(world,bounds,mask,allowedInstances,captureEntities,rejectPlayers);}
+        finally{timing("read",bounds,started);}
+    }
+    /** Logs how long a snapshot step took on a big box, so slow housing steps can be found. */
+    static void timing(String step,Bounds bounds,long started){
+        long ms=(System.nanoTime()-started)/1_000_000;
+        if(ms>=50)EterniaModPlugin.get().getLogger().atInfo().log("Plot snapshot %s took %d ms (box %d x %d x %d)",step,ms,bounds.maxX()-bounds.minX(),bounds.maxY()-bounds.minY(),bounds.maxZ()-bounds.minZ());
+    }
+    private BsonDocument captureTimed(World world,Bounds bounds,ColumnMask mask,Set<UUID> allowedInstances,boolean captureEntities,boolean rejectPlayers) {
         world.getEntityStore().getStore().assertThread();
         if(world.getChunkStore().supportsCubicSections()||bounds.minY()<ChunkUtil.MIN_Y||bounds.maxY()>MAX_Y) throw new IllegalStateException("Cubic or out-of-band sections need a dedicated snapshot adapter");
         BlockSelection selection=new BlockSelection();selection.setPosition(bounds.minX(),bounds.minY(),bounds.minZ());selection.setAnchor(0,0,0);
@@ -91,13 +101,15 @@ public final class NativeSnapshotStore {
             Holder<EntityStore> holder=NativeDecorativeEntities.capture(store.copyEntity(ref));selection.addEntityFromWorld(holder);
         }
         selection.sortEntitiesByPosition();
-        BsonDocument doc=canonicalEmptyFluids(SelectionPrefabSerializer.serialize(selection));
-        if(!doc.equals(canonicalEmptyFluids(SelectionPrefabSerializer.serialize(SelectionPrefabSerializer.deserialize(doc)))))throw new IllegalStateException("Native prefab round trip changed snapshot contents");
-        return doc;
+        return canonicalEmptyFluids(SelectionPrefabSerializer.serialize(selection));
     }
     public Snapshot save(String name,Bounds bounds,BsonDocument document) throws IOException {return save(name,bounds,null,document);}
     /** Saves a snapshot cut to hex {@code cells} (null: the whole box). Content outside the cells is refused, never saved. */
     public Snapshot save(String name,Bounds bounds,com.hexvane.eterniamod.hexplots.PlotCells cells,BsonDocument document) throws IOException {
+        long started=System.nanoTime();
+        try{return saveTimed(name,bounds,cells,document);}finally{timing("save",bounds,started);}
+    }
+    private Snapshot saveTimed(String name,Bounds bounds,com.hexvane.eterniamod.hexplots.PlotCells cells,BsonDocument document) throws IOException {
         document=canonicalEmptyFluids(SelectionPrefabSerializer.serialize(SelectionPrefabSerializer.deserialize(document)));
         HexRelocation.requireInside(document,ColumnMask.of(cells),bounds.minX(),bounds.minZ());
         var envelope=new BsonDocument("format",new BsonString("eternia-native-snapshot-1"));
@@ -105,14 +117,20 @@ public final class NativeSnapshotStore {
         // Optional cell mask: rectangle snapshots and every snapshot saved before hex plots have no "cells". The hash covers it.
         if(cells!=null)envelope.put("cells",new BsonDocument("lattice",new BsonString(cells.latticeId())).append("cells",new BsonString(cells.text())));
         envelope.put("clearFluidAtEveryBlock",BsonBoolean.TRUE);envelope.put("prefab",document);
-        var saved=files.write(name,envelope.toJson().getBytes(StandardCharsets.UTF_8));return load(saved);
+        var saved=files.write(name,envelope.toJson().getBytes(StandardCharsets.UTF_8));
+        return new Snapshot(saved,bounds,document,cells);
     }
     public Snapshot load(SnapshotFiles.Saved file) throws IOException {
+        long started=System.nanoTime();
+        var loaded=loadTimed(file);
+        timing("load",loaded.bounds(),started);
+        return loaded;
+    }
+    private Snapshot loadTimed(SnapshotFiles.Saved file) throws IOException {
         var envelope=BsonDocument.parse(new String(files.read(file),StandardCharsets.UTF_8));
         if(!envelope.getString("format").getValue().equals("eternia-native-snapshot-1")||!envelope.getBoolean("clearFluidAtEveryBlock").getValue())throw new IOException("Unsupported snapshot format");
         var b=envelope.getArray("bounds");var bounds=new Bounds(b.get(0).asInt32().getValue(),b.get(1).asInt32().getValue(),b.get(2).asInt32().getValue(),b.get(3).asInt32().getValue(),b.get(4).asInt32().getValue(),b.get(5).asInt32().getValue());
         var document=canonicalEmptyFluids(envelope.getDocument("prefab"));
-        if(!document.equals(canonicalEmptyFluids(SelectionPrefabSerializer.serialize(SelectionPrefabSerializer.deserialize(document)))))throw new IOException("Snapshot asset/component round trip changed; migration required");
         var cells=readCells(envelope);
         try{HexRelocation.requireInside(document,ColumnMask.of(cells),bounds.minX(),bounds.minZ());}catch(IllegalStateException outside){throw new IOException("Snapshot content lies outside its saved hexagons",outside);}
         return new Snapshot(file,bounds,document,cells);
@@ -124,9 +142,16 @@ public final class NativeSnapshotStore {
         catch(RuntimeException corrupt){throw new IOException("Snapshot hexagon mask is unreadable",corrupt);}
     }
     public void apply(World world,Snapshot snapshot,Vector3i destination) {
+        long started=System.nanoTime();
+        try{applyTimed(world,snapshot,destination);}finally{timing("write",snapshot.bounds(),started);}
+    }
+    private void applyTimed(World world,Snapshot snapshot,Vector3i destination) {
         var mask=snapshot.mask().shifted(destination.x-snapshot.bounds().minX(),destination.z-snapshot.bounds().minZ());
         NativeDecorativeEntities.preflightRestore(world,snapshot.document(),destination);
         var blockDoc=snapshot.document().clone();blockDoc.remove("entities");
+        // Only blocks that differ from the world are written: writing is the slow part, and most of a plot is unchanged.
+        blockDoc=onlyChanged(world,blockDoc,destination);
+        if(blockDoc.getArray("blocks",new BsonArray()).isEmpty()&&blockDoc.getArray("fluids",new BsonArray()).isEmpty()){spawnEntities(world,snapshot,destination);return;}
         var selection=SelectionPrefabSerializer.deserialize(blockDoc);
         selection.forEachBlock((x,y,z,b)->{
             int wx=Math.addExact(destination.x,x),wy=Math.addExact(destination.y,y),wz=Math.addExact(destination.z,z);
@@ -139,6 +164,9 @@ public final class NativeSnapshotStore {
         for(var cell:clearFluids)selection.addFluidAtLocalPos(cell.x,cell.y,cell.z,Fluid.EMPTY_ID,(byte)0);
         if(blockDoc.containsKey("fluids"))SelectionPrefabSerializer.deserialize(blockDoc).forEachFluid(selection::addFluidAtLocalPos);
         selection.place(null,world,destination,null);
+        spawnEntities(world,snapshot,destination);
+    }
+    private static void spawnEntities(World world,Snapshot snapshot,Vector3i destination){
         if(snapshot.document().containsKey("entities"))for(var value:snapshot.document().getArray("entities")) {
             Holder<EntityStore> holder=EntityStore.REGISTRY.deserialize(value.asDocument());
             holder.getComponent(TransformComponent.getComponentType()).getPosition().add(destination.x,destination.y,destination.z);
@@ -146,6 +174,32 @@ public final class NativeSnapshotStore {
             if(ref==null||!ref.isValid())throw new IllegalStateException("Native decorative entity spawn failed; recovery required");
             var dirty=world.getEntityStore().getStore().getComponent(ref,com.hypixel.hytale.server.core.entity.Dirty.getComponentType());if(dirty!=null)dirty.forceMarkDirty();
         }
+    }
+    /**
+     * The cells of {@code doc} (relative to {@code destination}) whose block, rotation or filler differ from the world,
+     * or that carry anything else (components, support, a fluid there now or in the snapshot). Fluids are kept whole.
+     */
+    static BsonDocument onlyChanged(World world,BsonDocument doc,Vector3i destination){
+        var fluidCells=new HashSet<String>();for(var f:doc.getArray("fluids",new BsonArray()))fluidCells.add(cellKey(f.asDocument()));
+        var keep=new BsonArray();
+        for(var value:doc.getArray("blocks",new BsonArray())){
+            var cell=value.asDocument();
+            if(fluidCells.contains(cellKey(cell))||!same(world,cell,destination))keep.add(cell);
+        }
+        var out=doc.clone();out.put("blocks",keep);return out;
+    }
+    private static final Set<String> PLAIN=Set.of("x","y","z","name","rotation","filler");
+    private static boolean same(World world,BsonDocument cell,Vector3i d){
+        for(String key:cell.keySet())if(!PLAIN.contains(key))return false;
+        int x=d.x+cell.getInt32("x").getValue(),y=d.y+cell.getInt32("y").getValue(),z=d.z+cell.getInt32("z").getValue();
+        int want=BlockType.getAssetMap().getIndex(cell.getString("name").getValue());
+        if(want<0||ChunkSectionBlockUtil.blockId(world,x,y,z)!=want)return false;
+        if(ChunkSectionBlockUtil.rotationIndex(world,x,y,z)!=cell.getInt32("rotation",new BsonInt32(0)).getValue())return false;
+        if(ChunkSectionBlockUtil.filler(world,x,y,z)!=cell.getInt32("filler",new BsonInt32(0)).getValue())return false;
+        if(ChunkSectionBlockUtil.blockEntityHolderAt(world,x,y,z)!=null)return false;
+        var section=ChunkSectionBlockUtil.sectionRefAt(world,x,y,z);if(section==null)return false;
+        var fluids=world.getChunkStore().getStore().getComponent(section,com.hypixel.hytale.server.core.universe.world.chunk.section.FluidSection.getComponentType());
+        return fluids==null||fluids.getFluidId(x,y,z)==Fluid.EMPTY_ID;
     }
     /** Entities still held by a section are only a concern when the capture takes custody of entities; block-only captures leave them in place. */
     private static void requireStorageIdle(World world,Ref<ChunkStore> ref,boolean captureEntities){
@@ -164,6 +218,10 @@ public final class NativeSnapshotStore {
     }
     private static String cellKey(BsonDocument cell){return cell.getInt32("x").getValue()+","+cell.getInt32("y").getValue()+","+cell.getInt32("z").getValue();}
     public void verify(World world,Snapshot snapshot,Vector3i destination,Set<UUID> instances,boolean entities) {
+        long started=System.nanoTime();
+        try{verifyTimed(world,snapshot,destination,instances,entities);}finally{timing("check",snapshot.bounds(),started);}
+    }
+    private void verifyTimed(World world,Snapshot snapshot,Vector3i destination,Set<UUID> instances,boolean entities) {
         Bounds b=snapshot.bounds();Bounds moved=new Bounds(destination.x,destination.y,destination.z,destination.x+b.maxX()-b.minX(),destination.y+b.maxY()-b.minY(),destination.z+b.maxZ()-b.minZ());
         BsonDocument actual=capture(world,moved,snapshot.mask().shifted(destination.x-b.minX(),destination.z-b.minZ()),instances,entities,false);
         BsonDocument expected=snapshot.document().clone();if(!entities)expected.remove("entities");

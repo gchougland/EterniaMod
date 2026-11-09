@@ -247,8 +247,14 @@ public final class HousingService extends DomainSupport {
             long price=context.settings().expansionPrice(location.cells().size());
             if(price>0) {
                 require(payer!=null,INVALID_INPUT,"A paid expansion needs a payer");
-                if(economy.balanceIn(tx,payer).available()<price)return HexOutcome.rejected(HexClaimRules.Result.of(HexClaimRules.Reason.COINS,price));
-                economy.spendIn(tx,payer,price,"hexplot-expand:"+operationId);
+                if(context.settings().crownPriced()) {
+                    require(payer.kind()==Owner.Kind.PLAYER,INVALID_INPUT,"Crowns are paid by a player");
+                    if(PremiumService.balanceIn(tx,payer.id())<price)return HexOutcome.rejected(HexClaimRules.Result.of(HexClaimRules.Reason.CROWNS,price));
+                    PremiumService.housingIn(tx,payer.id(),-price,"hexplot-expand:"+operationId);
+                } else {
+                    if(economy.balanceIn(tx,payer).available()<price)return HexOutcome.rejected(HexClaimRules.Result.of(HexClaimRules.Reason.COINS,price));
+                    economy.spendIn(tx,payer,price,"hexplot-expand:"+operationId);
+                }
             }
             journal.prepareIn(tx,operationId,"EXPAND",owner,expansionDetail(propertyId,cell));
             var next=location.withCells(location.cells().with(cell));
@@ -285,7 +291,8 @@ public final class HousingService extends DomainSupport {
             long refund=settings.sellRefund(location.cells().size());
             if(refund>0) {
                 require(payee!=null,INVALID_INPUT,"A paid sale needs a payee");
-                economy.creditIn(tx,payee,refund,"hexplot-sell:"+operationId);
+                if(settings.crownPriced()&&payee.kind()==Owner.Kind.PLAYER)PremiumService.housingIn(tx,payee.id(),refund,"hexplot-sell:"+operationId);
+                else economy.creditIn(tx,payee,refund,"hexplot-sell:"+operationId);
             }
             var op=journal.prepareIn(tx,operationId,"SHRINK",owner,expansionDetail(propertyId,cell));
             op=journal.advanceIn(tx,operationId,op.revision(),JournalService.State.WORLD_APPLIED);

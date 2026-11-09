@@ -296,8 +296,8 @@ public final class ClaimMapLogic {
         boolean estate = s.scope() == HousingRules.Scope.GUILD_ROOT;
 
         long price = price(s);
-        Message cost = s.mode() == Mode.SELL ? text("cost.refund").param("coins", coins(price))
-            : price <= 0 ? text("cost.free") : text("cost.coins").param("coins", coins(price));
+        Message cost = s.mode() == Mode.SELL ? text("cost.refund").param("coins", s.settings().priceText(price))
+            : price <= 0 ? text("cost.free") : text("cost.coins").param("coins", s.settings().priceText(price));
         Message ownLabel = text(estate ? "own.labelGuild" : "own.label");
         Message own = ownText(s);
 
@@ -451,10 +451,10 @@ public final class ClaimMapLogic {
 
     private static Message confirmText(Situation s, int count, long price) {
         return switch (s.mode()) {
-            case EXPAND -> text("status.confirmExpand").param("coins", coins(price));
-            case SELL -> text("status.confirmSell").param("coins", coins(price));
+            case EXPAND -> text("status.confirmExpand").param("coins", s.settings().priceText(price));
+            case SELL -> text("status.confirmSell").param("coins", s.settings().priceText(price));
             case PACKED -> text("status.confirmPacked").param("count", count);
-            case CLAIM -> price > 0 ? text("status.confirmCoins").param("count", count).param("coins", coins(price))
+            case CLAIM -> price > 0 ? text("status.confirmCoins").param("count", count).param("coins", s.settings().priceText(price))
                 : count == 1 ? text("status.confirmOne") : text("status.confirmFree").param("count", count);
         };
     }

@@ -18,6 +18,16 @@ class TerraformBlocksTest {
     }
 
     @Test
+    void growthIsClearedButGrassStays() {
+        for (String id : new String[] {"Plant_Leaves_Oak", "Plant_Flower_Common_Red", "Plant_Bush_Green", "Wood_Oak_Trunk", "Wood_Oak_Roots", "Rubble_Stone"})
+            assertTrue(TerraformBlocks.isGrowth(id), id);
+        for (String id : new String[] {"Soil_Gravel", "Rock_Stone", "Plant_Crop_Wheat", "Planter_Box", "Wood_Oak_Planks"})
+            assertFalse(TerraformBlocks.isGrowth(id), id);
+        assertTrue(TerraformBlocks.isKeptGrass("Plant_Grass_Lush"));
+        assertFalse(TerraformBlocks.isKeptGrass("Plant_Flower_Common_Red"));
+    }
+
+    @Test
     void groundAndTopsoil() {
         assertTrue(TerraformBlocks.isGround("Rock_Stone"));
         assertFalse(TerraformBlocks.isGround("Plant_Grass_Lush"));

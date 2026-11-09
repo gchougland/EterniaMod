@@ -82,12 +82,14 @@ class PlotCellsTest {
 
     @Test void settingsComeFromDataWithSafeFallbacks() throws Exception {
         HexPlotSettings shipped = HexPlotSettings.load(getClass().getClassLoader());
-        assertEquals(HexPlotSettings.DEFAULTS, shipped, "the shipped JSON matches the accepted plan");
+        assertEquals(new HexPlotSettings(32, 20, HexPlotSettings.DEFAULTS.startShapes(), 7, 19, 0, 0, 0, 24, 2, 5, 5, 500), shipped, "the shipped JSON matches the accepted plan");
         assertEquals(HexShape.TRIANGLE, shipped.startShape(HexClaimRules.Kind.PUBLIC, true));
         assertEquals(HexShape.FLOWER, shipped.startShape(HexClaimRules.Kind.GUILD_ESTATE, false));
         assertEquals(7, shipped.maxCells(HexClaimRules.Kind.PUBLIC));
         assertEquals(19, shipped.maxCells(HexClaimRules.Kind.GUILD_ESTATE));
-        assertEquals(3000, shipped.expansionPrice(3));
+        assertEquals(500, shipped.expansionPrice(3), "added hexagons cost 500 Crowns each");
+        assertTrue(shipped.crownPriced());
+        assertEquals("500 Crowns", shipped.priceText(500));
         var odd = HexPlotSettings.parse(new StringReader("""
             {"StartShapes":{"Public":"Triangle","GuildEstate":"Nope"},"MaxCells":{"Personal":2},
              "ExpansionPrice":{"Coins":50,"CoinsPerOwnedCell":-5},"Lattice":{"CellWidth":30},"PerCell":{"Props":"many"}}"""));

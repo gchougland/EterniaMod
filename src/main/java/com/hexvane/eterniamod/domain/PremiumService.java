@@ -27,6 +27,20 @@ public final class PremiumService extends DomainSupport {
     private final OwnershipService ownership;
     PremiumService(TransactionalStore s,Clock c,Supplier<UUID> i,OwnershipService ownership){super(s,c,i);this.ownership=ownership;}
     public Balance balance(UUID player){return store.transaction(tx->{long n=net(tx,player);return new Balance(Math.max(0,n),n<0?Math.negateExact(n):0);});}
+    /** A player's Crowns, inside the caller's transaction (housing charges them with its own changes). */
+    static long balanceIn(TransactionalStore.Transaction tx,UUID player){return tx.find("premium_wallet",player.toString()).map(r->r.number("balance")).orElse(0L);}
+    /**
+     * Spends ({@code delta} below zero) or gives back Crowns for a housing change, inside the caller's transaction. A
+     * receipt is used once: replaying the same change does nothing. Spending never takes the balance below zero.
+     */
+    static boolean housingIn(TransactionalStore.Transaction tx,UUID player,long delta,String receipt){
+        if(delta==0||tx.find("premium_housing",receipt).isPresent())return false;
+        var r=tx.find("premium_wallet",player.toString());long next=Math.addExact(balanceIn(tx,player),delta);
+        require(next>=0,INSUFFICIENT_BALANCE,"You need more Crowns.");
+        tx.save("premium_wallet",player.toString(),r.map(TransactionalStore.Row::revision).orElse(0L),fields("balance",next));
+        tx.save("premium_housing",receipt,0,fields("player",player,"delta",delta));
+        return true;
+    }
     private long net(TransactionalStore.Transaction tx,UUID player){return tx.find("premium_wallet",player.toString()).map(r->r.number("balance")).orElse(0L);}
     private void adjust(TransactionalStore.Transaction tx,UUID player,long delta){var r=tx.find("premium_wallet",player.toString());tx.save("premium_wallet",player.toString(),r.map(TransactionalStore.Row::revision).orElse(0L),fields("balance",Math.addExact(net(tx,player),delta)));}
     void creditIn(TransactionalStore.Transaction tx,UUID player,long amount,String source){

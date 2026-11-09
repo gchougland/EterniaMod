@@ -263,7 +263,6 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (slot == null || slot.state() == HousingService.State.PACKED) {
             boolean packed = slot != null;
             rows.add(Row.card(packed ? "Set down your plot" : "Choose a plot", packed ? "Pick new hexagons on the map" : "Pick your hexagons beside a road", packed ? "Set down" : "Choose", "home_claim:" + side, "eternia:plot/claim"));
-            rows.addAll(propCards(plugin, owner, side, true));
             return new View(name, packed ? "Your plot is packed with everything on it. Choose where to set it down." : guild ? "Your guild has no estate yet." : "You do not have a plot yet. Choose one beside a road to start.",
                 rows, noFields(), buttons("Refresh", "refresh", "", "", "", ""), null);
         }
@@ -279,14 +278,13 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (services.journal().unfinished().stream().anyMatch(op -> op.owner().equals(owner)))
             rows.add(Row.card("Fix my plot", "Something did not finish. Nothing is lost.", "Fix", "home_fix:" + side, "eternia:guild_voucher/fix"));
         rows.add(Row.card("Go to plot", "Travel to its edge", "Go", "home_go:" + side, "eternia:plot/visit"));
-        if (cells > 0) rows.add(Row.card("Add a hexagon", settings.expansionPrice(cells) + " Coins", "Add", "home_add:" + side, "eternia:plot/add"));
-        if (cells > 1) rows.add(Row.card("Sell a hexagon", settings.expansionPrice(cells - 1) + " Coins back", "Sell", "home_sell:" + side, "eternia:coins/sell"));
-        rows.add(Row.card("Move plot", services.ownership().available(owner, HousingService.MOVE_CREDIT) + " move credits", "Move", "home_move:" + side, "eternia:move/plot"));
+        if (cells > 0) rows.add(Row.card("Add a hexagon", settings.priceText(settings.expansionPrice(cells)), "Add", "home_add:" + side, "eternia:plot/add"));
+        if (cells > 1) rows.add(Row.card("Sell a hexagon", settings.priceText(settings.sellRefund(cells)) + " back", "Sell", "home_sell:" + side, "eternia:coins/sell"));
+        long credits = services.ownership().available(owner, HousingService.MOVE_CREDIT);
+        rows.add(Row.card("Move plot", credits + (credits == 1 ? " move credit" : " move credits"), "Move", "home_move:" + side, "eternia:move/plot"));
+        rows.add(Row.card("Pack plot", "Set it down later", "Pack", "home_packplot:" + side, "eternia:move/pack"));
         if (house != null) rows.add(Row.card("Pack house", houseName + " and what is inside", "Pack", "home_pack:" + side, house.contentId()));
         if (guild) rows.add(Row.card("Guild roads", "Plan roads on your estate", "Roads", "home_roads:" + side, "eternia:path/roads"));
-        // Ready to place: a house style first when none stands here, then decorations.
-        if (house == null) rows.addAll(houseCards(plugin, owner, side, false));
-        rows.addAll(propCards(plugin, owner, side, true));
         return new View(name, summary, rows, noFields(), buttons("Refresh", "refresh", "", "", "", ""), null);
     }
 
@@ -363,11 +361,17 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                     + services.ownership().available(owner, HousingService.MOVE_CREDIT) + ".");
                 generation++; rebuild();
             }
-            case "home_move_confirm" -> {
+            case "home_packplot" -> {
+                pending = new Pending("home_pack_confirm:" + parts[1], input(), "Pack your whole plot? Your house, decorations and everything you built are saved, and the land goes back to how it was. Set it down again from Home whenever you like. This uses one move credit; you have "
+                    + services.ownership().available(owner, HousingService.MOVE_CREDIT) + ".");
+                generation++; rebuild();
+            }
+            case "home_move_confirm", "home_pack_confirm" -> {
                 var world = location == null ? null : com.hypixel.hytale.server.core.universe.Universe.get().getWorld(location.worldId());
                 if (world == null) { homeStatus("Your plot's world is not open right now."); return; }
+                boolean move = action.equals("home_move_confirm");
                 close();
-                world.execute(() -> plugin.getPlotMover().request(world, owner, playerRef));
+                world.execute(() -> plugin.getPlotMover().request(world, owner, playerRef, move));
             }
             case "home_pack" -> { if (slot != null) pages.openCustomPage(ref, store, new com.hexvane.eterniamod.ui.BuildingPickupPage(playerRef, slot.propertyId()).withReturnFrom(pages.getCustomPage())); }
             case "home_fix" -> com.hexvane.eterniamod.housing.PropRecoveryMenu.open(plugin, ref, store, playerRef, owner);

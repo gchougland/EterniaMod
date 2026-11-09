@@ -184,13 +184,18 @@ public final class NativeClaimCoordinator {
         if(estateGuild!=null)plugin.getRuntime().welcomeGuild(estateGuild);
         String shape=shapeName(out.cells());
         var line=out.charged()>0
-            ?HexPlotText.plots("claim.paid","Your {shape} is ready! {coins} coins paid. Open your housing menu to place a house.","shape",shape,"coins",out.charged())
+            ?HexPlotText.plots("claim.paid","Your {shape} is ready! {coins} coins paid. Open your housing menu to place a house.","shape",shape,"coins",HexPlotSettings.current().priceText(out.charged()))
             :HexPlotText.plots("claim.done","Your {shape} is ready! Open your housing menu to place a house.","shape",shape);
         return HexCommitResult.success(line,property.toString(),out.result());
     }
 
     /** World thread. The synchronous expansion: checks who may grow the plot, commits durably, then applies it. */
     public synchronized HexCommitResult expandPlotNow(World world,UUID actor,UUID plotId,HexCoord cell,UUID operation) {
+        long started=System.nanoTime();
+        try{return expandPlotNowTimed(world,actor,plotId,cell,operation);}
+        finally{com.hexvane.eterniamod.EterniaModPlugin.get().getLogger().atInfo().log("Housing %s took %d ms","expandPlotNow",(System.nanoTime()-started)/1_000_000);}
+    }
+    private synchronized HexCommitResult expandPlotNowTimed(World world,UUID actor,UUID plotId,HexCoord cell,UUID operation) {
         var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);
         var plot=plotId==null?null:manager.getPlot(plotId);
         if(plot==null||!plot.isHex())return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.NO_PLOT));
@@ -217,9 +222,12 @@ public final class NativeClaimCoordinator {
         var out=services.housing().expandPlot(owner,plotId,cell,slot.revision(),operation,kind,context,Owner.player(actor));
         if(!out.ok())return HexCommitResult.refused(out.result());
         applyCells(manager,plot,out.cells());
+        // The new hexagon's ground (already shaped) joins the plot's saved ground now, so packing puts it back exactly.
+        try{com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator.extendBaseline(plugin,world,plot);}
+        catch(RuntimeException failure){plugin.getLogger().atWarning().withCause(failure).log("Saved ground of plot %s not extended; packing will refit it",plotId);}
         services.housing().completeExpansion(owner,operation);
         var line=out.charged()>0
-            ?HexPlotText.plots("expand.paid","Your plot grew to {cells} hexagons. {coins} coins paid.","cells",out.cells().size(),"coins",out.charged())
+            ?HexPlotText.plots("expand.paid","Your plot grew to {cells} hexagons. {coins} coins paid.","cells",out.cells().size(),"coins",HexPlotSettings.current().priceText(out.charged()))
             :HexPlotText.plots("expand.done","Your plot grew to {cells} hexagons.","cells",out.cells().size());
         return HexCommitResult.success(line,plotId.toString(),out.result());
     }
@@ -253,6 +261,11 @@ public final class NativeClaimCoordinator {
 
     /** World thread. The synchronous sale: who may shrink the plot, pack what stands on the hexagon, restore its ground, commit. */
     public synchronized HexCommitResult sellCellNow(World world,UUID actor,UUID plotId,HexCoord cell,UUID operation) {
+        long started=System.nanoTime();
+        try{return sellCellNowTimed(world,actor,plotId,cell,operation);}
+        finally{com.hexvane.eterniamod.EterniaModPlugin.get().getLogger().atInfo().log("Housing %s took %d ms","sellCellNow",(System.nanoTime()-started)/1_000_000);}
+    }
+    private synchronized HexCommitResult sellCellNowTimed(World world,UUID actor,UUID plotId,HexCoord cell,UUID operation) {
         var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);
         var plot=plotId==null?null:manager.getPlot(plotId);
         if(plot==null||!plot.isHex())return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.NO_PLOT));
@@ -307,7 +320,7 @@ public final class NativeClaimCoordinator {
         applyCells(manager,plot,out.cells());
         String packedNote=packed==0?"":packed==1?" 1 decoration from it went back to your inventory.":" "+packed+" decorations from it went back to your inventory.";
         var line=out.charged()>0
-            ?HexPlotText.plots("sell.paid","You sold a hexagon for {coins} coins. Your plot now has {cells} hexagons.{packed}","coins",out.charged(),"cells",out.cells().size(),"packed",packedNote)
+            ?HexPlotText.plots("sell.paid","You sold a hexagon for {coins} coins. Your plot now has {cells} hexagons.{packed}","coins",HexPlotSettings.current().priceText(out.charged()),"cells",out.cells().size(),"packed",packedNote)
             :HexPlotText.plots("sell.done","You gave back a hexagon. Your plot now has {cells} hexagons.{packed}","cells",out.cells().size(),"packed",packedNote);
         return HexCommitResult.success(line,plotId.toString(),out.result());
     }

@@ -10,7 +10,7 @@
   },
   "MaxCells": { "Personal": 7, "GuildEstate": 19 },
   "ClaimPrice": { "Coins": 0 },
-  "ExpansionPrice": { "Coins": 0, "CoinsPerOwnedCell": 1000 },
+  "ExpansionPrice": { "Crowns": 500, "Coins": 0, "CoinsPerOwnedCell": 0 },
   "PerCell": { "Props": 24, "Generators": 2 },
   "HouseSetback": 5,
   "GuildEstateMembers": 5

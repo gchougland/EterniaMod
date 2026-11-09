@@ -16,11 +16,13 @@ public final class VoluntaryPlotMover implements AutoCloseable {
     private final ScheduledExecutorService scheduler=Executors.newSingleThreadScheduledExecutor(r->{var t=new Thread(r,"eternia-plot-moves");t.setDaemon(true);return t;});
     private final Set<Owner> pending=ConcurrentHashMap.newKeySet();
     public VoluntaryPlotMover(EterniaModPlugin plugin){this.plugin=plugin;}
-    public void request(World world,Owner owner,PlayerRef actor){
-        if(!pending.add(owner)){actor.sendMessage(Message.raw("This plot is already preparing to move."));return;}
-        step(world,owner,actor,UUID.randomUUID(),0);
+    public void request(World world,Owner owner,PlayerRef actor){request(world,owner,actor,false);}
+    /** Packs the plot; with {@code thenPlace} the map opens right after so the player can set it down somewhere new. */
+    public void request(World world,Owner owner,PlayerRef actor,boolean thenPlace){
+        if(!pending.add(owner)){actor.sendMessage(Message.raw("This plot is already being packed."));return;}
+        step(world,owner,actor,UUID.randomUUID(),0,thenPlace);
     }
-    private void step(World world,Owner owner,PlayerRef actor,UUID operation,int attempt){
+    private void step(World world,Owner owner,PlayerRef actor,UUID operation,int attempt,boolean thenPlace){
         try {
             if(owner.kind()==Owner.Kind.PLAYER&&!owner.id().equals(actor.getUuid())||owner.kind()==Owner.Kind.GUILD&&!plugin.getServices().guilds().can(actor.getUuid(),owner.id(),"housing.move"))throw new IllegalStateException("Your role cannot move this plot.");
             if(plugin.getServices().ownership().available(owner,HousingService.MOVE_CREDIT)<1)throw new IllegalStateException("A move credit is required.");
@@ -36,10 +38,14 @@ public final class VoluntaryPlotMover implements AutoCloseable {
             if(occupied){
                 if(attempt>=15)throw new IllegalStateException("Everyone needs to step off the plot before it can be packed. Walk onto the road and try again.");
                 if(attempt==0)actor.sendMessage(Message.raw("Stepping everyone onto the road beside the plot before packing."));
-                scheduler.schedule(()->world.execute(()->step(world,owner,actor,operation,attempt+1)),1,TimeUnit.SECONDS);return;
+                scheduler.schedule(()->world.execute(()->step(world,owner,actor,operation,attempt+1,thenPlace)),1,TimeUnit.SECONDS);return;
             }
-            plugin.getRelocation().pack(world,owner,operation,false);
-            actor.sendMessage(Message.raw("Your furnished plot is packed. Use your plot deed in a world with housing enabled to restore it."));pending.remove(owner);
+            plugin.getRelocation().pack(world,owner,operation,false);pending.remove(owner);
+            if(thenPlace){
+                actor.sendMessage(Message.raw("Your plot is packed. Pick the hexagons to set it down on."));
+                var ref=actor.getReference();
+                if(ref!=null&&ref.isValid()){var store=ref.getStore();store.getExternalData().getWorld().execute(()->{if(ref.isValid())com.hexvane.eterniamod.claimmap.ClaimMapRoutes.claimNew(plugin,ref,store,actor,owner.kind()==Owner.Kind.GUILD);});}
+            } else actor.sendMessage(Message.raw("Your plot is packed with everything on it. Set it down again from Home in your Journal."));
         }catch(RuntimeException failure){pending.remove(owner);actor.sendMessage(Message.raw(failure.getMessage()==null?"The plot could not be moved.":failure.getMessage()));}
     }
     /**

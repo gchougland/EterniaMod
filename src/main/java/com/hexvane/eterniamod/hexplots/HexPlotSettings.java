@@ -29,6 +29,7 @@ import java.util.Map;
  * @param generatorsPerCell       generators allowed per cell
  * @param houseSetback            clear blocks between a house and the plot's outer border
  * @param guildEstateMembers      members a guild needs before it can claim its estate (local playtests allow 1)
+ * @param expandCrowns            Crowns per added cell; when above zero, added cells cost Crowns instead of coins
  */
 public record HexPlotSettings(
     int latticeWidth,
@@ -42,8 +43,17 @@ public record HexPlotSettings(
     int propsPerCell,
     int generatorsPerCell,
     int houseSetback,
-    int guildEstateMembers
+    int guildEstateMembers,
+    long expandCrowns
 ) {
+    /** Coin priced settings (no Crowns price). */
+    public HexPlotSettings(int latticeWidth, int latticeBody, Map<StartKey, HexShape> startShapes, int maxPersonal, int maxGuildEstate,
+                           long claimCoins, long expandCoins, long expandCoinsPerOwnedCell, int propsPerCell, int generatorsPerCell,
+                           int houseSetback, int guildEstateMembers) {
+        this(latticeWidth, latticeBody, startShapes, maxPersonal, maxGuildEstate, claimCoins, expandCoins, expandCoinsPerOwnedCell,
+            propsPerCell, generatorsPerCell, houseSetback, guildEstateMembers, 0);
+    }
+
     public static final String RESOURCE = "Server/EterniaMod/Housing/HexPlots.json";
 
     /** Which start shape applies: plot kind plus whether the owner holds the larger plot entitlement. */
@@ -65,6 +75,7 @@ public record HexPlotSettings(
         }
     }
 
+    /** Fallback when the data file is missing or unreadable (coin priced); the shipped HexPlots.json prices hexagons in Crowns. */
     public static final HexPlotSettings DEFAULTS = new HexPlotSettings(32, 20, defaultShapes(), 7, 19, 0, 0, 1000, 24, 2, 5, 5);
 
     private static volatile HexPlotSettings current = DEFAULTS;
@@ -88,6 +99,7 @@ public record HexPlotSettings(
         claimCoins = Math.max(0, claimCoins);
         expandCoins = Math.max(0, expandCoins);
         expandCoinsPerOwnedCell = Math.max(0, expandCoinsPerOwnedCell);
+        expandCrowns = Math.max(0, expandCrowns);
         propsPerCell = clamp(propsPerCell, 0, 10_000);
         generatorsPerCell = clamp(generatorsPerCell, 0, 10_000);
         houseSetback = clamp(houseSetback, 0, 16);
@@ -122,9 +134,18 @@ public record HexPlotSettings(
         return ownedCells <= 1 ? 0 : expansionPrice(ownedCells - 1);
     }
 
-    /** Coins for adding one cell to a plot that already has {@code ownedCells}. */
+    /** The price of adding one cell to a plot that already has {@code ownedCells}, in Crowns when Crown priced, else coins. */
     public long expansionPrice(int ownedCells) {
+        if (crownPriced()) return expandCrowns;
         return Math.addExact(expandCoins, Math.multiplyExact(expandCoinsPerOwnedCell, (long) Math.max(0, ownedCells)));
+    }
+
+    /** True when added hexagons cost Crowns. */
+    public boolean crownPriced() { return expandCrowns > 0; }
+
+    /** A hexagon price for players: "500 Crowns" or "1,000 Coins". */
+    public String priceText(long amount) {
+        return String.format(Locale.ROOT, "%,d", amount) + (crownPriced() ? (amount == 1 ? " Crown" : " Crowns") : (amount == 1 ? " Coin" : " Coins"));
     }
 
     public static HexPlotSettings load(ClassLoader loader) {
@@ -160,7 +181,8 @@ public record HexPlotSettings(
             number(claim, "Coins", d.claimCoins), number(expand, "Coins", d.expandCoins),
             number(expand, "CoinsPerOwnedCell", d.expandCoinsPerOwnedCell),
             integer(perCell, "Props", d.propsPerCell), integer(perCell, "Generators", d.generatorsPerCell),
-            integer(json, "HouseSetback", d.houseSetback), integer(json, "GuildEstateMembers", d.guildEstateMembers));
+            integer(json, "HouseSetback", d.houseSetback), integer(json, "GuildEstateMembers", d.guildEstateMembers),
+            number(expand, "Crowns", d.expandCrowns));
     }
 
     private static Map<StartKey, HexShape> defaultShapes() {

@@ -97,6 +97,12 @@ public final class PlotTerraformer {
 
     /** Background thread. Reads, plans and writes; never commits anything. */
     Outcome shape(World world, Request request, TerraformSettings settings, Supplier<Boolean> stillWanted) {
+        long started = System.nanoTime();
+        try { return shapeTimed(world, request, settings, stillWanted); }
+        finally { plugin.getLogger().atInfo().log("Housing terraform took %d ms", (System.nanoTime() - started) / 1_000_000); }
+    }
+
+    private Outcome shapeTimed(World world, Request request, TerraformSettings settings, Supplier<Boolean> stillWanted) {
         if (settings.mode() == TerraformSettings.Mode.OFF) return Outcome.none(settings.mode(), "off");
         if (request.cells().isEmpty()) return Outcome.none(settings.mode(), "no hexagons");
         boolean smooth = settings.mode() == TerraformSettings.Mode.SMOOTH;
@@ -131,7 +137,8 @@ public final class PlotTerraformer {
         // Write, a slice per tick; every column is checked again just before it changes.
         int[] counts = new int[2];
         List<Integer> changing = new ArrayList<>();
-        for (int i = 0; i < grid.size(); i++) if (target[i] != TerraformField.UNKNOWN && target[i] != grid.natural[i]) changing.add(i);
+        // Columns that change height, and claimed columns with plants or rubble to clear even where the height stays.
+        for (int i = 0; i < grid.size(); i++) if (target[i] != TerraformField.UNKNOWN && (target[i] != grid.natural[i] || grid.role[i] == TerraformField.OWN && survey.growth[i])) changing.add(i);
         if (!on(world, stillWanted)) return Outcome.none(settings.mode(), "no longer wanted");
         for (var slice : slices(changing, settings.maxColumnsPerTick())) on(world, () -> {
             var sel = new BlockSelection();
@@ -220,17 +227,18 @@ public final class PlotTerraformer {
         final byte[] kind;
         final int[] height, top, surfaceId, subId;
         final UUID[] plot;
+        final boolean[] growth;
 
         Survey(TerraformField.Grid grid) {
             this.grid = grid;
             int n = grid.size();
-            kind = new byte[n]; height = new int[n]; top = new int[n]; surfaceId = new int[n]; subId = new int[n]; plot = new UUID[n];
+            kind = new byte[n]; height = new int[n]; top = new int[n]; surfaceId = new int[n]; subId = new int[n]; plot = new UUID[n]; growth = new boolean[n];
         }
 
         void read(World world, EterniaModPlugin plugin, Context context, Request request, int i) {
             int x = grid.x(i), z = grid.z(i);
             var column = Column.read(world, x, z);
-            height[i] = column.ground; top[i] = column.top; surfaceId[i] = column.surface; subId[i] = column.sub;
+            height[i] = column.ground; top[i] = column.top; surfaceId[i] = column.surface; subId[i] = column.sub; growth[i] = column.growth;
             if (plugin.getInfrastructure().protectedColumn(request.world(), x, z)) {
                 kind[i] = ROAD;
                 height[i] = Column.solidTop(world, x, z);
@@ -264,11 +272,16 @@ public final class PlotTerraformer {
             if (!now.editable || now.ground != grid.natural[i]) return false;
             int n = now.ground;
             boolean mine = grid.role[i] == TerraformField.OWN;
-            int topBlock = Column.isTopsoil(now.surface) ? now.surface : blockIndex(mine ? surface : "Soil_Grass", "Soil_Grass");
-            int subBlock = Column.isTopsoil(now.sub) && !Column.id(now.sub).startsWith("Soil_Grass") ? now.sub : Column.subsoilFor(topBlock);
+            // The ground block on top stays what it was (grass, gravel, sand, stone); raised columns get it too.
+            int topBlock = Column.isGround(now.surface) ? now.surface : blockIndex(mine ? surface : "Soil_Grass", "Soil_Grass");
+            int subBlock = Column.isGround(now.sub) && !Column.id(now.sub).startsWith("Soil_Grass") ? now.sub : Column.subsoilFor(topBlock);
             // Natural growth above the new ground goes; it would float or be buried otherwise.
             for (int y = t + 1; y <= Math.max(now.top, n) + GROWTH && y < NativeSnapshotStore.MAX_Y; y++) {
-                if (ChunkSectionBlockUtil.blockId(world, x, y, z) != 0) sel.addEmptyAtWorldPos(x, y, z);
+                int id = ChunkSectionBlockUtil.blockId(world, x, y, z);
+                if (id == 0) continue;
+                // Grass blades stay on ground that keeps its height.
+                if (y == t + 1 && t == n && TerraformBlocks.isKeptGrass(Column.id(id))) continue;
+                sel.addEmptyAtWorldPos(x, y, z);
             }
             if (t > n) for (int y = n + 1; y < t; y++) sel.addBlockAtWorldPos(x, y, z, y >= t - 2 ? subBlock : fill, 0, FillerBlockUtil.NO_FILLER, 0);
             else if (t - 1 > ChunkUtil.MIN_Y) sel.addBlockAtWorldPos(x, t - 1, z, subBlock, 0, FillerBlockUtil.NO_FILLER, 0);
@@ -278,21 +291,24 @@ public final class PlotTerraformer {
     }
 
     /** One column as it is now. */
-    record Column(int ground, int top, int surface, int sub, boolean editable) {
+    record Column(int ground, int top, int surface, int sub, boolean editable, boolean growth) {
         static Column read(World world, int x, int z) {
             int top = Math.min(ChunkSectionBlockUtil.columnHeight(world, x, z), NativeSnapshotStore.MAX_Y - 1);
-            if (top < ChunkUtil.MIN_Y) return new Column(TerraformLevel.UNKNOWN, top, 0, 0, false);
+            if (top < ChunkUtil.MIN_Y) return new Column(TerraformLevel.UNKNOWN, top, 0, 0, false, false);
             int ground = TerraformLevel.UNKNOWN;
             for (int y = top; y > Math.max(ChunkUtil.MIN_Y, top - GROUND_SEARCH); y--) {
                 if (isGround(ChunkSectionBlockUtil.blockId(world, x, y, z))) { ground = y; break; }
             }
-            if (ground == TerraformLevel.UNKNOWN) return new Column(ground, top, 0, 0, false);
-            boolean editable = !hasFluid(world, x, ground + 1, z) && !hasFluid(world, x, ground, z);
+            if (ground == TerraformLevel.UNKNOWN) return new Column(ground, top, 0, 0, false, false);
+            boolean editable = !hasFluid(world, x, ground + 1, z) && !hasFluid(world, x, ground, z), growth = false;
             for (int y = ground + 1; editable && y <= Math.min(top + GROWTH, NativeSnapshotStore.MAX_Y - 1); y++) {
                 int id = ChunkSectionBlockUtil.blockId(world, x, y, z);
-                if (id != 0 && !isNatural(id)) editable = false;
+                if (id == 0) continue;
+                String name = id(id);
+                if (!TerraformBlocks.isGrowth(name)) editable = false;
+                else if (!(y == ground + 1 && TerraformBlocks.isKeptGrass(name))) growth = true;
             }
-            return new Column(ground, top, ChunkSectionBlockUtil.blockId(world, x, ground, z), ChunkSectionBlockUtil.blockId(world, x, ground - 1, z), editable);
+            return new Column(ground, top, ChunkSectionBlockUtil.blockId(world, x, ground, z), ChunkSectionBlockUtil.blockId(world, x, ground - 1, z), editable, growth);
         }
 
         /** Highest full cube block (road paving under lamps and fences). */
@@ -318,7 +334,12 @@ public final class PlotTerraformer {
             return type == null ? "" : type.getId();
         }
 
-        static boolean isGround(int index) { return index != 0 && TerraformBlocks.isGround(id(index)); }
+        /** Any full solid block that is not a plant, tree or rubble: grass, dirt, gravel, sand, stone, ore. */
+        static boolean isGround(int index) {
+            if (index == 0) return false;
+            var type = BlockType.getAssetMap().getAsset(index);
+            return type != null && type.isCubeDrawType() && type.getMaterial().name().equals("Solid") && !TerraformBlocks.isGrowth(type.getId());
+        }
         static boolean isNatural(int index) { return TerraformBlocks.isNatural(id(index)); }
         static boolean isTopsoil(int index) { return index != 0 && TerraformBlocks.isTopsoil(id(index)); }
         static int subsoilFor(int topIndex) { return blockIndex(TerraformBlocks.subsoilFor(id(topIndex)), "Soil_Dirt"); }

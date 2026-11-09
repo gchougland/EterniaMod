@@ -4,8 +4,8 @@
 
 ### Added
 
-- New plots are levelled for you. A freshly claimed hexagon is flattened to the height of the road beside it, and every hexagon you add later matches the rest of your plot. A guild's estate and its members' plots share one height. The edges either blend gently into the land around them or rise as a neat hexagon step. Buildings, roads and other plots are never changed.
-- You can sell a hexagon back from your plot and get its coins back. Open My Plots, choose Manage and press Sell a hexagon. Decorations on it go back to your inventory, and its ground goes back to how it was.
+- New plots are levelled for you. A freshly claimed hexagon is flattened to the height of the road beside it, and every hexagon you add later matches the rest of your plot. A guild's estate and its members' plots share one height. The edges either blend gently into the land around them or rise as a neat hexagon step. Trees, bushes, flowers and rubble are cleared while grass stays, on any kind of ground. Buildings, roads and other plots are never changed.
+- You can sell a hexagon back from your plot and get its Crowns back. Open Home in your Journal and press Sell a hexagon. Decorations on it go back to your inventory, and its ground goes back to how it was.
 
 ### Fixed
 
@@ -15,11 +15,13 @@
 - Moving your plot no longer fails because the land changed shape, a road was built next to it, or an animal or dropped item was standing on it.
 - Moving your plot steps you onto the road beside it instead of sending you to another world.
 - Records now shows the Journal tabs along the top, like every other page.
+- Buying, selling and moving hexagons, and packing up a plot, are much faster.
 
 ### Changed
 
+- Extra hexagons cost 500 Crowns each instead of coins.
 - Houses and decorations in Collections have a Place button. Stand on your plot and press it to start placing.
-- Home in the Journal is now your whole housing menu on one page. Place houses and decorations, pack your house, go to your plot, add, sell or move hexagons, and change palettes and paths, with your guild estate in its own tabs. The old stack of housing menus is gone.
+- Home in the Journal is now your whole housing menu on one page. Go to your plot, add or sell hexagons, pack or move your whole plot, and find your houses, decorations, palettes and paths in their own tabs, with your guild estate beside them. The old stack of housing menus is gone.
 
 ## [1.1.0]
 
