@@ -102,7 +102,7 @@ final class PropCarryGhost {
             return;
         }
         clear(world, viewer);
-        SHOWN.put(viewer, new Shown(world, prefab, steps, origin, fits, spawnAll(store, buffer, yaw, origin, glow(fits))));
+        SHOWN.put(viewer, new Shown(world, prefab, steps, origin, fits, spawnAll(store, prefab, buffer, yaw, origin, glow(fits))));
     }
 
     @Nullable
@@ -110,7 +110,7 @@ final class PropCarryGhost {
         return EntityEffect.getAssetMap().getAsset(fits ? FITS : BLOCKED);
     }
 
-    private static List<Ref<EntityStore>> spawnAll(Store<EntityStore> store, IPrefabBuffer buffer, Rotation yaw, Vector3i origin, @Nullable EntityEffect glow) {
+    private static List<Ref<EntityStore>> spawnAll(Store<EntityStore> store, String prefab, IPrefabBuffer buffer, Rotation yaw, Vector3i origin, @Nullable EntityEffect glow) {
         var holders = new ArrayList<Holder<EntityStore>>();
         PrefabRotation rotation = PrefabRotation.fromRotation(yaw);
         buffer.forEach(
@@ -129,26 +129,30 @@ final class PropCarryGhost {
                 copy.putComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(1f));
                 holders.add(copy);
             },
-            (x, z, entities, t) -> {
-                if (entities == null) return;
-                for (Holder<EntityStore> source : entities) {
-                    if (holders.size() >= MAX_GHOSTS) return;
-                    Holder<EntityStore> copy = source.clone();
-                    TransformComponent transform = copy.getComponent(TransformComponent.getComponentType());
-                    if (transform == null) continue;
-                    // Exactly as the placement pastes a prefab's entity parts.
-                    Vector3d at = new Vector3d(transform.getPosition());
-                    rotation.rotate(at);
-                    transform.getPosition().set(at.add(origin.x, origin.y, origin.z));
-                    if (copy.getComponent(EntityScaleComponent.getComponentType()) == null) {
-                        copy.putComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(1f));
-                    }
-                    holders.add(copy);
-                }
-            },
+            null,
             null,
             new PrefabBufferCall(new FastRandom(), rotation)
         );
+        // Entity parts (potions, plates) exactly as the placement pastes them: from the turned prefab, which turns each
+        // one about the right point and turns the entity itself too.
+        var path = com.hexvane.eterniamod.prefab.PrefabResolveUtil.resolvePrefabPath(prefab);
+        var selection = path == null ? null : com.hypixel.hytale.server.core.prefab.PrefabStore.get().getPrefab(path);
+        if (selection != null && selection.getEntityCount() > 0) {
+            int turns = (yaw.getDegrees() / 90) % 4;
+            var turned = turns == 0 ? selection : selection.cloneSelection().rotate(com.hypixel.hytale.math.Axis.Y, 90 * turns,
+                com.hypixel.hytale.server.core.prefab.selection.standard.RotateBlockMode.ALL);
+            turned.forEachEntity(source -> {
+                if (holders.size() >= MAX_GHOSTS) return;
+                Holder<EntityStore> copy = source.clone();
+                TransformComponent transform = copy.getComponent(TransformComponent.getComponentType());
+                if (transform == null) return;
+                transform.getPosition().add(origin.x, origin.y, origin.z);
+                if (copy.getComponent(EntityScaleComponent.getComponentType()) == null) {
+                    copy.putComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(1f));
+                }
+                holders.add(copy);
+            });
+        }
         var refs = new ArrayList<Ref<EntityStore>>();
         for (Holder<EntityStore> holder : holders) {
             Ref<EntityStore> ref = spawn(store, holder, glow);
