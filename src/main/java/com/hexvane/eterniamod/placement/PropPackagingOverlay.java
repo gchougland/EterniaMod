@@ -61,12 +61,12 @@ public final class PropPackagingOverlay {
         HubPlotRecord plot = PropBoundsUtil.findAimedPlot(plotManager.listPlots(), ref, store, plugin, 64.0);
         if (plot == null) plot = plotManager.findPlotAtPlayerOrTarget(ref, store);
         if (plot == null || !com.hexvane.eterniamod.housing.HousingAccess.previewCan(plugin,plot,uc.getUuid(),com.hexvane.eterniamod.housing.HousingCustody.PACK)) {
-            clearFor(playerRef);
+            var viewer = uc.getUuid();
+            world.execute(() -> PropPackHighlight.clear(world, viewer));
             return;
         }
         PropLookupUtil.PropMatch highlightMatch = PropBoundsUtil.findPropAlongLookRay(plot, ref, store, plugin, 64.0);
         HubPlotProp highlighted = highlightMatch != null ? highlightMatch.prop() : null;
-        clearFor(playerRef);
         var property=plot.getPlotId();var actor=uc.getUuid();var owner=com.hexvane.eterniamod.housing.HousingAccess.owner(plot);var attached=plot.getAttachedGuildUuid();
         var services=plugin.getServices();
         var allowed=services.readView(new OverlayKey(property,actor,owner,attached),java.time.Duration.ofSeconds(5),()->{
@@ -74,27 +74,9 @@ public final class PropPackagingOverlay {
             boolean reserve=guild!=null&&services.guilds().can(actor,guild,com.hexvane.eterniamod.housing.HousingCustody.RESERVE);
             return services.provenance().instances(property).stream().filter(instance->com.hexvane.eterniamod.housing.HousingCustody.allows(owner,attached,instance.owner(),true,guild,reserve)).map(instance->instance.id()).collect(java.util.stream.Collectors.toUnmodifiableSet());
         });
-        for (HubPlotProp prop : plot.getProps()) {
-            if(!allowed.contains(prop.getInstanceId()))continue;
-            PropDefinition def = plugin.getPropCatalog().get(prop.getPropId());
-            if (def == null) {
-                continue;
-            }
-            Path prefabPath = PrefabResolveUtil.resolvePrefabPath(def.getPrefabPath());
-            if (prefabPath == null) {
-                continue;
-            }
-            IPrefabBuffer buffer = PrefabBufferUtil.getCached(prefabPath);
-            Vector3i origin = new Vector3i(prop.getAnchorX(), prop.getAnchorY(), prop.getAnchorZ());
-            HubPlotFootprint fp = PlotFootprintUtil.computeFootprint(origin, prop.resolveRotationYaw(), buffer);
-            boolean isHighlight = highlighted != null && highlighted.getInstanceId().equals(prop.getInstanceId());
-            sendCube(
-                playerRef,
-                fp,
-                isHighlight ? COLOR_HIGHLIGHT : COLOR_NORMAL,
-                isHighlight ? OPACITY_HIGHLIGHT : OPACITY_NORMAL
-            );
-        }
+        // Only the decoration under the crosshair glows, and only one this player may pack.
+        HubPlotProp target = highlighted != null && allowed.contains(highlighted.getInstanceId()) ? highlighted : null;
+        world.execute(() -> PropPackHighlight.show(world, actor, target, plugin));
     }
 
     private static void sendCube(

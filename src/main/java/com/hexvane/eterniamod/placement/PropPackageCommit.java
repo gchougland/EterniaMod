@@ -62,13 +62,18 @@ public final class PropPackageCommit {
             return false;
         }
         UUID playerUuid = uc.getUuid();
+        // A pickup that stopped part way is finished or cancelled first, so it never blocks packing.
+        if (com.hexvane.eterniamod.housing.HousingAccess.locked(plugin,plot)) {
+            try { com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions.healPickups(plugin,world,plot); }
+            catch (RuntimeException failure) { plugin.getLogger().atWarning().withCause(failure).log("Could not resolve pickups before packing"); }
+        }
         if (com.hexvane.eterniamod.housing.HousingAccess.locked(plugin,plot)) {
             try {
                 if(com.hexvane.eterniamod.housing.relocation.FailedPropRecovery.recover(plugin,world,plot,playerUuid)>0) {
                     playerRef.sendMessage(Message.raw("The interrupted decoration has been returned to your build inventory. Your plot is unlocked; you can place it again or package another decoration."));
                     return true;
                 }
-                playerRef.sendMessage(Message.raw("This plot has an unfinished housing operation. Your ownership is unchanged. Open My plots to inspect its recovery state."));
+                playerRef.sendMessage(Message.raw("Something on this plot did not finish. Open My Plots and press Fix my plot. Nothing has been lost."));
             }catch(Exception failure){playerRef.sendMessage(Message.raw(failure.getMessage()));}
             return false;
         }
@@ -85,6 +90,10 @@ public final class PropPackageCommit {
         if (def == null) {
             return false;
         }
+        // The highlight copies stand where the decoration is; take them away before packing it.
+        PropPackHighlight.clear(world, playerUuid);
+        var packedProp = match.prop();
+        var vanishAt = packedProp;
         UUID operation;
         try {operation=NativePlacementTransactions.pickup(plugin,world,plot,playerUuid,match.prop().getInstanceId());}
         catch(Exception failure){playerRef.sendMessage(Message.raw(failure.getMessage()));return false;}
@@ -94,8 +103,21 @@ public final class PropPackageCommit {
         plotManager.saveIfDirty();
         NativePlacementTransactions.complete(plugin,operation);
         var custody=plugin.getServices().provenance().find(match.prop().getInstanceId()).orElseThrow().owner();
+        vanish(store, plugin, vanishAt);
         playerRef.sendMessage(custody.kind()==com.hexvane.eterniamod.domain.Owner.Kind.GUILD?Message.raw("Decoration returned to the guild build inventory."):Message.translation("eterniamod_common.eterniamod.common.propPackaged"));
         return true;
         }catch(Exception failure){NativePlacementTransactions.lock(plugin,operation);return false;}
+    }
+
+    /** A swirl of sparkles where the packed decoration stood. */
+    private static void vanish(Store<EntityStore> store, EterniaModPlugin plugin, com.hexvane.eterniamod.hub.HubPlotProp prop) {
+        PropDefinition def = plugin.getPropCatalog().get(prop.getPropId());
+        var buffer = def == null ? null : com.hexvane.eterniamod.prefab.PrefabResolveUtil.resolvePrefabBuffer(def.getPrefabPath());
+        double x = prop.getAnchorX() + 0.5, y = prop.getAnchorY(), z = prop.getAnchorZ() + 0.5;
+        if (buffer != null) {
+            var fp = PlotFootprintUtil.computePropFootprint(new org.joml.Vector3i(prop.getAnchorX(), prop.getAnchorY(), prop.getAnchorZ()), prop.resolveRotationYaw(), buffer);
+            x = (fp.getMinX() + fp.getMaxX() + 1) * 0.5; y = fp.getMinY(); z = (fp.getMinZ() + fp.getMaxZ() + 1) * 0.5;
+        }
+        PropPackHighlight.vanish(store, x, y, z);
     }
 }

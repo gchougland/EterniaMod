@@ -27,6 +27,7 @@
 
 ### Changed
 
+- The Packaging Wand makes the decoration you aim at glow gold, and packing it makes it vanish in a swirl of sparkles.
 - Decorations are placed by hand. Choose Place in your Decorations and you carry it as a box while a see through preview follows where you look. Right click sets it down, R turns it and Q puts it away. A small panel shows whether it fits there.
 
 ### Fixed

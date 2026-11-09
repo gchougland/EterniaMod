@@ -42,6 +42,8 @@ public final class PropPlacementPlayerRemoveSystem extends RefSystem<EntityStore
         }
         UUID placerUuid = uc.getUuid();
         PropCarry.forget(placerUuid);
+        var leftWorld = store.getExternalData().getWorld();
+        leftWorld.execute(() -> PropPackHighlight.clear(leftWorld, placerUuid));
         PropPlacementSession session = PropPlacementSessions.get(placerUuid);
         if (session != null) {
             PlayerRef pr = store.getComponent(ref, PlayerRef.getComponentType());

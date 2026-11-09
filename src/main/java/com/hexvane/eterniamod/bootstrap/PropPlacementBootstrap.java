@@ -37,6 +37,8 @@ public final class PropPlacementBootstrap {
             new PropPlacementPageSupplier()
         );
         EterniaPlacedInstance.register(plugin.getEntityStoreRegistry());
+        com.hexvane.eterniamod.placement.PropPackHighlight.Ghost.register(plugin.getEntityStoreRegistry());
+        plugin.getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.placement.PropPackHighlight.Cleanup());
         plugin.getEntityStoreRegistry().registerSystem(new PropPlacementPlayerRemoveSystem());
         plugin.getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.placement.PropCarrySystems.Follow());
         plugin.getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.placement.PropCarrySystems.RemoveDroppedBox());

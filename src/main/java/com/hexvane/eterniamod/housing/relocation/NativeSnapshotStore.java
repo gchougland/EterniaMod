@@ -82,6 +82,8 @@ public final class NativeSnapshotStore {
         if(captureEntities)for(var ref:entities(world,bounds,mask)) {
             var store=world.getEntityStore().getStore();
             if(store.getComponent(ref,Player.getComponentType())!=null) {if(rejectPlayers)throw new IllegalStateException("Players must leave the plot before packing");continue;}
+            // Packing Wand highlights are temporary copies, never part of a plot.
+            if(store.getComponent(ref,com.hexvane.eterniamod.placement.PropPackHighlight.Ghost.getComponentType())!=null)continue;
             var link=store.getComponent(ref,EterniaPlacedInstance.getComponentType());
             if(link==null||!allowedInstances.contains(link.getInstanceId()))throw new IllegalStateException("Unproven entity in snapshot; relocate it or record its provenance first");
             var dirty=store.getComponent(ref,com.hypixel.hytale.server.core.entity.Dirty.getComponentType());if(dirty!=null&&dirty.isSaving())throw new StorageBusy("Decorative entity storage is in flight; retry after it completes");
