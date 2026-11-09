@@ -109,7 +109,14 @@ public final class PropPackHighlight {
                 keys.add(type.getId());
                 // A block entity stands at the middle of its block and faces the opposite way to an entity at the same yaw
                 // (the game adds half a block and half a turn when it drops a carried block), so do the same.
-                blocks.add(new double[] {ox + x + 0.5, oy + y + 0.5, oz + z + 0.5, PrefabRotation.fromRotation(RotationTuple.get(rotation).yaw()).getYaw() + Math.PI});
+                double cx = 0.5, cy = 0.5, cz = 0.5;
+                // A multi block piece (a long table) is one model across several cells: centre its copy on the whole of it.
+                var boxes = com.hypixel.hytale.server.core.asset.type.blockhitbox.BlockBoundingBoxes.getAssetMap().getAsset(type.getHitboxTypeIndex());
+                if (boxes != null && boxes.protrudesUnitBox()) {
+                    var box = boxes.get(rotation).getBoundingBox();
+                    cx = (box.min.x + box.max.x) / 2; cy = (box.min.y + box.max.y) / 2; cz = (box.min.z + box.max.z) / 2;
+                }
+                blocks.add(new double[] {ox + x + cx, oy + y + cy, oz + z + cz, PrefabRotation.fromRotation(RotationTuple.get(rotation).yaw()).getYaw() + Math.PI});
             }, null, null, new PrefabBufferCall(new FastRandom(), PrefabRotation.fromRotation(yaw)));
         for (int i = 0; i < blocks.size(); i++) {
             double[] b = blocks.get(i);
