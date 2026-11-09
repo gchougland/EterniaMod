@@ -18,7 +18,7 @@ public final class EterniaAdminCommand extends AbstractCommandCollection {
     public EterniaAdminCommand(){
         super("admin","Eternia administration");setPermissionGroups("hytale:WorldEditor");
         addSubCommand(new CurrencyGrantCommand(CurrencyGrantService.Currency.CROWNS));addSubCommand(new CurrencyGrantCommand(CurrencyGrantService.Currency.COINS));
-        addSubCommand(new Status());addSubCommand(new Reload());addSubCommand(new Inspect());addSubCommand(new Recover());addSubCommand(new Grant());addSubCommand(new EterniaSetupCommand());addSubCommand(new RoadTool());addSubCommand(new WipePlots());addSubCommand(new HubBuildCommand());addSubCommand(new TownCommand());
+        addSubCommand(new Status());addSubCommand(new Reload());addSubCommand(new Inspect());addSubCommand(new Recover());addSubCommand(new Grant());addSubCommand(new EterniaSetupCommand());addSubCommand(new RoadTool());addSubCommand(new WipePlots());addSubCommand(new HubBuildCommand());addSubCommand(new TownCommand());addSubCommand(new TerraformCommand());
         com.hexvane.eterniamod.moderation.ModerationCommands.addTo(this);
         addSubCommand(new com.hexvane.eterniamod.stats.StatsAdminCommand());
     }

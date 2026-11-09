@@ -1,0 +1,10 @@
+{
+  "Mode": "Smooth",
+  "SkirtWidth": 8,
+  "BlendWidth": 5,
+  "RoadClearance": 3,
+  "SmoothPasses": 6,
+  "FillBlock": "Rock_Stone",
+  "PlateauBlock": "Rock_Basalt",
+  "MaxColumnsPerTick": 1024
+}
