@@ -14,8 +14,8 @@ final class BoundaryGroundSampler {
     BoundaryGroundSampler(BoundarySurfacePolicy policy) { this.policy = policy; }
 
     double sample(World world, BoundaryGeometry.Sample sample) {
-        double lowest = Double.POSITIVE_INFINITY;
-        double highest = Double.NEGATIVE_INFINITY;
+        double[] grounds = new double[4];
+        int i = 0;
         // Include the full horizontal sprite envelope, not just the emitter's central column.
         for (double dx : new double[] {-BoundaryFogSystem.SPRITE_ENVELOPE_RADIUS, BoundaryFogSystem.SPRITE_ENVELOPE_RADIUS}) {
             for (double dz : new double[] {-BoundaryFogSystem.SPRITE_ENVELOPE_RADIUS, BoundaryFogSystem.SPRITE_ENVELOPE_RADIUS}) {
@@ -23,14 +23,26 @@ final class BoundaryGroundSampler {
                 int z = (int) Math.floor(sample.z() + dz);
                 // This is a visual marker, not a placed block. Roads must not erase a plot side.
                 if (!ChunkSectionBlockUtil.isChunkInMemory(world, x, z)) return Double.NaN;
-                double ground = surface(world, x, z, sample.groundY());
-                if (!Double.isFinite(ground)) return Double.NaN;
-                lowest = Math.min(lowest, ground);
-                highest = Math.max(highest, ground);
+                grounds[i++] = surface(world, x, z, sample.groundY());
             }
         }
-        // Omit a wisp across a cliff/step rather than exceed its height relative to the lower side.
-        return highest - lowest > .5 ? Double.NaN : lowest;
+        return combine(grounds);
+    }
+
+    /**
+     * Where the glow sits, given the ground found in each column under it (NaN where none: a fence, a wall, a house
+     * corner). Columns without ground are skipped, so a fence on one side does not hide the line. A one block step
+     * (a levelled plot beside natural land) glows along its top edge; only a taller cliff is left out.
+     */
+    static double combine(double[] grounds) {
+        double lowest = Double.POSITIVE_INFINITY, highest = Double.NEGATIVE_INFINITY;
+        for (double ground : grounds) {
+            if (!Double.isFinite(ground)) continue;
+            lowest = Math.min(lowest, ground);
+            highest = Math.max(highest, ground);
+        }
+        if (!Double.isFinite(highest)) return Double.NaN;
+        return highest - lowest > 1.0 ? Double.NaN : highest;
     }
 
     private double surface(World world, int x, int z, int baseline) {
