@@ -18,7 +18,7 @@ public final class PlotFootprintUtil {
         return computeFootprint(origin, yaw, buffer, false);
     }
 
-    /** Footprint of a decoration: its blocks and its entity furniture. */
+    /** Footprint of a decoration: its blocks, or its entity furniture when it has no blocks. */
     @Nonnull
     public static HubPlotFootprint computePropFootprint(@Nonnull Vector3i origin, @Nonnull Rotation yaw, @Nonnull IPrefabBuffer buffer) {
         return computeFootprint(origin, yaw, buffer, true);
@@ -30,6 +30,9 @@ public final class PlotFootprintUtil {
         Random random = new FastRandom();
         PrefabBufferCall call = new PrefabBufferCall(random, pr);
         final int[] b = {
+            Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE
+        };
+        final int[] e = {
             Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE
         };
         buffer.forEach(
@@ -48,28 +51,31 @@ public final class PlotFootprintUtil {
                 b[4] = Math.max(b[4], wy);
                 b[5] = Math.max(b[5], wz);
             },
-            // Entity furniture (chairs, plates, lamps) counts too, so a prop made mostly or only of entities gets a
-            // real outline and its own placement checks.
+            // Entities (potions on a shelf, plates on a table) are collected separately: they only size a prop that has no
+            // blocks at all, since they usually sit inside the prop's blocks.
             (x, z, holders, t) -> {
                 if (!entities || holders == null) return;
                 for (var holder : holders) {
                     var transform = holder.getComponent(com.hypixel.hytale.server.core.modules.entity.component.TransformComponent.getComponentType());
                     if (transform == null || transform.getPosition() == null) continue;
-                    var at = new org.joml.Vector3d(transform.getPosition());
+                    // Turn the point about the middle of its block, the way block cells turn, so it stays in its own cell.
+                    var at = new org.joml.Vector3d(transform.getPosition()).sub(0.5, 0, 0.5);
                     pr.rotate(at);
+                    at.add(0.5, 0, 0.5);
                     int wx = origin.x + (int) Math.floor(at.x), wy = origin.y + (int) Math.floor(at.y), wz = origin.z + (int) Math.floor(at.z);
-                    b[0] = Math.min(b[0], wx);
-                    b[1] = Math.min(b[1], wy);
-                    b[2] = Math.min(b[2], wz);
-                    b[3] = Math.max(b[3], wx);
-                    b[4] = Math.max(b[4], wy);
-                    b[5] = Math.max(b[5], wz);
+                    e[0] = Math.min(e[0], wx);
+                    e[1] = Math.min(e[1], wy);
+                    e[2] = Math.min(e[2], wz);
+                    e[3] = Math.max(e[3], wx);
+                    e[4] = Math.max(e[4], wy);
+                    e[5] = Math.max(e[5], wz);
                 }
             },
             null,
             call
         );
         if (b[0] == Integer.MAX_VALUE) {
+            if (e[0] != Integer.MAX_VALUE) return new HubPlotFootprint(e[0], e[1], e[2], e[3], e[4], e[5]);
             return new HubPlotFootprint(origin.x, origin.y, origin.z, origin.x, origin.y, origin.z);
         }
         return new HubPlotFootprint(b[0], b[1], b[2], b[3], b[4], b[5]);
