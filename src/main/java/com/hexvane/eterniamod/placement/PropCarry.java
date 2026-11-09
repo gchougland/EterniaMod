@@ -143,11 +143,9 @@ public final class PropCarry {
         var world = store.getExternalData().getWorld();
         Vector3i normal = face(look.getPosition(), look.getDirection(), hit);
         Vector3i free = new Vector3i(hit.x + normal.x, hit.y + normal.y, hit.z + normal.z);
-        // On a wall the decoration stays at the height you aim at, against the wall. Only aiming at the underside of
-        // something (a ceiling) drops it to the floor below.
-        Vector3i floor = new Vector3i(free);
-        if (normal.y < 0) for (int down = 0; down < 6 && !solid(world, floor.x, floor.y - 1, floor.z); down++) floor.y--;
-        return new Aim(hit, free, floor);
+        // Wherever you aim, the decoration goes there: on the floor, against a wall at that height, or hanging from a
+        // ceiling (see clearOfWall, which lifts it so its top touches the ceiling).
+        return new Aim(hit, free, new Vector3i(free));
     }
 
     /** The face of block {@code hit} the view ray enters through, as an outward unit vector (top when unsure). */
@@ -174,11 +172,13 @@ public final class PropCarry {
         return type != null && type.getMaterial() == com.hypixel.hytale.protocol.BlockMaterial.Solid;
     }
 
-    /** Aiming at a wall: slides the prop out along the wall's face so its footprint sits in front of it, not inside. */
+    /** Against a wall: slides the prop out so it sits in front of it. Under a ceiling: lifts it so it hangs from it. */
     private static Vector3i clearOfWall(Vector3i anchor, Aim aim, PropPlacementSession session, PropDefinition def, IPrefabBuffer buffer) {
-        int nx = Integer.signum(aim.free.x - aim.hit.x), nz = Integer.signum(aim.free.z - aim.hit.z);
-        if (nx == 0 && nz == 0) return anchor;
+        int nx = Integer.signum(aim.free.x - aim.hit.x), nz = Integer.signum(aim.free.z - aim.hit.z), ny = Integer.signum(aim.free.y - aim.hit.y);
         var fp = PlotFootprintUtil.computePropFootprint(def.resolvePrefabAnchorWorld(anchor, session.getPrefabYaw()), session.getPrefabYaw(), buffer);
+        // Under a ceiling: hang the decoration so its top block sits just below the ceiling (a chandelier, a lantern).
+        if (ny < 0) return new Vector3i(anchor.x, anchor.y + (aim.free.y - fp.getMaxY()), anchor.z);
+        if (nx == 0 && nz == 0) return anchor;
         int dx = nx > 0 ? Math.max(0, aim.free.x - fp.getMinX()) : nx < 0 ? Math.min(0, aim.free.x - fp.getMaxX()) : 0;
         int dz = nz > 0 ? Math.max(0, aim.free.z - fp.getMinZ()) : nz < 0 ? Math.min(0, aim.free.z - fp.getMaxZ()) : 0;
         return new Vector3i(anchor.x + dx, anchor.y, anchor.z + dz);
