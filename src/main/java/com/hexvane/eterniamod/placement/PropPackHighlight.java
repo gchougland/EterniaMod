@@ -107,16 +107,13 @@ public final class PropPackHighlight {
                 BlockType type = BlockType.getAssetMap().getAsset(blockId);
                 if (type == null) return;
                 keys.add(type.getId());
-                // A block entity stands at the middle of its block and faces the opposite way to an entity at the same yaw
-                // (the game adds half a block and half a turn when it drops a carried block), so do the same.
-                double cx = 0.5, cy = 0.5, cz = 0.5;
-                // A multi block piece (a long table) is one model across several cells: centre its copy on the whole of it.
+                // A block entity draws the block's model about the middle of its own (first) cell, turned by the block's
+                // yaw; a piece over several cells (a table) extends from that cell exactly as it does in the world. Only a
+                // piece taller than a block stands at the middle of its height, as the game does for a dropped block.
+                double cy = 0.5;
                 var boxes = com.hypixel.hytale.server.core.asset.type.blockhitbox.BlockBoundingBoxes.getAssetMap().getAsset(type.getHitboxTypeIndex());
-                if (boxes != null && boxes.protrudesUnitBox()) {
-                    var box = boxes.get(rotation).getBoundingBox();
-                    cx = (box.min.x + box.max.x) / 2; cy = (box.min.y + box.max.y) / 2; cz = (box.min.z + box.max.z) / 2;
-                }
-                blocks.add(new double[] {ox + x + cx, oy + y + cy, oz + z + cz, PrefabRotation.fromRotation(RotationTuple.get(rotation).yaw()).getYaw() + Math.PI});
+                if (boxes != null) { var box = boxes.get(rotation).getBoundingBox(); if (box.height() > 1.0) cy = box.height() / 2; }
+                blocks.add(new double[] {ox + x + 0.5, oy + y + cy, oz + z + 0.5, RotationTuple.get(rotation).yaw().getRadians()});
             }, null, null, new PrefabBufferCall(new FastRandom(), PrefabRotation.fromRotation(yaw)));
         for (int i = 0; i < blocks.size(); i++) {
             double[] b = blocks.get(i);
