@@ -37,6 +37,17 @@ public final class HubPlotRecord {
     @Nullable
     private List<HubPlotProp> props;
 
+    /** Hex plots: the ground height (top block y) the plot's land was shaped to, or null when it was never shaped. */
+    @SerializedName("terrainLevel")
+    @Nullable
+    private Integer terrainLevel;
+
+    @Nullable
+    public Integer getTerrainLevel() { return terrainLevel; }
+
+    /** Records the shaped ground height. Call {@link HubPlotManager#updatePlot} afterwards. */
+    public void setTerrainLevel(@Nullable Integer value) { terrainLevel = value; }
+
     public HubPlotRecord() {}
 
     public HubPlotRecord(

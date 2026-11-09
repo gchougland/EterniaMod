@@ -15,7 +15,9 @@ import java.util.concurrent.CompletableFuture;
 /** Called on the owning world thread. Domain transactions additionally serialize reservations across worlds. */
 public final class NativeClaimCoordinator {
     private final EterniaModPlugin plugin;
-    public NativeClaimCoordinator(EterniaModPlugin plugin){this.plugin=plugin;}
+    private final com.hexvane.eterniamod.hexplots.terraform.PlotTerraformer terraformer;
+    public NativeClaimCoordinator(EterniaModPlugin plugin){this.plugin=plugin;terraformer=new com.hexvane.eterniamod.hexplots.terraform.PlotTerraformer(plugin);}
+    public com.hexvane.eterniamod.hexplots.terraform.PlotTerraformer terraformer(){return terraformer;}
     public HousingRules.Result validate(World world,UUID actor,PlotRect rect,HousingRules.Scope scope,boolean paid) {
         if(hexWorld(world))return asRectResult(HexClaimCheck.validate(plugin,world,actor,cellsForRect(world,rect,scope,paid).cells(),scope,paid));
         return validate(world,rect,ClaimEligibility.load(plugin.getServices(),actor,scope,paid));
@@ -99,17 +101,19 @@ public final class NativeClaimCoordinator {
      */
     public CompletableFuture<HexCommitResult> claimCells(PlayerRef player,World world,PlotCells cells,HexClaimRules.Kind kind) {
         Objects.requireNonNull(player);Objects.requireNonNull(world);Objects.requireNonNull(cells);Objects.requireNonNull(kind);
-        UUID operation=UUID.randomUUID();
+        UUID operation=UUID.randomUUID();UUID actor=player.getUuid();
+        // The land is shaped before the claim commits, so the terrain baseline the claim saves is the shaped ground.
+        var request=new com.hexvane.eterniamod.hexplots.terraform.PlotTerraformer.Request(world.getName(),cells.lattice(),cells.asSet(),()->claimGroup(actor,kind),null);
         return onWorld(world,()->loadGround(world,cells.bounds())).thenCompose(f->f)
-            .thenApplyAsync(v->{
+            .thenCompose(v->terraformer.shapeThen(world,request,()->HexClaimCheck.validate(plugin,world,actor,cells.cells(),scope(kind),paidFor(kind,cells.size())).valid(),outcome->{
                 HexCommitResult done;
-                try{done=claimCellsNow(world,player.getUuid(),cells,kind,groundY(world,player,cells),operation);}
+                try{done=claimCellsNow(world,actor,cells,kind,groundY(world,player,cells),operation);if(done.ok())recordLevel(world,done.plotId(),outcome,true);}
                 catch(RuntimeException failure){
                     plugin.getLogger().atWarning().withCause(failure).log("Hex claim did not finish");
                     done=HexCommitResult.failed(HexPlotText.plots("claim.failed","Your claim could not finish. Open My Plots to check it before you try again."),null);
                 }
                 tell(player,done);return done;
-            },world)
+            }))
             .exceptionallyAsync(error->{
                 plugin.getLogger().atWarning().withCause(error).log("Hex claim could not load its ground");
                 var done=HexCommitResult.failed(HexPlotText.plots("claim.retry","The land here is still loading. Try again in a moment."),null);
@@ -124,9 +128,14 @@ public final class NativeClaimCoordinator {
      */
     public CompletableFuture<HexCommitResult> expandPlot(PlayerRef player,World world,String plotId,HexCoord cell) {
         Objects.requireNonNull(player);Objects.requireNonNull(world);Objects.requireNonNull(plotId);Objects.requireNonNull(cell);
-        UUID operation=UUID.randomUUID();
-        return onWorld(world,()->{
-                var done=expandPlotNow(world,player.getUuid(),parse(plotId),cell,operation);
+        UUID operation=UUID.randomUUID();UUID plot=parse(plotId);
+        var lattice=plugin.getInfrastructure().world(world.getName()).flatMap(HousingInfrastructure.WorldPlan::hexLattice).orElse(null);
+        if(plot==null||lattice==null)return onWorld(world,()->{var done=expandPlotNow(world,player.getUuid(),plot,cell,operation);tell(player,done);return done;});
+        // The new hexagon is shaped to the plot's level while it is still free land, then the plot grows onto it.
+        var request=new com.hexvane.eterniamod.hexplots.terraform.PlotTerraformer.Request(world.getName(),lattice,Set.of(cell),()->null,plot);
+        return terraformer.shapeThen(world,request,()->HexLand.view(plugin,world).map(v->v.isFree(cell)&&v.plots().containsKey(plot)).orElse(false),outcome->{
+                var done=expandPlotNow(world,player.getUuid(),plot,cell,operation);
+                if(done.ok())recordLevel(world,plotId,outcome,false);
                 tell(player,done);return done;
             })
             .exceptionallyAsync(error->{
@@ -329,6 +338,22 @@ public final class NativeClaimCoordinator {
             for(int x=minX;x<=maxX;x++)for(int z=minZ;z<=maxZ;z++)for(int y=minY;y<=maxY;y++)sections.add(world.getChunkStore().getChunkSectionReferenceAsync(x,y,z,GetChunkFlags.SET_TICKING));
             return CompletableFuture.allOf(sections.toArray(CompletableFuture[]::new));
         });
+    }
+
+    /** Owner group of a fresh claim for terraforming: the player, or their guild for an estate or member plot. Off the world thread. */
+    private String claimGroup(UUID actor,HexClaimRules.Kind kind) {
+        if(kind==HexClaimRules.Kind.PUBLIC)return com.hexvane.eterniamod.hexplots.terraform.TerraformLevel.playerGroup(actor);
+        return plugin.getServices().guilds().membership(actor).map(m->com.hexvane.eterniamod.hexplots.terraform.TerraformLevel.guildGroup(m.guildId()))
+            .orElse(com.hexvane.eterniamod.hexplots.terraform.TerraformLevel.playerGroup(actor));
+    }
+
+    /** Saves the shaped ground height on the plot (a fresh claim always; a grown plot only when it had none). World thread. */
+    private void recordLevel(World world,String plotId,com.hexvane.eterniamod.hexplots.terraform.PlotTerraformer.Outcome outcome,boolean fresh) {
+        if(!outcome.shaped()||plotId==null)return;
+        var id=parse(plotId);if(id==null)return;
+        var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);var plot=manager.getPlot(id);
+        if(plot==null||!fresh&&plot.getTerrainLevel()!=null)return;
+        plot.setTerrainLevel(outcome.level());manager.updatePlot(plot);manager.saveIfDirty();
     }
 
     private static <T> CompletableFuture<T> onWorld(World world,java.util.function.Supplier<T> work) {

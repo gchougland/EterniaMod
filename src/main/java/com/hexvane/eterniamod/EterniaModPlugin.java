@@ -96,6 +96,7 @@ public final class EterniaModPlugin extends JavaPlugin {
             com.hexvane.eterniamod.runtime.RuntimeConfig.from(serverEnvironment));
         com.hexvane.eterniamod.seasonsales.SeasonSaleSync.sync(getServices(), dataDirectory, warning -> getLogger().atWarning().log("%s", warning));
         com.hexvane.eterniamod.hexplots.HexPlotSettings.install(EterniaModPlugin.class.getClassLoader());
+        com.hexvane.eterniamod.hexplots.terraform.TerraformSettings.install(EterniaModPlugin.class.getClassLoader(), dataDirectory);
         infrastructure = new com.hexvane.eterniamod.housing.HousingInfrastructure(dataDirectory.resolve("housing-infrastructure.json"));
         try { infrastructure.load(); } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
         claims = new com.hexvane.eterniamod.housing.NativeClaimCoordinator(this);

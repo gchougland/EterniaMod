@@ -2,6 +2,10 @@
 
 ## [1.2.0] - Unreleased
 
+### Added
+
+- New plots are levelled for you. A freshly claimed hexagon is flattened to the height of the road beside it, and every hexagon you add later matches the rest of your plot. A guild's estate and its members' plots share one height. The edges either blend gently into the land around them or rise as a neat hexagon step. Buildings, roads and other plots are never changed.
+
 ### Fixed
 
 - Packing up a building or plot no longer refuses because a door was opened, a light was lit or a crop grew. If a block really was swapped out, the message now says where.

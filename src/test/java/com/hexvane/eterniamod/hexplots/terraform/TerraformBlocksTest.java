@@ -1,0 +1,29 @@
+package com.hexvane.eterniamod.hexplots.terraform;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
+class TerraformBlocksTest {
+    @Test
+    void naturalLandMayBeShaped() {
+        for (String id : new String[] {"Soil_Grass", "Soil_Dirt", "Rock_Stone", "Sand_White", "Snow_Block", "Ore_Iron_Stone", "Plant_Grass_Lush", "Plant_Leaves_Oak", "Wood_Oak_Trunk", "Rubble_Stone"})
+            assertTrue(TerraformBlocks.isNatural(id), id);
+    }
+
+    @Test
+    void buildsAndCropsAreNeverShaped() {
+        for (String id : new String[] {"Wood_Oak_Planks", "Rock_Stone_Brick", "Rock_Stone_Cobble", "Wood_Oak_Trunk_Stairs", "Plant_Crop_Wheat", "Furniture_Table", "Rock_Stone_Brick_Smooth", "Soil_Grass_Stairs", "", "Planter_Box"})
+            assertFalse(TerraformBlocks.isNatural(id), id);
+    }
+
+    @Test
+    void groundAndTopsoil() {
+        assertTrue(TerraformBlocks.isGround("Rock_Stone"));
+        assertFalse(TerraformBlocks.isGround("Plant_Grass_Lush"));
+        assertTrue(TerraformBlocks.isTopsoil("Soil_Grass"));
+        assertFalse(TerraformBlocks.isTopsoil("Rock_Stone"));
+        assertEquals("Soil_Dirt", TerraformBlocks.subsoilFor("Soil_Grass"));
+        assertEquals("Sand_White", TerraformBlocks.subsoilFor("Sand_White"));
+    }
+}
