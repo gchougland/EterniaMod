@@ -123,7 +123,7 @@ public final class NativeRelocationCoordinator {
                 var before=store.load(new SnapshotFiles.Saved(item.nativeData().get("before"),item.nativeData().get("beforeHash")));
                 var placedAfter=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));
                 var changed=difference(placedAfter.document(),before.document());
-                var actual=boundsIn(current,before.bounds());requireSameBlocks(actual,placedAfter.document(),changed);
+                var actual=boundsIn(current,before.bounds());try{requireSameBlocks(actual,placedAfter.document(),changed,before.bounds());}catch(ObjectEdited edited){plugin.getLogger().atWarning().log("Plot pack refused, guild object %s changed %s",item.id(),edited.detail());throw edited;}
                 var sub=onlyCapturedCells(actual,changed);
                 NativeDecorativeEntities.filterInstances(sub,item.id(),true);NativeDecorativeEntities.requireIdentity(placedAfter.document(),sub,item.id());
                 requireEmptyGuildContainers(sub);
@@ -336,7 +336,45 @@ public final class NativeRelocationCoordinator {
     private static boolean overlaps(NativeSnapshotStore.Bounds a,NativeSnapshotStore.Bounds b){return a.minX()<b.maxX()&&b.minX()<a.maxX()&&a.minY()<b.maxY()&&b.minY()<a.maxY()&&a.minZ()<b.maxZ()&&b.minZ()<a.maxZ();}
     static BsonDocument difference(BsonDocument current,BsonDocument baseline){var result=current.clone();var original=index(baseline.getArray("blocks"));var fluids=index(baseline.getArray("fluids",new BsonArray()));var currentFluids=index(current.getArray("fluids",new BsonArray()));var changed=new BsonArray();var changedFluids=new BsonArray();for(var v:current.getArray("blocks")){var d=v.asDocument();String key=key(d);if(!d.equals(original.get(key))||!Objects.equals(fluids.get(key),currentFluids.get(key))){changed.add(d);if(currentFluids.containsKey(key))changedFluids.add(currentFluids.get(key));}}result.put("blocks",changed);result.put("fluids",changedFluids);return result;}
     static BsonDocument onlyCapturedCells(BsonDocument source,BsonDocument mask){var keys=index(mask.getArray("blocks")).keySet();var result=source.clone();for(String type:List.of("blocks","fluids")){var selected=new BsonArray();for(var value:source.getArray(type,new BsonArray()))if(keys.contains(key(value.asDocument())))selected.add(value);result.put(type,selected);}return result;}
-    static void requireSameBlocks(BsonDocument actual,BsonDocument expected,BsonDocument mask){var current=index(actual.getArray("blocks"));var prior=index(expected.getArray("blocks"));for(var value:mask.getArray("blocks")){String k=key(value.asDocument());var a=current.get(k).asDocument().clone();var e=prior.get(k).asDocument().clone();a.remove("components");e.remove("components");a.remove("support");e.remove("support");if(!a.equals(e))throw new IllegalStateException("Object blocks were edited; use whole-property relocation or review their ownership");}}
+    static void requireSameBlocks(BsonDocument actual,BsonDocument expected,BsonDocument mask){requireSameBlocks(actual,expected,mask,null);}
+    /**
+     * Refuses when a block an object placed was replaced since. A block switching between its own states (a door
+     * opened, a fireplace lit, a crop grown, stairs turning a corner) is the same block, not an edit. {@code where}
+     * (the snapshot's bounds) turns the refusal into a world position the player can find.
+     */
+    static void requireSameBlocks(BsonDocument actual,BsonDocument expected,BsonDocument mask,NativeSnapshotStore.Bounds where){
+        var current=index(actual.getArray("blocks"));var prior=index(expected.getArray("blocks"));
+        for(var value:mask.getArray("blocks")){
+            String k=key(value.asDocument());var a=current.get(k);var e=prior.get(k);
+            if(a!=null&&e!=null&&sameBlock(a.asDocument(),e.asDocument()))continue;
+            var cell=value.asDocument();int x=cell.getInt32("x").getValue(),y=cell.getInt32("y").getValue(),z=cell.getInt32("z").getValue();
+            if(where!=null){x+=where.minX();y+=where.minY();z+=where.minZ();}
+            String now=a==null?"nothing":a.asDocument().getString("name",new BsonString("?")).getValue(),was=e==null?"nothing":e.asDocument().getString("name",new BsonString("?")).getValue();
+            throw new ObjectEdited(x,y,z,where!=null,was,now);
+        }
+    }
+    /** A placed block was replaced; the message tells the player where. */
+    public static final class ObjectEdited extends IllegalStateException {
+        public final int x,y,z;public final String placed,now;
+        ObjectEdited(int x,int y,int z,boolean inWorld,String placed,String now){super(inWorld
+            ?"A block of this was changed after it was placed, at "+x+" "+y+" "+z+". Put the original block back there and try again."
+            :"A block of this was changed after it was placed. Put the original block back and try again.");this.x=x;this.y=y;this.z=z;this.placed=placed;this.now=now;}
+        /** For the server log: where, and what was placed against what stands there now. */
+        public String detail(){return "at "+x+" "+y+" "+z+": placed "+placed+", now "+now;}
+    }
+    static boolean sameBlock(BsonDocument a,BsonDocument e){
+        a=a.clone();e=e.clone();for(var d:List.of(a,e)){d.remove("components");d.remove("support");}
+        if(a.equals(e))return true;
+        String an=a.getString("name",new BsonString("")).getValue(),en=e.getString("name",new BsonString("")).getValue();
+        if(an.equals(en)||!baseBlock(an).equals(baseBlock(en)))return false;
+        // States of one block: the name and possibly the turn change (a stair corner), never the filler cell.
+        return a.getInt32("filler",new BsonInt32(0)).equals(e.getInt32("filler",new BsonInt32(0)));
+    }
+    /** The block a state belongs to: "*Door_State_Definitions_Open" is a state of "Door". */
+    static String baseBlock(String name){
+        if(name.startsWith("*")){int i=name.indexOf("_State_Definitions_");if(i>1)return name.substring(1,i);}
+        return name;
+    }
     static void requireEmptyGuildContainers(BsonDocument snapshot){for(var value:snapshot.getArray("blocks")){var cell=value.asDocument();if(!cell.containsKey("components"))continue;var holder=com.hypixel.hytale.server.core.universe.world.storage.ChunkStore.REGISTRY.deserialize(cell.getDocument("components"));var container=holder.getComponent(com.hypixel.hytale.server.core.modules.block.components.ItemContainerBlock.getComponentType());if(container!=null&&container.getItemContainer()!=null)for(short slot=0;slot<container.getItemContainer().getCapacity();slot++)if(!com.hypixel.hytale.server.core.inventory.ItemStack.isEmpty(container.getItemContainer().getItemStack(slot)))throw new IllegalStateException("Guild container has items without individual ownership provenance; segregate them before returning the property");}}
     static BsonDocument translateElevation(BsonDocument source,int dy,int minY,int maxY){var result=source.clone();for(String type:List.of("blocks","fluids"))for(var value:result.getArray(type,new BsonArray())){var cell=value.asDocument();int y=Math.addExact(cell.getInt32("y").getValue(),dy);if(y<minY||y>=maxY)throw new IllegalStateException("Moved content would cross the world height limit");cell.put("y",new BsonInt32(y));}if(result.containsKey("entities")){var entities=new BsonArray();for(var value:result.getArray("entities")){var holder=com.hypixel.hytale.server.core.universe.world.storage.EntityStore.REGISTRY.deserialize(value.asDocument());var p=holder.getComponent(com.hypixel.hytale.server.core.modules.entity.component.TransformComponent.getComponentType()).getPosition();p.y+=dy;if(p.y<minY||p.y>=maxY)throw new IllegalStateException("Moved entity would cross the world height limit");entities.add(com.hypixel.hytale.server.core.universe.world.storage.EntityStore.REGISTRY.serialize(holder));}result.put("entities",entities);}return result;}
     static void overlay(BsonDocument base,BsonDocument overlay){var cells=index(base.getArray("blocks"));var fluids=index(base.getArray("fluids",new BsonArray()));for(var v:overlay.getArray("blocks")){var d=v.asDocument();cells.put(key(d),d);fluids.remove(key(d));}for(var v:overlay.getArray("fluids",new BsonArray())){var d=v.asDocument();fluids.put(key(d),d);}base.put("blocks",new BsonArray(new ArrayList<>(cells.values())));base.put("fluids",new BsonArray(new ArrayList<>(fluids.values())));if(overlay.containsKey("entities"))base.put("entities",overlay.getArray("entities"));else base.remove("entities");}

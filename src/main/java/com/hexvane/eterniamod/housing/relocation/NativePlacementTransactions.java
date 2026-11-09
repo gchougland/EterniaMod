@@ -261,7 +261,7 @@ public final class NativePlacementTransactions {
         var known=new HashSet<UUID>();for(var other:services.provenance().instances(plot.getPlotId()))if(other.state().equals("PLACED"))known.add(other.id());known.add(instanceId);
         var captured=store.capture(world,b,before.mask(),known,true,false);
         NativeDecorativeEntities.requireIdentity(placedAfter.document(),captured,instanceId);
-        NativeRelocationCoordinator.requireSameBlocks(captured,placedAfter.document(),mask);
+        try{NativeRelocationCoordinator.requireSameBlocks(captured,placedAfter.document(),mask,b);}catch(NativeRelocationCoordinator.ObjectEdited edited){plugin.getLogger().atWarning().log("Pickup of %s refused, changed %s",instanceId,edited.detail());throw edited;}
         if(item.owner().kind()==Owner.Kind.GUILD&&!item.owner().equals(owner(plot)))NativeRelocationCoordinator.requireEmptyGuildContainers(NativeRelocationCoordinator.onlyCapturedCells(captured,mask));
         UUID operation=UUID.randomUUID();var packed=store.save(operation+"-pickup.json",b,before.cells(),NativeRelocationCoordinator.onlyCapturedCells(captured,mask));
         var restore=store.save(operation+"-pickup-before.json",b,before.cells(),NativeRelocationCoordinator.onlyCapturedCells(before.document(),mask));

@@ -2,6 +2,10 @@
 
 ## [1.2.0] - Unreleased
 
+### Fixed
+
+- Packing up a building or plot no longer refuses because a door was opened, a light was lit or a crop grew. If a block really was swapped out, the message now says where.
+
 ## [1.1.0]
 
 ### Added
