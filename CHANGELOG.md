@@ -5,6 +5,7 @@
 ### Fixed
 
 - Packing up a building or plot no longer refuses because a door was opened, a light was lit or a crop grew. If a block really was swapped out, the message now says where.
+- Packing up your house now packs the decorations and additions inside it for you first, instead of asking you to do it.
 - Plot borders glow all the way around, including over paths, planks and paving, along small steps in the ground and beside fences.
 
 ## [1.1.0]

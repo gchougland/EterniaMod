@@ -236,6 +236,37 @@ public final class NativePlacementTransactions {
             return new Placed(instance,before,after,operation,custodyOwner,source);
         } catch(Throwable failure){lock(plugin,operation);plugin.getLogger().atWarning().withCause(failure).log("Placement %s did not finish",operation);throw new IllegalStateException("Placing did not finish. Nothing was lost. Try again in a moment.",failure);}
     }
+    /** The house standing on the plot: the most recently placed house record. */
+    public static UUID house(EterniaModPlugin plugin,HubPlotRecord plot){
+        return plugin.getServices().provenance().instances(plot.getPlotId()).stream().filter(i->i.state().equals("PLACED")&&"HOUSE".equals(i.nativeData().get("kind")))
+            .max(Comparator.comparingLong(i->Long.parseLong(i.nativeData().getOrDefault("placedAt","0")))).map(ProvenanceService.Instance::id).orElseThrow(()->new IllegalStateException("House provenance missing"));
+    }
+    /**
+     * Objects placed after {@code instanceId} that would be left floating or buried if it were packed alone: anything
+     * whose space overlaps it, and for a house every house addition. Newest first, the order they must be packed in.
+     */
+    public static List<ProvenanceService.Instance> inTheWay(EterniaModPlugin plugin,HubPlotRecord plot,UUID instanceId) throws IOException {
+        var services=plugin.getServices();var item=services.provenance().find(instanceId).orElseThrow(()->new IllegalStateException("Unproven legacy object cannot be packaged"));
+        var store=snapshots(plugin);var b=store.load(new SnapshotFiles.Saved(item.nativeData().get("before"),item.nativeData().get("beforeHash"))).bounds();
+        boolean house="HOUSE".equals(item.nativeData().get("kind"));long since=Long.parseLong(item.nativeData().getOrDefault("placedAt","0"));
+        var out=new ArrayList<ProvenanceService.Instance>();
+        for(var other:services.provenance().instances(plot.getPlotId())) {
+            if(other.id().equals(instanceId)||!other.state().equals("PLACED")||"HOUSE".equals(other.nativeData().get("kind"))||"PATH".equals(other.nativeData().get("kind")))continue;
+            if(Long.parseLong(other.nativeData().getOrDefault("placedAt","9223372036854775807"))<since)continue;
+            var definition=plugin.getPropCatalog().get(other.nativeData().get("catalog"));
+            boolean addition=house&&definition!=null&&"addition".equals(definition.getCategory());
+            var o=store.load(new SnapshotFiles.Saved(other.nativeData().get("before"),other.nativeData().get("beforeHash"))).bounds();
+            boolean overlaps=b.minX()<o.maxX()&&o.minX()<b.maxX()&&b.minY()<o.maxY()&&o.minY()<b.maxY()&&b.minZ()<o.maxZ()&&o.minZ()<b.maxZ();
+            if(addition||overlaps)out.add(other);
+        }
+        out.sort(Comparator.comparingLong((ProvenanceService.Instance i)->Long.parseLong(i.nativeData().getOrDefault("placedAt","0"))).reversed());
+        return out;
+    }
+    /** Player name of a placed object. */
+    public static String name(EterniaModPlugin plugin,ProvenanceService.Instance item){
+        var definition=plugin.getPropCatalog().get(item.nativeData().get("catalog"));
+        return definition!=null&&definition.getDisplayName()!=null?definition.getDisplayName():"A decoration";
+    }
     /** Returns native custody to the build inventory. The quantity reservation remains held by the packed instance. */
     public static UUID pickup(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID instanceId) throws IOException {
         return pickup(plugin,world,plot,null,instanceId);
@@ -243,18 +274,15 @@ public final class NativePlacementTransactions {
     /** Player-facing callers pass the actor and re-resolve the original inventory owner at the instant of pickup. */
     public static UUID pickup(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID actor,UUID instanceId) throws IOException {
         healPickups(plugin,world,plot);
-        if(instanceId.equals(plot.getPlotId()))instanceId=plugin.getServices().provenance().instances(plot.getPlotId()).stream().filter(i->i.state().equals("PLACED")&&"HOUSE".equals(i.nativeData().get("kind"))).map(ProvenanceService.Instance::id).findFirst().orElseThrow(()->new IllegalStateException("House provenance missing"));
+        if(instanceId.equals(plot.getPlotId()))instanceId=house(plugin,plot);
         requireActive(plugin,plot);var services=plugin.getServices();var item=services.provenance().find(instanceId).orElseThrow(()->new IllegalStateException("Unproven legacy object cannot be packaged"));
         if(!item.state().equals("PLACED")||!item.propertyId().equals(plot.getPlotId()))throw new IllegalStateException("Placed object provenance does not match this property");
         if(actor==null){if(!item.owner().equals(owner(plot)))throw new IllegalStateException("Guild custody pickup requires the authorized actor");}
         else if("HOUSE".equals(item.nativeData().get("kind"))){if(!item.owner().equals(owner(plot))||!com.hexvane.eterniamod.housing.HousingAccess.can(plugin,plot,actor,"housing.structure"))throw new IllegalStateException("House ownership and structure permission are required");}
         else com.hexvane.eterniamod.housing.HousingCustody.require(plugin,plot,actor,item.owner(),com.hexvane.eterniamod.housing.HousingCustody.PACK);
         var store=snapshots(plugin);var before=store.load(new SnapshotFiles.Saved(item.nativeData().get("before"),item.nativeData().get("beforeHash")));var b=before.bounds();
-        for(var other:services.provenance().instances(plot.getPlotId()))if(!other.id().equals(instanceId)&&other.state().equals("PLACED")&&Long.parseLong(other.nativeData().getOrDefault("placedAt","9223372036854775807"))>=Long.parseLong(item.nativeData().getOrDefault("placedAt","0"))) {
-            if("HOUSE".equals(item.nativeData().get("kind"))){var definition=plugin.getPropCatalog().get(other.nativeData().get("catalog"));if(definition!=null&&definition.getCategory().equals("addition"))throw new IllegalStateException("Package house additions first, or move the whole plot");}
-            var otherBefore=store.load(new SnapshotFiles.Saved(other.nativeData().get("before"),other.nativeData().get("beforeHash")));var o=otherBefore.bounds();
-            if(b.minX()<o.maxX()&&o.minX()<b.maxX()&&b.minY()<o.maxY()&&o.minY()<b.maxY()&&b.minZ()<o.maxZ()&&o.minZ()<b.maxZ())throw new IllegalStateException("Package overlapping objects first, or move the whole plot");
-        }
+        var first=inTheWay(plugin,plot,instanceId);
+        if(!first.isEmpty()){var o=first.get(0);throw new IllegalStateException(name(plugin,o)+" stands in the way and has to be packed first.");}
         var placedAfter=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));
         var mask=NativeRelocationCoordinator.difference(placedAfter.document(),before.document());
         // Other placed objects on the plot may share this area (a shelf inside a house); their entities are known, not strangers.

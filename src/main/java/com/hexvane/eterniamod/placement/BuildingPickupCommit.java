@@ -66,6 +66,35 @@ public final class BuildingPickupCommit {
         if (def == null) {
             return Result.FAILED;
         }
+        // Decorations and additions placed inside or against the house are packed first, newest first, so nothing is
+        // left floating or buried when the ground comes back. Each goes back to the inventory it came from.
+        int packedFirst = 0;
+        try {
+            UUID house = NativePlacementTransactions.house(plugin, plot);
+            for (var item : NativePlacementTransactions.inTheWay(plugin, plot, house)) {
+                UUID op;
+                try { op = NativePlacementTransactions.pickup(plugin, world, plot, uc.getUuid(), item.id()); }
+                catch (Exception failure) {
+                    plugin.getLogger().atWarning().withCause(failure).log("House pickup on %s: could not pack %s (%s) first", plot.getPlotId(), item.id(), item.contentId());
+                    if (playerRef != null) playerRef.sendMessage(com.hypixel.hytale.server.core.Message.raw(
+                        "Could not pack " + NativePlacementTransactions.name(plugin, item) + " that stands in your house: " + failure.getMessage()));
+                    return Result.FAILED;
+                }
+                try {
+                    plot.removeProp(item.id());
+                    plotManager.updatePlot(plot);
+                    plotManager.saveIfDirty();
+                    NativePlacementTransactions.complete(plugin, op);
+                    packedFirst++;
+                } catch (Exception failure) { NativePlacementTransactions.lock(plugin, op); return Result.FAILED; }
+            }
+        } catch (Exception failure) {
+            plugin.getLogger().atWarning().withCause(failure).log("House pickup on %s: could not check what is inside", plot.getPlotId());
+            if (playerRef != null) playerRef.sendMessage(com.hypixel.hytale.server.core.Message.raw(failure.getMessage()));
+            return Result.FAILED;
+        }
+        if (packedFirst > 0 && playerRef != null) playerRef.sendMessage(com.hypixel.hytale.server.core.Message.raw(
+            packedFirst == 1 ? "Packed 1 decoration from your house first." : "Packed " + packedFirst + " decorations from your house first."));
         UUID operation;
         try { operation=NativePlacementTransactions.pickup(plugin,world,plot,uc.getUuid(),plot.getPlotId()); }
         catch(Exception failure){ if(playerRef!=null)playerRef.sendMessage(com.hypixel.hytale.server.core.Message.raw(failure.getMessage()));return Result.FAILED; }
