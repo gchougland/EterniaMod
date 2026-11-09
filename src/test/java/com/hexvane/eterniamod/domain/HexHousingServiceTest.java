@@ -172,6 +172,38 @@ class HexHousingServiceTest {
         assertEquals(2, services.housing().location(owner).orElseThrow().cells().size());
     }
 
+    @Test void sellingRefundsTheNewestHexagonOnce() {
+        UUID mira = account("Mira");
+        Owner owner = Owner.player(mira);
+        services.economy().credit(owner, 1000, "mint");
+        var slot = home(mira, Set.of(SOUTH));
+        HexCoord next = new HexCoord(0, 2);
+        UUID grow = UUID.randomUUID();
+        var grown = services.housing().expandPlot(owner, slot.propertyId(), next, slot.revision(), grow, HexClaimRules.Kind.PUBLIC, CONTEXT, owner);
+        var done = services.housing().completeExpansion(owner, grow);
+        assertEquals(0, services.economy().balance(owner).available());
+
+        var stale = services.housing().sellCell(owner, slot.propertyId(), next, done.revision() - 1, UUID.randomUUID(), HexClaimRules.Kind.PUBLIC, HexPlotSettings.DEFAULTS, Set.of(), Set.of(), owner);
+        assertEquals(HexClaimRules.Reason.CHANGED, stale.result().reason());
+
+        UUID op = UUID.randomUUID();
+        var sold = services.housing().sellCell(owner, slot.propertyId(), next, done.revision(), op, HexClaimRules.Kind.PUBLIC, HexPlotSettings.DEFAULTS, Set.of(), Set.of(), owner);
+        assertTrue(sold.ok(), sold.result().message());
+        assertEquals(grown.charged(), sold.charged(), "adding then selling breaks even");
+        assertEquals(1000, services.economy().balance(owner).available());
+        assertEquals(PlotCells.of(L, Set.of(SOUTH)), sold.cells());
+        assertEquals(1, services.housing().location(owner).orElseThrow().cells().size());
+        assertEquals(JournalService.State.COMPLETED, services.journal().find(op).orElseThrow().state());
+
+        var replay = services.housing().sellCell(owner, slot.propertyId(), next, sold.slot().revision(), op, HexClaimRules.Kind.PUBLIC, HexPlotSettings.DEFAULTS, Set.of(), Set.of(), owner);
+        assertTrue(replay.ok());
+        assertEquals(0, replay.charged());
+        assertEquals(1000, services.economy().balance(owner).available(), "never paid twice");
+
+        var last = services.housing().sellCell(owner, slot.propertyId(), SOUTH, sold.slot().revision(), UUID.randomUUID(), HexClaimRules.Kind.PUBLIC, HexPlotSettings.DEFAULTS, Set.of(), Set.of(), owner);
+        assertEquals(HexClaimRules.Reason.SMALLEST, last.result().reason());
+    }
+
     @Test void neighboursCannotGrowIntoEachOther() {
         UUID mira = account("Mira"), bo = account("Bo");
         var a = home(mira, Set.of(SOUTH));

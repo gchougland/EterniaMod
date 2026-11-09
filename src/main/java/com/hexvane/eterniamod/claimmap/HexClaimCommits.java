@@ -30,6 +30,11 @@ public interface HexClaimCommits {
     /** Adds one side sharing cell to the player's plot (or their guild estate when allowed), charging the price. */
     CompletableFuture<Result> expandPlot(PlayerRef player, World world, String plotId, HexCoord cell);
 
+    /** Sells one hexagon of the player's plot (or their guild estate when allowed) back, refunding its coins. */
+    default CompletableFuture<Result> sellCell(PlayerRef player, World world, String plotId, HexCoord cell) {
+        return CompletableFuture.completedFuture(new Result(false, Message.translation(Development.FINISHING), null, HexClaimRules.Result.of(HexClaimRules.Reason.SELL_ALLOWED)));
+    }
+
     /**
      * What a commit did. {@code message} is the friendly line for the page (the commit has already told the player in
      * chat); {@code plotId} is the plot's id text when land changed hands; {@code reason} explains a refusal.
@@ -60,6 +65,16 @@ public interface HexClaimCommits {
             @Override public CompletableFuture<Result> expandPlot(PlayerRef player, World world, String plotId, HexCoord cell) {
                 return expand.apply(player, world, plotId, cell).thenApply(result);
             }
+        };
+    }
+
+    /** Like {@link #adapt(Claim, Expand, Function)}, with the plots engine's sale as well. */
+    static <R> HexClaimCommits adapt(Claim<R> claim, Expand<R> expand, Expand<R> sell, Function<R, Result> result) {
+        HexClaimCommits base = adapt(claim, expand, result);
+        return new HexClaimCommits() {
+            @Override public CompletableFuture<Result> claimCells(PlayerRef player, World world, PlotCells cells, HexClaimRules.Kind kind) { return base.claimCells(player, world, cells, kind); }
+            @Override public CompletableFuture<Result> expandPlot(PlayerRef player, World world, String plotId, HexCoord cell) { return base.expandPlot(player, world, plotId, cell); }
+            @Override public CompletableFuture<Result> sellCell(PlayerRef player, World world, String plotId, HexCoord cell) { return sell.apply(player, world, plotId, cell).thenApply(result); }
         };
     }
 

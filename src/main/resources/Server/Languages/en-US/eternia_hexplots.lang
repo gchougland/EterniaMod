@@ -36,6 +36,12 @@ reason.cellFull=This hexagon is full. Try another part of your plot, or grow you
 reason.generatorsFull=This hexagon has all the generators it can hold. Try another part of your plot.
 reason.setback=Houses need {count} clear blocks inside the plot border.
 reason.roadSetback=Houses need five clear blocks from roads.
+reason.sellAllowed=You can sell this hexagon.
+reason.notOwned=This hexagon is not part of your plot.
+reason.smallest=Your plot is already as small as it can be.
+reason.split=Selling this hexagon would split your plot in two. Pick one on the edge.
+reason.houseHere=Your house stands on this hexagon. Pack it first or sell another one.
+reason.pathHere=Your garden path crosses this hexagon. Remove it first in Palettes and paths.
 
 # What a hexagon is to the player looking at it (claim map legend, map overlay tooltips).
 state.street=Street
@@ -122,6 +128,16 @@ map.status.working=Claiming your land. One moment.
 map.status.noneHere=There is no free land beside a road in this view. Use the arrows to look further along the roads.
 map.legend.grow=Room to grow
 map.status.full=Your plot is as large as it can grow.
+map.kicker.sell=Sell a hexagon
+map.hint.sell=Green hexagons can be sold back. Click one to see what you get for it.
+map.cell.sell=Can be sold
+map.body.sell=Sell this hexagon and get its coins back. Decorations on it go back to your inventory. Anything else built on it is removed and the ground goes back to how it was.
+map.cost.refund={coins} coins back
+map.claim.sell=Sell this hexagon
+map.claim.sellConfirm=Yes, sell it
+map.status.confirmSell=Sell this hexagon for {coins} coins? Anything built on it is removed.
+map.status.noSell=No hexagon can be sold right now. Your plot needs to keep its starting size and stay in one piece.
+map.legend.sell=Can be sold
 map.dev.finishing=This land can be yours. Claiming from the map is still being finished, so nothing changed yet.
 
 # Plot shapes, named by the house they hold.
@@ -136,6 +152,11 @@ plots.claim.paid=Your {shape} is ready! {coins} coins paid. Open your housing me
 plots.claim.retry=The land here is still loading. Try again in a moment.
 plots.expand.done=Your plot grew to {cells} hexagons.
 plots.expand.paid=Your plot grew to {cells} hexagons. {coins} coins paid.
+plots.sell.paid=You sold a hexagon for {coins} coins. Your plot now has {cells} hexagons.{packed}
+plots.sell.done=You gave back a hexagon. Your plot now has {cells} hexagons.{packed}
+plots.sell.failed=Your hexagon could not be sold just now. Nothing was charged. Try again in a moment.
+plots.sell.guildRole=Only your guild leader can sell hexagons of the guild estate.
+plots.sell.packFailed={name} on this hexagon could not be packed: {reason}
 plots.expand.retry=Your plot could not grow just now. Open My Plots to check it, then try again.
 plots.expand.guildRole=Only your guild leader can grow the guild estate.
 plots.claim.failed=Your claim could not finish. Open My Plots to check it before you try again.

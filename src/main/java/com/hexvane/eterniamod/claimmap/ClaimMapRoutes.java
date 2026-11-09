@@ -36,6 +36,11 @@ public final class ClaimMapRoutes {
         PlotClaimPage.openNew(ref, store, player, plugin, guild);
     }
 
+    /** "Sell a hexagon" of a plot in the player's current world. Returns false when that is not possible here. */
+    public static boolean sell(EterniaModPlugin plugin, Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, UUID plotId) {
+        return inHexWorld(store) && ClaimMapPage.open(plugin, ref, store, player, ClaimMapLogic.Mode.SELL, HousingRules.Scope.PUBLIC, plotId);
+    }
+
     /** "Add a hexagon" to a plot in the player's current world. Returns false when that is not possible here. */
     public static boolean expand(EterniaModPlugin plugin, Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, UUID plotId) {
         return inHexWorld(store) && ClaimMapPage.open(plugin, ref, store, player, ClaimMapLogic.Mode.EXPAND, HousingRules.Scope.PUBLIC, plotId);

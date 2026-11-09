@@ -38,6 +38,10 @@ public final class MyPlotsPage {
                         if(!ss.getExternalData().getWorld().getName().equals(location.worldId())||!com.hexvane.eterniamod.claimmap.ClaimMapRoutes.expand(plugin,rr,ss,player,slot.propertyId()))
                             player.sendMessage(Message.raw("Go to "+com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId())+" to add a hexagon to this plot."));
                     }));
+                    if(location!=null&&location.cells()!=null&&location.cells().size()>1)actions.add(new ChoicePage.Choice("Give one hexagon back and get its Coins back. Anything built on it is removed.","Sell a hexagon",(rr,ss)->{
+                        if(!ss.getExternalData().getWorld().getName().equals(location.worldId())||!com.hexvane.eterniamod.claimmap.ClaimMapRoutes.sell(plugin,rr,ss,player,slot.propertyId()))
+                            player.sendMessage(Message.raw("Go to "+com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId())+" to sell a hexagon of this plot."));
+                    }));
                     actions.add(new ChoicePage.Choice("Save the plot, house and belongings, then choose a new site","Move plot",(rr,ss)->ChoicePage.open(rr,ss,player,"Move "+name.toLowerCase()+"?","This uses one move credit. You have "+plugin.getServices().ownership().available(owner,HousingService.MOVE_CREDIT)+". After packing, use your Plot Deed or /e claim to restore it. No separate move tool is needed.",List.of(new ChoicePage.Choice("Pack the entire plot and reserve one move credit","Confirm move",(rrr,sss)->{
                         var current=plugin.getServices().housing().location(owner).orElseThrow();var world=Universe.get().getWorld(current.worldId());
                         if(world==null){player.sendMessage(Message.raw("This plot’s world is not loaded."));return;}

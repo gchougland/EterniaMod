@@ -70,6 +70,13 @@ public final class PlotCells {
         return new PlotCells(lattice, next);
     }
 
+    /** This plot without {@code cell}. */
+    public PlotCells without(HexCoord cell) {
+        List<HexCoord> next = new ArrayList<>(cells);
+        next.remove(cell);
+        return new PlotCells(lattice, next);
+    }
+
     /** Same cells moved by a whole number of cells (cells are exact translates of each other). */
     public PlotCells translate(HexCoord offset) {
         return new PlotCells(lattice, cells.stream().map(c -> c.plus(offset)).toList());

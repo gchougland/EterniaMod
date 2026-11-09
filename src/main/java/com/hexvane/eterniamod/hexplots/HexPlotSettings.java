@@ -117,6 +117,11 @@ public record HexPlotSettings(
         return Math.max(cap, Math.max(startCells(kind, false), startCells(kind, true)));
     }
 
+    /** Coins back for selling one cell of a plot with {@code ownedCells}: what its newest cell cost, so growing then selling breaks even. */
+    public long sellRefund(int ownedCells) {
+        return ownedCells <= 1 ? 0 : expansionPrice(ownedCells - 1);
+    }
+
     /** Coins for adding one cell to a plot that already has {@code ownedCells}. */
     public long expansionPrice(int ownedCells) {
         return Math.addExact(expandCoins, Math.multiplyExact(expandCoinsPerOwnedCell, (long) Math.max(0, ownedCells)));

@@ -105,7 +105,7 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
             window = ClaimMapGeometry.centredOn(view.lattice(), at[0], at[1]);
         }
         // Growing a guild estate reads as guild land throughout the page.
-        if (mode == Mode.EXPAND && plot != null && plot.ownerKind() == HexLandView.OwnerKind.GUILD) scope = HousingRules.Scope.GUILD_ROOT;
+        if ((mode == Mode.EXPAND || mode == Mode.SELL) && plot != null && plot.ownerKind() == HexLandView.OwnerKind.GUILD) scope = HousingRules.Scope.GUILD_ROOT;
         component.getPageManager().openCustomPage(ref, store, new ClaimMapPage(player, plugin, world, mode, scope, plotId, window));
         return true;
     }
@@ -211,6 +211,8 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
         var commits = HexClaimCommits.current();
         var future = mode == Mode.EXPAND
             ? commits.expandPlot(playerRef, world, plotId.toString(), cells.iterator().next())
+            : mode == Mode.SELL
+            ? commits.sellCell(playerRef, world, plotId.toString(), cells.iterator().next())
             : commits.claimCells(playerRef, world, PlotCells.of(view.lattice(), cells), ClaimMapLogic.kind(scope));
         future.whenComplete((done, failure) -> world.execute(() -> {
             if (isDismissed() || !ref.isValid()) return;
@@ -315,7 +317,7 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
      */
     private void settleMode() {
         HexLandView view = view();
-        if (view == null || account == null || mode == Mode.EXPAND) return;
+        if (view == null || account == null || mode == Mode.EXPAND || mode == Mode.SELL) return;
         var reason = ClaimMapLogic.accountReason(account, scope);
         if (reason == null) { if (mode == Mode.PACKED) mode = Mode.CLAIM; return; }
         switch (reason.reason()) {

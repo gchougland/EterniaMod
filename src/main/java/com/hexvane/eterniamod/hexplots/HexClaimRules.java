@@ -67,7 +67,13 @@ public final class HexClaimRules {
         CELL_FULL("cellFull", "This hexagon is full. Try another part of your plot, or grow your plot."),
         GENERATORS_FULL("generatorsFull", "This hexagon has all the generators it can hold. Try another part of your plot."),
         SETBACK("setback", "Houses need {count} clear blocks inside the plot border."),
-        ROAD_SETBACK("roadSetback", "Houses need five clear blocks from roads.");
+        ROAD_SETBACK("roadSetback", "Houses need five clear blocks from roads."),
+        SELL_ALLOWED("sellAllowed", "You can sell this hexagon."),
+        NOT_OWNED("notOwned", "This hexagon is not part of your plot."),
+        SMALLEST("smallest", "Your plot is already as small as it can be."),
+        SPLIT("split", "Selling this hexagon would split your plot in two. Pick one on the edge."),
+        HOUSE_HERE("houseHere", "Your house stands on this hexagon. Pack it first or sell another one."),
+        PATH_HERE("pathHere", "Your garden path crosses this hexagon. Remove it first in Palettes and paths.");
 
         private final String id;
         private final String message;
@@ -86,7 +92,7 @@ public final class HexClaimRules {
         /** English fallback, with {@code {count}} still in place. */
         public String message() { return message; }
 
-        public boolean allowed() { return this == ALLOWED || this == EXPAND_ALLOWED || this == PLACE_ALLOWED; }
+        public boolean allowed() { return this == ALLOWED || this == EXPAND_ALLOWED || this == PLACE_ALLOWED || this == SELL_ALLOWED; }
     }
 
     /** Outcome of a rule check. {@code count} fills {@code {count}} in the message (cells, members, coins, blocks). */
@@ -223,6 +229,19 @@ public final class HexClaimRules {
     }
 
     public static Result expand(Land land, Kind kind, UUID plot, HexCoord cell) { return expand(land, kind, plot, cell, HexPlotSettings.DEFAULTS); }
+
+    /**
+     * Gives one cell back. It must be the plot's own, the plot must keep at least its start shape's size, stay in one
+     * piece, and the cell must not hold the house ({@code houseCells}) or a garden path ({@code pathCells}).
+     */
+    public static Result sell(Set<HexCoord> current, HexCoord cell, Kind kind, HexPlotSettings settings, Set<HexCoord> houseCells, Set<HexCoord> pathCells) {
+        if (!current.contains(cell)) return Result.of(Reason.NOT_OWNED);
+        if (current.size() <= settings.startCells(kind, false)) return Result.of(Reason.SMALLEST);
+        if (houseCells.contains(cell)) return Result.of(Reason.HOUSE_HERE);
+        if (pathCells.contains(cell)) return Result.of(Reason.PATH_HERE);
+        if (!HexContiguity.canRemove(current, cell, Set.of())) return Result.of(Reason.SPLIT);
+        return Result.of(Reason.SELL_ALLOWED);
+    }
 
     /** Every cell the plot could grow into right now, in reading order. Empty at the cap. */
     public static Set<HexCoord> expansionOptions(Land land, Kind kind, Set<HexCoord> current, HexPlotSettings settings) {

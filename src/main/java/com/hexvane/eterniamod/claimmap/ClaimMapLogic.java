@@ -30,8 +30,8 @@ import java.util.function.Function;
 public final class ClaimMapLogic {
     private ClaimMapLogic() {}
 
-    /** Choosing a start plot, adding one hexagon to a plot, or setting a packed home down again. */
-    public enum Mode { CLAIM, EXPAND, PACKED }
+    /** Choosing a start plot, adding one hexagon to a plot, setting a packed home down again, or selling a hexagon back. */
+    public enum Mode { CLAIM, EXPAND, PACKED, SELL }
 
     /**
      * Account facts loaded off the world thread when the page opens. {@code personal} and {@code estate} are the slot
@@ -96,10 +96,31 @@ public final class ClaimMapLogic {
         Kind intent = switch (s.mode()) {
             case CLAIM -> s.account() != null && accountReason(s.account(), s.scope()) == null ? kind(s.scope()) : null;
             case PACKED -> kind(s.scope());
-            case EXPAND -> null;
+            case EXPAND, SELL -> null;
         };
         return new HexLandView.Viewer(player, guild, intent);
     }
+
+    /** True for the modes that work on one hexagon of an existing plot (adding one, or selling one). */
+    static boolean oneCell(Situation s) { return s.mode() == Mode.EXPAND || s.mode() == Mode.SELL; }
+
+    /**
+     * Cells of the plot that could be sold now (sell mode), else empty. The map knows the plot's size and shape; a house
+     * or a garden path on a hexagon is checked when the sale commits.
+     */
+    public static Set<HexCoord> sellable(Situation s) {
+        if (s.mode() != Mode.SELL || s.plotId() == null) return Set.of();
+        HexLandView.PlotInfo plot = s.view().plots().get(s.plotId());
+        if (plot == null) return Set.of();
+        Set<HexCoord> out = new LinkedHashSet<>();
+        Set<HexCoord> cells = plot.cells().asSet();
+        for (HexCoord c : plot.cells().cells())
+            if (HexClaimRules.sell(cells, c, HexLandView.kindOf(plot), s.settings(), Set.of(), Set.of()).valid()) out.add(c);
+        return out;
+    }
+
+    /** The cells a one-hexagon mode can act on now: room to grow, or hexagons that can be sold. */
+    static Set<HexCoord> targets(Situation s) { return s.mode() == Mode.SELL ? sellable(s) : growth(s); }
 
     /** Cells a plot could grow into now (expand mode), else empty. */
     public static Set<HexCoord> growth(Situation s) {
@@ -117,6 +138,10 @@ public final class ClaimMapLogic {
             if (s.packedSpots().contains(cell)) return CellState.FRONTAGE_FREE;
             return state == CellState.FRONTAGE_FREE ? CellState.FREE : state;
         }
+        if (s.mode() == Mode.SELL) {
+            if (growth.contains(cell)) return CellState.FRONTAGE_FREE;
+            return state == CellState.FRONTAGE_FREE ? CellState.FREE : state;
+        }
         if (s.mode() != Mode.EXPAND) return state;
         if (growth.contains(cell)) return CellState.FRONTAGE_FREE;
         return state == CellState.FRONTAGE_FREE ? CellState.FREE : state;
@@ -125,7 +150,7 @@ public final class ClaimMapLogic {
     /** States and plot ids for every cell of a window, for the picture. */
     public static ClaimMapRenderer.Scene scene(Situation s, ClaimMapGeometry g, List<com.hexvane.eterniamod.housing.PlotRect> roads, Double px, Double pz) {
         HexLandView.Viewer viewer = viewer(s);
-        Set<HexCoord> growth = growth(s);
+        Set<HexCoord> growth = targets(s);
         Map<HexCoord, CellState> states = new HashMap<>();
         Map<HexCoord, UUID> plots = new HashMap<>();
         for (HexCoord cell : g.visibleCells()) {
@@ -150,7 +175,7 @@ public final class ClaimMapLogic {
     /** Ways to place the plot over the clicked cell, those the rules allow first. */
     public static List<Option> options(Situation s) {
         HexCoord cell = s.selected();
-        if (cell == null || s.mode() == Mode.EXPAND) return List.of();
+        if (cell == null || oneCell(s)) return List.of();
         HexLandView view = s.view();
         List<Set<HexCoord>> layouts = new ArrayList<>();
         if (s.mode() == Mode.PACKED) {
@@ -213,7 +238,7 @@ public final class ClaimMapLogic {
     /** The cells a Claim press would commit now, or empty. */
     public static Set<HexCoord> chosen(Situation s) {
         if (s.selected() == null) return Set.of();
-        if (s.mode() == Mode.EXPAND) return growth(s).contains(s.selected()) ? Set.of(s.selected()) : Set.of();
+        if (oneCell(s)) return targets(s).contains(s.selected()) ? Set.of(s.selected()) : Set.of();
         List<Option> options = options(s);
         if (options.isEmpty()) return Set.of();
         Option o = options.get(Math.floorMod(s.option(), options.size()));
@@ -221,7 +246,7 @@ public final class ClaimMapLogic {
     }
 
     private static HexClaimRules.Result accountReason(Situation s) {
-        if (s.mode() == Mode.EXPAND) return null;
+        if (oneCell(s)) return null;
         HexClaimRules.Result r = accountReason(s.account(), s.scope());
         // In packed mode the packed slot is the point; any other account reason still stops the claim.
         if (s.mode() == Mode.PACKED && r != null && r.reason() == Reason.PACKED) return null;
@@ -231,15 +256,19 @@ public final class ClaimMapLogic {
     /** Cells to outline in the world: the picked layout, or (adding a hexagon) every cell the plot can grow into. */
     public static Set<HexCoord> focus(Situation s) {
         if (s.selected() != null) {
-            if (s.mode() == Mode.EXPAND) return growth(s).contains(s.selected()) ? Set.of(s.selected()) : Set.of();
+            if (oneCell(s)) return targets(s).contains(s.selected()) ? Set.of(s.selected()) : Set.of();
             List<Option> options = options(s);
             return options.isEmpty() ? Set.of() : options.get(Math.floorMod(s.option(), options.size())).cells();
         }
-        return s.mode() == Mode.EXPAND ? growth(s) : Set.of();
+        return oneCell(s) ? targets(s) : Set.of();
     }
 
-    /** Coins the commit will take. */
+    /** Coins the commit will take (in sell mode, the coins it gives back). */
     public static long price(Situation s) {
+        if (s.mode() == Mode.SELL) {
+            HexLandView.PlotInfo plot = s.plotId() == null ? null : s.view().plots().get(s.plotId());
+            return plot == null ? 0 : s.settings().sellRefund(plot.cells().size());
+        }
         if (s.mode() == Mode.EXPAND) {
             HexLandView.PlotInfo plot = s.plotId() == null ? null : s.view().plots().get(s.plotId());
             return plot == null ? 0 : s.settings().expansionPrice(plot.cells().size());
@@ -255,6 +284,7 @@ public final class ClaimMapLogic {
         ClaimMapGeometry g = s.shown();
         Message kicker = text(switch (s.mode()) {
             case EXPAND -> "kicker.expand";
+            case SELL -> "kicker.sell";
             case PACKED -> "kicker.packed";
             case CLAIM -> switch (s.scope()) {
                 case PUBLIC -> "kicker.claim";
@@ -266,7 +296,8 @@ public final class ClaimMapLogic {
         boolean estate = s.scope() == HousingRules.Scope.GUILD_ROOT;
 
         long price = price(s);
-        Message cost = price <= 0 ? text("cost.free") : text("cost.coins").param("coins", coins(price));
+        Message cost = s.mode() == Mode.SELL ? text("cost.refund").param("coins", coins(price))
+            : price <= 0 ? text("cost.free") : text("cost.coins").param("coins", coins(price));
         Message ownLabel = text(estate ? "own.labelGuild" : "own.label");
         Message own = ownText(s);
 
@@ -275,6 +306,7 @@ public final class ClaimMapLogic {
         Message claimText = text(switch (s.mode()) {
             case CLAIM -> s.confirming() ? "claim.confirm" : "claim";
             case EXPAND -> s.confirming() ? "claim.expandConfirm" : "claim.expand";
+            case SELL -> s.confirming() ? "claim.sellConfirm" : "claim.sell";
             case PACKED -> s.confirming() ? "claim.packedConfirm" : "claim.packed";
         });
         if (s.working()) claimText = text("claim.working");
@@ -298,19 +330,32 @@ public final class ClaimMapLogic {
             body = s.account() != null && blocked != null && s.mode() == Mode.CLAIM ? HexLand.message(blocked) : text(switch (s.mode()) {
                 case CLAIM -> s.scope() == HousingRules.Scope.GUILD_MEMBER ? "hint.member" : "hint.claim";
                 case EXPAND -> "hint.expand";
+                case SELL -> "hint.sell";
                 case PACKED -> "hint.packed";
             });
             if (status == null && s.mode() == Mode.EXPAND && plotFull(s)) status = text("status.full");
+            else if (status == null && s.mode() == Mode.SELL && sellable(s).isEmpty()) status = text("status.noSell");
             else if (status == null && g != null && s.account() != null && accountReason(s) == null && !anyGreen(s, g)) status = text("status.noneHere");
         } else {
             sideKicker = text("side.selected");
             HexLandView.Viewer viewer = viewer(s);
             HexLandView.CellInfo info = s.view().cell(s.selected(), viewer, s.names());
-            CellState state = state(s, viewer, growth(s), s.selected());
+            CellState state = state(s, viewer, targets(s), s.selected());
             swatch = state;
             var centre = g.centre(s.selected());
             selected = new ClaimMapScreen.Mark(centre.x(), centre.y());
-            switch (state) {
+            HexLandView.PlotInfo selling = s.mode() == Mode.SELL && s.plotId() != null ? s.view().plots().get(s.plotId()) : null;
+            if (selling != null && selling.cells().contains(s.selected())) {
+                // Selling: green hexagons can go; the others say why not.
+                if (state == CellState.FRONTAGE_FREE) {
+                    title = text("cell.sell");
+                    body = text("body.sell");
+                    picks = ClaimMapScreen.marks(g, List.of(s.selected()));
+                } else {
+                    title = text("cell.mine");
+                    body = HexLand.message(HexClaimRules.sell(selling.cells().asSet(), s.selected(), HexLandView.kindOf(selling), s.settings(), Set.of(), Set.of()));
+                }
+            } else switch (state) {
                 case MINE -> { title = text("cell.mine"); body = text("body.mine"); }
                 case MY_GUILD -> { title = owner(info, "cell.guild", "cell.myGuild"); body = text("body.myGuild"); }
                 case OTHER_PLAYER -> { title = owner(info, "cell.player", "cell.neighbour"); body = HexLand.message(HexClaimRules.Result.of(Reason.TAKEN)); }
@@ -318,7 +363,10 @@ public final class ClaimMapLogic {
                 case RESERVED -> { title = text("cell.reserved"); body = HexLand.message(HexClaimRules.Result.of(Reason.RESERVED)); }
                 case STREET -> { title = text("cell.street"); body = HexLand.message(HexClaimRules.Result.of(Reason.STREET)); }
                 default -> {
-                    if (s.mode() == Mode.EXPAND) {
+                    if (s.mode() == Mode.SELL) {
+                        title = text("cell.open");
+                        body = HexLand.message(HexClaimRules.Result.of(Reason.NOT_OWNED));
+                    } else if (s.mode() == Mode.EXPAND) {
                         HexLandView.PlotInfo plot = s.plotId() == null ? null : s.view().plots().get(s.plotId());
                         if (state == CellState.FRONTAGE_FREE) {
                             title = text("cell.grow");
@@ -369,13 +417,13 @@ public final class ClaimMapLogic {
             sideKicker, swatch, title, body, shapeName, shapeText, prev, next, cost, ownLabel, own, status,
             claimText, claimEnabled, s.confirming() && ready ? text("back") : null,
             s.picture(), s.loading(), selected, picks, picksValid,
-            s.mode() == Mode.EXPAND ? text("legend.grow") : HexLand.stateName(CellState.FRONTAGE_FREE));
+            s.mode() == Mode.EXPAND ? text("legend.grow") : s.mode() == Mode.SELL ? text("legend.sell") : HexLand.stateName(CellState.FRONTAGE_FREE));
     }
 
     /** True when some hexagon on screen is green (claimable, or room to grow). */
     static boolean anyGreen(Situation s, ClaimMapGeometry g) {
         HexLandView.Viewer viewer = viewer(s);
-        Set<HexCoord> growth = growth(s);
+        Set<HexCoord> growth = targets(s);
         for (var slot : g.slots()) if (state(s, viewer, growth, slot.cell()) == CellState.FRONTAGE_FREE) return true;
         return false;
     }
@@ -386,7 +434,7 @@ public final class ClaimMapLogic {
     }
 
     private static Message ownText(Situation s) {
-        HexLandView.PlotInfo plot = s.mode() == Mode.EXPAND && s.plotId() != null ? s.view().plots().get(s.plotId()) : ownPlot(s.view(), s.account(), s.scope());
+        HexLandView.PlotInfo plot = oneCell(s) && s.plotId() != null ? s.view().plots().get(s.plotId()) : ownPlot(s.view(), s.account(), s.scope());
         if (plot != null) {
             int max = s.settings().maxCells(HexLandView.kindOf(plot));
             int count = plot.cells().size();
@@ -404,6 +452,7 @@ public final class ClaimMapLogic {
     private static Message confirmText(Situation s, int count, long price) {
         return switch (s.mode()) {
             case EXPAND -> text("status.confirmExpand").param("coins", coins(price));
+            case SELL -> text("status.confirmSell").param("coins", coins(price));
             case PACKED -> text("status.confirmPacked").param("count", count);
             case CLAIM -> price > 0 ? text("status.confirmCoins").param("count", count).param("coins", coins(price))
                 : count == 1 ? text("status.confirmOne") : text("status.confirmFree").param("count", count);

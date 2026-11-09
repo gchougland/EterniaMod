@@ -259,6 +259,45 @@ public final class HousingService extends DomainSupport {
         return outcome;
     }
 
+    /**
+     * Gives one cell of an ACTIVE hex plot back. Checks the revision and that no expansion is waiting, validates with
+     * {@link HexClaimRules#sell}, credits {@code settings.sellRefund(cells owned)} to {@code payee} once per operation,
+     * saves the smaller set of cells and journals a completed SHRINK. The caller has already restored the cell's
+     * ground and packed what stood on it; it then updates the plot projection. Replaying the operation id returns the
+     * saved cells without paying twice. {@code charged} in the outcome is the refund.
+     */
+    public HexOutcome sellCell(Owner owner,UUID propertyId,HexCoord cell,long expectedRevision,UUID operationId,HexClaimRules.Kind kind,HexPlotSettings settings,Set<HexCoord> houseCells,Set<HexCoord> pathCells,Owner payee) {
+        Objects.requireNonNull(cell);Objects.requireNonNull(kind);Objects.requireNonNull(settings);
+        var outcome=store.transaction(tx->{
+            var found=tx.find("housing_slot",owner.key());
+            if(found.isEmpty()||!found.get().value("property").equals(propertyId.toString()))return HexOutcome.rejected(HexClaimRules.Reason.NO_PLOT);
+            var r=found.get();
+            var previous=tx.find("operation",operationId.toString());
+            if(previous.isPresent()) {
+                require(previous.get().value("kind").equals("SHRINK")&&previous.get().value("detail").equals(expansionDetail(propertyId,cell)),CONFLICT,"Operation id reused");
+                var saved=location(r);return new HexOutcome(HexClaimRules.Result.of(HexClaimRules.Reason.SELL_ALLOWED),slot(r),saved.cells(),0,saved.worldId());
+            }
+            if(r.revision()!=expectedRevision||!r.value("state").equals("ACTIVE")||!r.value("expansion").isEmpty())return HexOutcome.rejected(HexClaimRules.Reason.CHANGED);
+            var location=location(r);
+            if(location.cells()==null)return HexOutcome.rejected(HexClaimRules.Reason.NO_LATTICE);
+            var verdict=HexClaimRules.sell(location.cells().asSet(),cell,kind,settings,houseCells,pathCells);
+            if(!verdict.valid())return HexOutcome.rejected(verdict);
+            long refund=settings.sellRefund(location.cells().size());
+            if(refund>0) {
+                require(payee!=null,INVALID_INPUT,"A paid sale needs a payee");
+                economy.creditIn(tx,payee,refund,"hexplot-sell:"+operationId);
+            }
+            var op=journal.prepareIn(tx,operationId,"SHRINK",owner,expansionDetail(propertyId,cell));
+            op=journal.advanceIn(tx,operationId,op.revision(),JournalService.State.WORLD_APPLIED);
+            journal.advanceIn(tx,operationId,op.revision(),JournalService.State.COMPLETED);
+            var next=location.withCells(location.cells().without(cell));
+            var data=changed(r);data.putAll(locationFields(next));
+            return new HexOutcome(verdict,slot(tx.save(r.namespace(),r.key(),r.revision(),data)),next.cells(),refund,next.worldId());
+        });
+        if(outcome.ok())HexLandEvents.fire(outcome.world(),Set.of(cell),HexLandEvents.Cause.UNCLAIM);
+        return outcome;
+    }
+
     /** The native adapter applied a paid expansion to the world projection. Idempotent. */
     public Slot completeExpansion(Owner owner,UUID operationId) {
         return store.transaction(tx->{

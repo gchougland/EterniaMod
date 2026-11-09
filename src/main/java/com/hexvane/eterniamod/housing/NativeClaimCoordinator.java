@@ -224,6 +224,97 @@ public final class NativeClaimCoordinator {
         return HexCommitResult.success(line,plotId.toString(),out.result());
     }
 
+    /**
+     * Sells {@code cell} of the plot {@code plotId} back: loads its ground, packs the decorations standing on it, puts
+     * its ground back as it was before it was claimed, refunds what the newest hexagon cost and shrinks the plot.
+     * Completes on the world thread with a friendly message; never completes exceptionally. Safe from any thread.
+     */
+    public CompletableFuture<HexCommitResult> sellCell(PlayerRef player,World world,String plotId,HexCoord cell) {
+        Objects.requireNonNull(player);Objects.requireNonNull(world);Objects.requireNonNull(plotId);Objects.requireNonNull(cell);
+        UUID operation=UUID.randomUUID();UUID plot=parse(plotId);
+        var lattice=plugin.getInfrastructure().world(world.getName()).flatMap(HousingInfrastructure.WorldPlan::hexLattice).orElse(null);
+        if(plot==null||lattice==null)return onWorld(world,()->{var done=HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.NO_PLOT));tell(player,done);return done;});
+        return onWorld(world,()->loadGround(world,lattice.bounds(cell))).thenCompose(f->f)
+            .thenApplyAsync(v->{
+                HexCommitResult done;
+                try{done=sellCellNow(world,player.getUuid(),plot,cell,operation);}
+                catch(RuntimeException failure){
+                    plugin.getLogger().atWarning().withCause(failure).log("Selling hexagon %s of plot %s did not finish",cell,plotId);
+                    done=HexCommitResult.failed(HexPlotText.plots("sell.failed","Your hexagon could not be sold just now. Nothing was charged. Try again in a moment."),plotId);
+                }
+                tell(player,done);return done;
+            },world)
+            .exceptionallyAsync(error->{
+                plugin.getLogger().atWarning().withCause(error).log("Selling a hexagon could not load its ground");
+                var done=HexCommitResult.failed(HexPlotText.plots("claim.retry","The land here is still loading. Try again in a moment."),plotId);
+                tell(player,done);return done;
+            },world);
+    }
+
+    /** World thread. The synchronous sale: who may shrink the plot, pack what stands on the hexagon, restore its ground, commit. */
+    public synchronized HexCommitResult sellCellNow(World world,UUID actor,UUID plotId,HexCoord cell,UUID operation) {
+        var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);
+        var plot=plotId==null?null:manager.getPlot(plotId);
+        if(plot==null||!plot.isHex())return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.NO_PLOT));
+        var services=plugin.getServices();var owner=HousingAccess.owner(plot);
+        if(owner==null)return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.NO_PLOT));
+        HexClaimRules.Kind kind;
+        if(owner.kind()==Owner.Kind.GUILD) {
+            if(!services.guilds().can(actor,owner.id(),"housing.resize"))
+                return HexCommitResult.failed(HexPlotText.plots("sell.guildRole","Only your guild leader can sell hexagons of the guild estate."),plotId.toString());
+            kind=HexClaimRules.Kind.GUILD_ESTATE;
+        } else {
+            if(!actor.equals(plot.getOwnerUuid()))return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.OUTSIDE));
+            kind=plot.getAttachedGuildUuid()!=null?HexClaimRules.Kind.GUILD_MEMBER:HexClaimRules.Kind.PUBLIC;
+        }
+        var slot=services.housing().find(owner).orElse(null);
+        if(slot==null||!slot.propertyId().equals(plotId))return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.NO_PLOT));
+        for(var pending:services.housing().pendingExpansions(world.getName()))if(pending.propertyId().equals(plotId))applyExpansion(world,pending);
+        slot=services.housing().find(owner).orElse(slot);
+        if(slot.state()!=HousingService.State.ACTIVE)return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.RECOVERY));
+        var settings=HexPlotSettings.current();var lattice=plot.getCells().lattice();
+        // What stands where: the house and a garden path block the sale; decorations on the hexagon are packed first.
+        Set<HexCoord> houseCells=new HashSet<>(),pathCells=new HashSet<>();var onCell=new ArrayList<ProvenanceService.Instance>();
+        var snapshots=com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions.snapshots(plugin);
+        for(var item:services.provenance().instances(plotId)) {
+            if(!item.state().equals("PLACED"))continue;
+            com.hexvane.eterniamod.housing.relocation.NativeSnapshotStore.Bounds b;
+            try{b=snapshots.load(new com.hexvane.eterniamod.housing.relocation.SnapshotFiles.Saved(item.nativeData().get("before"),item.nativeData().get("beforeHash"))).bounds();}
+            catch(java.io.IOException|RuntimeException unreadable){plugin.getLogger().atWarning().withCause(unreadable).log("Could not read where %s stands",item.id());continue;}
+            var touched=lattice.cellsTouching(new PlotRect(b.minX(),b.minZ(),b.maxX()-b.minX(),b.maxZ()-b.minZ()));
+            String what=item.nativeData().getOrDefault("kind","PROP");
+            if(what.equals("HOUSE"))houseCells.addAll(touched);
+            else if(what.equals("PATH"))pathCells.addAll(touched);
+            else if(touched.contains(cell))onCell.add(item);
+        }
+        var verdict=HexClaimRules.sell(plot.getCells().asSet(),cell,kind,settings,houseCells,pathCells);
+        if(!verdict.valid())return HexCommitResult.refused(verdict);
+        onCell.sort(Comparator.comparingLong((ProvenanceService.Instance i)->Long.parseLong(i.nativeData().getOrDefault("placedAt","0"))).reversed());
+        int packed=0;
+        for(var item:onCell) {
+            UUID op;
+            try{op=com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions.pickup(plugin,world,plot,actor,item.id());}
+            catch(Exception failure){
+                plugin.getLogger().atWarning().withCause(failure).log("Selling %s of plot %s: could not pack %s (%s)",cell,plotId,item.id(),item.contentId());
+                return HexCommitResult.failed(HexPlotText.plots("sell.packFailed","{name} on this hexagon could not be packed: {reason}","name",com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions.name(plugin,item),"reason",String.valueOf(failure.getMessage())),plotId.toString());
+            }
+            try{plot.removeProp(item.id());manager.updatePlot(plot);manager.saveIfDirty();com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions.complete(plugin,op);packed++;}
+            catch(RuntimeException failure){com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions.lock(plugin,op);throw failure;}
+        }
+        com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator.releaseCell(plugin,world,plot,cell);
+        var out=services.housing().sellCell(owner,plotId,cell,slot.revision(),operation,kind,settings,houseCells,pathCells,Owner.player(actor));
+        if(!out.ok())return HexCommitResult.refused(out.result());
+        applyCells(manager,plot,out.cells());
+        String packedNote=packed==0?"":packed==1?" 1 decoration from it went back to your inventory.":" "+packed+" decorations from it went back to your inventory.";
+        var line=out.charged()>0
+            ?HexPlotText.plots("sell.paid","You sold a hexagon for {coins} coins. Your plot now has {cells} hexagons.{packed}","coins",out.charged(),"cells",out.cells().size(),"packed",packedNote)
+            :HexPlotText.plots("sell.done","You gave back a hexagon. Your plot now has {cells} hexagons.{packed}","cells",out.cells().size(),"packed",packedNote);
+        return HexCommitResult.success(line,plotId.toString(),out.result());
+    }
+
+    /** Coins back for selling one hexagon of a plot with {@code cellsOwned} cells. */
+    public static long sellRefund(int cellsOwned){return HexPlotSettings.current().sellRefund(cellsOwned);}
+
     /** What the next hexagon costs for a plot of {@code cellsOwned} cells (pages show it before the player confirms). */
     public static long expansionPrice(int cellsOwned){return HexPlotSettings.current().expansionPrice(cellsOwned);}
 

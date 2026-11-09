@@ -33,6 +33,22 @@ class HexClaimRulesTest {
         assertEquals(1, HexContiguity.edgeCells(Set.of(HexCoord.ORIGIN)));
     }
 
+    @Test void sellingAHexagon() {
+        var s = HexPlotSettings.DEFAULTS;
+        Set<HexCoord> line = Set.of(new HexCoord(0, 0), new HexCoord(1, 0), new HexCoord(2, 0));
+        var end = new HexCoord(2, 0);
+        assertEquals(HexClaimRules.Reason.SELL_ALLOWED, HexClaimRules.sell(line, end, HexClaimRules.Kind.PUBLIC, s, Set.of(), Set.of()).reason());
+        assertTrue(HexClaimRules.sell(line, end, HexClaimRules.Kind.PUBLIC, s, Set.of(), Set.of()).valid());
+        assertEquals(HexClaimRules.Reason.SPLIT, HexClaimRules.sell(line, new HexCoord(1, 0), HexClaimRules.Kind.PUBLIC, s, Set.of(), Set.of()).reason());
+        assertEquals(HexClaimRules.Reason.NOT_OWNED, HexClaimRules.sell(line, new HexCoord(5, 5), HexClaimRules.Kind.PUBLIC, s, Set.of(), Set.of()).reason());
+        assertEquals(HexClaimRules.Reason.HOUSE_HERE, HexClaimRules.sell(line, end, HexClaimRules.Kind.PUBLIC, s, Set.of(end), Set.of()).reason());
+        assertEquals(HexClaimRules.Reason.PATH_HERE, HexClaimRules.sell(line, end, HexClaimRules.Kind.PUBLIC, s, Set.of(), Set.of(end)).reason());
+        assertEquals(HexClaimRules.Reason.SMALLEST, HexClaimRules.sell(Set.of(HexCoord.ORIGIN), HexCoord.ORIGIN, HexClaimRules.Kind.PUBLIC, s, Set.of(), Set.of()).reason());
+        assertEquals(HexClaimRules.Reason.SMALLEST, HexClaimRules.sell(HexShape.FLOWER.cells(), new HexCoord(1, 0), HexClaimRules.Kind.GUILD_ESTATE, s, Set.of(), Set.of()).reason(), "an estate keeps its flower");
+        assertEquals(0, s.sellRefund(1));
+        assertEquals(s.expansionPrice(2), s.sellRefund(3), "the coins the newest hexagon cost");
+    }
+
     @Test void streetAndFrontage() {
         var land = land(Map.of());
         assertTrue(land.street().containsAll(Set.of(new HexCoord(0, 0), new HexCoord(3, 0))));

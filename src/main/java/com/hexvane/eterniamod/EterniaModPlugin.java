@@ -218,7 +218,7 @@ public final class EterniaModPlugin extends JavaPlugin {
     /** Connects the Claim Map to the plots engine (commits), relocation (packed homes) and the in world border focus. */
     private void installClaimMapHooks() {
         com.hexvane.eterniamod.claimmap.HexClaimCommits.install(com.hexvane.eterniamod.claimmap.HexClaimCommits.adapt(
-            getClaims()::claimCells, getClaims()::expandPlot,
+            getClaims()::claimCells, getClaims()::expandPlot, getClaims()::sellCell,
             r -> new com.hexvane.eterniamod.claimmap.HexClaimCommits.Result(r.ok(), r.message(), r.plotId(), r.reason())));
         com.hexvane.eterniamod.claimmap.ClaimMapRestore.install(new com.hexvane.eterniamod.claimmap.ClaimMapRestore() {
             public com.hexvane.eterniamod.hexplots.HexClaimRules.Result check(com.hypixel.hytale.server.core.universe.world.World w, com.hexvane.eterniamod.domain.Owner o, java.util.UUID a, com.hexvane.eterniamod.housing.HousingRules.Scope s, java.util.Collection<com.hexvane.eterniamod.hexplots.HexCoord> c) { return getRelocation().restoreCheck(w, o, a, s, c); }

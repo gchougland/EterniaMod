@@ -98,6 +98,43 @@ public final class NativeRelocationCoordinator {
             writePointer(pointer,baseline.file());
         } catch(IOException e){throw new UncheckedIOException(e);}
     }
+    /**
+     * Before a hex plot gives up {@code cell}: puts that hexagon's ground back the way the plot's saved ground has it
+     * (anything built there is removed), then saves the plot's ground without that hexagon. Columns a road protects
+     * now are left alone. Returns false when no saved ground covers the hexagon; its ground is then left as it is.
+     * World thread; the hexagon's chunks must be loaded.
+     */
+    public static boolean releaseCell(EterniaModPlugin plugin,World world,HubPlotRecord plot,HexCoord cell) {
+        var cells=plot.getCells();if(cells==null||!cells.contains(cell))throw new IllegalStateException("This hexagon is not part of the plot");
+        try {
+            var store=NativePlacementTransactions.snapshots(plugin);Path pointer=store.files().resolve("baseline-"+plot.getPlotId()+".pointer");
+            if(!Files.exists(pointer)){plugin.getLogger().atInfo().log("Plot %s sells %s with no saved ground; ground left as it is",plot.getPlotId(),cell);return false;}
+            var old=loadPointer(store,pointer);var ob=old.bounds();var lattice=cells.lattice();
+            var rest=cells.without(cell);
+            BsonDocument back=old.document().clone(),keep=old.document().clone();back.remove("entities");keep.remove("entities");
+            for(String type:List.of("blocks","fluids")){
+                var toBack=new BsonArray();var toKeep=new BsonArray();
+                for(var value:old.document().getArray(type,new BsonArray())){
+                    var d=value.asDocument();int x=ob.minX()+d.getInt32("x").getValue(),z=ob.minZ()+d.getInt32("z").getValue();
+                    var at=lattice.cellAt(x,z);
+                    if(at.equals(cell)){if(!plugin.getInfrastructure().protectedColumn(world.getName(),x,z))toBack.add(d);}
+                    else if(rest.contains(at))toKeep.add(d);
+                }
+                back.put(type,toBack);keep.put(type,toKeep);
+            }
+            boolean restored=!back.getArray("blocks").isEmpty();
+            if(restored){
+                var only=PlotCells.of(lattice,List.of(cell));
+                var ground=store.save(plot.getPlotId()+"-sold-"+cell.q()+"_"+cell.r()+"-"+UUID.randomUUID()+".json",ob,only,back);
+                store.apply(world,ground,ob.origin());store.verify(world,ground,ob.origin(),Set.of(),false);
+                var box=only.bounds();NativePlacementTransactions.flush(world,new NativeSnapshotStore.Bounds(box.x(),ob.minY(),box.z(),box.endX(),ob.maxY(),box.endZ()));
+            }else plugin.getLogger().atInfo().log("Plot %s sells %s but its saved ground does not cover it; ground left as it is",plot.getPlotId(),cell);
+            var box=rest.bounds();var nb=new NativeSnapshotStore.Bounds(box.x(),ob.minY(),box.z(),box.endX(),ob.maxY(),box.endZ());
+            var shrunk=store.save(plot.getPlotId()+"-baseline-"+rest.size()+"-"+UUID.randomUUID()+".json",nb,rest,shiftInto(keep,ob,nb,null));
+            writePointer(pointer,shrunk.file());
+            return restored;
+        } catch(IOException e){throw new UncheckedIOException(e);}
+    }
     public UUID pack(World world,Owner owner,UUID operation,boolean forced) {
         var services=plugin.getServices();var slot=services.housing().find(owner).orElseThrow();
         if(slot.state()==HousingService.State.PACKED&&slot.operationId().equals(operation))return operation;
@@ -185,7 +222,7 @@ public final class NativeRelocationCoordinator {
         plugin.getLogger().atInfo().log("Plot %s: saved ground refitted for packing (%s)",plot.getPlotId(),saved==null?"none saved":!saved.bounds().equals(b)||!Objects.equals(saved.cells(),cells)?"plot shape changed":"protected columns changed");
         return store.save(operation+"-baseline-fitted.json",b,cells,fitted);
     }
-    /** Cells of {@code source} (relative to {@code from}) moved to be relative to {@code to}, keeping only {@code keys}. */
+    /** Cells of {@code source} (relative to {@code from}) moved to be relative to {@code to}, keeping only {@code keys} (all when null). */
     private static BsonDocument shiftInto(BsonDocument source,NativeSnapshotStore.Bounds from,NativeSnapshotStore.Bounds to,Set<String> keys){
         var result=source.clone();
         for(String type:List.of("blocks","fluids")){
@@ -193,7 +230,7 @@ public final class NativeRelocationCoordinator {
             for(var value:source.getArray(type,new BsonArray())){
                 var d=value.asDocument().clone();
                 d.put("x",new BsonInt32(d.getInt32("x").getValue()+from.minX()-to.minX()));d.put("y",new BsonInt32(d.getInt32("y").getValue()+from.minY()-to.minY()));d.put("z",new BsonInt32(d.getInt32("z").getValue()+from.minZ()-to.minZ()));
-                if(keys.contains(key(d)))kept.add(d);
+                if(keys==null||keys.contains(key(d)))kept.add(d);
             }
             result.put(type,kept);
         }

@@ -24,6 +24,14 @@ class PlotCellsTest {
         assertEquals(PlotCells.of(L, List.of(new HexCoord(0, 0), new HexCoord(1, 0), new HexCoord(1, 1))), cells, "order of input does not matter");
     }
 
+    @Test void withoutRemovesOneCell() {
+        var cells = PlotCells.of(L, List.of(new HexCoord(0, 0), new HexCoord(1, 0), new HexCoord(1, 1)));
+        var less = cells.without(new HexCoord(1, 0));
+        assertEquals(PlotCells.of(L, List.of(new HexCoord(0, 0), new HexCoord(1, 1))), less);
+        assertEquals(cells, less.with(new HexCoord(1, 0)));
+        assertEquals(cells, cells.without(new HexCoord(9, 9)), "a cell it does not have changes nothing");
+    }
+
     @Test void badTextIsRejected() {
         assertThrows(IllegalArgumentException.class, () -> PlotCells.parse("hex:32:20:0:0", ""));
         assertThrows(IllegalArgumentException.class, () -> PlotCells.parse("rect", "0:0"));
