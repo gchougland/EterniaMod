@@ -9,7 +9,6 @@ import com.hexvane.eterniamod.prefab.PrefabResolveUtil;
 import com.hexvane.eterniamod.prop.PropDefinition;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.protocol.packets.interface_.Page;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
@@ -121,13 +120,55 @@ public final class PropCarry {
             stop(ref, store, player);
             return;
         }
-        Vector3i target = TargetUtil.getTargetBlock(ref, REACH, store);
-        if (target != null) {
-            Vector3i sign = BuildingPlacementAnchorUtil.pickAnchor(
-                session.getWorld(), new BlockPosition(target.x, target.y, target.z));
-            session.setAnchor(centred(sign, session, def, buffer));
+        Aim aim = aim(ref, store);
+        if (aim != null) {
+            Vector3i sign = new Vector3i(aim.floor.x, aim.floor.y + com.hexvane.eterniamod.EterniaModConstants.PLOT_SIGN_BLOCK_Y_ABOVE_LOGICAL_ANCHOR, aim.floor.z);
+            session.setAnchor(clearOfWall(centred(sign, session, def, buffer), aim, session, def, buffer));
         }
         refresh(ref, store, player, session, def, buffer);
+    }
+
+    /**
+     * Where the player is aiming: the solid block the view ray hits, the empty cell in front of the face it hits,
+     * and the floor cell under that (the empty cell resting on solid ground, at most a few blocks down).
+     */
+    record Aim(Vector3i hit, Vector3i free, Vector3i floor) {}
+
+    @Nullable
+    static Aim aim(Ref<EntityStore> ref, Store<EntityStore> store) {
+        var look = TargetUtil.getLook(ref, store);
+        if (look == null) return null;
+        var world = store.getExternalData().getWorld();
+        var from = look.getPosition();
+        var dir = look.getDirection();
+        Vector3i previous = null;
+        for (double t = 0; t <= REACH; t += 0.05) {
+            Vector3i cell = new Vector3i((int) Math.floor(from.x + dir.x * t), (int) Math.floor(from.y + dir.y * t), (int) Math.floor(from.z + dir.z * t));
+            if (cell.equals(previous)) continue;
+            if (solid(world, cell.x, cell.y, cell.z)) {
+                if (previous == null) return null;
+                Vector3i floor = new Vector3i(previous);
+                for (int down = 0; down < 6 && !solid(world, floor.x, floor.y - 1, floor.z); down++) floor.y--;
+                return new Aim(cell, previous, floor);
+            }
+            previous = cell;
+        }
+        return null;
+    }
+
+    private static boolean solid(com.hypixel.hytale.server.core.universe.world.World world, int x, int y, int z) {
+        var type = com.hexvane.eterniamod.world.ChunkSectionBlockUtil.blockType(world, x, y, z);
+        return type != null && type.getMaterial() == com.hypixel.hytale.protocol.BlockMaterial.Solid;
+    }
+
+    /** Aiming at a wall: slides the prop out along the wall's face so its footprint sits in front of it, not inside. */
+    private static Vector3i clearOfWall(Vector3i anchor, Aim aim, PropPlacementSession session, PropDefinition def, IPrefabBuffer buffer) {
+        int nx = Integer.signum(aim.free.x - aim.hit.x), nz = Integer.signum(aim.free.z - aim.hit.z);
+        if (nx == 0 && nz == 0) return anchor;
+        var fp = PlotFootprintUtil.computePropFootprint(def.resolvePrefabAnchorWorld(anchor, session.getPrefabYaw()), session.getPrefabYaw(), buffer);
+        int dx = nx > 0 ? Math.max(0, aim.free.x - fp.getMinX()) : nx < 0 ? Math.min(0, aim.free.x - fp.getMaxX()) : 0;
+        int dz = nz > 0 ? Math.max(0, aim.free.z - fp.getMinZ()) : nz < 0 ? Math.min(0, aim.free.z - fp.getMaxZ()) : 0;
+        return new Vector3i(anchor.x + dx, anchor.y, anchor.z + dz);
     }
 
     /** Anchor that puts the middle of the prop's footprint under the crosshair. */

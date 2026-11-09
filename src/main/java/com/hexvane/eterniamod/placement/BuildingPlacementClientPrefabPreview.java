@@ -156,6 +156,13 @@ public final class BuildingPlacementClientPrefabPreview {
             rotated = rotated.rotate(Axis.Y, 90 * steps, RotateBlockMode.ALL);
         }
         EditorBlocksChange editor = rotated.toPacket();
+        // Decorations such as potions are item entities that also name a block. In the world they show as items at
+        // dropped item size; given both, the preview draws the full size block. Keep only the item so they match.
+        if (editor.entityChanges != null) {
+            for (ClipboardEntityChange entity : editor.entityChanges) {
+                if (entity != null && entity.itemId != null && !entity.itemId.isEmpty()) entity.blockId = 0;
+            }
+        }
         Payload payload =
             new Payload(
                 editor.blocksChange,

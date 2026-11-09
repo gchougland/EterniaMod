@@ -31,12 +31,38 @@ public final class NativePlacementTransactions {
         if(slot.state()!=HousingService.State.ACTIVE||!slot.propertyId().equals(plot.getPlotId()))throw new IllegalStateException("Property is locked by another operation");
         if(plugin.getServices().journal().unfinished().stream().anyMatch(o->o.owner().equals(owner(plot))&&!o.state().equals(JournalService.State.PACKED)))throw new IllegalStateException("Unfinished native operation requires recovery");
     }
+    /**
+     * Clears pickup locks on this plot when nothing needs recovering: every placed object still matches the world
+     * exactly as it was placed, so the failed pickup changed nothing. Anything that does not match stays locked.
+     * World thread. Returns the number of locks cleared.
+     */
+    public static int healPickups(EterniaModPlugin plugin,World world,HubPlotRecord plot){
+        var services=plugin.getServices();Owner owner=owner(plot);String property=plot.getPlotId().toString();
+        var locked=services.journal().unfinished().stream().filter(o->o.owner().equals(owner)&&o.kind().equals("PICKUP")&&o.detail().equals(property)&&o.state()==JournalService.State.RECOVERY_REQUIRED).toList();
+        if(locked.isEmpty())return 0;
+        try{
+            var store=snapshots(plugin);
+            for(var item:services.provenance().instances(plot.getPlotId())){
+                if(!item.state().equals("PLACED")||!item.nativeData().containsKey("after"))continue;
+                var before=store.load(new SnapshotFiles.Saved(item.nativeData().get("before"),item.nativeData().get("beforeHash")));
+                var placedAfter=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));
+                var mask=NativeRelocationCoordinator.difference(placedAfter.document(),before.document());
+                var captured=store.capture(world,before.bounds(),before.mask(),Set.of(item.id()),true,false);
+                NativeDecorativeEntities.requireIdentity(placedAfter.document(),captured,item.id());
+                NativeRelocationCoordinator.requireSameBlocks(captured,placedAfter.document(),mask);
+            }
+        }catch(Exception changed){return 0;}
+        for(var op:locked)services.journal().advance(op.id(),op.revision(),JournalService.State.CANCELLED);
+        plugin.getLogger().atInfo().log("Cleared %d pickup locks on plot %s: every placed object was still intact",locked.size(),property);
+        return locked.size();
+    }
     public record Placed(UUID instanceId,NativeSnapshotStore.Snapshot before,NativeSnapshotStore.Snapshot after,UUID operation,Owner contentOwner,String source) {}
     public static Placed place(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID actor,String catalogId,Vector3i origin,Rotation yaw,IPrefabBuffer buffer,boolean house) throws IOException {
         return place(plugin,world,plot,actor,catalogId,origin,yaw,buffer,house,owner(plot));
     }
     /** Explicit source owner enables a permitted guild quantity to remain guild-owned on an attached member plot. */
     public static Placed place(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID actor,String catalogId,Vector3i origin,Rotation yaw,IPrefabBuffer buffer,boolean house,Owner custodyOwner) throws IOException {
+        healPickups(plugin,world,plot);
         Owner owner=owner(plot);String content=(house?"eternia:house/":"eternia:prop/")+catalogId;
         var packed=plugin.getServices().batch(()->{
         requireActive(plugin,plot);
@@ -117,7 +143,7 @@ public final class NativePlacementTransactions {
             else plugin.getServices().provenance().acknowledgeRestored(instance,packed.revision(),plot.getPlotId(),data);
             journal.advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);
             return new Placed(instance,before,after,operation,custodyOwner,source);
-        } catch(Throwable failure){lock(plugin,operation);throw new IllegalStateException("Placement is locked for recovery; snapshot retained",failure);}
+        } catch(Throwable failure){lock(plugin,operation);plugin.getLogger().atWarning().withCause(failure).log("Placement %s did not finish",operation);throw new IllegalStateException("Placing did not finish. Nothing was lost. Try again in a moment.",failure);}
     }
     /** Returns native custody to the build inventory. The quantity reservation remains held by the packed instance. */
     public static UUID pickup(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID instanceId) throws IOException {
@@ -125,6 +151,7 @@ public final class NativePlacementTransactions {
     }
     /** Player-facing callers pass the actor and re-resolve the original inventory owner at the instant of pickup. */
     public static UUID pickup(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID actor,UUID instanceId) throws IOException {
+        healPickups(plugin,world,plot);
         if(instanceId.equals(plot.getPlotId()))instanceId=plugin.getServices().provenance().instances(plot.getPlotId()).stream().filter(i->i.state().equals("PLACED")&&"HOUSE".equals(i.nativeData().get("kind"))).map(ProvenanceService.Instance::id).findFirst().orElseThrow(()->new IllegalStateException("House provenance missing"));
         requireActive(plugin,plot);var services=plugin.getServices();var item=services.provenance().find(instanceId).orElseThrow(()->new IllegalStateException("Unproven legacy object cannot be packaged"));
         if(!item.state().equals("PLACED")||!item.propertyId().equals(plot.getPlotId()))throw new IllegalStateException("Placed object provenance does not match this property");
@@ -155,7 +182,7 @@ public final class NativePlacementTransactions {
             store.apply(world,restore,b.origin());store.verify(world,restore,b.origin(),Set.of(),false);flush(world,b);
             services.provenance().acknowledgePacked(instanceId,item.revision(),NativeRelocationCoordinator.reference(packed.file()));
             services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);return operation;
-        }catch(Throwable failure){lock(plugin,operation);throw new IllegalStateException("Pickup is locked for recovery; saved contents retained",failure);}
+        }catch(Throwable failure){lock(plugin,operation);plugin.getLogger().atWarning().withCause(failure).log("Pickup %s did not finish",operation);throw new IllegalStateException("Packing did not finish. Your decoration and its contents are kept safe. Try again in a moment.",failure);}
     }
     /** Must run after the native plot metadata was successfully saved. */
     public static void complete(EterniaModPlugin plugin,UUID operation){plugin.getServices().batch(()->{var op=plugin.getServices().journal().find(operation).orElseThrow();plugin.getServices().journal().advance(operation,op.revision(),JournalService.State.COMPLETED);return null;});}

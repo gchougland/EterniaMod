@@ -44,7 +44,10 @@ public final class EterniaPackagePropInteraction extends SimpleBlockInteraction 
         if (plugin == null) {
             return;
         }
-        PropPackageCommit.packageProp(context.getEntity(), commandBuffer.getStore(), plugin);
+        // Packing removes entities, which the game refuses during this interaction's tick: run it right after.
+        var ref = context.getEntity();
+        var store = commandBuffer.getStore();
+        world.execute(() -> { if (ref.isValid()) PropPackageCommit.packageProp(ref, store, plugin); });
     }
 
     @Override
