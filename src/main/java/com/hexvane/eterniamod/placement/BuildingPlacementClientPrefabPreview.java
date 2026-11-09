@@ -156,11 +156,18 @@ public final class BuildingPlacementClientPrefabPreview {
             rotated = rotated.rotate(Axis.Y, 90 * steps, RotateBlockMode.ALL);
         }
         EditorBlocksChange editor = rotated.toPacket();
-        // Decorations such as potions are item entities that also name a block. In the world they show as items at
-        // dropped item size; given both, the preview draws the full size block. Keep only the item so they match.
+        // Decorations such as potions, mugs and bread are block entities that also carry an item. The world draws them
+        // at block entity size (1/32 block per model unit times their scale). Given a block and an item, the preview
+        // draws them through the block path times the item's own Scale; given only the item, at half that. So send
+        // only the item, with the scale doubled and divided by the item's Scale, and every one matches the world.
         if (editor.entityChanges != null) {
             for (ClipboardEntityChange entity : editor.entityChanges) {
-                if (entity != null && entity.itemId != null && !entity.itemId.isEmpty()) entity.blockId = 0;
+                if (entity == null || entity.itemId == null || entity.itemId.isEmpty()) continue;
+                var item = com.hypixel.hytale.server.core.asset.type.item.config.Item.getAssetMap().getAsset(entity.itemId);
+                float itemScale = item == null || item.getScale() <= 0f ? 1f : item.getScale();
+                float scale = entity.scale <= 0f ? 1f : entity.scale;
+                entity.blockId = 0;
+                entity.scale = scale * 2f / itemScale;
             }
         }
         Payload payload =

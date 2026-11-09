@@ -101,24 +101,27 @@ public final class PropPackHighlight {
         int ox = prop.getAnchorX(), oy = prop.getAnchorY(), oz = prop.getAnchorZ();
         var blocks = new ArrayList<double[]>();
         var keys = new ArrayList<String>();
+        // Cells come from the prefab; what stands there (block and rotation) is read from the world, so the copy
+        // matches the placed block exactly, however the decoration was turned.
+        var cells = new ArrayList<int[]>();
         buffer.forEach(IPrefabBuffer.iterateAllColumns(),
             (x, y, z, blockId, holder, support, rotation, filler, t, fluidId, fluidLevel) -> {
-                if (filler != 0 || blockId == 0 || keys.size() >= MAX_GHOSTS) return;
-                BlockType type = BlockType.getAssetMap().getAsset(blockId);
-                if (type == null) return;
-                keys.add(type.getId());
-                // A block entity draws the block's model about the middle of its own (first) cell, turned by the block's
-                // yaw; a piece over several cells (a table) extends from that cell exactly as it does in the world. Only a
-                // piece taller than a block stands at the middle of its height, as the game does for a dropped block.
-                double cy = 0.5;
-                var boxes = com.hypixel.hytale.server.core.asset.type.blockhitbox.BlockBoundingBoxes.getAssetMap().getAsset(type.getHitboxTypeIndex());
-                if (boxes != null) { var box = boxes.get(rotation).getBoundingBox(); if (box.height() > 1.0) cy = box.height() / 2; }
-                blocks.add(new double[] {ox + x + 0.5, oy + y + cy, oz + z + 0.5, RotationTuple.get(rotation).yaw().getRadians()});
+                if (filler != 0 || blockId == 0 || cells.size() >= MAX_GHOSTS) return;
+                cells.add(new int[] {ox + x, oy + y, oz + z});
             }, null, null, new PrefabBufferCall(new FastRandom(), PrefabRotation.fromRotation(yaw)));
+        for (int[] c : cells) {
+            if (com.hexvane.eterniamod.world.ChunkSectionBlockUtil.filler(world, c[0], c[1], c[2]) != 0) continue;
+            BlockType type = com.hexvane.eterniamod.world.ChunkSectionBlockUtil.blockType(world, c[0], c[1], c[2]);
+            if (type == null || type.getMaterial() == com.hypixel.hytale.protocol.BlockMaterial.Empty) continue;
+            var turn = RotationTuple.get(com.hexvane.eterniamod.world.ChunkSectionBlockUtil.rotationIndex(world, c[0], c[1], c[2]));
+            keys.add(type.getId());
+            // Exactly how the game makes a falling block from a placed one: the middle of its cell, its yaw plus half a turn.
+            blocks.add(new double[] {c[0] + 0.5, c[1] + 0.5, c[2] + 0.5, turn.yaw().getRadians() + Math.PI, turn.pitch().getRadians(), turn.roll().getRadians()});
+        }
         for (int i = 0; i < blocks.size(); i++) {
             double[] b = blocks.get(i);
             Holder<EntityStore> holder = EntityStore.REGISTRY.newHolder();
-            holder.putComponent(TransformComponent.getComponentType(), new TransformComponent(new Vector3d(b[0], b[1], b[2]), new Rotation3f(0f, (float) b[3], 0f)));
+            holder.putComponent(TransformComponent.getComponentType(), new TransformComponent(new Vector3d(b[0], b[1], b[2]), new Rotation3f((float) b[4], (float) b[3], (float) b[5])));
             holder.putComponent(BlockEntity.getComponentType(), new BlockEntity(keys.get(i)));
             ghosts.add(spawn(store, holder, GROW_BLOCKS, effect));
         }
