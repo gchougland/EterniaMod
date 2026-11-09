@@ -54,6 +54,8 @@ public final class PropPackHighlight {
     static final String EFFECT = "Eternia_Pack_Highlight";
     static final String VANISH = "Teleport";
     private static final float GROW = 1.08f;
+    /** Block copies grow from the middle of their block, so thin parts near it barely move: grow them more to stop flicker. */
+    private static final float GROW_BLOCKS = 1.15f;
     private static final int MAX_GHOSTS = 256;
 
     /** Marks a highlight copy. */
@@ -114,7 +116,7 @@ public final class PropPackHighlight {
             Holder<EntityStore> holder = EntityStore.REGISTRY.newHolder();
             holder.putComponent(TransformComponent.getComponentType(), new TransformComponent(new Vector3d(b[0], b[1], b[2]), new Rotation3f(0f, (float) b[3], 0f)));
             holder.putComponent(BlockEntity.getComponentType(), new BlockEntity(keys.get(i)));
-            ghosts.add(spawn(store, holder, GROW, effect));
+            ghosts.add(spawn(store, holder, GROW_BLOCKS, effect));
         }
         // The decoration's entity parts (potions, plates): a copy of each, the same way a little larger.
         var fp = PlotFootprintUtil.computePropFootprint(new org.joml.Vector3i(ox, oy, oz), yaw, buffer);
