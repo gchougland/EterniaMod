@@ -17,9 +17,18 @@ public final class HousingInventory {
     private record InventoryKey(Owner owner,String kind,List<String> ids) {}
     private record Stock(List<ProvenanceService.Instance> instances,Map<String,Long> available) {}
     private HousingInventory(){}
+    /** Every way into housing opens the Journal's Home, after any unfinished placement or claim draft is picked up. */
     public static void open(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
+        if(prepare(plugin,ref,store,player))return;
+        com.hexvane.eterniamod.socialui.SocialUiBootstrap.openJournal(ref,store,player,com.hexvane.eterniamod.socialui.EterniaServicesPage.Section.HOUSING);
+    }
+    /** Finishes a stuck pickup and reopens an unfinished placement or claim draft. True when a page was opened. */
+    public static boolean prepare(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
         healStuckPickups(plugin,store,player);
-        if(resume(plugin,ref,store,player))return;
+        return resume(plugin,ref,store,player);
+    }
+    /** The old card menu. No longer linked from anywhere; Home in the Journal replaced it. */
+    public static void openCards(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
         var cards=new ArrayList<IllustratedMenuPage.Card>();
         Owner personal=Owner.player(player.getUuid());
         cards.add(new IllustratedMenuPage.Card("YOUR HOUSE STYLES","Browse your homes. Stand on your personal plot to place one.",ContentImages.path("eternia:house/hub_house",false),"House styles",(r,s)->houses(plugin,r,s,player,personal)));

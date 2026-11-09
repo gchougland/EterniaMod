@@ -29,6 +29,26 @@ public final class CustomizationMenus {
         choices.add(new ChoicePage.Choice("Replace missing deed and service tools","Reissue tools",(r,s)->player.sendMessage(Message.raw(CustomizationTools.reissue(r,s,player,true)))));
         ChoicePage.open(ref,store,player,"Home customization","Palettes affect authored house surfaces. Paths use level, clear ground inside your lot and stop before public roads. Every change requires confirmation.",choices);
     }
+    /** Previews palette {@code id} on the plot the player stands on. */
+    public static void palette(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,String id) {
+        var service=CustomizationBootstrap.service();var plot=standing(plugin,ref,store,player);if(service==null||plot==null)return;
+        service.catalog().palettes().stream().filter(p->p.id().equals(id)).findFirst().ifPresent(palette->preview(player,ref,store,()->service.palette(store.getExternalData().getWorld(),plot.getPlotId(),player.getUuid(),palette)));
+    }
+    /** Starts laying path {@code id} from where the player stands: choose a width, then a preview. */
+    public static void path(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,String id) {
+        var service=CustomizationBootstrap.service();var plot=standing(plugin,ref,store,player);if(service==null||plot==null)return;
+        service.catalog().paths().stream().filter(p->p.id().equals(id)).findFirst().ifPresent(style->pathWidth(service,plot.getPlotId(),style,ref,store,player));
+    }
+    /** Previews removing the plot's garden path. */
+    public static void removePath(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
+        var service=CustomizationBootstrap.service();var plot=standing(plugin,ref,store,player);if(service==null||plot==null)return;
+        preview(player,ref,store,()->service.removePath(store.getExternalData().getWorld(),plot.getPlotId(),player.getUuid()));
+    }
+    private static com.hexvane.eterniamod.hub.HubPlotRecord standing(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player){
+        var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(store.getExternalData().getWorld(),plugin).findPlotAtPlayerOrTarget(ref,store);
+        if(plot==null)player.sendMessage(Message.raw("Stand on your plot first."));
+        return plot;
+    }
     private static void pathWidth(CustomizationService service,UUID plot,CustomizationCatalog.PathStyle style,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player){
         List<ChoicePage.Choice> choices=new ArrayList<>();
         for(int value=1;value<=3;value++){final int width=value;choices.add(new ChoicePage.Choice(width==1?"A narrow garden path":width==2?"Room for a comfortable walkway":"A broad entrance path",width+" block"+(width==1?"":"s")+" wide",(r,s)->preview(player,r,s,()->{

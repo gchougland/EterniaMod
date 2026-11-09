@@ -170,6 +170,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if(layout().equals("ServicesOverview")){String feature=switch(section){case HOUSING->"Your own corner";case WORLDS->"The road awaits";case COMING_SOON->"More adventures ahead";default->"Welcome, adventurer";};commands.set("#FeatureTitle.Text",feature);commands.set("#FeatureText.Text",switch(section){case HOUSING->"A free plot, a home to personalize, and a place to return to after your adventures.";case WORLDS->"Public portals connect the Hub to the worlds beyond.";case COMING_SOON->"Minigames are coming soon. Your housing and season journeys are ready now.";default->"Prowl\nEternia Guide\n\nSettle in, find your guild, and start exploring.";});commands.setObject("#SectionArt.Background", new com.hypixel.hytale.server.core.ui.PatchStyle(com.hypixel.hytale.server.core.ui.Value.of("EterniaMod/Icons/"+(section==Section.WORLDS?"worlds":"housing")+".png")));}
         if(section==Section.SEASON){commands.set("#SeasonProgress.Visible",!focus.isEmpty()&&pending==null);commands.set("#ProgressLabel.Text",view.progressLabel);bar(commands,"#ProgressFill","#ProgressRest",view.progress,view.progressTotal);
             if(pending==null&&view.season!=null)SeasonHall.render(commands,view.season,(selector,route)->bind(events,selector,route),busy);}
+        if(section==Section.HOUSING&&desk==Desk.JOURNAL){commands.set("#CollectionBanner.Visible",false);commands.set("#CollectionPreview.Visible",false);}
         if(section==Section.COLLECTION){commands.set("#CollectionBanner.Visible",false);commands.set("#CollectionSummary.Text",view.document);
             boolean viewer=!previewContent.isEmpty()&&pending==null;commands.set("#CollectionPreview.Visible",viewer);
             if(viewer){commands.set("#PreviewName.TextSpans",Message.raw(view.rows.stream().filter(row->row.contentId.equals(previewContent)).map(Row::text).findFirst().orElse(UiPresentation.contentName(previewContent))));bind(events,"#ClosePreview","collection_preview_close");}}
@@ -201,10 +202,10 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private final com.hexvane.eterniamod.ui.PrefabCardPreview preview;
     @Override protected void rebuild(){super.rebuild();if(isDismissed())return;preview.show(section==Section.COLLECTION&&!deskHome&&!previewContent.isEmpty()?previewContent:null);}
     @Override public void onDismiss(@Nonnull Ref<EntityStore> ref,@Nonnull Store<EntityStore> store){preview.clear();super.onDismiss(ref,store);}
-    private boolean collectionGrid(){return section==Section.COLLECTION&&!mode.equals("pet");}
-    private int visiblePageSize(){return section==Section.COLLECTION&&(mode.equals("inventory")||collectionGrid())?Math.max(PAGE_SIZE,view.rows.size()):PAGE_SIZE;}
+    private boolean collectionGrid(){return section==Section.COLLECTION&&!mode.equals("pet")||section==Section.HOUSING&&desk==Desk.JOURNAL;}
+    private int visiblePageSize(){return (section==Section.COLLECTION||section==Section.HOUSING)&&(mode.equals("inventory")||collectionGrid())?Math.max(PAGE_SIZE,view.rows.size()):PAGE_SIZE;}
 
-    private String layout(){return switch(section){case GREETER,HOUSING,WORLDS,COMING_SOON->"ServicesOverview";case GUILD->"ServicesRoster";case MAIL->"ServicesMail";case SEASON->"ServicesSeason";case COLLECTION->"ServicesCollection";default->"ServicesDirectory";};}
+    private String layout(){if(section==Section.HOUSING&&desk==Desk.JOURNAL)return "ServicesCollection";return switch(section){case GREETER,HOUSING,WORLDS,COMING_SOON->"ServicesOverview";case GUILD->"ServicesRoster";case MAIL->"ServicesMail";case SEASON->"ServicesSeason";case COLLECTION->"ServicesCollection";default->"ServicesDirectory";};}
     private List<Tab> tabs(){return switch(section){
         case GUILD->view.title.equals("Find your guild")||view.title.equals("Loading")?List.of():List.of(new Tab("Members","back","members",mode.isEmpty()||mode.equals("member")),new Tab("Roles","guild_roles","title",mode.startsWith("role")),new Tab("Notice board","guild_board","board",false),new Tab("Guild estate","external:GUILD_HOUSING","charter",false));
         case MAIL->List.of(new Tab("Inbox","back","mail",!mode.equals("compose")),new Tab("Write a letter","mail_compose","quests",mode.equals("compose")),new Tab("Deliveries","external:ITEM_DESK","parcel",false));
@@ -216,9 +217,172 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             for(String[] category:categories){String id=category[0].toLowerCase(java.util.Locale.ROOT);list.add(new Tab(category[0],"collection_view:"+id,category[1],id.equals(current)));}
             yield list;
         }
+        case HOUSING->{
+            if(desk!=Desk.JOURNAL)yield List.of();
+            String current=mode.isEmpty()?"home":mode;
+            List<Tab> list=new ArrayList<>(List.of(new Tab("Your home","home_view:home","housing",current.equals("home")),new Tab("Houses","home_view:houses","housing",current.equals("houses")),
+                new Tab("Decorations","home_view:decorations","furnishing",current.equals("decorations")),new Tab("Palettes and paths","home_view:materials","palette",current.equals("materials"))));
+            if(homeGuild){list.add(new Tab("Guild estate","home_view:guild","guild",current.equals("guild")));list.add(new Tab("Guild decorations","home_view:guild_decorations","furnishing",current.equals("guild_decorations")));}
+            yield list;
+        }
         case SHOP->List.of(new Tab("Browse","back","market",true),new Tab("My shop","external:SHOP_MANAGE","storage",false),new Tab("Trade","external:TRADE_DESK","trade",false));
         default->List.of();};}
     private record Tab(String label,String route,String icon,boolean selected) {}
+    // ---------- Home: the housing menu inside the Journal (layout D) ----------
+    /** Journal Home. Side tabs: Your home, Houses, Decorations, Palettes and paths, and the guild estate when in a guild. */
+    private View homeView(Input input) {
+        var plugin = com.hexvane.eterniamod.EterniaModPlugin.get();
+        var membership = services.guilds().membership(actor).orElse(null);
+        homeGuild = membership != null;
+        String tab = input.mode.isEmpty() ? "home" : input.mode;
+        boolean guildSide = tab.startsWith("guild") && membership != null;
+        Owner owner = guildSide ? Owner.guild(membership.guildId()) : Owner.player(actor);
+        String side = guildSide ? "g" : "p";
+        return switch (tab) {
+            case "houses" -> new View("Houses", "Your house styles. Stand on your plot and press Place. Packing a house packs the decorations inside it too.",
+                orNothing(houseCards(plugin, owner, side, true), "You do not own a house style yet."), noFields(), buttons("Refresh", "refresh", "", "", "", ""), null);
+            case "decorations", "guild_decorations" -> new View(guildSide ? "Guild decorations" : "Decorations",
+                guildSide ? "Shared by your guild. Stand on the guild estate or an attached member plot to place them." : "Stand on your plot and press Place. Packed decorations keep everything stored inside them.",
+                orNothing(propCards(plugin, owner, side, false), "No decorations yet."), noFields(), buttons("Refresh", "refresh", "", "", "", ""), null);
+            case "materials" -> new View("Palettes and paths", "Change your house's materials or lay a garden path. Stand on your plot first; every change shows a preview.",
+                orNothing(materialCards(plugin, owner), "You do not own a palette or a path yet."), noFields(), buttons("Refresh", "refresh", "", "", "", ""), null);
+            default -> plotView(plugin, owner, side, guildSide);
+        };
+    }
+
+    /** Set while loading Home (off the world thread), read when the side tabs are drawn. */
+    private volatile boolean homeGuild;
+
+    private static List<Row> orNothing(List<Row> rows, String text) { return rows.isEmpty() ? List.of(Row.info(text)) : rows; }
+
+    private View plotView(com.hexvane.eterniamod.EterniaModPlugin plugin, Owner owner, String side, boolean guild) {
+        String name = guild ? "Guild estate" : "Your plot";
+        var slot = services.housing().find(owner).orElse(null);
+        var location = services.housing().location(owner).orElse(null);
+        List<Row> rows = new ArrayList<>();
+        if (slot == null || slot.state() == HousingService.State.PACKED) {
+            boolean packed = slot != null;
+            rows.add(Row.card(packed ? "Set down your plot" : "Choose a plot", packed ? "Pick new hexagons on the map" : "Pick your hexagons beside a road", packed ? "Set down" : "Choose", "home_claim:" + side, "eternia:plot/claim"));
+            rows.addAll(propCards(plugin, owner, side, true));
+            return new View(name, packed ? "Your plot is packed with everything on it. Choose where to set it down." : guild ? "Your guild has no estate yet." : "You do not have a plot yet. Choose one beside a road to start.",
+                rows, noFields(), buttons("Refresh", "refresh", "", "", "", ""), null);
+        }
+        var instances = services.provenance().instances(slot.propertyId()).stream().filter(i -> i.state().equals("PLACED")).toList();
+        var house = instances.stream().filter(i -> "HOUSE".equals(i.nativeData().get("kind"))).findFirst().orElse(null);
+        long placed = instances.stream().filter(i -> "PROP".equals(i.nativeData().get("kind"))).count();
+        int cells = location == null || location.cells() == null ? 0 : location.cells().size();
+        String world = location == null ? "an unloaded world" : com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId());
+        String houseName = house == null ? "No house yet" : UiPresentation.contentName(house.contentId());
+        var settings = com.hexvane.eterniamod.hexplots.HexPlotSettings.current();
+        String summary = (cells > 0 ? (cells == 1 ? "1 hexagon" : cells + " hexagons") + " in " : "In ") + world + " · " + houseName
+            + (cells > 0 ? " · " + placed + " of " + cells * settings.propsPerCell() + " decorations placed" : "");
+        if (services.journal().unfinished().stream().anyMatch(op -> op.owner().equals(owner)))
+            rows.add(Row.card("Fix my plot", "Something did not finish. Nothing is lost.", "Fix", "home_fix:" + side, "eternia:guild_voucher/fix"));
+        rows.add(Row.card("Go to plot", "Travel to its edge", "Go", "home_go:" + side, "eternia:plot/visit"));
+        if (cells > 0) rows.add(Row.card("Add a hexagon", settings.expansionPrice(cells) + " Coins", "Add", "home_add:" + side, "eternia:plot/add"));
+        if (cells > 1) rows.add(Row.card("Sell a hexagon", settings.expansionPrice(cells - 1) + " Coins back", "Sell", "home_sell:" + side, "eternia:coins/sell"));
+        rows.add(Row.card("Move plot", services.ownership().available(owner, HousingService.MOVE_CREDIT) + " move credits", "Move", "home_move:" + side, "eternia:move/plot"));
+        if (house != null) rows.add(Row.card("Pack house", houseName + " and what is inside", "Pack", "home_pack:" + side, house.contentId()));
+        if (guild) rows.add(Row.card("Guild roads", "Plan roads on your estate", "Roads", "home_roads:" + side, "eternia:path/roads"));
+        // Ready to place: a house style first when none stands here, then decorations.
+        if (house == null) rows.addAll(houseCards(plugin, owner, side, false));
+        rows.addAll(propCards(plugin, owner, side, true));
+        return new View(name, summary, rows, noFields(), buttons("Refresh", "refresh", "", "", "", ""), null);
+    }
+
+    /** House style cards. {@code all} also lists the style standing on the plot (with Pack). */
+    private List<Row> houseCards(com.hexvane.eterniamod.EterniaModPlugin plugin, Owner owner, String side, boolean all) {
+        var slot = services.housing().find(owner).orElse(null);
+        String standing = slot == null ? null : services.provenance().instances(slot.propertyId()).stream()
+            .filter(i -> i.state().equals("PLACED") && "HOUSE".equals(i.nativeData().get("kind"))).map(ProvenanceService.Instance::contentId).findFirst().orElse(null);
+        List<Row> rows = new ArrayList<>();
+        for (var def : plugin.getBuildingCatalog().asMap().values()) {
+            String content = "eternia:house/" + def.getId();
+            if (!services.ownership().owns(owner, content)) continue;
+            String name = def.getDisplayName() == null ? UiPresentation.friendlyId(def.getId()) : def.getDisplayName();
+            if (content.equals(standing)) { if (all) rows.add(Row.card(name, "On your plot", "Pack", "home_pack:" + side, content)); continue; }
+            rows.add(Row.card(name, standing == null ? "Ready to place" : "Pack your house to switch", standing == null ? "Place" : "", standing == null ? "home_place_house:" + side + ":" + def.getId() : "", content));
+        }
+        return rows;
+    }
+
+    /** Decoration cards with counts. {@code readyOnly} keeps only those that can be placed now. */
+    private List<Row> propCards(com.hexvane.eterniamod.EterniaModPlugin plugin, Owner owner, String side, boolean readyOnly) {
+        var owned = services.provenance().ownedInstances(owner);
+        List<Row> rows = new ArrayList<>();
+        for (var def : plugin.getPropCatalog().asMap().values()) {
+            String content = "eternia:prop/" + def.getId();
+            long ready = services.ownership().available(owner, content);
+            long packed = owned.stream().filter(i -> i.contentId().equals(content) && i.state().equals("PACKED")).count();
+            long placed = owned.stream().filter(i -> i.contentId().equals(content) && i.state().equals("PLACED")).count();
+            if (ready + packed + placed == 0 || readyOnly && ready + packed == 0) continue;
+            List<String> parts = new ArrayList<>();
+            if (ready > 0) parts.add(ready + " ready");
+            if (packed > 0) parts.add(packed + " packed");
+            if (placed > 0) parts.add(placed + " placed");
+            String name = def.getDisplayName() == null ? UiPresentation.friendlyId(def.getId()) : def.getDisplayName();
+            boolean can = ready + packed > 0;
+            rows.add(Row.card(name, String.join(" · ", parts), can ? "Place" : "", can ? "home_place_prop:" + side + ":" + def.getId() : "", content));
+        }
+        return rows;
+    }
+
+    private List<Row> materialCards(com.hexvane.eterniamod.EterniaModPlugin plugin, Owner owner) {
+        var service = com.hexvane.eterniamod.customization.CustomizationBootstrap.service();
+        if (service == null) return List.of();
+        List<Row> rows = new ArrayList<>();
+        for (var palette : service.catalog().palettes()) if (services.ownership().owns(owner, "eternia:palette/" + palette.id()))
+            rows.add(Row.card(palette.name(), "Changes your house's stone and wood", "Preview", "home_palette:" + palette.id(), "eternia:palette/" + palette.id()));
+        for (var path : service.catalog().paths()) if (services.ownership().owns(owner, "eternia:path/" + path.id()))
+            rows.add(Row.card(path.name(), "A garden path from where you stand", "Lay path", "home_path:" + path.id(), "eternia:path/" + path.id()));
+        var slot = services.housing().find(owner).orElse(null);
+        if (slot != null && services.provenance().instances(slot.propertyId()).stream().anyMatch(i -> i.state().equals("PLACED") && "PATH".equals(i.nativeData().get("kind"))))
+            rows.add(Row.card("Remove path", "Puts the ground back", "Remove", "home_path_remove", "eternia:path/remove"));
+        return rows;
+    }
+
+    /** Runs a Home button. World thread. */
+    private void homeAction(Ref<EntityStore> ref, Store<EntityStore> store, String route) {
+        var plugin = com.hexvane.eterniamod.EterniaModPlugin.get();
+        String[] parts = route.split(":");
+        String action = parts[0];
+        var membership = services.guilds().membership(actor).orElse(null);
+        Owner owner = parts.length > 1 && parts[1].equals("g") && membership != null ? Owner.guild(membership.guildId()) : Owner.player(actor);
+        var slot = services.housing().find(owner).orElse(null);
+        var location = services.housing().location(owner).orElse(null);
+        var pages = store.getComponent(ref, com.hypixel.hytale.server.core.entity.entities.Player.getComponentType()).getPageManager();
+        String inWorld = location == null ? "" : "Go to " + com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId()) + " first.";
+        boolean here = location != null && store.getExternalData().getWorld().getName().equals(location.worldId());
+        switch (action) {
+            case "home_claim" -> com.hexvane.eterniamod.claimmap.ClaimMapRoutes.claimNew(plugin, ref, store, playerRef, owner.kind() == Owner.Kind.GUILD);
+            case "home_go" -> { close(); plugin.getTravel().visitPlot(playerRef, owner); }
+            case "home_add" -> { if (slot == null || !here || !com.hexvane.eterniamod.claimmap.ClaimMapRoutes.expand(plugin, ref, store, playerRef, slot.propertyId())) homeStatus(inWorld); }
+            case "home_sell" -> { if (slot == null || !here || !com.hexvane.eterniamod.claimmap.ClaimMapRoutes.sell(plugin, ref, store, playerRef, slot.propertyId())) homeStatus(inWorld); }
+            case "home_move" -> {
+                pending = new Pending("home_move_confirm:" + parts[1], input(), "Move your whole plot? Everything on it is packed and you choose new hexagons on the map. This uses one move credit; you have "
+                    + services.ownership().available(owner, HousingService.MOVE_CREDIT) + ".");
+                generation++; rebuild();
+            }
+            case "home_move_confirm" -> {
+                var world = location == null ? null : com.hypixel.hytale.server.core.universe.Universe.get().getWorld(location.worldId());
+                if (world == null) { homeStatus("Your plot's world is not open right now."); return; }
+                close();
+                world.execute(() -> plugin.getPlotMover().request(world, owner, playerRef));
+            }
+            case "home_pack" -> { if (slot != null) pages.openCustomPage(ref, store, new com.hexvane.eterniamod.ui.BuildingPickupPage(playerRef, slot.propertyId()).withReturnFrom(pages.getCustomPage())); }
+            case "home_fix" -> com.hexvane.eterniamod.housing.PropRecoveryMenu.open(plugin, ref, store, playerRef, owner);
+            case "home_roads" -> com.hexvane.eterniamod.guildroads.GuildRoads.open(ref, store, playerRef);
+            case "home_place_house" -> com.hexvane.eterniamod.housing.HousingInventory.placeHouse(plugin, ref, store, playerRef, owner, parts[2]);
+            case "home_place_prop" -> com.hexvane.eterniamod.housing.HousingInventory.placeProp(plugin, ref, store, playerRef, owner, parts[2]);
+            case "home_palette" -> com.hexvane.eterniamod.customization.CustomizationMenus.palette(plugin, ref, store, playerRef, parts[1]);
+            case "home_path" -> com.hexvane.eterniamod.customization.CustomizationMenus.path(plugin, ref, store, playerRef, parts[1]);
+            case "home_path_remove" -> com.hexvane.eterniamod.customization.CustomizationMenus.removePath(plugin, ref, store, playerRef);
+            default -> { }
+        }
+    }
+
+    private void homeStatus(String text) { status = text; generation++; rebuild(); }
+
 
     /** A route may lead only to this desk's own sections and trades; everything else belongs to another NPC or the Journal. */
     private boolean allowed(String route){
@@ -306,13 +470,14 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (route.startsWith("nav:")) {
             if(route.equals("nav:WORLDS")){registration.actions.perform(SocialUiActions.Action.WORLD_SELECT,ref,store,playerRef);return;}
             // Home goes straight to the housing menu; the old summary screen was an extra click.
-            if(route.equals("nav:HOUSING")&&desk==Desk.JOURNAL){registration.actions.perform(SocialUiActions.Action.HOUSING_INVENTORY,ref,store,playerRef);return;}
+            // An unfinished placement or claim draft is picked up again before Home opens.
+            if(route.equals("nav:HOUSING")&&desk==Desk.JOURNAL&&com.hexvane.eterniamod.housing.HousingInventory.prepare(com.hexvane.eterniamod.EterniaModPlugin.get(),ref,store,playerRef))return;
             section = Section.valueOf(route.substring(4)); deskHome = false; previewContent = ""; mode = ""; focus = ""; page = 0; one = two = three = ""; draftCapabilities = null; pending = null;
             refresh(ref, store, ""); return;
         }
         if (route.equals("next") || route.equals("previous")) { page = Math.max(0, page + (route.equals("next") ? 1 : -1)); generation++; rebuild(); return; }
         if (route.equals("cancel_confirmation")) { pending = null; generation++; rebuild(); return; }
-        if (route.equals("confirm")) { Pending current = pending; if (current == null) return; pending = null; runDomain(ref, store, current.route, current.input); return; }
+        if (route.equals("confirm")) { Pending current = pending; if (current == null) return; pending = null; if (current.route.startsWith("home_")) { generation++; rebuild(); homeAction(ref, store, current.route); return; } runDomain(ref, store, current.route, current.input); return; }
         if(route.startsWith("mount_summon:")){
             close();com.hexvane.eterniamod.collections.MountRuntime.summon(services,playerRef,ref,store,route.substring(13));return;
         }
@@ -348,6 +513,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (route.startsWith("season_view:")) { mode = "rewards"; focus = route.substring(12); page = 0; refresh(ref, store, ""); return; }
         if (route.equals("season_quests")) { mode = "quests"; page = 0; refresh(ref, store, ""); return; }
         if (route.equals("season_rewards")) { mode = "rewards"; page = 0; refresh(ref, store, ""); return; }
+        if (route.startsWith("home_view:")) { mode = route.substring(10).equals("home") ? "" : route.substring(10); focus = ""; page = 0; refresh(ref, store, ""); return; }
+        if (route.startsWith("home_")) { homeAction(ref, store, route); return; }
         if (route.startsWith("collection_view:")) { mode = route.substring(16); focus = ""; previewContent = ""; page = 0; refresh(ref, store, ""); return; }
         if (route.startsWith("collection_preview:")) { previewContent = route.substring(19); generation++; rebuild(); return; }
         if (route.equals("collection_preview_close")) { previewContent = ""; generation++; rebuild(); return; }
@@ -497,6 +664,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 Row.info("Press O any time to open your Journal: mail, guild, quests, seasons and your collection.")),
                 noFields(), buttons("Starter toolkit", "intro_toolkit", "Travel", "external:WORLD_SELECT", "", ""), null);
             case HOUSING -> {
+                if (request.desk == Desk.JOURNAL) yield homeView(input);
                 var housing = services.housing().find(Owner.player(actor)).orElse(null);
                 List<Row> rows = new ArrayList<>();
                 rows.add(Row.info(housing == null ? "Your free 24 × 24 plot is waiting for you." : "Your home · " + UiPresentation.friendlyId(housing.state().name())));
@@ -614,7 +782,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 case "materials"->"Palettes and paths to make your home your own.";
                 default->"Your plot upgrades, waygates and passes.";
             }, rows.isEmpty()?List.of(Row.info("Nothing in this collection yet.")):rows,noFields(),
-                buttons("Housing inventory","external:HOUSING_INVENTORY","","","Refresh","refresh"),null);
+                buttons("Open Home","external:HOUSING_INVENTORY","","","Refresh","refresh"),null);
         }
         if(input.mode.equals("mounts")){
             var rows=definitions.stream().filter(d->d.kind()==CollectionService.Kind.MOUNT&&services.ownership().owns(owner,d.id()))

@@ -19,7 +19,7 @@
 ### Changed
 
 - Houses and decorations in Collections have a Place button. Stand on your plot and press it to start placing.
-- The Home tab in the Journal opens your housing menu straight away.
+- Home in the Journal is now your whole housing menu on one page. Place houses and decorations, pack your house, go to your plot, add, sell or move hexagons, and change palettes and paths, with your guild estate in its own tabs. The old stack of housing menus is gone.
 
 ## [1.1.0]
 
