@@ -86,7 +86,7 @@ public final class TownBuilder {
                 var result=TownTerrainPlanner.plan(plan,(cx,cz)->heights.getOrDefault(key(cx,cz),TownTerrainPlanner.UNKNOWN));
                 int cut=0,filled=0,changed=0;for(int i=0;i<result.target.length;i++){int t=result.target[i],n=result.natural[i];if(t==TownTerrainPlanner.UNKNOWN||n==TownTerrainPlanner.UNKNOWN)continue;if(t!=n)changed++;cut=Math.max(cut,n-t);filled=Math.max(filled,t-n);}
                 String summary="The town square will sit at height "+result.anchorY()+". The ground changes in "+changed+" columns: up to "+cut+" blocks cut away and up to "+filled+" filled. "
-                    +plan.lots.size()+" houses, "+plan.walls.towers.size()+" towers, "+plan.walls.gates.size()+" gates and "+plan.roads.size()+" roads will be built. Everything is backed up first; /e admin town undo puts the land back.";
+                    +plan.lots.size()+" houses, "+plan.walls.towers.size()+" towers, "+plan.walls.gates.size()+" gates, each with a short road out of it, will be built. Grow the town's roads from those with /e admin town roads grow. Everything is backed up first; /e admin town undo puts the land back.";
                 return new Preview(actor,world.getName(),x,z,plan,result,summary,Instant.now().plusSeconds(300));
             }catch(RuntimeException e){throw e;}catch(Exception e){throw new IllegalStateException(e.getMessage(),e);}
         },JOBS);
@@ -138,7 +138,7 @@ public final class TownBuilder {
                 var failed=new ArrayList<String>();
                 for(var road:r.roads){int minX=Integer.MAX_VALUE,minZ=Integer.MAX_VALUE,maxX=Integer.MIN_VALUE,maxZ=Integer.MIN_VALUE;for(var n:road.nodes()){minX=Math.min(minX,n[0]);maxX=Math.max(maxX,n[0]);minZ=Math.min(minZ,n[2]);maxZ=Math.max(maxZ,n[2]);}
                     loadArea(world,ax+minX-8,az+minZ-8,ax+maxX+8,az+maxZ+8);
-                    try{on(world,()->{var nodes=road.nodes().stream().map(n->new double[]{ax+n[0]+.5,n[1],az+n[2]+.5}).toList();m.roads.add(TownRoadAuthor.author(world,preview.actor(),nodes,road.road().width).toString());}).join();save(plugin,m);}
+                    try{var nodes=road.nodes().stream().map(n->new double[]{ax+n[0]+.5,n[1],az+n[2]+.5}).toList();m.roads.add(TownRoadNetwork.layTownRoad(plugin,world,preview.actor(),nodes,road.road().width).toString());save(plugin,m);}
                     catch(Exception e){failed.add(road.road().id+" ("+cause(e)+")");}}
                 m.state="placed";save(plugin,m);
                 tell(player,"The town is built. The arrival point is on the podium at "+ax+", "+(ay+plan.arrival[1])+", "+az+"."+(failed.isEmpty()?"":" Some roads could not be laid: "+String.join("; ",failed)+". Lay them with the Road Designer."));

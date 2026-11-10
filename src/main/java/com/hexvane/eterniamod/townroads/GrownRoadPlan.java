@@ -98,7 +98,8 @@ public final class GrownRoadPlan {
                     if (cost == null) continue;
                     int crowd = 0, gain = l.claimable() && !covered.contains(t) ? -1 : 0;
                     for (HexCoord a : t.neighbors()) {
-                        if (road.containsKey(a) && !near.contains(a) && !a.equals(via)) crowd++;
+                        // A plaza or walled town is not a road: new roads may run beside it.
+                        if (road.containsKey(a) && road.get(a) != 3 && !near.contains(a) && !a.equals(via)) crowd++;
                         Land la = land.get(a);
                         if (la != null && la.claimable() && !covered.contains(a) && !road.containsKey(a)) gain++;
                         // Free land just across water counts too, so roads reach the bank where a bridge can start.

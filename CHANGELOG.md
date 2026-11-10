@@ -6,7 +6,7 @@
 
 - New plots are levelled for you. A freshly claimed hexagon is flattened to the height of the road beside it, and every hexagon you add later matches the rest of your plot. A guild's estate and its members' plots share one height. The edges either blend gently into the land around them or rise as a neat hexagon step. Trees, bushes, wild wheat, berry bushes, flowers and rubble are cleared while grass stays, on any kind of ground. A tree cut by your plot is removed whole, so no pieces are left floating beside it. Crops growing on farmland are left alone. Buildings, roads and other plots are never changed.
 - You can sell a hexagon back from your plot and get its Crowns back. Open Home in your Journal and press Sell a hexagon. Decorations on it go back to your inventory, and its ground goes back to how it was.
-- Staff can grow a town's roads in one go. Stand by the Hub plaza and type `/e admin town roads grow`, or stand where a new town should go and type `/e admin town portal` to set down a spawn platform with a portal and roads around it. The roads branch out and bend around hills, plots and the plaza, cross rivers on wooden bridges, and leave room for homes between them. Build every road at once, or let the town grow: new roads then appear as homes are claimed, whenever free land beside the roads runs low. The plan shows in the world before anything is built, and `/e admin town roads undo` takes the nearest one away again.
+- Staff can grow a town's roads in one go. Stand by the Hub plaza and type `/e admin town roads grow`, or stand where a new town should go and type `/e admin town portal` to set down a spawn platform with a portal and roads around it. The roads branch out and bend around hills, plots and the plaza, cross rivers on wooden bridges, and leave room for homes between them. Build every road at once, or let the town grow: new roads then appear as homes are claimed, whenever free land beside the roads runs low. Each road levels a smooth path and clears the trees in its hexagons first. A map of the planned roads and bridges shows before anything is built, and `/e admin town roads undo` takes the nearest town's roads away again and puts the land back.
 
 ### Fixed
 
@@ -23,6 +23,7 @@
 
 - Extra hexagons cost 500 Crowns each instead of coins.
 - Roads built with the Road Designer use half blocks where they step up one block, so walking up them is smooth.
+- Placing the Eternia town now lays one short road out of each gate, lined up with it, instead of the whole road grid. Grow the rest with `/e admin town roads grow`.
 - Houses and decorations in Collections have a Place button. Stand on your plot and press it to start placing.
 - Home in the Journal is now your whole housing menu on one page. Go to your plot, add or sell hexagons, pack or move your whole plot, and find your houses, decorations, palettes and paths in their own tabs, with your guild estate beside them. The old stack of housing menus is gone.
 

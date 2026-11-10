@@ -75,18 +75,8 @@ final class TownCommand extends AbstractCommandCollection {
         player.sendMessage(Message.raw(mode==TownRoadNetwork.Mode.PORTAL?"Planning a portal town centred where you stand...":"Planning roads round the nearest plaza..."));
         TownRoadNetwork.preview(plugin,world,player.getUuid(),mode,x,z,radius,player).whenComplete((preview,failure)->world.execute(()->{
             if(failure!=null){player.sendMessage(Message.raw("The roads cannot be planned here: "+message(failure)));return;}
-            TownRoadNetwork.draw(player,preview);
             if(!ref.isValid()){player.sendMessage(Message.raw(preview.summary()));return;}
-            ChoicePage.open(ref,store,player,mode==TownRoadNetwork.Mode.PORTAL?"Place this portal town?":"Build these town roads?",preview.summary(),List.of(
-                new ChoicePage.Choice(mode==TownRoadNetwork.Mode.PORTAL?"Build the platform, portal and every road now":"Build every road now","Build all",(r,s)->{
-                    try{TownRoadNetwork.build(plugin,world,preview,true,lead,player);player.sendMessage(Message.raw("Building. Progress appears here."));}
-                    catch(RuntimeException e){player.sendMessage(Message.raw(e.getMessage()));}
-                }),
-                new ChoicePage.Choice(mode==TownRoadNetwork.Mode.PORTAL?"Build the platform and portal, then add roads as homes are claimed":"Add roads as homes are claimed","Grow",(r,s)->{
-                    try{TownRoadNetwork.build(plugin,world,preview,false,lead,player);player.sendMessage(Message.raw("Starting. Progress appears here."));}
-                    catch(RuntimeException e){player.sendMessage(Message.raw(e.getMessage()));}
-                }),
-                new ChoicePage.Choice("Look at the plan again","Show again",(r,s)->{TownRoadNetwork.draw(player,preview);player.sendMessage(Message.raw("Run the command again to build it."));})));
+            com.hexvane.eterniamod.town.TownRoadPlanPage.open(ref,store,player,world,preview,preview.picture(),lead);
         }));
     }
     private static final class RoadsUndo extends AbstractPlayerCommand {

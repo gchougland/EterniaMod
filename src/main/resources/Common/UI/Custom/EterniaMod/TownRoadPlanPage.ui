@@ -1,0 +1,33 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+@MapSize = 680;
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    Group { Anchor: (Width: 420); LayoutMode: Middle;
+      Group { Anchor: (Width: 180, Height: 40, Left: 0); Background: "Theme/Surfaces/EterniaWordmark.png"; }
+    }
+    Group { FlexWeight: 1; }
+    $T.@CodexClose #Close {}
+  }
+  $T.@CodexBody {
+    $T.@CodexPanel { Anchor: (Width: 420, Right: 24); Padding: (Full: 24);
+      Label #Title { Anchor: (Height: 72, Bottom: 10); Style: (...$T.@TitleStyle, FontSize: 26, Wrap: true, VerticalAlignment: Start); }
+      Label #Description { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 16, TextColor: $T.@Muted); }
+      Group { Anchor: (Height: 96, Bottom: 8); LayoutMode: Top;
+        Label { Anchor: (Height: 24); Style: (...$T.@MutedStyle); Text: "On the map"; }
+        Label #KeyRoads { Anchor: (Height: 22); Style: (...$T.@DefaultLabelStyle, FontSize: 15, TextColor: #8fd99b); Text: "New roads"; }
+        Label #KeyBridges { Anchor: (Height: 22); Style: (...$T.@DefaultLabelStyle, FontSize: 15, TextColor: #7fb4f0); Text: "New bridges"; }
+        Label #KeyOld { Anchor: (Height: 22); Style: (...$T.@DefaultLabelStyle, FontSize: 15, TextColor: #e2c47c); Text: "Roads and plazas already there"; }
+      }
+      $T.@TextButton #BuildAll { Anchor: (Height: 48, Bottom: 10); Text: "Build every road now"; }
+      $T.@SecondaryTextButton #Grow { Anchor: (Height: 48, Bottom: 10); Text: "Grow as homes are claimed"; }
+      $T.@SecondaryTextButton #Cancel { Anchor: (Height: 48); Text: "Cancel"; }
+    }
+    $T.@CodexPanel { FlexWeight: 1; Padding: (Full: 16); LayoutMode: Middle;
+      Group #MapStage { Anchor: (Width: @MapSize, Height: @MapSize); Background: #1b2a2b;
+        AssetImage #Map { Anchor: (Full: 0); AssetPath: ""; FallbackTexturePath: "UI/Custom/EterniaMod/ClaimMap/MapLoading.png"; HitTestVisible: false; }
+      }
+    }
+  }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
+}
