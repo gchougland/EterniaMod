@@ -91,6 +91,11 @@ public final class ManagedHubServices implements AutoCloseable {
         if(existing!=null){if(existing.state()!=State.ACTIVE)service.finish(world,existing,actor);if(service.registry.find(existing.id()).orElseThrow().live())return existing.id();}
         return service.add(world,actor,Kind.PORTAL,"Eternia_World_Portal",new Pose(x,y,z,yaw)).id();
     }
+    /** Adds one more managed world portal, for a portal town; a world may hold several. */
+    public static UUID addPortal(EterniaModPlugin plugin,World world,UUID actor,int x,int y,int z,float yaw)throws Exception {
+        SetupAccess.require(actor);world.getEntityStore().getStore().assertThread();
+        return require(plugin).add(world,actor,Kind.PORTAL,"Eternia_World_Portal",new Pose(x,y,z,yaw)).id();
+    }
     private void refreshIdentity(World world,Ref<EntityStore> ref)throws IOException {
         var store=world.getEntityStore().getStore();store.assertThread();var uuid=store.getComponent(ref,UUIDComponent.getComponentType());if(uuid==null)return;
         var entry=registry.find(uuid.getUuid()).orElse(null);if(entry==null||!entry.live()||entry.kind()!=Kind.NPC||!entry.world().equals(world.getName()))return;

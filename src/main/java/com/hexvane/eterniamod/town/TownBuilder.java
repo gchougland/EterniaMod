@@ -173,7 +173,7 @@ public final class TownBuilder {
     /** The natural ground at a column: the top solid soil, rock or sand, under any plants, trees or snow cover. */
     static int natural(World world,int x,int z){
         int top=ChunkSectionBlockUtil.columnHeight(world,x,z);if(top<ChunkUtil.MIN_Y)return TownTerrainPlanner.UNKNOWN;
-        for(int y=Math.min(top,NativeSnapshotStore.MAX_Y-1);y>Math.max(ChunkUtil.MIN_Y,top-64);y--){var type=ChunkSectionBlockUtil.blockType(world,x,y,z);if(type!=null&&isGround(type.getId()))return y;}
+        for(int y=Math.min(top,NativeSnapshotStore.MAX_Y-1);y>=Math.max(ChunkUtil.MIN_Y,top-64);y--){var type=ChunkSectionBlockUtil.blockType(world,x,y,z);if(type!=null&&isGround(type.getId()))return y;}
         return TownTerrainPlanner.UNKNOWN;
     }
     static boolean isGround(String id){return id!=null&&(id.startsWith("Soil_")||id.startsWith("Rock_")||id.startsWith("Ore_")||id.startsWith("Sand"));}
