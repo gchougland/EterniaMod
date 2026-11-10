@@ -294,6 +294,9 @@ public final class TownBuilder {
     // ---- threads and chunks --------------------------------------------------------------------------------------------
     @FunctionalInterface interface Work {void run()throws Exception;}
     /** Runs work on the world thread and completes when it has. */
+    @FunctionalInterface interface Supply<T> {T get()throws Exception;}
+    /** Runs work on the world thread and waits for its result. Call off the world thread. */
+    static <T> T supply(World world,Supply<T> work){var done=new CompletableFuture<T>();world.execute(()->{try{done.complete(work.get());}catch(Throwable e){done.completeExceptionally(e);}});return done.join();}
     static CompletableFuture<Void> on(World world,Work work){var done=new CompletableFuture<Void>();world.execute(()->{try{work.run();done.complete(null);}catch(Throwable e){done.completeExceptionally(e);}});return done;}
     /** Loads (and keeps ticking) every chunk and section under a box of columns, in world coordinates. Call off the world thread. */
     static void loadArea(World world,int minX,int minZ,int maxX,int maxZ){

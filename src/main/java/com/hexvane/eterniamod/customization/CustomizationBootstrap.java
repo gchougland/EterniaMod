@@ -13,6 +13,7 @@ public final class CustomizationBootstrap {
         HousingEnvironmentalProtection.register(plugin);
         HousingWorldPolicy.register(plugin);
         HubBuildMode.register(plugin);
+        com.hexvane.eterniamod.town.TownRoadNetwork.register(plugin);
         HousingInteractionGuard.register(plugin);
         service=new CustomizationService(plugin);
         timer=Executors.newSingleThreadScheduledExecutor(task->{var thread=new Thread(task,"Eternia-customization-preview");thread.setDaemon(true);return thread;});

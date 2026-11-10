@@ -54,19 +54,21 @@ final class TownCommand extends AbstractCommandCollection {
     }
     private static final class Grow extends AbstractPlayerCommand {
         private final OptionalArg<Integer> radius=withOptionalArg("radius","How many hexagons out from the plaza the roads may reach (2 to 12, default 7)",ArgTypes.INTEGER);
+        private final OptionalArg<Integer> lead=withOptionalArg("lead","When growing, how many free hexagons beside the roads to keep ready (default 12)",ArgTypes.INTEGER);
         Grow(){super("grow","Plan roads round the plaza you stand in or nearest, and build them after you confirm");setPermissionGroups("hytale:WorldEditor");}
         @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){
-            plan(context,store,ref,player,world,TownRoadNetwork.Mode.PLAZA,radius.provided(context)?radius.get(context):TownRoadNetwork.DEFAULT_RADIUS);
+            plan(context,store,ref,player,world,TownRoadNetwork.Mode.PLAZA,radius.provided(context)?radius.get(context):TownRoadNetwork.DEFAULT_RADIUS,lead.provided(context)?lead.get(context):0);
         }
     }
     private static final class Portal extends AbstractPlayerCommand {
         private final OptionalArg<Integer> radius=withOptionalArg("radius","How many hexagons out from the platform the roads may reach (2 to 12, default 7)",ArgTypes.INTEGER);
+        private final OptionalArg<Integer> lead=withOptionalArg("lead","When growing, how many free hexagons beside the roads to keep ready (default 12)",ArgTypes.INTEGER);
         Portal(){super("portal","Place a portal town where you stand: the spawn platform, a portal and roads round it");setPermissionGroups("hytale:WorldEditor");}
         @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){
-            plan(context,store,ref,player,world,TownRoadNetwork.Mode.PORTAL,radius.provided(context)?radius.get(context):TownRoadNetwork.DEFAULT_RADIUS);
+            plan(context,store,ref,player,world,TownRoadNetwork.Mode.PORTAL,radius.provided(context)?radius.get(context):TownRoadNetwork.DEFAULT_RADIUS,lead.provided(context)?lead.get(context):0);
         }
     }
-    private static void plan(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world,TownRoadNetwork.Mode mode,int radius){
+    private static void plan(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world,TownRoadNetwork.Mode mode,int radius,int lead){
         try{SetupAccess.require(player.getUuid());}catch(RuntimeException e){player.sendMessage(Message.raw(e.getMessage()));return;}
         var transform=store.getComponent(ref,TransformComponent.getComponentType());if(transform==null){player.sendMessage(Message.raw("Your position is unavailable."));return;}
         var p=transform.getPosition();int x=(int)Math.floor(p.x),z=(int)Math.floor(p.z);var plugin=EterniaModPlugin.get();
@@ -76,8 +78,12 @@ final class TownCommand extends AbstractCommandCollection {
             TownRoadNetwork.draw(player,preview);
             if(!ref.isValid()){player.sendMessage(Message.raw(preview.summary()));return;}
             ChoicePage.open(ref,store,player,mode==TownRoadNetwork.Mode.PORTAL?"Place this portal town?":"Build these town roads?",preview.summary(),List.of(
-                new ChoicePage.Choice(mode==TownRoadNetwork.Mode.PORTAL?"Build the platform, portal and roads":"Build the roads","Build",(r,s)->{
-                    try{TownRoadNetwork.build(plugin,world,preview,player);player.sendMessage(Message.raw("Building. Progress appears here."));}
+                new ChoicePage.Choice(mode==TownRoadNetwork.Mode.PORTAL?"Build the platform, portal and every road now":"Build every road now","Build all",(r,s)->{
+                    try{TownRoadNetwork.build(plugin,world,preview,true,lead,player);player.sendMessage(Message.raw("Building. Progress appears here."));}
+                    catch(RuntimeException e){player.sendMessage(Message.raw(e.getMessage()));}
+                }),
+                new ChoicePage.Choice(mode==TownRoadNetwork.Mode.PORTAL?"Build the platform and portal, then add roads as homes are claimed":"Add roads as homes are claimed","Grow",(r,s)->{
+                    try{TownRoadNetwork.build(plugin,world,preview,false,lead,player);player.sendMessage(Message.raw("Starting. Progress appears here."));}
                     catch(RuntimeException e){player.sendMessage(Message.raw(e.getMessage()));}
                 }),
                 new ChoicePage.Choice("Look at the plan again","Show again",(r,s)->{TownRoadNetwork.draw(player,preview);player.sendMessage(Message.raw("Run the command again to build it."));})));

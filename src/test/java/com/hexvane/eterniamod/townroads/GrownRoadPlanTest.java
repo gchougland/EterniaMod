@@ -20,7 +20,7 @@ class GrownRoadPlanTest {
     @Test
     void growsATreeFromTheSource() {
         var source = List.of(HexCoord.ORIGIN);
-        var plan = GrownRoadPlan.grow(HexCoord.ORIGIN, flat(7), source, List.of(), (a, b) -> true, GrownRoadPlan.Settings.DEFAULT);
+        var plan = GrownRoadPlan.grow(HexCoord.ORIGIN, flat(7), source, List.of(), (a, m, b) -> m == null ? 0.0 : null, GrownRoadPlan.Settings.DEFAULT);
         assertTrue(plan.cells().size() > 10, "a flat disk gets plenty of road");
         Set<HexCoord> seen = new HashSet<>(source);
         for (var step : plan.steps()) {
@@ -32,7 +32,7 @@ class GrownRoadPlanTest {
 
     @Test
     void leavesRoomForHomesBetweenRoads() {
-        var plan = GrownRoadPlan.grow(HexCoord.ORIGIN, flat(7), List.of(HexCoord.ORIGIN), List.of(), (a, b) -> true, GrownRoadPlan.Settings.DEFAULT);
+        var plan = GrownRoadPlan.grow(HexCoord.ORIGIN, flat(7), List.of(HexCoord.ORIGIN), List.of(), (a, m, b) -> m == null ? 0.0 : null, GrownRoadPlan.Settings.DEFAULT);
         Set<HexCoord> road = new HashSet<>(plan.cells());
         road.add(HexCoord.ORIGIN);
         long free = HexCoord.disk(HexCoord.ORIGIN, 7).stream().filter(c -> !road.contains(c)).count();
@@ -51,7 +51,7 @@ class GrownRoadPlanTest {
         HexCoord hill = new HexCoord(2, 0);
         land.put(hill, new GrownRoadPlan.Land(false, false, 40));
         var blockers = List.of(new HexCoord(-1, 0), new HexCoord(-1, 1));
-        var plan = GrownRoadPlan.grow(HexCoord.ORIGIN, land, List.of(HexCoord.ORIGIN), blockers, (a, b) -> true, GrownRoadPlan.Settings.DEFAULT);
+        var plan = GrownRoadPlan.grow(HexCoord.ORIGIN, land, List.of(HexCoord.ORIGIN), blockers, (a, m, b) -> m == null ? 0.0 : null, GrownRoadPlan.Settings.DEFAULT);
         assertFalse(plan.cells().contains(hill));
         for (HexCoord b : blockers) assertFalse(plan.cells().contains(b));
         for (var step : plan.steps()) assertFalse(blockers.contains(step.from()), "a blocker never sprouts a road");
@@ -60,14 +60,30 @@ class GrownRoadPlanTest {
     @Test
     void respectsEdges() {
         // No road may cross the q = 0 line.
-        var plan = GrownRoadPlan.grow(new HexCoord(2, 0), flat(6), List.of(new HexCoord(2, 0)), List.of(), (a, b) -> a.q() > 0 == b.q() > 0, GrownRoadPlan.Settings.DEFAULT);
+        var plan = GrownRoadPlan.grow(new HexCoord(2, 0), flat(6), List.of(new HexCoord(2, 0)), List.of(), (a, m, b) -> m == null && a.q() > 0 == b.q() > 0 ? 0.0 : null, GrownRoadPlan.Settings.DEFAULT);
         assertTrue(plan.cells().stream().allMatch(c -> c.q() > 0));
+    }
+
+    @Test
+    void bridgesCrossARiver() {
+        // A river runs down q = 3: water hexagons the road may only cross on a bridge.
+        var land = flat(7);
+        for (HexCoord c : HexCoord.disk(HexCoord.ORIGIN, 7)) if (c.q() == 3) land.put(c, new GrownRoadPlan.Land(false, false, 0, true));
+        var plan = GrownRoadPlan.grow(HexCoord.ORIGIN, land, List.of(HexCoord.ORIGIN), List.of(), (a, m, b) -> m == null ? 0.0 : 1.5, GrownRoadPlan.Settings.DEFAULT);
+        assertTrue(plan.cells().stream().anyMatch(c -> c.q() > 3), "roads reach the far bank");
+        var bridges = plan.steps().stream().filter(GrownRoadPlan.Step::bridge).toList();
+        assertFalse(bridges.isEmpty());
+        for (var b : bridges) { assertEquals(3, b.via().q()); assertEquals(2, b.from().distance(b.to())); }
+        assertTrue(plan.cells().stream().noneMatch(c -> c.q() == 3), "no road hexagon stands in the river");
+        var chains = GrownRoadPlan.chains(plan, List.of(HexCoord.ORIGIN), 6);
+        for (var c : chains) if (c.bridge()) assertEquals(3, c.cells().size(), "a bridge is a road of its own: bank, water, bank");
+        assertEquals(plan.cells(), GrownRoadPlan.cellsOf(chains));
     }
 
     @Test
     void chainsCoverThePlanInBuildOrder() {
         var sources = List.of(HexCoord.ORIGIN);
-        var plan = GrownRoadPlan.grow(HexCoord.ORIGIN, flat(8), sources, List.of(), (a, b) -> true, GrownRoadPlan.Settings.DEFAULT);
+        var plan = GrownRoadPlan.grow(HexCoord.ORIGIN, flat(8), sources, List.of(), (a, m, b) -> m == null ? 0.0 : null, GrownRoadPlan.Settings.DEFAULT);
         var chains = GrownRoadPlan.chains(plan, sources, 4);
         Set<HexCoord> built = new HashSet<>(sources);
         for (var chain : chains) {

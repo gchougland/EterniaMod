@@ -96,9 +96,9 @@ final class SplineRoadService {
         RoadClearance.requireLoaded(world,union);BsonDocument actual=scoped(scope,()->SparseRoadSnapshots.capture(files(),world,union));plainSnapshot(actual);plainGround(actual,bounds,plan.cells());
         if(current!=null){var expected=files().load(current.current().after());SparseRoadSnapshots.requireSame(SparseRoadSnapshots.select(actual,bounds,current.current().snapshotCells()),expected.document(),null);}
         var original=actual.clone();if(current!=null)SparseRoadSnapshots.overlay(original,bounds,files().load(current.current().before()));
-        RoadClearance.validateSavedObjects(original,bounds,plan.cells());var nextOriginal=SparseRoadSnapshots.select(original,bounds,nextCells);var painted=nextOriginal.clone();paint(painted,SparseRoadSnapshots.bounds(nextCells),plan.cells(),RoadStyle.surface(nodes,width,plan.cells(),style.columns(),style.blockId()));
+        RoadClearance.validateSavedObjects(original,bounds,plan.cells());var nextOriginal=SparseRoadSnapshots.select(original,bounds,nextCells);var painted=nextOriginal.clone();paint(painted,SparseRoadSnapshots.bounds(nextCells),plan.cells(),RoadStyle.surface(nodes,width,plan.cells(),style.columns(),style.blockId()),RoadSlabs.available(style.blocks()));
         String operation=UUID.randomUUID().toString();var nextBounds=SparseRoadSnapshots.bounds(nextCells);var savedOriginal=files().save(operation+"-original.json",nextBounds,nextOriginal);var savedPainted=files().save(operation+"-painted.json",nextBounds,painted);
-        var next=new Version(nodes,width,style.id(),style.blockId(),plan.cells(),areas(id,plan.cells()),savedOriginal.file(),savedPainted.file(),plan.connections(),2,above,style.columns());
+        var next=new Version(nodes,width,style.id(),style.blockId(),plan.cells(),areas(id,plan.cells()),savedOriginal.file(),savedPainted.file(),plan.connections(),2,above,style.columns(),RoadSlabs.available(style.blocks()));
         var desired=original.clone();SparseRoadSnapshots.overlay(desired,bounds,savedPainted);
         var before=files().save(operation+"-before.json",bounds,actual);var after=files().save(operation+"-after.json",bounds,desired);
         var pending=new Road(id,actor,world.getName(),rev+1,State.PENDING,current==null?null:current.current(),new Change(before.file(),after.file(),union,next));
@@ -175,17 +175,27 @@ final class SplineRoadService {
     private static boolean surfaceDebris(BlockType block){
         return block.getId().startsWith("Plant_")||block.getId().startsWith("Rubble_")||block.getId().startsWith("Wood_")&&!block.isCubeDrawType();
     }
-    private static void paint(BsonDocument document,NativeSnapshotStore.Bounds bounds,List<SplineGeometry.Cell> ground,Map<SplineGeometry.Column,String> materials){
-        var surface=new HashMap<String,String>();ground.forEach(c->surface.put(SparseRoadSnapshots.key(c.x()-bounds.minX(),c.y()-bounds.minY(),c.z()-bounds.minZ()),materials.get(c.column())));
+    /**
+     * Writes the road surface into its snapshot: each ground cell gets its material, all headroom is cleared. With
+     * {@code slabs}, a cell whose neighbour along the road is one block higher gets a half block of its material on
+     * top, so the road steps up smoothly.
+     */
+    private static void paint(BsonDocument document,NativeSnapshotStore.Bounds bounds,List<SplineGeometry.Cell> ground,Map<SplineGeometry.Column,String> materials,boolean slabs){
+        var surface=new HashMap<String,String>();
+        ground.forEach(c->surface.put(SparseRoadSnapshots.key(c.x()-bounds.minX(),c.y()-bounds.minY(),c.z()-bounds.minZ()),materials.get(c.column())));
+        var steps=new HashSet<String>();
+        if(slabs)RoadSlabs.steps(ground,materials).forEach((cell,block)->{var k=SparseRoadSnapshots.key(cell.x()-bounds.minX(),cell.y()-bounds.minY(),cell.z()-bounds.minZ());surface.put(k,block);steps.add(k);});
         for(var value:document.getArray("blocks")){
-            var cell=value.asDocument();cell.put("name",new BsonString(surface.getOrDefault(SparseRoadSnapshots.key(cell),BlockType.EMPTY.getId())));if(!surface.containsKey(SparseRoadSnapshots.key(cell))){cell.remove("components");cell.remove("filler");cell.remove("rotation");}
+            var cell=value.asDocument();
+            cell.put("name",new BsonString(surface.getOrDefault(SparseRoadSnapshots.key(cell),BlockType.EMPTY.getId())));
+            if(!surface.containsKey(SparseRoadSnapshots.key(cell))||steps.contains(SparseRoadSnapshots.key(cell))){cell.remove("components");cell.remove("filler");cell.remove("rotation");}
         }
     }
     private void verifyPainted(Version version)throws IOException{
         // Startup precedes native asset registration. Validate names/masks without
         // deserializing a prefab against the still-empty native asset maps.
         var document=BsonDocument.parse(new String(files().files().read(version.after()),StandardCharsets.UTF_8)).getDocument("prefab");
-        var expected=document.clone();paint(expected,SparseRoadSnapshots.bounds(version.snapshotCells()),version.cells(),RoadStyle.surface(version.nodes(),version.width(),version.cells(),version.palette(),version.block()));
+        var expected=document.clone();paint(expected,SparseRoadSnapshots.bounds(version.snapshotCells()),version.cells(),RoadStyle.surface(version.nodes(),version.width(),version.cells(),version.palette(),version.block()),version.slabs());
         if(!document.equals(expected))throw new IOException("Road surface or cleared headroom differs from its saved cells");
     }
     static void plain(String id){var block=BlockType.getAssetMap().getAsset(id);if(block==null||!block.isCubeDrawType()||block.getBlockEntity()!=null)throw new IllegalStateException("Road styles require plain cube blocks");}
