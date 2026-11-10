@@ -53,7 +53,7 @@ public final class HubBuildMode {
     public static void set(EterniaModPlugin plugin, PlayerRef player, World world, boolean enabled) {
         SetupAccess.require(player.getUuid());
         if (enabled) {
-            if (!isHub(plugin, world)) throw new IllegalArgumentException("Choose this world's Hub role in /e admin setup first.");
+            if (!isHub(plugin, world)) throw new IllegalArgumentException(plugin.getInfrastructure().world(world.getName()).map(plan -> "This world is set up as a "+plan.role()+" world. Make it the Hub in /e admin setup, World role, then try again.").orElse("Make this world the Hub in /e admin setup, World role, then try again."));
             SESSIONS.enable(player.getUuid(), world.getWorldConfig().getUuid());
         } else SESSIONS.forget(player.getUuid());
         try { HousingWorldPolicy.refresh(world); }

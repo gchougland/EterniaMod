@@ -4,7 +4,7 @@
 
 ### Added
 
-- New plots are levelled for you. A freshly claimed hexagon is flattened to the height of the road beside it, and every hexagon you add later matches the rest of your plot. A guild's estate and its members' plots share one height. The edges either blend gently into the land around them or rise as a neat hexagon step. Trees, bushes, flowers and rubble are cleared while grass stays, on any kind of ground. Buildings, roads and other plots are never changed.
+- New plots are levelled for you. A freshly claimed hexagon is flattened to the height of the road beside it, and every hexagon you add later matches the rest of your plot. A guild's estate and its members' plots share one height. The edges either blend gently into the land around them or rise as a neat hexagon step. Trees, bushes, wild wheat, berry bushes, flowers and rubble are cleared while grass stays, on any kind of ground. A tree cut by your plot is removed whole, so no pieces are left floating beside it. Crops growing on farmland are left alone. Buildings, roads and other plots are never changed.
 - You can sell a hexagon back from your plot and get its Crowns back. Open Home in your Journal and press Sell a hexagon. Decorations on it go back to your inventory, and its ground goes back to how it was.
 
 ### Fixed
@@ -16,6 +16,7 @@
 - Moving your plot steps you onto the road beside it instead of sending you to another world.
 - Records now shows the Journal tabs along the top, like every other page.
 - Buying, selling and moving hexagons, and packing up a plot, are much faster.
+- Making a world the Hub in world setup now works when an old test world still held the Hub role, so Hub building can be turned on there.
 
 ### Changed
 

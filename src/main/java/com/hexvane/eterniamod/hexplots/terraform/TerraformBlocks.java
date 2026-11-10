@@ -4,8 +4,9 @@ import com.hexvane.eterniamod.boundary.BoundarySurfacePolicy;
 import java.util.Locale;
 
 /**
- * Which blocks plot shaping may touch, by block id. Pure. Anything not listed here (planks, bricks, furniture, crops,
- * paths, fences, lamps, anything a player built) makes its whole column off limits.
+ * Which blocks plot shaping may touch, by block id. Pure. Anything not listed here (planks, bricks, furniture, planters,
+ * paths, fences, lamps, anything a player built) makes its whole column off limits. Crops count as wild growth here;
+ * the terraformer keeps any crop growing on tilled soil.
  */
 public final class TerraformBlocks {
     private TerraformBlocks() {}
@@ -21,7 +22,7 @@ public final class TerraformBlocks {
         if (isGround(id)) return true;
         if (id == null || id.isEmpty()) return false;
         String lower = id.toLowerCase(Locale.ROOT);
-        if (lower.startsWith("plant_crop") || lower.contains("planter") || lower.contains("pot")) return false;
+        if (potted(lower)) return false;
         if (lower.startsWith("plant_")) return true;
         if (lower.startsWith("wood_")) return lower.endsWith("_trunk") || lower.endsWith("_trunk_full") || lower.contains("_roots") || lower.contains("_branch");
         return lower.startsWith("rubble_");
@@ -29,15 +30,37 @@ public final class TerraformBlocks {
 
     /**
      * Growth cleared from claimed hexagons: plants, flowers, bushes, leaves, tree trunks, roots and branches, loose
-     * rubble. Never crops or planters.
+     * rubble, wild crops such as wheat and berry bushes. Never planters or pots.
      */
     public static boolean isGrowth(String id) {
         if (id == null || id.isEmpty()) return false;
         String lower = id.toLowerCase(Locale.ROOT);
-        if (lower.startsWith("plant_crop") || lower.contains("planter") || lower.contains("pot")) return false;
+        if (potted(lower)) return false;
         if (lower.startsWith("plant_") || lower.contains("leaves")) return true;
         if (lower.startsWith("wood_")) return lower.endsWith("_trunk") || lower.endsWith("_trunk_full") || lower.contains("_roots") || lower.contains("_branch");
         return lower.startsWith("rubble_");
+    }
+
+    /** A crop: kept when it grows on tilled soil, cleared as wild growth otherwise. */
+    public static boolean isCrop(String id) { return id != null && id.toLowerCase(Locale.ROOT).startsWith("plant_crop"); }
+
+    /** Farmed soil. */
+    public static boolean isTilled(String id) { return id != null && id.toLowerCase(Locale.ROOT).contains("tilled"); }
+
+    /** Tree wood: trunks, roots and branches. Connected wood outside a plot goes with a tree cleared inside it. */
+    public static boolean isTreeWood(String id) {
+        if (id == null) return false;
+        String lower = id.toLowerCase(Locale.ROOT);
+        return lower.startsWith("wood_") && (lower.endsWith("_trunk") || lower.endsWith("_trunk_full") || lower.contains("_roots") || lower.contains("_branch"));
+    }
+
+    /** Leaves of any tree. */
+    public static boolean isLeaves(String id) { return id != null && id.toLowerCase(Locale.ROOT).contains("leaves") && !potted(id.toLowerCase(Locale.ROOT)); }
+
+    private static boolean potted(String lower) {
+        if (lower.contains("planter")) return true;
+        for (String word : lower.split("_")) if (word.equals("pot") || word.equals("potted") || word.equals("flowerpot")) return true;
+        return false;
     }
 
     /** Grass blades are the one growth that stays on claimed land. */

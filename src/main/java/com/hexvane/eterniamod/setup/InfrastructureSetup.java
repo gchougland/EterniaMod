@@ -59,11 +59,22 @@ public final class InfrastructureSetup {
         SetupAccess.require(player.getUuid());if(!Set.of("hub-housing","hub","housing","adventure").contains(value))throw input("Choose hub-housing, hub, housing or adventure.");
         var snapshot=plugin.getInfrastructure().snapshot();String world=store.getExternalData().getWorld().getName();var old=snapshot.worlds().get(world);
         String role=value.equals("hub-housing")?"hub":value;boolean housing=value.equals("hub-housing");
-        if(role.equals("hub")&&snapshot.worlds().entrySet().stream().anyMatch(e->!e.getKey().equals(world)&&e.getValue().role().equals("hub")))throw input("A Hub is already configured. Change its role before assigning a different Hub.");
+        String oldHub=role.equals("hub")?otherHub(snapshot,world):null;
+        if(oldHub!=null&&!replaceableHub(oldHub))throw input("The Hub is "+oldHub+". Stand in "+oldHub+" and give it another role first.");
         var next=old==null?new HousingInfrastructure.WorldPlan(role,List.of(),List.of(),null,housing):old.withRole(role,housing);
         // A world gaining housing for the first time cuts its land into hexagons (see /e admin setup lattice).
         if(old==null||!old.supportsHousing())next=next.withHousingDefaults(com.hexvane.eterniamod.hexplots.HexPlotSettings.current().defaultLattice());
-        review(plugin,ref,store,player,snapshot,old,next,"Set "+world+" to "+value+". "+(next.supportsHousing()?"This enables the whole-world housing construction policy. ":"")+(next.hexPlots()&&(old==null||!old.hexPlots())?"Plots here are hexagons; use /e admin setup lattice show to see the grid. ":"")+(next.arrival()==null?"Set a safe arrival point next.":"Existing roads, plazas and arrival are retained."),null,0);
+        review(plugin,ref,store,player,snapshot,old,next,"Set "+world+" to "+value+". "+(next.supportsHousing()?"This enables the whole-world housing construction policy. ":"")+(next.hexPlots()&&(old==null||!old.hexPlots())?"Plots here are hexagons; use /e admin setup lattice show to see the grid. ":"")+(next.arrival()==null?"Set a safe arrival point next.":"Existing roads, plazas and arrival are retained.")+(oldHub==null?"":" "+oldHub+" stops being the Hub and becomes a housing world."),null,0);
+    }
+    /** Another world holding the Hub role, or null. */
+    private static String otherHub(HousingInfrastructure.Snapshot snapshot,String world) {
+        return snapshot.worlds().entrySet().stream().filter(e->!e.getKey().equals(world)&&e.getValue().role().equals("hub")).map(Map.Entry::getKey).findFirst().orElse(null);
+    }
+    /** The local test village, or a world that no longer exists, gives up the Hub role when another world takes it. */
+    private static boolean replaceableHub(String world) {
+        if(world.equals(com.hexvane.eterniamod.localplayground.LocalPlayground.VILLAGE))return true;
+        var universe=com.hypixel.hytale.server.core.universe.Universe.get();
+        return universe.getWorld(world)==null&&!java.nio.file.Files.exists(universe.getWorldsPath().resolve(world));
     }
     public static void arrival(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
         SetupAccess.require(player.getUuid());var pos=position(ref,store);var point=new HousingInfrastructure.Point(pos.x+.5,pos.y,pos.z+.5);var snapshot=plugin.getInfrastructure().snapshot();var old=requirePlan(snapshot,pos.world);
@@ -139,7 +150,15 @@ public final class InfrastructureSetup {
         if(draft==null||!draft.id.equals(id)||!draft.world.equals(world.getName()))throw input("This review expired or belongs to a different world. Start it again.");
         var snapshot=plugin.getInfrastructure().snapshot();if(snapshot.revision()!=draft.revision||!Objects.equals(snapshot.worlds().get(draft.world),draft.before))throw input("Infrastructure changed since preview. Start a new review.");
         validate(plugin,world,draft.before,draft.after);
-        try{plugin.getInfrastructure().saveWorld(draft.revision,draft.world,draft.after);}catch(IOException failure){throw new DomainException(DomainException.Code.CONFLICT,failure.getMessage(),failure);}
+        try{
+            long revision=draft.revision;
+            String oldHub=draft.after.role().equals("hub")?otherHub(snapshot,draft.world):null;
+            if(oldHub!=null){
+                if(!replaceableHub(oldHub))throw input("The Hub is "+oldHub+". Stand in "+oldHub+" and give it another role first.");
+                plugin.getInfrastructure().saveWorld(revision,oldHub,snapshot.worlds().get(oldHub).withRole("housing",true));revision++;
+            }
+            plugin.getInfrastructure().saveWorld(revision,draft.world,draft.after);
+        }catch(IOException failure){throw new DomainException(DomainException.Code.CONFLICT,failure.getMessage(),failure);}
         DRAFTS.remove(player.getUuid(),draft);player.sendMessage(Message.raw("Saved setup for "+draft.world+". "+draft.description));
         plugin.getLogger().atInfo().log("Administrator %s saved infrastructure revision %s in world %s",player.getUuid(),draft.revision+1,draft.world);
         com.hexvane.eterniamod.customization.HousingWorldPolicy.refreshAll().whenComplete((unused,failure)->{if(failure!=null){plugin.getLogger().atSevere().withCause(failure).log("Saved world setup policy did not apply");player.sendMessage(Message.raw("Setup was saved, but the world gameplay policy could not apply. Check the server log before allowing housing claims."));}});

@@ -18,9 +18,11 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.section.FluidSection;
 import com.hypixel.hytale.server.core.universe.world.storage.GetChunkFlags;
 import com.hypixel.hytale.server.core.util.FillerBlockUtil;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -150,9 +152,110 @@ public final class PlotTerraformer {
             sel.placeNoReturn(world, new Vector3i(0, 0, 0), world.getEntityStore().getStore());
             return null;
         });
+        int felled = fellTrees(world, request, context, survey);
         plugin.getLogger().atInfo().log("Plot terraform (%s) shaped %d columns to y=%d from %s for %s; %d left as they were",
             settings.mode().displayName(), counts[0], level, source, request.cells(), counts[1]);
+        if (felled > 0) plugin.getLogger().atInfo().log("Plot terraform removed %d tree blocks left hanging outside %s", felled, request.cells());
         return new Outcome(settings.mode(), level, source, counts[0], counts[1], "");
+    }
+
+    /** How far from the shaped land the rest of a cleared tree is followed. */
+    static final int TREE_REACH = 16;
+    /** Leaves this close to a removed trunk or branch go with it. */
+    static final int LEAF_REACH = 6;
+    /** At most this many blocks are removed per job, so a dense forest is never felled. */
+    static final int TREE_BUDGET = 12_000;
+
+    /**
+     * Removes the rest of every tree the shaping cut: wood joined to cleared wood, then leaves joined to cleared parts
+     * that sit near removed wood. Roads, plazas and other plots are never touched. Background thread.
+     */
+    private int fellTrees(World world, Request request, Context context, Survey survey) {
+        if (survey.clearedWood.isEmpty() && survey.clearedLeaves.isEmpty()) return 0;
+        PlotRect box = request.lattice().bounds(request.cells());
+        int margin = Math.max(0, box.x() - survey.grid.minX) + TREE_REACH;
+        var reach = new TerraformField.Grid(box.x() - margin, box.z() - margin, box.width() + 2 * margin, box.depth() + 2 * margin);
+        load(world, reach);
+        List<List<Vector3i>> work = on(world, () -> {
+            var removed = new HashSet<Vector3i>();
+            removed.addAll(survey.clearedWood);
+            removed.addAll(survey.clearedLeaves);
+            var wood = new WoodIndex();
+            survey.clearedWood.forEach(wood::add);
+            List<Vector3i> out = new ArrayList<>();
+            // Wood joined to cleared wood, corners included (branches meet trunks on a diagonal).
+            var queue = new ArrayDeque<Vector3i>(survey.clearedWood);
+            while (!queue.isEmpty() && out.size() < TREE_BUDGET) {
+                var at = queue.poll();
+                for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 1; dy++) for (int dz = -1; dz <= 1; dz++) {
+                    var next = new Vector3i(at.x + dx, at.y + dy, at.z + dz);
+                    if (removed.contains(next) || !inside(reach, next) || !free(context, request, next.x, next.z)) continue;
+                    if (!TerraformBlocks.isTreeWood(Column.id(ChunkSectionBlockUtil.blockId(world, next.x, next.y, next.z)))) continue;
+                    removed.add(next); out.add(next); wood.add(next); queue.add(next);
+                }
+            }
+            // Leaves joined to anything removed, close to removed wood.
+            queue = new ArrayDeque<>(removed);
+            while (!queue.isEmpty() && out.size() < TREE_BUDGET) {
+                var at = queue.poll();
+                for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 1; dy++) for (int dz = -1; dz <= 1; dz++) {
+                    var next = new Vector3i(at.x + dx, at.y + dy, at.z + dz);
+                    if (removed.contains(next) || !inside(reach, next) || !free(context, request, next.x, next.z)) continue;
+                    if (!TerraformBlocks.isLeaves(Column.id(ChunkSectionBlockUtil.blockId(world, next.x, next.y, next.z)))) continue;
+                    if (!wood.near(next, LEAF_REACH)) continue;
+                    removed.add(next); out.add(next); queue.add(next);
+                }
+            }
+            return chunks(out, 4096);
+        });
+        int count = 0;
+        for (var slice : work) {
+            count += slice.size();
+            on(world, () -> {
+                var sel = new BlockSelection();
+                sel.setPosition(0, 0, 0);
+                sel.setAnchor(0, 0, 0);
+                for (var at : slice) sel.addEmptyAtWorldPos(at.x, at.y, at.z);
+                sel.placeNoReturn(world, new Vector3i(0, 0, 0), world.getEntityStore().getStore());
+                return null;
+            });
+        }
+        return count;
+    }
+
+    /** Removed wood bucketed by space, so "is wood near here" stays quick for big trees. */
+    static final class WoodIndex {
+        private static final int SIZE = 8;
+        private final Map<Long, List<Vector3i>> buckets = new HashMap<>();
+
+        void add(Vector3i at) { buckets.computeIfAbsent(key(Math.floorDiv(at.x, SIZE), Math.floorDiv(at.y, SIZE), Math.floorDiv(at.z, SIZE)), k -> new ArrayList<>()).add(at); }
+
+        boolean near(Vector3i at, int reach) {
+            int bx = Math.floorDiv(at.x, SIZE), by = Math.floorDiv(at.y, SIZE), bz = Math.floorDiv(at.z, SIZE);
+            for (int dx = -1; dx <= 1; dx++) for (int dy = -1; dy <= 1; dy++) for (int dz = -1; dz <= 1; dz++) {
+                var list = buckets.get(key(bx + dx, by + dy, bz + dz));
+                if (list == null) continue;
+                for (var w : list) if (Math.abs(w.x - at.x) <= reach && Math.abs(w.y - at.y) <= reach && Math.abs(w.z - at.z) <= reach) return true;
+            }
+            return false;
+        }
+
+        private static long key(int x, int y, int z) { return ((long) (x & 0x1fffff) << 42) | ((long) (y & 0x1fffff) << 21) | (z & 0x1fffff); }
+    }
+
+    private static boolean inside(TerraformField.Grid g, Vector3i at) {
+        return at.x >= g.minX && at.x < g.minX + g.width && at.z >= g.minZ && at.z < g.minZ + g.depth && at.y > ChunkUtil.MIN_Y && at.y < NativeSnapshotStore.MAX_Y;
+    }
+
+    /** Public land the shaping may clear: not a road, plaza or plot. World thread. */
+    private boolean free(Context context, Request request, int x, int z) {
+        return !plugin.getInfrastructure().protectedColumn(request.world(), x, z) && context.view.plotAtColumn(x, z) == null;
+    }
+
+    static <T> List<List<T>> chunks(List<T> items, int size) {
+        List<List<T>> out = new ArrayList<>();
+        for (int i = 0; i < items.size(); i += size) out.add(new ArrayList<>(items.subList(i, Math.min(items.size(), i + size))));
+        return out;
     }
 
     /** The level by the group, road and ground rules. Off the world thread. */
@@ -228,6 +331,8 @@ public final class PlotTerraformer {
         final int[] height, top, surfaceId, subId;
         final UUID[] plot;
         final boolean[] growth;
+        /** Tree wood and leaves the write cleared, where the rest of each tree is looked for. World thread only. */
+        final List<Vector3i> clearedWood = new ArrayList<>(), clearedLeaves = new ArrayList<>();
 
         Survey(TerraformField.Grid grid) {
             this.grid = grid;
@@ -280,8 +385,11 @@ public final class PlotTerraformer {
                 int id = ChunkSectionBlockUtil.blockId(world, x, y, z);
                 if (id == 0) continue;
                 // Grass blades stay on ground that keeps its height.
-                if (y == t + 1 && t == n && TerraformBlocks.isKeptGrass(Column.id(id))) continue;
+                String name = Column.id(id);
+                if (y == t + 1 && t == n && TerraformBlocks.isKeptGrass(name)) continue;
                 sel.addEmptyAtWorldPos(x, y, z);
+                if (TerraformBlocks.isTreeWood(name)) clearedWood.add(new Vector3i(x, y, z));
+                else if (TerraformBlocks.isLeaves(name)) clearedLeaves.add(new Vector3i(x, y, z));
             }
             if (t > n) for (int y = n + 1; y < t; y++) sel.addBlockAtWorldPos(x, y, z, y >= t - 2 ? subBlock : fill, 0, FillerBlockUtil.NO_FILLER, 0);
             else if (t - 1 > ChunkUtil.MIN_Y) sel.addBlockAtWorldPos(x, t - 1, z, subBlock, 0, FillerBlockUtil.NO_FILLER, 0);
@@ -301,11 +409,13 @@ public final class PlotTerraformer {
             }
             if (ground == TerraformLevel.UNKNOWN) return new Column(ground, top, 0, 0, false, false);
             boolean editable = !hasFluid(world, x, ground + 1, z) && !hasFluid(world, x, ground, z), growth = false;
+            // Crops on tilled soil are someone's farm; wild crops (wheat, berry bushes) are growth like any plant.
+            boolean farmed = TerraformBlocks.isTilled(id(ChunkSectionBlockUtil.blockId(world, x, ground, z)));
             for (int y = ground + 1; editable && y <= Math.min(top + GROWTH, NativeSnapshotStore.MAX_Y - 1); y++) {
                 int id = ChunkSectionBlockUtil.blockId(world, x, y, z);
                 if (id == 0) continue;
                 String name = id(id);
-                if (!TerraformBlocks.isGrowth(name)) editable = false;
+                if (!TerraformBlocks.isGrowth(name) || farmed && TerraformBlocks.isCrop(name)) editable = false;
                 else if (!(y == ground + 1 && TerraformBlocks.isKeptGrass(name))) growth = true;
             }
             return new Column(ground, top, ChunkSectionBlockUtil.blockId(world, x, ground, z), ChunkSectionBlockUtil.blockId(world, x, ground - 1, z), editable, growth);
