@@ -53,7 +53,7 @@ final class TownCommand extends AbstractCommandCollection {
         Roads(){super("roads","Grow a town's road network around the nearest plaza, or take one away");setPermissionGroups("hytale:WorldEditor");addSubCommand(new Grow());addSubCommand(new RoadsUndo());}
     }
     private static final class Grow extends AbstractPlayerCommand {
-        private final OptionalArg<Integer> radius=withOptionalArg("radius","How many hexagons out from the plaza the roads may reach (2 to 12, default 7)",ArgTypes.INTEGER);
+        private final OptionalArg<Integer> radius=withOptionalArg("radius","How many hexagons out from the plaza the roads may reach (2 to 25, default 7)",ArgTypes.INTEGER);
         private final OptionalArg<Integer> lead=withOptionalArg("lead","When growing, how many free hexagons beside the roads to keep ready (default 12)",ArgTypes.INTEGER);
         Grow(){super("grow","Plan roads round the plaza you stand in or nearest, and build them after you confirm");setPermissionGroups("hytale:WorldEditor");}
         @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){
@@ -61,7 +61,7 @@ final class TownCommand extends AbstractCommandCollection {
         }
     }
     private static final class Portal extends AbstractPlayerCommand {
-        private final OptionalArg<Integer> radius=withOptionalArg("radius","How many hexagons out from the platform the roads may reach (2 to 12, default 7)",ArgTypes.INTEGER);
+        private final OptionalArg<Integer> radius=withOptionalArg("radius","How many hexagons out from the platform the roads may reach (2 to 25, default 7)",ArgTypes.INTEGER);
         private final OptionalArg<Integer> lead=withOptionalArg("lead","When growing, how many free hexagons beside the roads to keep ready (default 12)",ArgTypes.INTEGER);
         Portal(){super("portal","Place a portal town where you stand: the spawn platform, a portal and roads round it");setPermissionGroups("hytale:WorldEditor");}
         @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){

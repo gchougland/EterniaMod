@@ -64,7 +64,7 @@ public final class TownRoadNetwork {
 
     public enum Mode { PLAZA, PORTAL }
 
-    public static final int DEFAULT_RADIUS = 7, MAX_RADIUS = 12, WIDTH = 5;
+    public static final int DEFAULT_RADIUS = 7, MAX_RADIUS = 25, WIDTH = 5;
     /** Hexagons per road at most: shorter roads clear less at once and fail alone. */
     static final int MAX_CHAIN = 6;
     /** Height change per block of road between two hexagon centres, and the height range inside a hexagon, a road may take. */
@@ -239,7 +239,7 @@ public final class TownRoadNetwork {
         Set<HexCoord> blockers = new LinkedHashSet<>();
         for (HexCoord c : m.disk) if ((now.street().contains(c) || m.plazaCells.contains(c)) && !sources.contains(c)) blockers.add(c);
         if (sources.isEmpty()) return List.of();
-        var settings = new GrownRoadPlan.Settings(2, m.mode == Mode.PORTAL ? 2 : 1, 400, 0.03);
+        var settings = new GrownRoadPlan.Settings(2, m.mode == Mode.PORTAL ? 2 : 1, 2500, 0.03);
         var result = GrownRoadPlan.grow(m.center, land, sources, blockers, (a, via, b) -> failed.contains(key(a, via, b)) ? null : m.edges.get(key(a, via, b)), settings);
         if (reach != null) reach[0] = result.cells().size();
         List<Road> roads = new ArrayList<>();
