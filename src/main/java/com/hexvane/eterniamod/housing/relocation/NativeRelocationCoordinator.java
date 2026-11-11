@@ -158,7 +158,7 @@ public final class NativeRelocationCoordinator {
         NativePlacementTransactions.requireActive(plugin,plot);
         var store=snapshots();boolean began=false,mutated=false;
         try {
-            com.hexvane.eterniamod.guildroads.GuildRoads.beforePack(world,plot);
+            com.hexvane.eterniamod.guildroads.GuildRoads.beforePack(world,plot);{var custom=com.hexvane.eterniamod.customization.CustomizationBootstrap.service();if(custom!=null)custom.beforePack(world,plot);}
             var baselinePointer=store.files().resolve("baseline-"+plot.getPlotId()+".pointer");
             var savedGround=Files.exists(baselinePointer)?loadPointer(store,baselinePointer):null;
             var b=bounds(plot);var cells=plot.getCells();var mask=ColumnMask.of(cells);

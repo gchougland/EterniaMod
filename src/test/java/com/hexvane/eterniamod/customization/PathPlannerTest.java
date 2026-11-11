@@ -67,4 +67,13 @@ class PathPlannerTest {
         for(var cell:plan.blocks())assertTrue(cells.containsColumn(cell.x(),cell.z()),"path block "+cell+" left the hexagon");
         assertFalse(cells.containsColumn(box.x(),box.z()),"the box corner is a neighbour's land");
     }
+
+    @org.junit.jupiter.api.Test void longPathsFollowGentleStepsButNotCliffs(){
+        var land=new PlotRect(0,0,300,20);var road=new PlotRect(296,0,4,20);
+        // Two hundred and ninety blocks long, rising one block every ten.
+        var plan=PathPlanner.planOnGround(land::contains,new PathPlanner.Cell(5,10),java.util.List.of(road),3,c->c.x()/10,java.util.List.of());
+        org.junit.jupiter.api.Assertions.assertTrue(plan.centerline().getLast().x()>=289);
+        // A two block cliff across the whole strip cannot be paved.
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,()->PathPlanner.planOnGround(land::contains,new PathPlanner.Cell(5,10),java.util.List.of(road),3,c->c.x()<150?0:2,java.util.List.of()));
+    }
 }

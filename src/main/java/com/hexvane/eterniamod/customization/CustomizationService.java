@@ -68,15 +68,29 @@ public final class CustomizationService implements AutoCloseable {
         for(var placed:instances)if(placed.state().equals("PLACED"))occupied.add(snapshots().load(pointer(placed.nativeData(),"after")).bounds());
         int ground=surface(world,startX,startZ,startY);if(ground==Integer.MIN_VALUE)throw new IllegalStateException("Stand on level natural ground outside your door");
         var obstacles=occupied.stream().map(b->new PlotRect(b.minX(),b.minZ(),b.maxX()-b.minX(),b.maxZ()-b.minZ())).toList();
-        var route=PathPlanner.plan(plot::containsColumn,new PathPlanner.Cell(startX,startZ),plugin.getInfrastructure().structureRoads(world.getName()),width,cell->
-            !plugin.getInfrastructure().protectedColumn(world.getName(),cell.x(),cell.z())&&surface(world,cell.x(),cell.z(),ground+1)==ground,obstacles).blocks();
+        // The path may cross the plot's own hexagons, however far, and the public road hexagons beside them to reach the road.
+        var view=com.hexvane.eterniamod.hexplots.HexLand.view(plugin,world).orElse(null);
+        PathPlanner.Area land=(x,z)->plot.containsColumn(x,z)||view!=null&&view.isStreet(view.lattice().cellAt(x,z));
+        var start=new PathPlanner.Cell(startX,startZ);var near=new PlotRect(startX,startZ,1,1);
+        var roads=plugin.getInfrastructure().structureRoads(world.getName()).stream().filter(road->near.gap(road)<=PATH_SEARCH).toList();
+        Map<PathPlanner.Cell,Integer> heights=new HashMap<>();
+        java.util.function.ToIntFunction<PathPlanner.Cell> height=cell->heights.computeIfAbsent(cell,c->{
+            if(Math.abs(c.x()-startX)>PATH_SEARCH||Math.abs(c.z()-startZ)>PATH_SEARCH||plugin.getInfrastructure().protectedColumn(world.getName(),c.x(),c.z()))return PathPlanner.NO_GROUND;
+            int y=pathGround(world,c.x(),c.z(),ground);return y==Integer.MIN_VALUE?PathPlanner.NO_GROUND:y;});
+        var route=PathPlanner.planOnGround(land,start,roads,width,height,obstacles).blocks();
         int minX=route.stream().mapToInt(PathPlanner.Cell::x).min().orElseThrow(),maxX=route.stream().mapToInt(PathPlanner.Cell::x).max().orElseThrow()+1;
         int minZ=route.stream().mapToInt(PathPlanner.Cell::z).min().orElseThrow(),maxZ=route.stream().mapToInt(PathPlanner.Cell::z).max().orElseThrow()+1;
-        var bounds=new NativeSnapshotStore.Bounds(minX,ground,minZ,maxX,ground+1,maxZ);var files=snapshots();var capture=files.capture(world,bounds,Set.of(),false,false);
-        Set<String> keys=new HashSet<>();for(var cell:route)keys.add((cell.x()-minX)+",0,"+(cell.z()-minZ));
-        BsonDocument beforeDocument=CellEdits.select(capture,keys);var afterDocument=beforeDocument.clone();
+        int minY=route.stream().mapToInt(height::applyAsInt).min().orElseThrow(),maxY=route.stream().mapToInt(height::applyAsInt).max().orElseThrow()+2;
+        var bounds=new NativeSnapshotStore.Bounds(minX,minY,minZ,maxX,maxY,maxZ);var files=snapshots();var capture=files.capture(world,bounds,Set.of(),false,false);
+        // Each path block is paved at its own ground height; a grass tuft or flower on top of it is cleared.
+        Set<String> keys=new HashSet<>();Set<String> above=new HashSet<>();
+        for(var cell:route){int y=height.applyAsInt(cell);keys.add((cell.x()-minX)+","+(y-minY)+","+(cell.z()-minZ));
+            var top=ChunkSectionBlockUtil.blockType(world,cell.x(),y+1,cell.z());if(top!=null&&top!=BlockType.EMPTY&&top.getMaterial()!=com.hypixel.hytale.protocol.BlockMaterial.Empty)above.add((cell.x()-minX)+","+(y+1-minY)+","+(cell.z()-minZ));}
+        Set<String> all=new HashSet<>(keys);all.addAll(above);
+        BsonDocument beforeDocument=CellEdits.select(capture,all);var afterDocument=beforeDocument.clone();
         if(!beforeDocument.getArray("fluids",new BsonArray()).isEmpty())throw new IllegalStateException("Paths cannot replace fluid cells");
-        for(var value:afterDocument.getArray("blocks")){var cell=value.asDocument();if(cell.containsKey("components")||cell.getInt32("filler",new BsonInt32(0)).getValue()!=0)throw new IllegalStateException("A path cannot replace a multiblock or functional block");cell.put("name",new BsonString(style.blockId()));}
+        for(var value:afterDocument.getArray("blocks")){var cell=value.asDocument();if(cell.containsKey("components")||cell.getInt32("filler",new BsonInt32(0)).getValue()!=0)throw new IllegalStateException("A path cannot replace a multiblock or functional block");
+            cell.put("name",new BsonString(above.contains(CellEdits.key(cell))?"Empty":style.blockId()));}
         UUID operation=UUID.randomUUID();var before=files.save(operation+"-before.json",bounds,beforeDocument);var after=files.save(operation+"-after.json",bounds,afterDocument);
         var packed=plugin.getServices().provenance().ownedInstances(HousingAccess.owner(plot)).stream().filter(i->i.state().equals("PACKED")&&i.contentId().equals(content)&&"PATH".equals(i.nativeData().get("kind"))).findFirst().orElse(null);
         Map<String,String> descriptor=Map.of("before",before.file().reference(),"beforeHash",before.file().sha256(),"after",after.file().reference(),"afterHash",after.file().sha256(),"kind","PATH","catalog",style.id(),"width",Integer.toString(width),"yaw","None","placedAt",Long.toString(System.currentTimeMillis()));
@@ -115,7 +129,7 @@ public final class CustomizationService implements AutoCloseable {
         var currentRoads=plugin.getInfrastructure().structureRoads(world.getName());
         for(var cell:preview.after.document().getArray("blocks")){
             var c=cell.asDocument();int x=preview.after.bounds().minX()+c.getInt32("x").getValue(),z=preview.after.bounds().minZ()+c.getInt32("z").getValue();
-            if(!plot.containsColumn(x,z)||plugin.getInfrastructure().protectedColumn(world.getName(),x,z))throw new IllegalStateException("Protected columns changed after preview");
+            if(!plot.containsColumn(x,z)&&!(preview.kind.equals("PATH")&&street(world,x,z))||plugin.getInfrastructure().protectedColumn(world.getName(),x,z))throw new IllegalStateException("Protected columns changed after preview");
             if(preview.kind.equals("PALETTE")&&!clearOfEdges(plot,x,z,currentRoads))throw new IllegalStateException("Road or border setbacks changed after preview");
         }
         CellEdits.requireSame(files.capture(world,preview.before.bounds(),Set.of(),false,false),preview.before.document());
@@ -170,6 +184,38 @@ public final class CustomizationService implements AutoCloseable {
     }
     private static PlotRect rect(HubPlotRecord plot){var p=plot.getFootprint();return new PlotRect(p.getMinX(),p.getMinZ(),p.getMaxX()-p.getMinX()+1,p.getMaxZ()-p.getMinZ()+1);}
     private static void simpleBlock(String id){var block=BlockType.getAssetMap().getAsset(id);if(block==null||!block.isCubeDrawType()||block.getBlockEntity()!=null)throw new IllegalStateException("Customization requires a valid plain cube block: "+id);}
+    /**
+     * Before a plot is packed, the stretch of its path that runs outside the plot (across the road hexagon to the road) is
+     * put back to its saved ground, so moving the plot never leaves a strip of path behind.
+     */
+    public void beforePack(World world,com.hexvane.eterniamod.hub.HubPlotRecord plot){
+        for(var item:plugin.getServices().provenance().instances(plot.getPlotId())){
+            if(!item.state().equals("PLACED")||!"PATH".equals(item.nativeData().get("kind")))continue;
+            try{
+                var files=snapshots();var before=files.load(pointer(item.nativeData(),"before"));var b=before.bounds();
+                Set<String> outside=new HashSet<>();
+                for(var value:before.document().getArray("blocks")){var c=value.asDocument();int x=b.minX()+c.getInt32("x").getValue(),z=b.minZ()+c.getInt32("z").getValue();if(!plot.containsColumn(x,z))outside.add(CellEdits.key(c));}
+                if(outside.isEmpty())continue;
+                var saved=files.save(UUID.randomUUID()+"-path-outside.json",b,CellEdits.select(before.document(),outside));
+                files.apply(world,saved,b.origin());NativePlacementTransactions.flush(world,b);
+            }catch(Exception e){plugin.getLogger().atWarning().withCause(e).log("Could not put back the path outside plot %s",plot.getPlotId());}
+        }
+    }
+    /** Public road hexagon land, where a path may run on to meet the road. */
+    private boolean street(World world,int x,int z){var view=com.hexvane.eterniamod.hexplots.HexLand.view(plugin,world).orElse(null);return view!=null&&view.isStreet(view.lattice().cellAt(x,z));}
+    /** How far, in blocks, a path may wander from where it starts. */
+    static final int PATH_SEARCH=320;
+    /** The ground a path block can sit on near height {@code around}: natural ground with only air or plants above it. */
+    private int pathGround(World world,int x,int z,int around){
+        if(!ChunkSectionBlockUtil.isChunkInMemory(world,x,z))return Integer.MIN_VALUE;
+        for(int y=around+6;y>=around-6;y--){if(y<0||y>316)continue;var block=ChunkSectionBlockUtil.blockType(world,x,y,z);if(block==null||!block.isCubeDrawType()||block.getBlockEntity()!=null)continue;
+            String id=block.getId();if(!(id.startsWith("Soil_")||id.startsWith("Grass_")||id.startsWith("Sand_")||id.equals("Rock_Stone_Cobble")||id.equals("Rock_Stone")))return Integer.MIN_VALUE;
+            if(clear(world,x,y+1,z)&&clear(world,x,y+2,z))return y;return Integer.MIN_VALUE;
+        }return Integer.MIN_VALUE;
+    }
+    /** Air, or a plant a path may clear (grass, flowers, small bushes). */
+    private boolean clear(World world,int x,int y,int z){if(empty(world,x,y,z))return true;var block=ChunkSectionBlockUtil.blockType(world,x,y,z);
+        return block!=null&&block.getBlockEntity()==null&&com.hexvane.eterniamod.hexplots.terraform.TerraformBlocks.isGrowth(block.getId())&&!com.hexvane.eterniamod.hexplots.terraform.TerraformBlocks.isTreeWood(block.getId());}
     private int surface(World world,int x,int z,int baseline){
         if(!ChunkSectionBlockUtil.isChunkInMemory(world,x,z))return Integer.MIN_VALUE;
         for(int y=baseline+1;y>=baseline-3;y--){if(y<0||y>316)continue;var block=ChunkSectionBlockUtil.blockType(world,x,y,z);if(block==null||!block.isCubeDrawType()||block.getBlockEntity()!=null)continue;

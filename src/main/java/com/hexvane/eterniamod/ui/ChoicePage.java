@@ -35,8 +35,10 @@ public final class ChoicePage extends EterniaInteractiveCustomUIPage<ChoicePage.
     @Override public void handleDataEvent(Ref<EntityStore> ref,Store<EntityStore> store,Data data){if(data.action==null||isDismissed())return;store.getExternalData().getWorld().execute(()->{
         if(isDismissed()||!ref.isValid())return;
         try {if(data.action.equals("Back")){if(back!=null)back.accept(ref,store);return;}if(data.action.equals("Close")){close();return;}if(data.action.equals("Next")){if((page+1)*6<choices.size())page++;rebuild();return;}if(data.action.equals("Previous")){page=Math.max(0,page-1);rebuild();return;}
-            if(data.action.startsWith("Choose:")){int i=Integer.parseInt(data.action.substring(7));if(i>=page*6&&i<Math.min(choices.size(),page*6+6))choices.get(i).action.accept(ref,store);}
+            if(data.action.startsWith("Choose:")){int i=Integer.parseInt(data.action.substring(7));if(i>=page*6&&i<Math.min(choices.size(),page*6+6)){try{choices.get(i).action.accept(ref,store);}finally{closeIfStillOpen(ref,store);}}}
         }catch(RuntimeException error){playerRef.sendMessage(Message.raw(error instanceof com.hexvane.eterniamod.domain.DomainException?error.getMessage():"This action could not complete. Please try again after the issue is resolved."));}
     });}
+    /** After a choice runs, the menu closes unless the choice opened another page in its place. */
+    private void closeIfStillOpen(Ref<EntityStore> ref,Store<EntityStore> store){if(isDismissed()||!ref.isValid())return;var component=store.getComponent(ref,Player.getComponentType());if(component!=null&&component.getPageManager().getCustomPage()==this)close();}
     public static final class Data{public String action;public static final BuilderCodec<Data> CODEC=BuilderCodec.builder(Data.class,Data::new).append(new KeyedCodec<>("Action",Codec.STRING),(d,v)->d.action=v,d->d.action).add().build();}
 }
