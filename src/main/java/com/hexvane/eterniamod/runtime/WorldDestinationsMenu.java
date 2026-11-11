@@ -37,6 +37,33 @@ public final class WorldDestinationsMenu {
                 if (component != null) component.getPageManager().setPage(r, s, Page.None);
             }));
         });
+        // Portal towns, in this world and others, except the one the player is standing in; and this world's own square.
+        var here = store.getComponent(ref, com.hypixel.hytale.server.core.modules.entity.component.TransformComponent.getComponentType());
+        double hx = here == null ? 0 : here.getPosition().x, hz = here == null ? 0 : here.getPosition().z;
+        var world = store.getExternalData().getWorld();
+        var plan = plugin.getInfrastructure().world(current).orElse(null);
+        var towns = com.hexvane.eterniamod.town.TownRoadNetwork.portalTowns(plugin);
+        if (plan != null && plan.arrival() != null && !towns.isEmpty() && Math.hypot(plan.arrival().x() - hx, plan.arrival().z() - hz) > 120) {
+            var arrival = plan.arrival();
+            choices.addFirst(new IllustratedMenuPage.Card(WorldDisplayNames.name(current) + " square", "Return to the heart of " + WorldDisplayNames.name(current) + ".", image(plan.role()), "Travel", (r, s) -> {
+                guard.accept(r,s);
+                plugin.getTravel().stepTo(player, world, new org.joml.Vector3d(arrival.x(), arrival.y(), arrival.z()));
+                var c = s.getComponent(r, Player.getComponentType());
+                if (c != null) c.getPageManager().setPage(r, s, Page.None);
+            }));
+        }
+        for (var town : towns) {
+            if (town.world().equals(current) && Math.hypot(town.centerX() - hx, town.centerZ() - hz) < 80) continue;
+            var target = Universe.get().getWorld(town.world());
+            if (target == null) continue;
+            String where = "A portal town in " + WorldDisplayNames.name(town.world()) + ".";
+            choices.add(new IllustratedMenuPage.Card(town.name(), where + " Step through to its portal square.", image("housing"), "Travel", (r, s) -> {
+                guard.accept(r,s);
+                plugin.getTravel().stepTo(player, target, new org.joml.Vector3d(town.x(), town.y(), town.z()));
+                var c = s.getComponent(r, Player.getComponentType());
+                if (c != null) c.getPageManager().setPage(r, s, Page.None);
+            }));
+        }
         var component = store.getComponent(ref, Player.getComponentType());
         if (component != null) IllustratedMenuPage.open(ref,store,player,"Travel","WHERE WILL YOU GO NEXT?","You are in " + WorldDisplayNames.name(current) + ". Choose a destination to step through the Waygate.",choices);
     }

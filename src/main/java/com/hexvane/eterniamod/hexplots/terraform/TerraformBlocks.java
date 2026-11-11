@@ -21,7 +21,7 @@ public final class TerraformBlocks {
     public static boolean isNatural(String id) {
         if (isGround(id)) return true;
         if (id == null || id.isEmpty()) return false;
-        String lower = id.toLowerCase(Locale.ROOT);
+        String lower = base(id);
         if (potted(lower)) return false;
         if (lower.startsWith("plant_")) return true;
         if (lower.startsWith("wood_")) return lower.endsWith("_trunk") || lower.endsWith("_trunk_full") || lower.contains("_roots") || lower.contains("_branch");
@@ -34,7 +34,7 @@ public final class TerraformBlocks {
      */
     public static boolean isGrowth(String id) {
         if (id == null || id.isEmpty()) return false;
-        String lower = id.toLowerCase(Locale.ROOT);
+        String lower = base(id);
         if (potted(lower)) return false;
         if (lower.startsWith("plant_") || lower.contains("leaves")) return true;
         if (lower.startsWith("wood_")) return lower.endsWith("_trunk") || lower.endsWith("_trunk_full") || lower.contains("_roots") || lower.contains("_branch");
@@ -42,20 +42,32 @@ public final class TerraformBlocks {
     }
 
     /** A crop: kept when it grows on tilled soil, cleared as wild growth otherwise. */
-    public static boolean isCrop(String id) { return id != null && id.toLowerCase(Locale.ROOT).startsWith("plant_crop"); }
+    public static boolean isCrop(String id) { return id != null && base(id).startsWith("plant_crop"); }
 
     /** Farmed soil. */
-    public static boolean isTilled(String id) { return id != null && id.toLowerCase(Locale.ROOT).contains("tilled"); }
+    public static boolean isTilled(String id) { return id != null && base(id).contains("tilled"); }
 
     /** Tree wood: trunks, roots and branches. Connected wood outside a plot goes with a tree cleared inside it. */
     public static boolean isTreeWood(String id) {
         if (id == null) return false;
-        String lower = id.toLowerCase(Locale.ROOT);
+        String lower = base(id);
         return lower.startsWith("wood_") && (lower.endsWith("_trunk") || lower.endsWith("_trunk_full") || lower.contains("_roots") || lower.contains("_branch"));
     }
 
     /** Leaves of any tree. */
-    public static boolean isLeaves(String id) { return id != null && id.toLowerCase(Locale.ROOT).contains("leaves") && !potted(id.toLowerCase(Locale.ROOT)); }
+    public static boolean isLeaves(String id) { return id != null && base(id).contains("leaves") && !potted(base(id)); }
+
+    /**
+     * The block's own name in lower case. A block in one of its states (a grown crop, a berry bush with berries) is
+     * named like "*Plant_Crop_Wheat_Block_State_Definitions_Stage4": the leading star and the state part are dropped.
+     */
+    static String base(String id) {
+        if (id == null) return "";
+        String s = id.startsWith("*") ? id.substring(1) : id;
+        int state = s.indexOf("_State_Definitions");
+        if (state > 0) s = s.substring(0, state);
+        return s.toLowerCase(Locale.ROOT);
+    }
 
     private static boolean potted(String lower) {
         if (lower.contains("planter")) return true;
@@ -64,12 +76,12 @@ public final class TerraformBlocks {
     }
 
     /** Grass blades are the one growth that stays on claimed land. */
-    public static boolean isKeptGrass(String id) { return id != null && id.toLowerCase(Locale.ROOT).startsWith("plant_grass"); }
+    public static boolean isKeptGrass(String id) { return id != null && base(id).startsWith("plant_grass"); }
 
     /** A top block worth keeping on shaped ground: grass, dirt, sand or snow (not bare rock). */
     public static boolean isTopsoil(String id) {
         if (!isGround(id)) return false;
-        String lower = id.toLowerCase(Locale.ROOT);
+        String lower = base(id);
         return lower.startsWith("soil_") || lower.startsWith("grass_") || lower.startsWith("sand") || lower.startsWith("snow");
     }
 

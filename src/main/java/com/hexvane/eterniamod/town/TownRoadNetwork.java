@@ -148,6 +148,8 @@ public final class TownRoadNetwork {
     // ---- the record of what was built ----------------------------------------------------------------------------------
     static final class Network {
         String id, world, mode, state, plazaArea, portal, actor;
+        /** A portal town's name, shown in the portal's travel menu. */
+        String name;
         int[] center, anchor;
         long created;
         boolean growing;
@@ -258,6 +260,8 @@ public final class TownRoadNetwork {
         n.built.forEach(c -> built.add(HexCoord.parse(c)));
         Set<String> failed = new HashSet<>(n.failed);
         int added = 0, skipped = 0, target = all ? Integer.MAX_VALUE : n.lead > 0 ? n.lead : LEAD;
+        // Why roads were left out, with how many and one spot to go and look.
+        Map<String, int[]> reasons = new LinkedHashMap<>();
         for (int round = 0; round < 200; round++) {
             Now now = TownBuilder.supply(world, () -> now(plugin, world, m));
             if (frontage(m, now) >= target) break;
@@ -275,7 +279,10 @@ public final class TownRoadNetwork {
             } catch (Exception e) {
                 skipped++;
                 failed.add(key(chain.start(), chain.bridge() && chain.cells().size() == 3 ? chain.cells().get(1) : null, chain.bridge() ? chain.end() : chain.cells().get(1)));
-                plugin.getLogger().atInfo().log("Town road from %s to %s skipped: %s", chain.start(), chain.end(), TownBuilder.cause(e));
+                String why = TownBuilder.cause(e);
+                double[] at = next.nodes().get(Math.min(2, next.nodes().size() - 1));
+                reasons.computeIfAbsent(why, k -> new int[] {0, (int) at[0], (int) at[2]})[0]++;
+                plugin.getLogger().atInfo().log("Town road from %s to %s near %d, %d skipped: %s", chain.start(), chain.end(), (int) at[0], (int) at[2], why);
             }
             n.built = built.stream().map(HexCoord::toString).toList();
             n.failed = List.copyOf(failed);
@@ -283,7 +290,8 @@ public final class TownRoadNetwork {
         }
         if (added > 0 && !all && player == null) plugin.getLogger().atInfo().log("Town roads grew by %d roads in %s as homes were claimed", added, world.getName());
         if (player != null) TownBuilder.tell(player, added == 0 && !all ? "There is still free land beside the roads; more roads come as homes are claimed."
-            : "Town roads done: " + added + " roads built" + (skipped > 0 ? ", " + skipped + " left out where the land or a building was in the way." : "."));
+            : "Town roads done: " + added + " roads built" + (skipped > 0 ? ", " + skipped + " left out." : "."));
+        if (player != null) reasons.forEach((why, c) -> TownBuilder.tell(player, c[0] + (c[0] == 1 ? " road" : " roads") + " left out: " + why + " (for example near " + c[1] + ", " + c[2] + ")"));
         return added;
     }
 
@@ -609,6 +617,7 @@ public final class TownRoadNetwork {
             var center = preview.land().centerCell();
             n.center = new int[] {(int) lattice.centerX(center), (int) lattice.centerZ(center)};
             n.anchor = preview.anchor();
+            if (preview.mode() == Mode.PORTAL) n.name = defaultName(plugin, world.getName());
             try {
                 SetupAccess.require(preview.actor());
                 update(plugin, world.getName(), n);
@@ -684,7 +693,7 @@ public final class TownRoadNetwork {
         List<SplineGeometry.Node> curve = SplineGeometry.sample(nodes);
         TownBuilder.on(world, () -> {
             var view = HexLand.view(plugin, world).orElse(null);
-            level(plugin, world, view, lattice, mine, curve, BED, EASE);
+            level(plugin, world, view, lattice, mine, curve, BED, EASE, true);
             fell(plugin, world, view, lattice, mine);
         }).join();
     }
@@ -704,7 +713,7 @@ public final class TownRoadNetwork {
             var area = new PlotRect((int) minX - 8, (int) minZ - 8, (int) (maxX - minX) + 17, (int) (maxZ - minZ) + 17);
             Set<HexCoord> around = lattice.cellsTouching(area);
             TownBuilder.loadArea(world, area.x() - 8, area.z() - 8, area.endX() + 8, area.endZ() + 8);
-            TownBuilder.on(world, () -> level(plugin, world, HexLand.view(plugin, world).orElse(null), lattice, around, curve, width / 2.0 + 0.5, width / 2.0 + 3)).join();
+            TownBuilder.on(world, () -> level(plugin, world, HexLand.view(plugin, world).orElse(null), lattice, around, curve, width / 2.0 + 0.5, width / 2.0 + 3, false)).join();
         }
         return retrying(() -> buildRoad(world, actor, nodes, width));
     }
@@ -761,7 +770,7 @@ public final class TownRoadNetwork {
     }
 
     /** Levels a smooth bed along the road's curve and eases the land either side back to its own height. World thread. */
-    private static void level(EterniaModPlugin plugin, World world, HexLandView view, HexLattice lattice, Set<HexCoord> mine, List<SplineGeometry.Node> curve, double bedWidth, double easeWidth) {
+    private static void level(EterniaModPlugin plugin, World world, HexLandView view, HexLattice lattice, Set<HexCoord> mine, List<SplineGeometry.Node> curve, double bedWidth, double easeWidth, boolean wholeHexagons) {
         // The ground under the road's middle, about one sample per block.
         List<double[]> line = new ArrayList<>(); // x, z, ground
         double walked = 0;
@@ -797,22 +806,35 @@ public final class TownRoadNetwork {
         sel.setPosition(0, 0, 0);
         sel.setAnchor(0, 0, 0);
         int reach = (int) Math.ceil(easeWidth) + 1;
-        for (int x = (int) Math.floor(minX) - reach; x <= (int) Math.ceil(maxX) + reach; x++) for (int z = (int) Math.floor(minZ) - reach; z <= (int) Math.ceil(maxZ) + reach; z++) {
+        int x0 = (int) Math.floor(minX) - reach, x1 = (int) Math.ceil(maxX) + reach, z0 = (int) Math.floor(minZ) - reach, z1 = (int) Math.ceil(maxZ) + reach;
+        // Whole hexagons: the road's height spreads across each of its hexagons and blends back to the land over the last
+        // few blocks before a neighbouring hexagon, so a road hexagon is one smooth slope instead of a strip in a hillside.
+        int[] edge = null;
+        if (wholeHexagons) {
+            var cells = lattice.bounds(mine);
+            x0 = Math.min(x0, cells.x()); z0 = Math.min(z0, cells.z()); x1 = Math.max(x1, cells.endX()); z1 = Math.max(z1, cells.endZ());
+            edge = edgeDistance(lattice, mine, x0, z0, x1, z1);
+        }
+        int width = x1 - x0 + 1;
+        for (int x = x0; x <= x1; x++) for (int z = z0; z <= z1; z++) {
             boolean inside = mine.contains(lattice.cellAt(x, z));
             double best = Double.MAX_VALUE; int at = 0;
             for (int i = 0; i < line.size(); i++) { double d = Math.hypot(x + .5 - line.get(i)[0], z + .5 - line.get(i)[1]); if (d < best) { best = d; at = i; } }
-            if (best > (inside ? easeWidth : bedWidth + 0.5) || !free(plugin, world, view, x, z)) continue;
+            boolean spread = wholeHexagons && inside;
+            if (!spread && best > (inside ? easeWidth : bedWidth + 0.5) || !free(plugin, world, view, x, z)) continue;
             int n = surface(world, x, z);
             if (n == TownTerrainPlanner.UNKNOWN || hasFluid(world, x, n + 1, z)) continue;
             double road = smooth[at];
-            int t = (int) Math.round(best <= bedWidth ? road : road + (n - road) * ((best - bedWidth) / (easeWidth - bedWidth)));
             boolean bed = best <= bedWidth;
+            double toLand = bed ? 0 : spread ? Math.max(0, 1 - edge[(x - x0) * (z1 - z0 + 1) + (z - z0)] / HEX_BLEND) : (best - bedWidth) / (easeWidth - bedWidth);
+            int t = (int) Math.round(road + (n - road) * Math.min(1, toLand));
             // Above the new top: everything goes in the bed; outside it, only what the cut removes and plants or trees.
             for (int y = t + 1; y <= Math.max(n, t) + (bed ? 12 : 30) && y < NativeSnapshotStore.MAX_Y; y++) {
                 int id = ChunkSectionBlockUtil.blockId(world, x, y, z);
                 if (id == BlockType.EMPTY_ID) continue;
                 var type = BlockType.getAssetMap().getAsset(id);
-                if (bed || y <= n || type != null && TerraformBlocks.isGrowth(type.getId())) sel.addEmptyAtWorldPos(x, y, z);
+                boolean blade = type != null && y == t + 1 && TerraformBlocks.isKeptGrass(type.getId()) && !bed;
+                if (!blade && (bed || y <= n || type != null && TerraformBlocks.isGrowth(type.getId()))) sel.addEmptyAtWorldPos(x, y, z);
             }
             for (int y = n + 1; y < t; y++) sel.addBlockAtWorldPos(x, y, z, dirt, 0, FillerBlockUtil.NO_FILLER, 0);
             var top = ChunkSectionBlockUtil.blockType(world, x, t, z);
@@ -820,6 +842,32 @@ public final class TownRoadNetwork {
             if (t > n || !plain) sel.addBlockAtWorldPos(x, t, z, grass, 0, FillerBlockUtil.NO_FILLER, 0);
         }
         sel.placeNoReturn(world, new Vector3i(0, 0, 0), world.getEntityStore().getStore());
+    }
+
+    /** Blocks over which a road hexagon blends back into the land beside it. */
+    static final double HEX_BLEND = 7;
+
+    /** Each column's distance, in blocks, to the nearest column outside the road's hexagons (row by row in x). */
+    private static int[] edgeDistance(HexLattice lattice, Set<HexCoord> mine, int x0, int z0, int x1, int z1) {
+        int w = x1 - x0 + 1, d = z1 - z0 + 1;
+        int[] dist = new int[w * d];
+        var queue = new ArrayDeque<Integer>();
+        for (int i = 0; i < w; i++) for (int k = 0; k < d; k++) {
+            int idx = i * d + k;
+            if (mine.contains(lattice.cellAt(x0 + i, z0 + k))) dist[idx] = Integer.MAX_VALUE;
+            else { dist[idx] = 0; queue.add(idx); }
+        }
+        while (!queue.isEmpty()) {
+            int idx = queue.poll(), i = idx / d, k = idx % d;
+            int[][] steps = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+            for (int[] st : steps) {
+                int ni = i + st[0], nk = k + st[1];
+                if (ni < 0 || nk < 0 || ni >= w || nk >= d) continue;
+                int nidx = ni * d + nk;
+                if (dist[nidx] > dist[idx] + 1) { dist[nidx] = dist[idx] + 1; queue.add(nidx); }
+            }
+        }
+        return dist;
     }
 
     /** Fells every tree standing in the road's hexagons: its wood wherever it reaches, and the leaves round it. World thread. */
@@ -1141,6 +1189,47 @@ public final class TownRoadNetwork {
             if (target < n && target > 0) sel.addBlockAtWorldPos(x, target, z, grass, 0, FillerBlockUtil.NO_FILLER, 0);
         }
         sel.placeNoReturn(world, new Vector3i(0, 0, 0), world.getEntityStore().getStore());
+    }
+
+    // ---- names and travel ----------------------------------------------------------------------------------------------
+    /** A portal town players can travel to: its name and where they arrive on its platform. */
+    public record PortalTown(String world, String name, double x, double y, double z, int centerX, int centerZ) {}
+
+    /** Every portal town standing, in every world, by name. */
+    public static List<PortalTown> portalTowns(EterniaModPlugin plugin) {
+        List<PortalTown> out = new ArrayList<>();
+        for (String world : plugin.getInfrastructure().worlds().keySet()) {
+            try {
+                for (var n : ledger(plugin, world).networks) {
+                    if (!"PORTAL".equals(n.mode) || "undone".equals(n.state) || n.anchor == null || n.plazaArea == null) continue;
+                    // Arrive on the platform a little south of the portal, clear of the middle podium.
+                    out.add(new PortalTown(world, n.name == null || n.name.isBlank() ? "Portal town" : n.name, n.anchor[0] + .5, n.anchor[1], n.anchor[2] + 22.5, n.anchor[0], n.anchor[2]));
+                }
+            } catch (IOException ignored) { /* An unreadable record lists nothing. */ }
+        }
+        out.sort(Comparator.comparing(PortalTown::name));
+        return out;
+    }
+
+    private static String defaultName(EterniaModPlugin plugin, String world) {
+        int count = 1;
+        try { count += (int) ledger(plugin, world).networks.stream().filter(n -> "PORTAL".equals(n.mode) && !"undone".equals(n.state)).count(); } catch (IOException ignored) {}
+        return "Portal town " + count;
+    }
+
+    /** Renames the portal town nearest to (x, z). Returns the old name. */
+    public static String rename(EterniaModPlugin plugin, String world, UUID actor, int x, int z, String name) throws IOException {
+        SetupAccess.require(actor);
+        String clean = name == null ? "" : name.strip().replaceAll("\\s+", " ");
+        if (clean.isEmpty() || clean.length() > 32 || !clean.matches("[\\p{L}\\p{N} '&.-]+")) throw new IllegalArgumentException("Give the town a name of up to 32 letters, numbers and spaces");
+        var ledger = ledger(plugin, world);
+        var n = ledger.networks.stream().filter(o -> "PORTAL".equals(o.mode) && !"undone".equals(o.state) && o.anchor != null)
+            .min(Comparator.comparingDouble(o -> Math.hypot(o.anchor[0] - x, o.anchor[2] - z)))
+            .orElseThrow(() -> new IllegalStateException("There is no portal town in this world"));
+        String old = n.name == null ? "Portal town" : n.name;
+        n.name = clean;
+        save(plugin, world, ledger);
+        return old;
     }
 
     // ---- undo ----------------------------------------------------------------------------------------------------------

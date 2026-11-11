@@ -21,7 +21,7 @@ import java.util.List;
 
 /** /e admin town place and undo: build the Eternia town on the land where you stand, or take it away (docs/implementation/town-placement.md). */
 final class TownCommand extends AbstractCommandCollection {
-    TownCommand(){super("town","Build the Eternia town on this land, or remove it");setPermissionGroups("hytale:WorldEditor");addSubCommand(new Place());addSubCommand(new Undo());addSubCommand(new Roads());addSubCommand(new Portal());}
+    TownCommand(){super("town","Build the Eternia town on this land, or remove it");setPermissionGroups("hytale:WorldEditor");addSubCommand(new Place());addSubCommand(new Undo());addSubCommand(new Roads());addSubCommand(new Portal());addSubCommand(new Rename());}
 
     private static final class Place extends AbstractPlayerCommand {
         Place(){super("place","Survey the land where you stand and build the town here after you confirm");setPermissionGroups("hytale:WorldEditor");}
@@ -66,6 +66,18 @@ final class TownCommand extends AbstractCommandCollection {
         Portal(){super("portal","Place a portal town where you stand: the spawn platform, a portal and roads round it");setPermissionGroups("hytale:WorldEditor");}
         @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){
             plan(context,store,ref,player,world,TownRoadNetwork.Mode.PORTAL,radius.provided(context)?radius.get(context):TownRoadNetwork.DEFAULT_RADIUS,lead.provided(context)?lead.get(context):0);
+        }
+    }
+    /** /e admin town rename: names the portal town nearest to you, as its portal's travel menu shows it. */
+    private static final class Rename extends AbstractPlayerCommand {
+        private final com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg<String> name=withRequiredArg("name","The town's new name",ArgTypes.GREEDY_STRING);
+        Rename(){super("rename","Rename the portal town nearest to you");setPermissionGroups("hytale:WorldEditor");}
+        @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){
+            var transform=store.getComponent(ref,TransformComponent.getComponentType());if(transform==null){player.sendMessage(Message.raw("Your position is unavailable."));return;}
+            var p=transform.getPosition();
+            try{String old=TownRoadNetwork.rename(EterniaModPlugin.get(),world.getName(),player.getUuid(),(int)Math.floor(p.x),(int)Math.floor(p.z),name.get(context));
+                player.sendMessage(Message.raw(old+" is now called "+name.get(context).strip()+"."));}
+            catch(Exception e){player.sendMessage(Message.raw(message(e)));}
         }
     }
     private static void plan(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world,TownRoadNetwork.Mode mode,int radius,int lead){

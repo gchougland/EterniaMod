@@ -41,6 +41,14 @@ class TerraformBlocksTest {
     }
 
     @Test
+    void grownCropsAndBerriesInTheirStatesAreGrowth() {
+        for (String id : new String[] {"*Plant_Crop_Wheat_Block_State_Definitions_Stage4", "*Plant_Crop_Berry_Block_State_Definitions_StageFinal", "*Plant_Leaves_Oak_State_Definitions_Snow"})
+            assertTrue(TerraformBlocks.isGrowth(id), id);
+        assertTrue(TerraformBlocks.isCrop("*Plant_Crop_Wheat_Block_State_Definitions_Stage2"));
+        assertFalse(TerraformBlocks.isGrowth("*Wood_Darkwood_Roof_Steep_State_Definitions_Corner_Right"));
+    }
+
+    @Test
     void groundAndTopsoil() {
         assertTrue(TerraformBlocks.isGround("Rock_Stone"));
         assertFalse(TerraformBlocks.isGround("Plant_Grass_Lush"));
