@@ -36,6 +36,8 @@ public final class PathPlanner {
         if(best==null||bestGap>reach)throw new IllegalArgumentException("No clear route reaches the road. Try a narrower path or a different starting point.");
         List<Cell> path=new ArrayList<>();for(Cell cell=best;cell!=null;cell=previous.get(cell))path.add(cell);Collections.reverse(path);return List.copyOf(path);
     }
+    /** Around the start, a path may run right up to a house or decoration: only open natural ground is needed there, so it can meet the door. */
+    static final double DOORSTEP=5;
     public record Plan(List<Cell> centerline,List<Cell> blocks,int width){}
     /** Width and obstacle clearance are checked for every paved cell, including rounded corners. */
     public static Plan plan(PlotRect plot,Cell start,List<PlotRect> roads,int width,Predicate<Cell> ground,List<PlotRect> obstacles){
@@ -57,9 +59,9 @@ public final class PathPlanner {
         if(width<1||width>3)throw new IllegalArgumentException("Choose a path width from one to three blocks.");
         Map<Cell,Boolean> checked=new HashMap<>();
         Predicate<Cell> valid=cell->checked.computeIfAbsent(cell,c->plot.contains(c.x,c.z)&&roads.stream().noneMatch(r->r.contains(c.x,c.z))
-            &&obstacles.stream().noneMatch(o->c.x>=o.x()-1&&c.x<o.x()+o.width()+1&&c.z>=o.z()-1&&c.z<o.z()+o.depth()+1)&&ground.test(c));
+            &&(Math.hypot(c.x-start.x,c.z-start.z)<DOORSTEP||obstacles.stream().noneMatch(o->c.x>=o.x()-1&&c.x<o.x()+o.width()+1&&c.z>=o.z()-1&&c.z<o.z()+o.depth()+1))&&ground.test(c));
         Predicate<Cell> center=cell->stamp(cell,width).stream().allMatch(t->valid.test(t)&&step.test(cell,t));
-        if(!center.test(start))throw new IllegalArgumentException("Stand on clear ground with room for this width and one empty block beside your house or decorations.");
+        if(!center.test(start))throw new IllegalArgumentException("Stand on open ground outside your door, with room for the path's width.");
         // Reserve another cell around obstacles when space allows, so a bend has room to round off.
         // Near the starting point retain the requested clearance, allowing a path to leave a doorway.
         Predicate<Cell> roomy=c->center.test(c)&&(Math.hypot(c.x-start.x,c.z-start.z)<4||stamp(c,width).stream().noneMatch(tile->obstacles.stream().anyMatch(o->tile.x>=o.x()-2&&tile.x<o.x()+o.width()+2&&tile.z>=o.z()-2&&tile.z<o.z()+o.depth()+2)));

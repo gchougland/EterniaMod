@@ -47,7 +47,11 @@ class PathPlannerTest {
         var plot=new PlotRect(0,0,24,24);var road=List.of(new PlotRect(24,0,3,24));
         assertThrows(IllegalArgumentException.class,()->PathPlanner.plan(plot,new PathPlanner.Cell(2,5),road,3,c->c.z()==5,List.of()));
         assertThrows(IllegalArgumentException.class,()->PathPlanner.plan(plot,new PathPlanner.Cell(2,5),road,4,c->true,List.of()));
-        assertThrows(IllegalArgumentException.class,()->PathPlanner.plan(plot,new PathPlanner.Cell(5,5),road,1,c->true,List.of(new PlotRect(6,5,4,4))));
+        // A path may start right against a house's door, but never runs through the house itself.
+        var house=new PlotRect(6,5,4,4);
+        var atDoor=PathPlanner.plan(plot,new PathPlanner.Cell(5,5),road,1,c->!house.contains(c.x(),c.z()),List.of(house));
+        assertEquals(new PathPlanner.Cell(5,5),atDoor.centerline().getFirst());
+        assertTrue(atDoor.blocks().stream().noneMatch(c->house.contains(c.x(),c.z())));
     }
     @Test void roomyDetourSoftensItsCorners() {
         var plan=PathPlanner.plan(new PlotRect(0,0,32,32),new PathPlanner.Cell(5,5),List.of(new PlotRect(32,0,3,32)),1,c->true,List.of(new PlotRect(12,0,6,18)));

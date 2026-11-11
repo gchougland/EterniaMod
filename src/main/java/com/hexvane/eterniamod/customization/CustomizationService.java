@@ -129,10 +129,11 @@ public final class CustomizationService implements AutoCloseable {
         var currentRoads=plugin.getInfrastructure().structureRoads(world.getName());
         for(var cell:preview.after.document().getArray("blocks")){
             var c=cell.asDocument();int x=preview.after.bounds().minX()+c.getInt32("x").getValue(),z=preview.after.bounds().minZ()+c.getInt32("z").getValue();
+            if(preview.kind.equals("REMOVE_PATH"))continue;
             if(!plot.containsColumn(x,z)&&!(preview.kind.equals("PATH")&&street(world,x,z))||plugin.getInfrastructure().protectedColumn(world.getName(),x,z))throw new IllegalStateException("Protected columns changed after preview");
             if(preview.kind.equals("PALETTE")&&!clearOfEdges(plot,x,z,currentRoads))throw new IllegalStateException("Road or border setbacks changed after preview");
         }
-        CellEdits.requireSame(files.capture(world,preview.before.bounds(),Set.of(),false,false),preview.before.document());
+        if(!preview.kind.equals("REMOVE_PATH"))CellEdits.requireSame(files.capture(world,preview.before.bounds(),Set.of(),false,false),preview.before.document());
         var journal=services.journal();var op=journal.prepare(preview.operation,"CUSTOMIZE_"+preview.kind,HousingAccess.owner(plot),preview.property.toString());
         UUID instance=preview.instance==null?UUID.randomUUID():preview.instance.id();var manifest=new BsonDocument("before",new BsonString(preview.before.file().reference())).append("beforeHash",new BsonString(preview.before.file().sha256())).append("after",new BsonString(preview.after.file().reference())).append("afterHash",new BsonString(preview.after.file().sha256())).append("instance",new BsonString(instance.toString())).append("kind",new BsonString(preview.kind));
         manifest.put("world",new BsonString(world.getName()));
