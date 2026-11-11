@@ -79,7 +79,8 @@ public final class CustomizationService implements AutoCloseable {
         // Standing on a doorstep or a block of the house: start from the open ground beside it instead.
         for(int d=1;ground==Integer.MIN_VALUE&&d<=3;d++)for(int dx=-d;dx<=d&&ground==Integer.MIN_VALUE;dx++)for(int dz=-d;dz<=d&&ground==Integer.MIN_VALUE;dz++)ground=surface(world,startX+dx,startZ+dz,startY);
         if(ground==Integer.MIN_VALUE)throw new IllegalStateException("Stand on open ground just outside your door");
-        var obstacles=occupied.stream().map(b->new PlotRect(b.minX(),b.minZ(),b.maxX()-b.minX(),b.maxZ()-b.minZ())).toList();
+        // Only the blocks a house or decoration really placed are in the way (see taken), not the whole box around it.
+        List<PlotRect> obstacles=List.of();
         // The path may cross the plot's own hexagons, however far, and the public road hexagons beside them to reach the road.
         var view=com.hexvane.eterniamod.hexplots.HexLand.view(plugin,world).orElse(null);
         PathPlanner.Area land=(x,z)->plot.containsColumn(x,z)||view!=null&&view.isStreet(view.lattice().cellAt(x,z));
@@ -97,7 +98,7 @@ public final class CustomizationService implements AutoCloseable {
         // Each path block is paved at its own ground height; a grass tuft or flower on top of it is cleared.
         Set<String> keys=new HashSet<>();Set<String> above=new HashSet<>();
         for(var cell:route){int y=height.applyAsInt(cell);keys.add((cell.x()-minX)+","+(y-minY)+","+(cell.z()-minZ));
-            var top=ChunkSectionBlockUtil.blockType(world,cell.x(),y+1,cell.z());if(top!=null&&top!=BlockType.EMPTY&&top.getMaterial()!=com.hypixel.hytale.protocol.BlockMaterial.Empty)above.add((cell.x()-minX)+","+(y+1-minY)+","+(cell.z()-minZ));}
+            var top=ChunkSectionBlockUtil.blockType(world,cell.x(),y+1,cell.z());if(top!=null&&top!=BlockType.EMPTY&&!top.getId().equals("Empty")&&!taken.contains(packCell(cell.x(),y+1,cell.z())))above.add((cell.x()-minX)+","+(y+1-minY)+","+(cell.z()-minZ));}
         Set<String> all=new HashSet<>(keys);all.addAll(above);
         BsonDocument beforeDocument=CellEdits.select(capture,all);var afterDocument=beforeDocument.clone();
         if(!beforeDocument.getArray("fluids",new BsonArray()).isEmpty())throw new IllegalStateException("Paths cannot replace fluid cells");
@@ -133,10 +134,6 @@ public final class CustomizationService implements AutoCloseable {
         if(preview.kind.equals("PATH")) {
             var placed=services.provenance().instances(preview.property).stream().filter(i->i.state().equals("PLACED")).toList();
             if(placed.stream().anyMatch(i->"PATH".equals(i.nativeData().get("kind"))))throw new IllegalStateException("A path was placed after this preview");
-            for(var existing:placed) {
-                var bounds=files.load(pointer(existing.nativeData(),"after")).bounds();
-                for(var value:preview.after.document().getArray("blocks")){var cell=value.asDocument();int x=preview.after.bounds().minX()+cell.getInt32("x").getValue(),z=preview.after.bounds().minZ()+cell.getInt32("z").getValue();if(x>=bounds.minX()-1&&x<bounds.maxX()+1&&z>=bounds.minZ()-1&&z<bounds.maxZ()+1)throw new IllegalStateException("A house or decoration is too close to this path. Create a new preview.");}
-            }
         }
         var currentRoads=plugin.getInfrastructure().structureRoads(world.getName());
         for(var cell:preview.after.document().getArray("blocks")){

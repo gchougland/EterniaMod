@@ -23,7 +23,7 @@ public final class TerraformBlocks {
         if (id == null || id.isEmpty()) return false;
         String lower = base(id);
         if (potted(lower)) return false;
-        if (lower.startsWith("plant_")) return true;
+        if (lower.startsWith("plant_") || isSticks(lower) || isNest(lower)) return true;
         if (lower.startsWith("wood_")) return lower.endsWith("_trunk") || lower.endsWith("_trunk_full") || lower.contains("_roots") || lower.contains("_branch");
         return lower.startsWith("rubble_");
     }
@@ -36,7 +36,7 @@ public final class TerraformBlocks {
         if (id == null || id.isEmpty()) return false;
         String lower = base(id);
         if (potted(lower)) return false;
-        if (lower.startsWith("plant_") || lower.contains("leaves")) return true;
+        if (lower.startsWith("plant_") || lower.contains("leaves") || isSticks(lower) || isNest(lower)) return true;
         if (lower.startsWith("wood_")) return lower.endsWith("_trunk") || lower.endsWith("_trunk_full") || lower.contains("_roots") || lower.contains("_branch");
         return lower.startsWith("rubble_");
     }
@@ -52,6 +52,22 @@ public final class TerraformBlocks {
         if (id == null) return false;
         String lower = base(id);
         return lower.startsWith("wood_") && (lower.endsWith("_trunk") || lower.endsWith("_trunk_full") || lower.contains("_roots") || lower.contains("_branch"));
+    }
+
+    /** A pile of fallen sticks, scattered on the ground by world generation. */
+    static boolean isSticks(String lower) { return lower.startsWith("wood_sticks"); }
+
+    /** A bird's nest, sitting in a tree or on the ground. */
+    static boolean isNest(String lower) { return lower.startsWith("deco_nest"); }
+
+    /** A nest in a tree: it goes when the tree does. */
+    public static boolean isBirdNest(String id) { return id != null && isNest(base(id)); }
+
+    /** Loose ground cover that needs a block under it: plants, sticks and rubble, not leaves or tree wood. */
+    public static boolean isGroundCover(String id) {
+        if (id == null || id.isEmpty()) return false;
+        String lower = base(id);
+        return !potted(lower) && !lower.contains("leaves") && (lower.startsWith("plant_") || lower.startsWith("rubble_") || isSticks(lower) || isNest(lower));
     }
 
     /** Leaves of any tree. */

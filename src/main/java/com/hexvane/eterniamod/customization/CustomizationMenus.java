@@ -54,7 +54,7 @@ public final class CustomizationMenus {
         for(int value=1;value<=3;value++){final int width=value;choices.add(new ChoicePage.Choice(width==1?"A narrow garden path":width==2?"Room for a comfortable walkway":"A broad entrance path",width+" block"+(width==1?"":"s")+" wide",(r,s)->preview(player,r,s,()->{
             var t=s.getComponent(r,TransformComponent.getComponentType()).getPosition();return service.path(s.getExternalData().getWorld(),plot,player.getUuid(),style,(int)Math.floor(t.x),(int)Math.floor(t.y),(int)Math.floor(t.z),width);
         })));}
-        ChoicePage.open(ref,store,player,"Path width","Stand where your path should begin. Leave space for its full width and one empty block beside houses and decorations. Bends are softened where there is room.",choices);
+        ChoicePage.open(ref,store,player,"Path width","Stand at your door where the path should begin. It finds its own way to the road and goes around your house and decorations.",choices);
     }
     private interface PreviewFactory {CustomizationService.Preview get()throws Exception;}
     private static void preview(PlayerRef player,Ref<EntityStore> ref,Store<EntityStore> store,PreviewFactory factory){try{var preview=factory.get();store.getComponent(ref,Player.getComponentType()).getPageManager().openCustomPage(ref,store,new CustomizationPreviewPage(player,preview).withReturnFrom(store.getComponent(ref,Player.getComponentType()).getPageManager().getCustomPage()));}catch(Exception error){player.sendMessage(Message.raw(error.getMessage()==null?"Could not prepare customization preview":error.getMessage()));}}
