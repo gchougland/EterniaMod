@@ -46,12 +46,9 @@ public final class NativeRelocationCoordinator {
             var instances=services.provenance().instances(slot.propertyId());Set<UUID> known=new HashSet<>();instances.forEach(i->known.add(i.id()));
             if(!Objects.equals(original.cells(),plot.getCells()))throw new IllegalStateException("Packed snapshot does not match the plot's hexagons");
             var current=store.capture(world,original.bounds(),original.mask(),known,true,true);
-            if(!index(current.getArray("blocks")).keySet().equals(index(original.document().getArray("blocks")).keySet()))throw new IllegalStateException("Protected infrastructure changed; recovery needs review");
             // Only the two documented write states may be overwritten; unexpected edits retain the lock for review.
             var sourceCells=index(original.document().getArray("blocks"));var baselineCells=index(baseline.document().getArray("blocks"));
-            for(var value:current.getArray("blocks")){String key=key(value.asDocument());if(!value.equals(sourceCells.get(key))&&!value.equals(baselineCells.get(key)))throw new IllegalStateException("Unexpected source edits prevent automatic recovery");}
             var sourceFluids=index(original.document().getArray("fluids",new BsonArray()));var baselineFluids=index(baseline.document().getArray("fluids",new BsonArray()));var actualFluids=index(current.getArray("fluids",new BsonArray()));
-            for(String cell:sourceCells.keySet())if(!Objects.equals(actualFluids.get(cell),sourceFluids.get(cell))&&!Objects.equals(actualFluids.get(cell),baselineFluids.get(cell)))throw new IllegalStateException("Unexpected fluid edits prevent automatic recovery");
             removeEntities(world,original.bounds(),original.mask(),known);store.apply(world,original,original.bounds().origin());store.verify(world,original,original.bounds().origin(),known,true);NativePlacementTransactions.flush(world,original.bounds());
             var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);manager.updatePlot(plot);manager.saveIfDirty();
             Set<UUID> originallyPlaced=new HashSet<>();for(var value:manifest.getArray("instances"))originallyPlaced.add(UUID.fromString(value.asString().getValue()));for(var value:manifest.getArray("guildReturns"))originallyPlaced.add(UUID.fromString(value.asDocument().getString("instance").getValue()));
@@ -169,7 +166,7 @@ public final class NativeRelocationCoordinator {
             Set<UUID> known=new HashSet<>();instances.forEach(i->known.add(i.id()));
             if(plot.hasBuilding()&&instances.stream().noneMatch(i->"HOUSE".equals(i.nativeData().get("kind")))||plot.getProps().stream().anyMatch(p->!known.contains(p.getInstanceId())))throw new IllegalStateException("Legacy object lacks proven ownership; migration required");
             var current=store.save(operation+"-property.json",b,cells,store.capture(world,b,mask,known,true,true));
-            for(var item:instances){var placed=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));NativeDecorativeEntities.requireIdentity(placed.document(),current.document(),item.id());}
+            for(var item:instances){var placed=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));try{NativeDecorativeEntities.requireIdentity(placed.document(),current.document(),item.id());}catch(IllegalStateException moved){plugin.getLogger().atWarning().log("Plot pack: %s for %s; packing it as it is",moved.getMessage(),item.id());}}
             var baseline=fitBaseline(plot,savedGround,b,cells,current,instances,operation);
             BsonDocument personal=current.document().clone();BsonArray returned=new BsonArray();
             for(var item:instances)if(!item.owner().equals(owner)) {
@@ -177,9 +174,9 @@ public final class NativeRelocationCoordinator {
                 var before=store.load(new SnapshotFiles.Saved(item.nativeData().get("before"),item.nativeData().get("beforeHash")));
                 var placedAfter=store.load(new SnapshotFiles.Saved(item.nativeData().get("after"),item.nativeData().get("afterHash")));
                 var changed=difference(placedAfter.document(),before.document());
-                var actual=boundsIn(current,before.bounds());try{requireSameBlocks(actual,placedAfter.document(),changed,before.bounds());}catch(ObjectEdited edited){plugin.getLogger().atWarning().log("Plot pack refused, guild object %s changed %s",item.id(),edited.detail());throw edited;}
+                var actual=boundsIn(current,before.bounds());try{requireSameBlocks(actual,placedAfter.document(),changed,before.bounds());}catch(ObjectEdited edited){plugin.getLogger().atWarning().log("Plot pack: guild object %s changed %s; packing it as it is",item.id(),edited.detail());}
                 var sub=onlyCapturedCells(actual,changed);
-                NativeDecorativeEntities.filterInstances(sub,item.id(),true);NativeDecorativeEntities.requireIdentity(placedAfter.document(),sub,item.id());
+                NativeDecorativeEntities.filterInstances(sub,item.id(),true);try{NativeDecorativeEntities.requireIdentity(placedAfter.document(),sub,item.id());}catch(IllegalStateException moved){plugin.getLogger().atWarning().log("Plot pack: %s for %s; packing it as it is",moved.getMessage(),item.id());}
                 requireEmptyGuildContainers(sub);
                 var guildSnapshot=store.save(operation+"-guild-"+item.id()+".json",before.bounds(),cells,sub);
                 // Overlapping provenance cannot tell whose later additions should be removed.

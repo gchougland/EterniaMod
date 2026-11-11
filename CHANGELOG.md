@@ -11,6 +11,7 @@
 ### Fixed
 
 - Packing up a building or plot no longer refuses because a door was opened, a light was lit or a crop grew. If a block really was swapped out, the message now says where.
+- Picking up a house or decoration, packing or moving a plot, removing a path and finishing work that was cut short no longer stop because blocks there were placed or broken since. They carry on and put the saved land back.
 - Packing up your house now packs the decorations and additions inside it for you first, instead of asking you to do it.
 - Plot borders glow all the way around, including over paths, planks and paving, along small steps in the ground and beside fences.
 - Moving your plot no longer fails because the land changed shape, a road was built next to it, or an animal or dropped item was standing on it.

@@ -61,9 +61,9 @@ public final class NativeHouseRecoverySmoke {
         if(!FailedHouseRecovery.recover(plugin,world,plot,actor)||FailedHouseRecovery.recover(plugin,world,plot,actor))throw new AssertionError("Legacy recovery must finish exactly once");
         if(!plot.hasBuilding()||plot.getBuilding().resolveRotationYaw()!=yaw||plot.getBuilding().getAnchorY()!=122
             ||!com.hexvane.eterniamod.housing.HousingAccess.can(plugin,plot,actor,"housing.door.use"))throw new AssertionError("Recovered house did not restore pose and owner door access");
-        snapshots.verify(world,after,after.bounds().origin(),Set.of(instance),true);
+        snapshots.verifyExact(world,after,after.bounds().origin(),Set.of(instance),true);
         pack(plugin,world,plot,actor);
-        snapshots.verify(world,before,before.bounds().origin(),Set.of(),true);
+        snapshots.verifyExact(world,before,before.bounds().origin(),Set.of(),true);
 
         // Crash after provenance was already saved, before house metadata was written.
         var restored=NativePlacementTransactions.place(plugin,world,plot,actor,"hearthstone_manor",origin,yaw,buffer,true);

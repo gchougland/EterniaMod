@@ -146,7 +146,7 @@ final class NativeGuildSmoke {
             restoredHouse.nativeData().get("afterHash")));
         check(houseAfter.document().equals(house.after().document()),
             "Moving between equal flat terrain must preserve the house's original blocks and components exactly");
-        snapshots.verify(world, houseAfter, houseAfter.bounds().origin(), Set.of(house.instanceId()), true);
+        snapshots.verifyExact(world, houseAfter, houseAfter.bounds().origin(), Set.of(house.instanceId()), true);
         var stillPacked = services.provenance().find(shelf.instanceId()).orElseThrow();
         check(stillPacked.equals(packedShelf), "Restoring the player must not mutate the guild's packed custody record");
         check(services.provenance().ownedInstances(memberOwner).stream().noneMatch(i -> i.contentId().equals(content))
@@ -157,7 +157,7 @@ final class NativeGuildSmoke {
         check(restoredSlot.state() == HousingService.State.ACTIVE && restoredSlot.attachedGuild() == null
                 && services.ownership().available(memberOwner, HousingService.MOVE_CREDIT) == moveCredits,
             "Forced relocation must clear the attachment and preserve the member's free move credit");
-        snapshots.verify(world, hall.after(), hall.after().bounds().origin(), Set.of(hall.instanceId()), true);
+        snapshots.verifyExact(world, hall.after(), hall.after().bounds().origin(), Set.of(hall.instanceId()), true);
         check(services.provenance().find(hall.instanceId()).orElseThrow().owner().equals(guildOwner)
                 && services.housing().find(guildOwner).orElseThrow().state() == HousingService.State.ACTIVE,
             "Moving a member must leave the guild hall and its ownership intact");

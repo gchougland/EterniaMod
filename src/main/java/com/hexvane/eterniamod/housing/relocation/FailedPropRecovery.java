@@ -62,11 +62,6 @@ public final class FailedPropRecovery {
         var actual=snapshots.capture(world,bounds,before.mask(),Set.of(),true,false);
         var comparison=NativeSnapshotStore.comparisonDocument(actual);
         boolean restored=comparison.equals(NativeSnapshotStore.comparisonDocument(before.document()));
-        if(!restored&&!comparison.equals(NativeSnapshotStore.comparisonDocument(after.document())))
-        {
-            var diagnostic=snapshots.files().write("recovery-check-"+UUID.randomUUID()+".json",new BsonDocument("before",before.document()).append("after",after.document()).append("actual",actual).toJson().getBytes(StandardCharsets.UTF_8));
-            throw new IllegalStateException("The decoration no longer matches its saved placement. Nothing was removed. Operation "+op.id()+"; comparison saved as "+diagnostic.reference()+".");
-        }
         if(!restored)snapshots.apply(world,before,bounds.origin());
         snapshots.verify(world,before,bounds.origin(),Set.of(),true);
         NativePlacementTransactions.flush(world,bounds);

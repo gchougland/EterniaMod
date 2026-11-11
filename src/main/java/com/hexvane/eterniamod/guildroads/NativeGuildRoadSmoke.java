@@ -14,7 +14,7 @@ public final class NativeGuildRoadSmoke {
         var root=service.preview(world,leader,new GuildRoadPlanner.Cell(50,10),new GuildRoadPlanner.Cell(55,10),0,"cobblestone");
         service.confirm(world,root);check(GuildRoads.protectedColumn(world.getName(),52,10),"Built road must protect its full column");
         service.confirm(world,service.previewRemoval(world,leader,root.road().id()));
-        var original=files.load(root.road().before());files.verify(world,original,original.bounds().origin(),Set.of(),false);
+        var original=files.load(root.road().before());files.verifyExact(world,original,original.bounds().origin(),Set.of(),false);
         check(!GuildRoads.protectedColumn(world.getName(),52,10),"Removing road must release its protection");
         var rebuilt=service.preview(world,leader,new GuildRoadPlanner.Cell(55,10),new GuildRoadPlanner.Cell(50,10),0,"cobblestone");
         service.confirm(world,rebuilt);service.confirm(world,service.previewRemoval(world,leader,rebuilt.road().id()));
@@ -35,7 +35,7 @@ public final class NativeGuildRoadSmoke {
     public static void assertMemberPackRestoredTerrain(EterniaModPlugin plugin,World world,Proof proof){
         check(GuildRoads.service().roads().stream().noneMatch(r->r.id().equals(proof.road())),"Member packing must remove the complete crossing road segment");
         check(!GuildRoads.protectedColumn(world.getName(),103,9)&&!GuildRoads.protectedColumn(world.getName(),105,9),"Packed plot must release old road protection");
-        NativePlacementTransactions.snapshots(plugin).verify(world,proof.terrain(),proof.terrain().bounds().origin(),Set.of(),false);
+        NativePlacementTransactions.snapshots(plugin).verifyExact(world,proof.terrain(),proof.terrain().bounds().origin(),Set.of(),false);
         plugin.getLogger().atInfo().log("ETERNIA_NATIVE_ROAD_SMOKE_PASS: exact terrain restored before forced member packing");
     }
     private interface Action{void run()throws Exception;}

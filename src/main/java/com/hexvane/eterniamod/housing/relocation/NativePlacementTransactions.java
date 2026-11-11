@@ -288,8 +288,8 @@ public final class NativePlacementTransactions {
         // Other placed objects on the plot may share this area (a shelf inside a house); their entities are known, not strangers.
         var known=new HashSet<UUID>();for(var other:services.provenance().instances(plot.getPlotId()))if(other.state().equals("PLACED"))known.add(other.id());known.add(instanceId);
         var captured=store.capture(world,b,before.mask(),known,true,false);
-        NativeDecorativeEntities.requireIdentity(placedAfter.document(),captured,instanceId);
-        try{NativeRelocationCoordinator.requireSameBlocks(captured,placedAfter.document(),mask,b);}catch(NativeRelocationCoordinator.ObjectEdited edited){plugin.getLogger().atWarning().log("Pickup of %s refused, changed %s",instanceId,edited.detail());throw edited;}
+        try{NativeDecorativeEntities.requireIdentity(placedAfter.document(),captured,instanceId);}catch(IllegalStateException moved){plugin.getLogger().atWarning().log("Pickup of %s: %s; packing it as it is",instanceId,moved.getMessage());}
+        try{NativeRelocationCoordinator.requireSameBlocks(captured,placedAfter.document(),mask,b);}catch(NativeRelocationCoordinator.ObjectEdited edited){plugin.getLogger().atWarning().log("Pickup of %s: changed %s; packing it as it is",instanceId,edited.detail());}
         if(item.owner().kind()==Owner.Kind.GUILD&&!item.owner().equals(owner(plot)))NativeRelocationCoordinator.requireEmptyGuildContainers(NativeRelocationCoordinator.onlyCapturedCells(captured,mask));
         UUID operation=UUID.randomUUID();var packed=store.save(operation+"-pickup.json",b,before.cells(),NativeRelocationCoordinator.onlyCapturedCells(captured,mask));
         var restore=store.save(operation+"-pickup-before.json",b,before.cells(),NativeRelocationCoordinator.onlyCapturedCells(before.document(),mask));

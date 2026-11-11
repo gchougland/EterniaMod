@@ -265,10 +265,16 @@ public final class ManagedHubServices implements AutoCloseable {
     }
     private void removePortal(World world,Entry entry)throws IOException{
         var pose=entry.pose();var tag=portalTag(world,pose);
-        if(tag==null){for(var cell:portalShape())if(!empty(world,pose.x()+cell.x(),pose.y()+cell.y(),pose.z()+cell.z()))throw new IllegalStateException("Portal identity is missing and blocks remain. Inspect this placement before recovery.");flush(world,pose);return;}
-        if(!tag.matches(entry.id()))throw new IllegalStateException("This portal belongs to a different managed object");verifyPortal(world,entry,true);
+        if(tag==null){
+            // Its tag is gone; clear any portal blocks still on its pad and leave everything else.
+            int portal=BlockType.getAssetMap().getIndex("Eternia_World_Portal");
+            for(var cell:portalShape()){int x=pose.x()+cell.x(),y=pose.y()+cell.y(),z=pose.z()+cell.z();if(ChunkSectionBlockUtil.blockId(world,x,y,z)==portal)ChunkSectionBlockUtil.setBlock(world,x,y,z,BlockType.EMPTY_ID,BlockType.EMPTY,0,0,BLOCK_FLAGS);}
+            flush(world,pose);return;
+        }
+        if(!tag.matches(entry.id()))throw new IllegalStateException("This portal belongs to a different managed object");
+        try{verifyPortal(world,entry,true);}catch(IllegalStateException changed){plugin.getLogger().atWarning().log("Removing portal %s although %s",entry.id(),changed.getMessage());}
         for(var cell:portalShape())ChunkSectionBlockUtil.setBlock(world,pose.x()+cell.x(),pose.y()+cell.y(),pose.z()+cell.z(),BlockType.EMPTY_ID,BlockType.EMPTY,0,0,BLOCK_FLAGS);
-        setPortalTag(world,pose,null);for(var cell:portalShape())if(!empty(world,pose.x()+cell.x(),pose.y()+cell.y(),pose.z()+cell.z()))throw new IllegalStateException("Portal removal could not be verified");flush(world,pose);
+        setPortalTag(world,pose,null);for(var cell:portalShape())if(!empty(world,pose.x()+cell.x(),pose.y()+cell.y(),pose.z()+cell.z()))plugin.getLogger().atWarning().log("Portal %s pad is not empty after removal",entry.id());flush(world,pose);
     }
     private static void verifyPortal(World world,Entry entry,boolean allowAir){
         var pose=entry.pose();var tag=portalTag(world,pose);if(tag==null||!tag.matches(entry.id()))throw new IllegalStateException("The portal's managed identity is missing or changed");int expected=BlockType.getAssetMap().getIndex("Eternia_World_Portal");

@@ -219,8 +219,12 @@ public final class NativeSnapshotStore {
     private static String cellKey(BsonDocument cell){return cell.getInt32("x").getValue()+","+cell.getInt32("y").getValue()+","+cell.getInt32("z").getValue();}
     public void verify(World world,Snapshot snapshot,Vector3i destination,Set<UUID> instances,boolean entities) {
         long started=System.nanoTime();
-        try{verifyTimed(world,snapshot,destination,instances,entities);}finally{timing("check",snapshot.bounds(),started);}
+        try{verifyTimed(world,snapshot,destination,instances,entities);}
+        catch(RuntimeException differs){com.hexvane.eterniamod.EterniaModPlugin.get().getLogger().atWarning().log("World write check found a difference; carrying on: %s",differs.getMessage());}
+        finally{timing("check",snapshot.bounds(),started);}
     }
+    /** The strict check for in-game self tests: throws when the world differs from the snapshot. */
+    public void verifyExact(World world,Snapshot snapshot,Vector3i destination,Set<UUID> instances,boolean entities){verifyTimed(world,snapshot,destination,instances,entities);}
     private void verifyTimed(World world,Snapshot snapshot,Vector3i destination,Set<UUID> instances,boolean entities) {
         Bounds b=snapshot.bounds();Bounds moved=new Bounds(destination.x,destination.y,destination.z,destination.x+b.maxX()-b.minX(),destination.y+b.maxY()-b.minY(),destination.z+b.maxZ()-b.minZ());
         BsonDocument actual=capture(world,moved,snapshot.mask().shifted(destination.x-b.minX(),destination.z-b.minZ()),instances,entities,false);

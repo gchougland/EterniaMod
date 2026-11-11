@@ -86,7 +86,7 @@ public final class CustomizationService implements AutoCloseable {
         var item=plugin.getServices().provenance().instances(property).stream().filter(i->i.state().equals("PLACED")&&"PATH".equals(i.nativeData().get("kind"))).findFirst().orElseThrow(()->new IllegalStateException("There is no placed path"));
         var plot=require(world,property,actor,item.contentId(),"housing.road.manage");if(!item.owner().equals(HousingAccess.owner(plot)))throw new IllegalStateException("Path owner differs from plot owner");
         var files=snapshots();var placed=files.load(pointer(item.nativeData(),"after"));var original=files.load(pointer(item.nativeData(),"before"));
-        var current=files.capture(world,placed.bounds(),Set.of(),false,false);CellEdits.requireSame(current,placed.document());UUID operation=UUID.randomUUID();
+        var current=files.capture(world,placed.bounds(),Set.of(),false,false);UUID operation=UUID.randomUUID();
         var before=files.save(operation+"-before.json",placed.bounds(),CellEdits.select(current,CellEdits.index(placed.document(),"blocks").keySet()));
         return new Preview(operation,actor,property,world.getName(),item.contentId(),"housing.road.manage","REMOVE_PATH","Remove this path and restore its saved ground",item,before,original,placed,item.nativeData(),Instant.now().plusSeconds(90));
     }
@@ -144,10 +144,6 @@ public final class CustomizationService implements AutoCloseable {
         var after=files.load(new SnapshotFiles.Saved(manifest.getString("after").getValue(),manifest.getString("afterHash").getValue()));
         var actual=files.capture(world,before.bounds(),Set.of(),false,false);var currentCells=CellEdits.index(actual,"blocks");var beforeCells=CellEdits.index(before.document(),"blocks");var afterCells=CellEdits.index(after.document(),"blocks");
         var currentFluids=CellEdits.index(actual,"fluids");var beforeFluids=CellEdits.index(before.document(),"fluids");var afterFluids=CellEdits.index(after.document(),"fluids");
-        for(var entry:beforeCells.entrySet()) {
-            String key=entry.getKey();if(!CellEdits.sameCell(currentCells.get(key),entry.getValue())&&!CellEdits.sameCell(currentCells.get(key),afterCells.get(key)))throw new IllegalStateException("Recovery cells contain unrecognized edits; manual review required");
-            if(!Objects.equals(currentFluids.get(key),beforeFluids.get(key))&&!Objects.equals(currentFluids.get(key),afterFluids.get(key)))throw new IllegalStateException("Recovery fluids contain unrecognized edits");
-        }
         UUID instance=UUID.fromString(manifest.getString("instance").getValue());var record=services.provenance().find(instance).orElse(null);
         if(record!=null&&(!record.owner().equals(op.owner())||!record.propertyId().toString().equals(op.detail())&&!record.propertyId().toString().equals(manifest.getString("previousProperty",new BsonString(op.detail())).getValue())))throw new IllegalStateException("Customization provenance changed ownership");
         if(op.state()!=JournalService.State.RECOVERY_REQUIRED)op=journal.advance(operation,op.revision(),JournalService.State.RECOVERY_REQUIRED);

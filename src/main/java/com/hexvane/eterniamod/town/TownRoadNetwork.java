@@ -783,7 +783,7 @@ public final class TownRoadNetwork {
             }
             var captured = doc;
             TownBuilder.on(world, () -> {
-                var saved = store.save("cell-" + c.q() + "_" + c.r() + ".json", bounds, cellMask, captured);
+                var saved = store.save("cell-" + c.q() + "_" + c.r() + "-" + fresh() + ".json", bounds, cellMask, captured);
                 var backup = new TownBuilder.Backup();
                 backup.name = saved.file().reference(); backup.sha = saved.file().sha256();
                 backup.min = new int[] {bounds.minX(), bounds.minY(), bounds.minZ()}; backup.max = new int[] {bounds.maxX(), bounds.maxY(), bounds.maxZ()};
@@ -880,6 +880,9 @@ public final class TownRoadNetwork {
         }
         sel.placeNoReturn(world, new Vector3i(0, 0, 0), world.getEntityStore().getStore());
     }
+
+    /** A short unique tag for backup file names, so land backed up again after a clear never reuses an older file. */
+    private static String fresh() { return Long.toString(System.currentTimeMillis(), 36) + Integer.toString(java.util.concurrent.ThreadLocalRandom.current().nextInt(1 << 20), 36); }
 
     /** Blocks over which a road hexagon blends back into the land beside it. */
     static final double HEX_BLEND = 7;
@@ -1050,7 +1053,7 @@ public final class TownRoadNetwork {
         var bounds = new NativeSnapshotStore.Bounds(minX, Math.max(1, minY - 1), minZ, maxX + 1, Math.min(NativeSnapshotStore.MAX_Y, maxY), maxZ + 1);
         var doc = TownBuilder.captureWhenIdle(world, store, bounds);
         TownBuilder.on(world, () -> {
-            var saved = store.save("bridge-" + bounds.minX() + "_" + bounds.minZ() + "_" + bounds.minY() + ".json", bounds, doc);
+            var saved = store.save("bridge-" + bounds.minX() + "_" + bounds.minZ() + "_" + bounds.minY() + "-" + fresh() + ".json", bounds, doc);
             var backup = new TownBuilder.Backup();
             backup.name = saved.file().reference(); backup.sha = saved.file().sha256();
             backup.min = new int[] {bounds.minX(), bounds.minY(), bounds.minZ()}; backup.max = new int[] {bounds.maxX(), bounds.maxY(), bounds.maxZ()};

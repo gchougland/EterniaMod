@@ -41,7 +41,7 @@ public final class NativePropRecoverySmoke {
         snapshots.apply(world,placed.after(),placed.after().bounds().origin());
         if(FailedPropRecovery.recover(plugin,world,plot,actor)!=1||FailedPropRecovery.recover(plugin,world,plot,actor)!=0)throw new AssertionError("Recovery must complete once");
         if(services.ownership().available(owner,"eternia:prop/cacti")!=1||com.hexvane.eterniamod.housing.HousingAccess.locked(plugin,plot))throw new AssertionError("Recovery did not return exactly one item and unlock property");
-        snapshots.verify(world,placed.before(),placed.before().bounds().origin(),Set.of(),true);
+        snapshots.verifyExact(world,placed.before(),placed.before().bounds().origin(),Set.of(),true);
         plugin.getLogger().atInfo().log("ETERNIA_NATIVE_PROP_RECOVERY_PASS: cactus placement/pickup, clock initialization, foreign actor and edited-block rejection, single quantity return and unlocked plot");
     }
 }

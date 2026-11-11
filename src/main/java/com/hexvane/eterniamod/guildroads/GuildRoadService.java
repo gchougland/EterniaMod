@@ -102,7 +102,6 @@ final class GuildRoadService {
     synchronized void beforePack(World world,HubPlotRecord plot)throws Exception{
         world.getEntityStore().getStore().assertThread();
         for(var road:roads().stream().filter(r->r.world().equals(world.getName())&&(com.hexvane.eterniamod.housing.PlotAreas.overlaps(plot,r.rectangle())||plot.getGuildOwnerUuid()!=null&&plot.getGuildOwnerUuid().equals(r.guild()))).toList()){
-            if(road.state()!=State.ACTIVE)throw new IllegalStateException("Recover the interrupted guild road before this property can move");
             remove(world,road);
         }
         if(plot.getGuildOwnerUuid()==null&&plot.getAttachedGuildUuid()!=null&&registry.easement(plot.getPlotId(),plot.getAttachedGuildUuid()))registry.easement(plot.getPlotId(),plot.getAttachedGuildUuid(),false);
@@ -111,7 +110,6 @@ final class GuildRoadService {
         publicClear(world,current.rectangle());boolean recovering=current.state()!=State.ACTIVE;
         for(var plot:EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots())if(com.hexvane.eterniamod.housing.PlotAreas.overlaps(plot,current.rectangle())){var owner=HousingAccess.owner(plot);var slot=owner==null?null:plugin.getServices().housing().find(owner).orElse(null);if(slot==null||slot.state()!=HousingService.State.ACTIVE||!slot.propertyId().equals(plot.getPlotId()))throw new IllegalStateException("An intersecting property is moving or requires recovery; retain the road until that operation is resolved");}
         var before=files().load(current.before());var after=files().load(current.after());
-        scoped(world,current,()->{var actual=files().capture(world,before.bounds(),Set.of(),false,false);if(recovering)requireKnown(actual,before.document(),after.document());else requireSame(actual,after.document());return null;});
         var journal=plugin.getServices().journal();var road=current.state(State.REMOVING,recovering?current.operation():UUID.randomUUID());
         var op=recovering?journal.find(current.operation()).orElseThrow():prepare(road,"GUILD_ROAD_REMOVE");
         try{

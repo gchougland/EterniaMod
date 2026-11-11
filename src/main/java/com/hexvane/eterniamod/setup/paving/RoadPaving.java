@@ -125,7 +125,6 @@ public final class RoadPaving {
     private synchronized void restore(World world,UUID actor,UUID id)throws Exception {
         SetupAccess.require(actor);var op=registry.get(id);if(op==null||op.state()==State.RESTORED||!op.world().equals(world.getName()))throw new IllegalStateException("Paving record changed or belongs to another world");
         validate(world,op.rect(),op.y(),op.id(),false);var before=load(op,false);var after=load(op,true);
-        scoped(op,()->{var actual=files().capture(world,before.bounds(),Set.of(),false,false);if(op.state()==State.COMPLETE)requireSame(actual,after.document());else requireKnown(actual,before.document(),after.document());});
         registry.put(op.state(State.PENDING));
         scoped(op,()->{files().apply(world,before,before.bounds().origin());files().verify(world,before,before.bounds().origin(),Set.of(),false);NativePlacementTransactions.flush(world,before.bounds());});
         registry.put(op.state(State.RESTORED));
