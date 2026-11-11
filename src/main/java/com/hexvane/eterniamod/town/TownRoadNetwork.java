@@ -1378,7 +1378,14 @@ public final class TownRoadNetwork {
                         }
                         if (cleared) continue;
                         if (!outside.isEmpty()) throw new IllegalStateException("Roads drawn with the Road Designer join this town's roads near " + String.join(" and ", outside) + ". Remove them, then run undo again");
-                        throw last;
+                        // Only this town's own roads are left, and they hold each other in place (or their ground was changed
+                        // since they were built). Take them all away together and write their original ground back.
+                        var rest = List.copyOf(n.roads).reversed().stream().map(UUID::fromString).toList();
+                        int missed = TownBuilder.supply(world, () -> TownRoadAuthor.forceRemove(world, actor, rest));
+                        plugin.getLogger().atInfo().log("Town road undo took %d roads away together after: %s", rest.size(), last == null ? "no error" : TownBuilder.cause(last));
+                        if (missed > 0) TownBuilder.tell(player, missed + " roads were taken away, but the ground under them could not be put back everywhere. The town's own land backup is put back next.");
+                        n.roads.clear();
+                        update(plugin, world.getName(), n);
                     }
                 }
                 if (roadsOnly) {

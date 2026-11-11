@@ -108,7 +108,6 @@ final class SplineRoadService {
         SetupAccess.require(actor);var current=find(id);if(current==null||!current.world().equals(world.getName())||current.state()==State.REMOVED)throw new IllegalStateException("The road is no longer available");
         if(current.state()==State.PENDING)throw new IllegalStateException("Use Recover to restore the interrupted road first");
         var snapshot=plugin.getInfrastructure().snapshot();var nextPlan=infrastructure(world,current.current(),null,snapshot,id);var v=current.current();RoadClearance.requireLoaded(world,v.snapshotCells());
-        scoped(scope(world,id,v.areas().keySet(),v.snapshotCells()),()->{SparseRoadSnapshots.requireSame(SparseRoadSnapshots.capture(files(),world,v.snapshotCells()),files().load(v.after()).document(),null);return null;});
         var pending=new Road(id,actor,world.getName(),current.revision()+1,State.PENDING,v,new Change(v.after(),v.before(),v.snapshotCells(),null));return new Review(actor,current,pending,snapshot,nextPlan,Instant.now().plusSeconds(90));
     }
     synchronized void confirm(World world,Review review)throws Exception{
@@ -117,9 +116,10 @@ final class SplineRoadService {
         var nextPlan=infrastructure(world,pending.current(),pending.change().next(),snapshot,pending.id());
         if(pending.change().next()!=null){var next=pending.change().next();plain(next.block());next.palette().stream().flatMap(Collection::stream).filter(s->!s.isEmpty()).distinct().forEach(SplineRoadService::plain);var fresh=plan(world,next.nodes(),next.width(),pending.current()==null?null:pending.id());if(!fresh.valid()||!fresh.cells().equals(next.cells())||!fresh.connections().equals(next.connections())||!new HashSet<>(next.snapshotCells()).containsAll(fresh.above()))throw new IllegalStateException("Ground or protected areas changed after preview");}
         RoadClearance.requireLoaded(world,pending.change().cells());var before=files().load(pending.change().before());var after=files().load(pending.change().after());var allowed=areaIds(pending);var scope=scope(world,pending.id(),allowed,pending.change().cells());
-        scoped(scope,()->{SparseRoadSnapshots.requireSame(SparseRoadSnapshots.capture(files(),world,pending.change().cells()),before.document(),null);return null;});
+        boolean removing=pending.change().next()==null;
+        if(!removing)scoped(scope,()->{SparseRoadSnapshots.requireSame(SparseRoadSnapshots.capture(files(),world,pending.change().cells()),before.document(),null);return null;});
         registry.put(pending.revision()-1,pending);
-        try{scoped(scope,()->{files().apply(world,after,after.bounds().origin());verify(world,after,pending.change().cells());flush(world,pending.change().cells());return null;});
+        try{scoped(scope,()->{files().apply(world,after,after.bounds().origin());if(removing)check(world,after,pending.change().cells(),pending.id());else verify(world,after,pending.change().cells());flush(world,pending.change().cells());return null;});
             plugin.getInfrastructure().saveWorld(snapshot.revision(),world.getName(),nextPlan);
             var completed=new Road(pending.id(),pending.actor(),pending.world(),pending.revision()+1,pending.change().next()==null?State.REMOVED:State.ACTIVE,pending.change().next(),null);registry.put(pending.revision(),completed);
         }catch(Throwable failure){retain(pending);throw new IllegalStateException("Road edit was interrupted. Its exact cells stay protected; use Recover in the road tool",failure);}
@@ -128,7 +128,7 @@ final class SplineRoadService {
         SetupAccess.require(actor);world.getEntityStore().getStore().assertThread();var road=find(id);if(road==null||road.state()!=State.PENDING||!road.world().equals(world.getName()))throw new IllegalStateException("This road has no pending recovery");
         RoadClearance.requireLoaded(world,road.change().cells());var before=files().load(road.change().before());var after=files().load(road.change().after());var snapshot=plugin.getInfrastructure().snapshot();var currentPlan=snapshot.worlds().get(world.getName());var desired=rollbackInfrastructure(world,road,snapshot);
         var scope=scope(world,road.id(),areaIds(road),road.change().cells());
-        try{scoped(scope,()->{var actual=SparseRoadSnapshots.capture(files(),world,road.change().cells());SparseRoadSnapshots.requireSame(actual,before.document(),after.document());files().apply(world,before,before.bounds().origin());verify(world,before,road.change().cells());flush(world,road.change().cells());return null;});
+        try{scoped(scope,()->{files().apply(world,before,before.bounds().origin());check(world,before,road.change().cells(),road.id());flush(world,road.change().cells());return null;});
             if(!desired.equals(currentPlan))plugin.getInfrastructure().saveWorld(snapshot.revision(),world.getName(),desired);
             var restored=new Road(road.id(),actor,road.world(),road.revision()+1,road.current()==null?State.REMOVED:State.ACTIVE,road.current(),null);registry.put(road.revision(),restored);var remaining=new HashMap<>(emergency);remaining.remove(id);emergency=Map.copyOf(remaining);
         }catch(Throwable failure){retain(road);throw new IllegalStateException("Recovery retained the road lock: "+failure.getMessage(),failure);}
@@ -153,6 +153,38 @@ final class SplineRoadService {
         registry.put(road.revision(),new Road(road.id(),actor,road.world(),road.revision()+1,road.current()==null?State.REMOVED:State.ACTIVE,road.current(),null));
         var remaining=new HashMap<>(emergency);remaining.remove(id);emergency=Map.copyOf(remaining);
         plugin.getLogger().atWarning().log("Administrator %s released unfinished road %s in %s; its ground was left as it was",actor,id,world.getName());
+    }
+    /**
+     * Takes a set of roads away together when they cannot be removed one at a time: their junctions rest on each other,
+     * or one road's ground was changed since it was built. Their registrations go in one save, then each road's original
+     * ground is written back over it, newest first, without first checking the ground still matches. Roads outside the
+     * set must not join onto them. Returns how many roads' ground could not be written back.
+     */
+    synchronized int forceRemove(World world,UUID actor,List<UUID> newestFirst)throws Exception{
+        SetupAccess.require(actor);world.getEntityStore().getStore().assertThread();
+        var ids=new HashSet<>(newestFirst);var roads=new ArrayList<Road>();
+        for(var id:newestFirst){var road=find(id);if(road!=null&&road.state()!=State.REMOVED&&road.world().equals(world.getName()))roads.add(road);}
+        if(roads.isEmpty())return 0;
+        var snapshot=plugin.getInfrastructure().snapshot();var current=snapshot.worlds().get(world.getName());
+        if(current!=null){
+            var areas=new TreeMap<>(current.areas());
+            for(var road:roads)for(String area:areaIds(road))areas.remove(area);
+            var desired=current.withAreas(areas);
+            var outside=roads().stream().filter(r->r.world().equals(world.getName())&&r.state()!=State.REMOVED&&!ids.contains(r.id())).flatMap(r->RoadConnectionRules.connections(r).stream()).toList();
+            RoadConnectionRules.preserveProtection(desired,outside);
+            if(!desired.equals(current))plugin.getInfrastructure().saveWorld(snapshot.revision(),world.getName(),desired);
+        }
+        var remaining=new HashMap<>(emergency);
+        for(var road:roads){registry.put(road.revision(),new Road(road.id(),actor,road.world(),road.revision()+1,State.REMOVED,null,null));remaining.remove(road.id());}
+        emergency=Map.copyOf(remaining);
+        int missed=0;
+        for(var road:roads){
+            var v=road.current();if(v==null)continue;
+            try{var before=files().load(v.before());files().apply(world,before,before.bounds().origin());flush(world,v.snapshotCells());}
+            catch(Exception e){missed++;plugin.getLogger().atWarning().withCause(e).log("Could not write back the ground under removed road %s",road.id());}
+        }
+        plugin.getLogger().atWarning().log("Administrator %s took away %d joined roads in %s directly",actor,roads.size(),world.getName());
+        return missed;
     }
     private void retain(Road road){var next=new HashMap<>(emergency);next.put(road.id(),road);emergency=Map.copyOf(next);}
     private HousingInfrastructure.WorldPlan infrastructure(World world,Version old,Version next,HousingInfrastructure.Snapshot snapshot,UUID id){
@@ -234,6 +266,8 @@ final class SplineRoadService {
     private static Set<String> areaIds(Road road){var ids=new HashSet<String>();if(road.current()!=null)ids.addAll(road.current().areas().keySet());if(road.change()!=null&&road.change().next()!=null)ids.addAll(road.change().next().areas().keySet());return Set.copyOf(ids);}
     private static Write scope(World world,UUID id,Set<String> areas,List<SplineGeometry.Cell> cells){return new Write(world.getName(),id,Set.copyOf(areas),Set.copyOf(cells.stream().map(SplineGeometry.Cell::column).toList()));}
     private static <T>T scoped(Write scope,java.util.concurrent.Callable<T> action)throws Exception{if(WRITING.get()!=null)throw new IllegalStateException("Nested spline road write");WRITING.set(scope);try{return action.call();}finally{WRITING.remove();}}
+    /** Like verify, but only logs a difference: removing or recovering a road must always finish. */
+    private void check(World world,NativeSnapshotStore.Snapshot expected,List<SplineGeometry.Cell> cells,UUID id){try{verify(world,expected,cells);}catch(RuntimeException e){plugin.getLogger().atWarning().log("Road %s ground differs after it was put back: %s",id,e.getMessage());}}
     private void verify(World world,NativeSnapshotStore.Snapshot expected,List<SplineGeometry.Cell> cells){SparseRoadSnapshots.requireSame(SparseRoadSnapshots.capture(files(),world,cells),expected.document(),null);}
     private static void flush(World world,List<SplineGeometry.Cell> cells)throws IOException{var chunks=new HashSet<String>();for(var cell:cells){String key=(cell.x()>>5)+":"+(cell.z()>>5);if(chunks.add(key))NativePlacementTransactions.flush(world,new NativeSnapshotStore.Bounds(cell.x(),cell.y(),cell.z(),cell.x()+1,cell.y()+1,cell.z()+1));}}
     void nativeSmoke(World world)throws Exception{
