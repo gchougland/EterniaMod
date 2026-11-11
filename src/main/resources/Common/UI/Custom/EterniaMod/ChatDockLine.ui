@@ -1,0 +1,4 @@
+Group #ChatLine {
+  Anchor: (Bottom: 6);
+  LayoutMode: LeftWrap;
+}

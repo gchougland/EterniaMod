@@ -1,0 +1,7 @@
+Group #HudNote {
+  Anchor: (Top: 4);
+  Padding: (Horizontal: 10, Vertical: 4);
+  Background: PatchStyle(TexturePath: "Chat/DockHudLine.png", Border: 14);
+  LayoutMode: Top;
+  Label #NoteText { Text: ""; Style: (FontSize: 14, TextColor: #b5c3b8, Wrap: true); }
+}

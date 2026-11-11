@@ -1,0 +1,5 @@
+Label #LineWord {
+  Anchor: (Height: 22, Right: 5);
+  Text: "";
+  Style: (FontSize: 15, TextColor: #f0e8d5, VerticalAlignment: Center);
+}

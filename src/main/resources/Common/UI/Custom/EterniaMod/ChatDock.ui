@@ -1,0 +1,121 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+
+@TabStyle = ButtonStyle(
+  Default: (Background: PatchStyle(TexturePath: "Chat/DockTab.png", Border: 12)),
+  Hovered: (Background: PatchStyle(TexturePath: "Chat/DockTabHover.png", Border: 12)),
+  Pressed: (Background: PatchStyle(TexturePath: "Chat/DockTabActive.png", Border: 12))
+);
+@TabOnStyle = ButtonStyle(
+  Default: (Background: PatchStyle(TexturePath: "Chat/DockTabActive.png", Border: 12)),
+  Hovered: (Background: PatchStyle(TexturePath: "Chat/DockTabActive.png", Border: 12)),
+  Pressed: (Background: PatchStyle(TexturePath: "Chat/DockTabActive.png", Border: 12))
+);
+@TileStyle = ButtonStyle(
+  Default: (Background: PatchStyle(TexturePath: "Chat/DockTile.png", Border: 12)),
+  Hovered: (Background: PatchStyle(TexturePath: "Chat/DockTileHover.png", Border: 12)),
+  Pressed: (Background: PatchStyle(TexturePath: "Chat/DockTileHover.png", Border: 12))
+);
+@Tab = Button {
+  @Icon = "Chat/Channel_server.png";
+  @Name = "Server";
+  @Color = #c9d3cb;
+  @Style = @TabStyle;
+  Anchor: (Height: 36, Right: 4);
+  Padding: (Horizontal: 10);
+  LayoutMode: Left;
+  Style: @Style;
+  Group { Anchor: (Width: 18, Height: 18, Right: 6); Background: @Icon; HitTestVisible: false; }
+  Label { Text: @Name; HitTestVisible: false; Style: (FontSize: 14, TextColor: @Color, RenderBold: true, VerticalAlignment: Center); }
+};
+@Chip = Group {
+  @Surface = "Chat/Chip_server.png";
+  @Name = "Server";
+  Visible: false;
+  Anchor: (Height: 28, Right: 8);
+  Padding: (Horizontal: 12);
+  Background: PatchStyle(TexturePath: @Surface, Border: 12);
+  Label { Text: @Name; Style: (FontSize: 13, TextColor: #101e22, RenderBold: true, VerticalAlignment: Center); }
+};
+
+Group #Dock {
+  Anchor: (Left: 48, Bottom: 250, Width: 540, Height: 430);
+  LayoutMode: Top;
+
+  Group #DockTabs {
+    Anchor: (Height: 36);
+    LayoutMode: Left;
+    @Tab #TabServer { }
+    @Tab #TabServerOn { @Style = @TabOnStyle; Visible: false; }
+    @Tab #TabWorld { @Icon = "Chat/Channel_world.png"; @Name = "World"; @Color = #85c5b3; }
+    @Tab #TabWorldOn { @Icon = "Chat/Channel_world.png"; @Name = "World"; @Color = #85c5b3; @Style = @TabOnStyle; Visible: false; }
+    @Tab #TabParty { @Icon = "Chat/Channel_party.png"; @Name = "Party"; @Color = #8fb8e8; }
+    @Tab #TabPartyOn { @Icon = "Chat/Channel_party.png"; @Name = "Party"; @Color = #8fb8e8; @Style = @TabOnStyle; Visible: false; }
+    @Tab #TabGuild { @Icon = "Chat/Channel_guild.png"; @Name = "Guild"; @Color = #d8b66b; }
+    @Tab #TabGuildOn { @Icon = "Chat/Channel_guild.png"; @Name = "Guild"; @Color = #d8b66b; @Style = @TabOnStyle; Visible: false; }
+    @Tab #TabNearby { @Icon = "Chat/Channel_nearby.png"; @Name = "Nearby"; @Color = #a9d18e; }
+    @Tab #TabNearbyOn { @Icon = "Chat/Channel_nearby.png"; @Name = "Nearby"; @Color = #a9d18e; @Style = @TabOnStyle; Visible: false; }
+  }
+
+  Group #LogFrame {
+    FlexWeight: 1;
+    Anchor: (Top: 2, Bottom: 6);
+    Background: PatchStyle(TexturePath: "Chat/DockLog.png", Border: 12);
+    Padding: (Full: 12);
+    Group #DockLog {
+      LayoutMode: TopScrolling;
+      ScrollbarStyle: $C.@DefaultScrollbarStyle;
+      AutoScrollDown: true;
+    }
+  }
+
+  Group #InputRow {
+    Anchor: (Height: 50);
+    Background: PatchStyle(TexturePath: "Chat/DockInput.png", Border: 12);
+    Padding: (Horizontal: 8);
+    LayoutMode: Left;
+    @Chip #ChipServer { }
+    @Chip #ChipWorld { @Surface = "Chat/Chip_world.png"; @Name = "World"; }
+    @Chip #ChipParty { @Surface = "Chat/Chip_party.png"; @Name = "Party"; }
+    @Chip #ChipGuild { @Surface = "Chat/Chip_guild.png"; @Name = "Guild"; }
+    @Chip #ChipNearby { @Surface = "Chat/Chip_nearby.png"; @Name = "Nearby"; }
+    TextField #DockInput {
+      FlexWeight: 1;
+      Anchor: (Height: 36);
+      AutoFocus: true;
+      MaxLength: 500;
+      Style: (FontSize: 16, TextColor: $T.@Text);
+      PlaceholderText: "Type a message";
+      PlaceholderStyle: (FontSize: 16, TextColor: $T.@Muted);
+    }
+    Button #EmoteToggle {
+      Anchor: (Width: 42, Height: 36, Left: 6);
+      Style: @TileStyle;
+      TooltipText: "Emotes";
+      TextTooltipStyle: $T.@DefaultTextTooltipStyle;
+      Group { Anchor: (Width: 24, Height: 24); Background: "Chat/Emote_smile.png"; HitTestVisible: false; }
+    }
+    $T.@TextButton #DockSend { Text: "Send"; Anchor: (Width: 86, Height: 36, Left: 6); }
+  }
+}
+
+Group #EmotePanel {
+  Visible: false;
+  Anchor: (Left: 600, Bottom: 250, Width: 256, Height: 214);
+  Background: PatchStyle(TexturePath: "Chat/DockPopup.png", Border: 12);
+  Padding: (Full: 12);
+  LayoutMode: Top;
+  Group {
+    Anchor: (Height: 24, Bottom: 8);
+    LayoutMode: Left;
+    Label { Text: "EMOTES"; Style: (FontName: "Secondary", FontSize: 13, TextColor: $T.@Primary, RenderBold: true, VerticalAlignment: Center); }
+    Group { FlexWeight: 1; }
+    Label { Text: "Click to add"; Style: (FontSize: 12, TextColor: $T.@Muted, VerticalAlignment: Center); }
+  }
+  Group #EmoteScroll {
+    FlexWeight: 1;
+    LayoutMode: TopScrolling;
+    ScrollbarStyle: $C.@DefaultScrollbarStyle;
+    Group #EmoteGrid { LayoutMode: LeftWrap; }
+  }
+}

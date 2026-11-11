@@ -202,6 +202,8 @@ afterEvaluate {
     if (!runServer.environment.containsKey("ETERNIA_MODE")) {
         runServer.environment("ETERNIA_MODE", "local")
     }
+    // The chat dock uses the game's server driven interface preview, which the server only enables with this flag.
+    runServer.systemProperty("hytale.serverside_ui_preview", "true")
     // Never copy build output over source on shutdown: source may have changed
     // while this server was running. Import intentional in-game edits explicitly.
     logger.lifecycle("Task '${runServer.name}' leaves source assets unchanged on exit; syncAssets is manual only.")

@@ -26,6 +26,7 @@ public final class EterniaChatCommand extends AbstractPlayerCommand {
         setPermissionGroups("hytale:Adventurer");
         for (ChatChannel channel : ChatChannel.values()) addSubCommand(new ChannelCommand(channel));
         addSubCommand(new HelpCommand());
+        addSubCommand(new ChatKeyProbe());
     }
 
     @Override

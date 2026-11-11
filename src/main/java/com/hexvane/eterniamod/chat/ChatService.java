@@ -67,11 +67,7 @@ public final class ChatService implements AutoCloseable {
                 return event;
             }
             ChatChannel channel = preferences.current(sender.getUuid());
-            if (channel == ChatChannel.SERVER) {
-                // The engine delivers to everyone in every world; only the look is ours.
-                event.setFormatter((player, text) -> ChatFormat.line(ChatChannel.SERVER, ChatFormat.speaker(player), text));
-                return event;
-            }
+            // Every channel, Server included, is delivered here so the line reaches the chat dock, not the game's chat box.
             event.setCancelled(true);
             dispatch(sender, channel, event.getContent(), event.getTargets());
             return event;
@@ -100,7 +96,40 @@ public final class ChatService implements AutoCloseable {
 
     /** {@code /e chat <channel>}: remember the channel for plain chat. */
     public void switchTo(PlayerRef player, ChatChannel channel) {
-        run(player, () -> {
+        run(player, () -> doSwitch(player, channel));
+    }
+
+    /** The player's channel, read away from the world thread. */
+    public CompletableFuture<ChatChannel> channelOf(PlayerRef player) {
+        return CompletableFuture.supplyAsync(() -> preferences.current(player.getUuid()), executor);
+    }
+
+    /** A channel tab in the dock: switches when allowed, and answers with the channel the player is now in. */
+    public CompletableFuture<ChatChannel> switchFromDock(PlayerRef player, ChatChannel channel) {
+        return CompletableFuture.supplyAsync(() -> {
+            doSwitch(player, channel);
+            return preferences.current(player.getUuid());
+        }, executor);
+    }
+
+    /** A message typed in the dock: the same rules and routing as plain chat. */
+    public void sendFromDock(PlayerRef sender, String typed) {
+        var cleaned = ChatText.clean(typed);
+        if (cleaned.isEmpty()) return;
+        var problem = ChatText.problem(cleaned.get());
+        if (problem.isPresent()) { sender.sendMessage(ChatFormat.warn(Message.translation(problem.get()))); return; }
+        run(sender, () -> {
+            var blocked = ChatGate.blockReason(sender.getUuid());
+            if (blocked.isPresent()) { sender.sendMessage(ChatFormat.warn(blocked.get())); return; }
+            var audience = audience(sender, Universe.get().getPlayers());
+            var shortcut = ChatShortcut.parse(cleaned.get());
+            if (shortcut.isPresent()) dispatch(sender, shortcut.get().channel(), shortcut.get().text(), audience);
+            else dispatch(sender, preferences.current(sender.getUuid()), cleaned.get(), audience);
+        });
+    }
+
+    private void doSwitch(PlayerRef player, ChatChannel channel) {
+        {
             UUID id = player.getUuid();
             if (channel == ChatChannel.PARTY && services.parties().find(id).isEmpty()) {
                 player.sendMessage(ChatFormat.warn(Message.translation("eternia_chat.fail.noPartySwitch"))); return;
@@ -116,7 +145,7 @@ public final class ChatService implements AutoCloseable {
             player.sendMessage(Message.join(ChatFormat.tag(channel), Message.raw(" "),
                 ChatFormat.note(Message.translation("eternia_chat.switch.done").param("channel", ChatFormat.channelName(channel))
                     .param("about", about(channel)))));
-        });
+        }
     }
 
     /** {@code /e chat}: where you are talking, and how to change it. */
@@ -172,8 +201,8 @@ public final class ChatService implements AutoCloseable {
         for (PlayerRef ref : audience) { byId.put(ref.getUuid(), ref); listeners.add(listener(ref)); }
         byId.put(sender.getUuid(), sender);
         List<UUID> recipients = ChatRouting.recipients(channel, listener(sender), listeners, members, settings.nearbyRadius());
-        Message line = ChatFormat.line(channel, ChatFormat.speaker(sender), text);
-        for (UUID id : recipients) byId.get(id).sendMessage(line);
+        ChatLine line = ChatLine.chat(channel, ChatFormat.speakerName(sender), ChatFormat.rank(sender), text);
+        for (UUID id : recipients) ChatDock.deliver(byId.get(id), line);
         log(channel, sender, text);
         if (ChatRouting.onlySender(recipients)) {
             switch (channel) {

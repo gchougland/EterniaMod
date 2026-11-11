@@ -1,0 +1,5 @@
+Group #NoteLine {
+  Anchor: (Bottom: 6);
+  LayoutMode: Top;
+  Label #NoteText { Text: ""; Style: (FontSize: 14, TextColor: #b5c3b8, Wrap: true); }
+}

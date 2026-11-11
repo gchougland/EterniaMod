@@ -37,12 +37,20 @@ public final class ChatFormat {
      * {@code Message.join(rankTag(player), Message.raw(" "), name)}. Every channel, including Server and Guild,
      * formats through this method, so one change covers all of chat.
      */
-    public static Message speaker(PlayerRef player) {
+    public static Message speaker(PlayerRef player) { return Message.raw(speakerName(player)); }
+
+    /** The same name as plain text, for the chat dock. */
+    public static String speakerName(PlayerRef player) {
         var plugin = EterniaModPlugin.get();
         var collections = plugin == null ? null : plugin.getCollectionRuntime();
-        String name = collections == null ? player.getUsername() : collections.displayName(player);
-        return Message.raw(inline(name));
+        return inline(collections == null ? player.getUsername() : collections.displayName(player));
     }
+
+    /**
+     * The mark drawn before the sender's name in the dock, as the art name after {@code Chat/Rank_}, or null for none.
+     * Nobody has a rank yet: this is where one is chosen when ranks arrive.
+     */
+    public static String rank(PlayerRef player) { return null; }
 
     /** A feedback line for the player. */
     public static Message note(Message body) { return body.color(NOTE_COLOR); }

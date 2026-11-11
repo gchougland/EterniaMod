@@ -1,0 +1,30 @@
+<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:hy="clr-namespace:HytaleClient.UI.Common">
+
+    <!-- Probe only: does the game's Chat key reach a server command from a HUD widget? -->
+    <b:Interaction.Behaviors>
+        <hy:InputActionCommandBehavior ActionName="Chat" Command="{Binding Data.ChatCommand}"/>
+    </b:Interaction.Behaviors>
+
+    <Border Background="#D0101E22" BorderBrush="#D8B66B" BorderThickness="1" CornerRadius="8" Padding="12" Margin="48,0,0,320"
+            Width="420" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+        <StackPanel>
+            <TextBlock Text="Eternia chat probe" FontSize="14" FontWeight="Bold" Foreground="#D8B66B"/>
+            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                <TextBlock Text="Chat key presses caught: " Foreground="#B5C3B8" FontSize="13"/>
+                <TextBlock Text="{Binding Data.Presses}" Foreground="#F0E8D5" FontSize="13" FontWeight="Bold"/>
+            </StackPanel>
+            <TextBlock hy:TextFormatting.FormattedMessage="{Binding Data.Status}" Foreground="#F0E8D5" FontSize="13"
+                       TextWrapping="Wrap" Margin="0,4,0,0"/>
+            <TextBox x:Name="ProbeInput" Margin="0,8,0,0" Height="34" FontSize="13">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Return" Command="{Binding Data.SendCommand}"
+                                CommandParameter="{Binding Text, ElementName=ProbeInput}"/>
+                </TextBox.InputBindings>
+            </TextBox>
+        </StackPanel>
+    </Border>
+</UserControl>

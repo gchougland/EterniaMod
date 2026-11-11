@@ -1,0 +1,25 @@
+@Key = Group {
+  @Name = "O";
+  Anchor: (Height: 20, Right: 5);
+  Padding: (Horizontal: 7);
+  Background: PatchStyle(TexturePath: "Chat/DockTab.png", Border: 12);
+  Label { Text: @Name; Style: (FontSize: 11, TextColor: #c9d3cb, RenderBold: true, VerticalAlignment: Center); }
+};
+@KeyUse = Label {
+  Anchor: (Right: 12);
+  Style: (FontSize: 11, TextColor: #8f9c96, VerticalAlignment: Center);
+};
+
+Group #ChatHud {
+  Anchor: (Left: 48, Bottom: 250, Width: 540, Height: 230);
+  LayoutMode: Bottom;
+}
+
+Group #KeyHints {
+  Anchor: (Left: 48, Bottom: 222, Width: 300, Height: 20);
+  LayoutMode: Left;
+  @Key { @Name = "O"; }
+  @KeyUse { Text: "Journal"; }
+  @Key { @Name = "Alt"; }
+  @KeyUse { Text: "Chat"; }
+}

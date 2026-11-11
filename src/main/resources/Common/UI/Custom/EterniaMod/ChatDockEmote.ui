@@ -1,0 +1,9 @@
+Button #EmoteTile {
+  Anchor: (Width: 48, Height: 44, Right: 6, Bottom: 6);
+  Style: ButtonStyle(
+    Default: (Background: PatchStyle(TexturePath: "Chat/DockTile.png", Border: 12)),
+    Hovered: (Background: PatchStyle(TexturePath: "Chat/DockTileHover.png", Border: 12)),
+    Pressed: (Background: PatchStyle(TexturePath: "Chat/DockTileHover.png", Border: 12))
+  );
+  Group #EmotePic { Anchor: (Width: 28, Height: 28); HitTestVisible: false; }
+}
