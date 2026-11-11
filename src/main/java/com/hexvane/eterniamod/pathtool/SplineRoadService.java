@@ -133,6 +133,27 @@ final class SplineRoadService {
             var restored=new Road(road.id(),actor,road.world(),road.revision()+1,road.current()==null?State.REMOVED:State.ACTIVE,road.current(),null);registry.put(road.revision(),restored);var remaining=new HashMap<>(emergency);remaining.remove(id);emergency=Map.copyOf(remaining);
         }catch(Throwable failure){retain(road);throw new IllegalStateException("Recovery retained the road lock: "+failure.getMessage(),failure);}
     }
+    /**
+     * Last resort for a road whose build stopped halfway and whose ground has changed since, so it can no longer be put
+     * back: lifts its lock and drops its half finished registration (an edited road keeps its earlier version), leaving
+     * the ground exactly as it is. Nothing is overwritten.
+     */
+    synchronized void release(World world,UUID actor,UUID id)throws Exception{
+        SetupAccess.require(actor);world.getEntityStore().getStore().assertThread();
+        var road=find(id);
+        if(road==null||road.state()!=State.PENDING||!road.world().equals(world.getName()))throw new IllegalStateException("This road has no unfinished work to release");
+        var snapshot=plugin.getInfrastructure().snapshot();var current=snapshot.worlds().get(world.getName());
+        if(current!=null){
+            var areas=new TreeMap<>(current.areas());
+            for(String area:areaIds(road))areas.remove(area);
+            if(road.current()!=null)road.current().areas().forEach((name,rect)->areas.put(name,new HousingInfrastructure.Area(HousingInfrastructure.AreaKind.ROAD,rect)));
+            var desired=current.withAreas(areas);
+            if(!desired.equals(current))plugin.getInfrastructure().saveWorld(snapshot.revision(),world.getName(),desired);
+        }
+        registry.put(road.revision(),new Road(road.id(),actor,road.world(),road.revision()+1,road.current()==null?State.REMOVED:State.ACTIVE,road.current(),null));
+        var remaining=new HashMap<>(emergency);remaining.remove(id);emergency=Map.copyOf(remaining);
+        plugin.getLogger().atWarning().log("Administrator %s released unfinished road %s in %s; its ground was left as it was",actor,id,world.getName());
+    }
     private void retain(Road road){var next=new HashMap<>(emergency);next.put(road.id(),road);emergency=Map.copyOf(next);}
     private HousingInfrastructure.WorldPlan infrastructure(World world,Version old,Version next,HousingInfrastructure.Snapshot snapshot,UUID id){
         RoadConnectionRules.preserveSurface(old,next,connections(world.getName(),id));

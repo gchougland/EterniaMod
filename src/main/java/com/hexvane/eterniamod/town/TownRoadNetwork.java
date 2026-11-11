@@ -1256,13 +1256,16 @@ public final class TownRoadNetwork {
                 SetupAccess.require(actor);
                 var roads = TownBuilder.supply(world, () -> TownRoadAuthor.unfinished(world));
                 if (roads.isEmpty()) { TownBuilder.tell(player, "No unfinished road work in this world. Claims are not blocked by roads."); return; }
-                int done = 0;
+                int restored = 0, released = 0, stuck = 0;
                 for (var road : roads) {
                     TownBuilder.loadArea(world, road.box()[0] - 4, road.box()[1] - 4, road.box()[2] + 4, road.box()[3] + 4);
-                    try { retrying(() -> { TownBuilder.on(world, () -> TownRoadAuthor.recover(world, actor, road.id())).join(); return null; }); done++; }
-                    catch (Exception e) { TownBuilder.tell(player, "The road work near " + road.box()[0] + ", " + road.box()[1] + " could not be put back: " + TownBuilder.cause(e)); }
+                    try { retrying(() -> { TownBuilder.on(world, () -> TownRoadAuthor.recover(world, actor, road.id())).join(); return null; }); restored++; continue; }
+                    catch (Exception e) { plugin.getLogger().atInfo().log("Unfinished road %s could not be put back (%s); releasing its lock", road.id(), TownBuilder.cause(e)); }
+                    // Its ground changed since, so it cannot be put back safely: free the lock and leave the ground as it is.
+                    try { TownBuilder.on(world, () -> TownRoadAuthor.release(world, actor, road.id())).join(); released++; TownBuilder.tell(player, "Freed the stuck road near " + road.box()[0] + ", " + road.box()[1] + ". Its ground was left as it is, so smooth it by hand if it looks odd."); }
+                    catch (Exception e) { stuck++; TownBuilder.tell(player, "The road work near " + road.box()[0] + ", " + road.box()[1] + " could not be freed: " + TownBuilder.cause(e)); }
                 }
-                TownBuilder.tell(player, done + " of " + roads.size() + " unfinished roads put back." + (done == roads.size() ? " Claims work again." : ""));
+                TownBuilder.tell(player, (restored > 0 ? restored + " put back. " : "") + (released > 0 ? released + " freed. " : "") + (stuck == 0 ? "Claims work again." : stuck + " still stuck."));
             } catch (Exception e) { TownBuilder.tell(player, "Could not check road work: " + TownBuilder.cause(e)); }
         });
     }
@@ -1365,7 +1368,11 @@ public final class TownRoadNetwork {
                         for (var id : List.copyOf(n.roads)) {
                             var joiners = TownBuilder.supply(world, () -> TownRoadAuthor.joiners(world, UUID.fromString(id)));
                             for (var j : joiners) {
-                                if (j.pending()) { TownBuilder.on(world, () -> TownRoadAuthor.recover(world, actor, j.id())).join(); cleared = true; }
+                                if (j.pending()) {
+                                    try { TownBuilder.on(world, () -> TownRoadAuthor.recover(world, actor, j.id())).join(); }
+                                    catch (Exception e) { TownBuilder.on(world, () -> TownRoadAuthor.release(world, actor, j.id())).join(); }
+                                    cleared = true;
+                                }
                                 else if (!n.roads.contains(j.id().toString())) outside.add(j.x() + ", " + j.z());
                             }
                         }

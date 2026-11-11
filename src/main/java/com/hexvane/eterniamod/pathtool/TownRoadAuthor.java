@@ -61,6 +61,9 @@ public final class TownRoadAuthor {
     /** Puts back the ground of a road whose build was interrupted. */
     public static void recover(World world,UUID actor,UUID id)throws Exception{SetupAccess.require(actor);SplineRoadTool.service().recover(world,actor,id);}
 
+    /** Lifts the lock of an unfinished road that can no longer be put back, leaving its ground as it is. */
+    public static void release(World world,UUID actor,UUID id)throws Exception{SetupAccess.require(actor);SplineRoadTool.service().release(world,actor,id);}
+
     /** Removes a road the town laid, restoring the ground it was built on. */
     public static void remove(World world,UUID actor,UUID id)throws Exception{
         SetupAccess.require(actor);var service=SplineRoadTool.service();service.confirm(world,service.reviewRemoval(world,actor,id));
