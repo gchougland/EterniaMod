@@ -80,4 +80,15 @@ class PathPlannerTest {
         // A two block cliff across the whole strip cannot be paved.
         org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,()->PathPlanner.planOnGround(land::contains,new PathPlanner.Cell(5,10),java.util.List.of(road),3,c->c.x()<150?0:2,java.util.List.of()));
     }
+
+    @Test void wideDoorPathLeavesOutHouseBlocksInsteadOfRefusing(){
+        var plot=new PlotRect(0,0,24,24);var road=List.of(new PlotRect(24,0,3,24));var house=new PlotRect(6,5,4,4);
+        // Three wide, starting right against the wall: the blocks that would land in the house are simply left out.
+        var plan=PathPlanner.plan(plot,new PathPlanner.Cell(5,6),road,3,c->!house.contains(c.x(),c.z()),List.of(house));
+        assertTrue(plan.blocks().stream().noneMatch(c->house.contains(c.x(),c.z())));
+        assertTrue(plan.blocks().contains(new PathPlanner.Cell(5,6)));
+        // Standing on the house's own step starts the path from the open ground beside it.
+        var onStep=PathPlanner.plan(plot,new PathPlanner.Cell(6,6),road,1,c->!house.contains(c.x(),c.z()),List.of(house));
+        assertFalse(house.contains(onStep.centerline().getFirst().x(),onStep.centerline().getFirst().z()));
+    }
 }

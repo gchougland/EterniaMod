@@ -65,18 +65,30 @@ public final class CustomizationService implements AutoCloseable {
         var instances=plugin.getServices().provenance().instances(property);if(instances.stream().anyMatch(i->i.state().equals("PLACED")&&"PATH".equals(i.nativeData().get("kind"))))throw new IllegalStateException("Remove the current path before changing its route");
         var house=instances.stream().filter(i->i.state().equals("PLACED")&&"HOUSE".equals(i.nativeData().get("kind"))).findFirst().orElseThrow();
         var occupied=new ArrayList<NativeSnapshotStore.Bounds>();
-        for(var placed:instances)if(placed.state().equals("PLACED"))occupied.add(snapshots().load(pointer(placed.nativeData(),"after")).bounds());
-        int ground=surface(world,startX,startZ,startY);if(ground==Integer.MIN_VALUE)throw new IllegalStateException("Stand on level natural ground outside your door");
+        // Every block a house or decoration put down is left alone: the path goes around it rather than paving over it.
+        Set<Long> taken=new HashSet<>();
+        for(var placed:instances)if(placed.state().equals("PLACED")){
+            var after=snapshots().load(pointer(placed.nativeData(),"after"));occupied.add(after.bounds());
+            BsonDocument beforeDoc=null;try{beforeDoc=snapshots().load(pointer(placed.nativeData(),"before")).document();}catch(Exception missing){}
+            var was=beforeDoc==null?Map.<String,BsonDocument>of():CellEdits.index(beforeDoc,"blocks");var ab=after.bounds();
+            for(var value:after.document().getArray("blocks")){var c=value.asDocument();String name=c.getString("name",new BsonString("Empty")).getValue();
+                if(name.equals("Empty")||CellEdits.sameCell(was.get(CellEdits.key(c)),c))continue;
+                taken.add(packCell(ab.minX()+c.getInt32("x").getValue(),ab.minY()+c.getInt32("y").getValue(),ab.minZ()+c.getInt32("z").getValue()));}
+        }
+        int ground=surface(world,startX,startZ,startY);
+        // Standing on a doorstep or a block of the house: start from the open ground beside it instead.
+        for(int d=1;ground==Integer.MIN_VALUE&&d<=3;d++)for(int dx=-d;dx<=d&&ground==Integer.MIN_VALUE;dx++)for(int dz=-d;dz<=d&&ground==Integer.MIN_VALUE;dz++)ground=surface(world,startX+dx,startZ+dz,startY);
+        if(ground==Integer.MIN_VALUE)throw new IllegalStateException("Stand on open ground just outside your door");
         var obstacles=occupied.stream().map(b->new PlotRect(b.minX(),b.minZ(),b.maxX()-b.minX(),b.maxZ()-b.minZ())).toList();
         // The path may cross the plot's own hexagons, however far, and the public road hexagons beside them to reach the road.
         var view=com.hexvane.eterniamod.hexplots.HexLand.view(plugin,world).orElse(null);
         PathPlanner.Area land=(x,z)->plot.containsColumn(x,z)||view!=null&&view.isStreet(view.lattice().cellAt(x,z));
         var start=new PathPlanner.Cell(startX,startZ);var near=new PlotRect(startX,startZ,1,1);
         var roads=plugin.getInfrastructure().structureRoads(world.getName()).stream().filter(road->near.gap(road)<=PATH_SEARCH).toList();
-        Map<PathPlanner.Cell,Integer> heights=new HashMap<>();
+        Map<PathPlanner.Cell,Integer> heights=new HashMap<>();final int around=ground;
         java.util.function.ToIntFunction<PathPlanner.Cell> height=cell->heights.computeIfAbsent(cell,c->{
             if(Math.abs(c.x()-startX)>PATH_SEARCH||Math.abs(c.z()-startZ)>PATH_SEARCH||plugin.getInfrastructure().protectedColumn(world.getName(),c.x(),c.z()))return PathPlanner.NO_GROUND;
-            int y=pathGround(world,c.x(),c.z(),ground);return y==Integer.MIN_VALUE?PathPlanner.NO_GROUND:y;});
+            int y=pathGround(world,c.x(),c.z(),around);return y==Integer.MIN_VALUE||taken.contains(packCell(c.x(),y,c.z()))?PathPlanner.NO_GROUND:y;});
         var route=PathPlanner.planOnGround(land,start,roads,width,height,obstacles).blocks();
         int minX=route.stream().mapToInt(PathPlanner.Cell::x).min().orElseThrow(),maxX=route.stream().mapToInt(PathPlanner.Cell::x).max().orElseThrow()+1;
         int minZ=route.stream().mapToInt(PathPlanner.Cell::z).min().orElseThrow(),maxZ=route.stream().mapToInt(PathPlanner.Cell::z).max().orElseThrow()+1;
@@ -204,6 +216,7 @@ public final class CustomizationService implements AutoCloseable {
     }
     /** Public road hexagon land, where a path may run on to meet the road. */
     private boolean street(World world,int x,int z){var view=com.hexvane.eterniamod.hexplots.HexLand.view(plugin,world).orElse(null);return view!=null&&view.isStreet(view.lattice().cellAt(x,z));}
+    private static long packCell(int x,int y,int z){return ((long)x&0x3FFFFFL)<<42|((long)z&0x3FFFFFL)<<20|((long)y&0xFFFFFL);}
     /** How far, in blocks, a path may wander from where it starts. */
     static final int PATH_SEARCH=320;
     /** The ground a path block can sit on near height {@code around}: natural ground with only air or plants above it. */

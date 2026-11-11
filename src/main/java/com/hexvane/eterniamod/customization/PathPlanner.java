@@ -60,13 +60,24 @@ public final class PathPlanner {
         Map<Cell,Boolean> checked=new HashMap<>();
         Predicate<Cell> valid=cell->checked.computeIfAbsent(cell,c->plot.contains(c.x,c.z)&&roads.stream().noneMatch(r->r.contains(c.x,c.z))
             &&(Math.hypot(c.x-start.x,c.z-start.z)<DOORSTEP||obstacles.stream().noneMatch(o->c.x>=o.x()-1&&c.x<o.x()+o.width()+1&&c.z>=o.z()-1&&c.z<o.z()+o.depth()+1))&&ground.test(c));
-        Predicate<Cell> center=cell->stamp(cell,width).stream().allMatch(t->valid.test(t)&&step.test(cell,t));
-        if(!center.test(start))throw new IllegalArgumentException("Stand on open ground outside your door, with room for the path's width.");
+        // Near the door the path keeps whatever part of its width fits and simply leaves out blocks of the house or a
+        // decoration; further out it needs its full width.
+        Predicate<Cell> near=c->Math.hypot(c.x-start.x,c.z-start.z)<DOORSTEP;
+        Predicate<Cell> center=cell->valid.test(cell)&&(near.test(cell)||stamp(cell,width).stream().allMatch(t->valid.test(t)&&step.test(cell,t)));
+        // Standing on a doorstep or another block the path cannot use starts it from the nearest open ground instead.
+        Cell first=start;
+        if(!center.test(start)){
+            Cell found=null;double best=Double.MAX_VALUE;
+            for(int dx=-3;dx<=3;dx++)for(int dz=-3;dz<=3;dz++){var c=new Cell(start.x+dx,start.z+dz);double d=Math.hypot(dx,dz);if(d<best&&center.test(c)){best=d;found=c;}}
+            if(found==null)throw new IllegalArgumentException("Stand on open ground just outside your door.");
+            first=found;
+        }
         // Reserve another cell around obstacles when space allows, so a bend has room to round off.
         // Near the starting point retain the requested clearance, allowing a path to leave a doorway.
         Predicate<Cell> roomy=c->center.test(c)&&(Math.hypot(c.x-start.x,c.z-start.z)<4||stamp(c,width).stream().noneMatch(tile->obstacles.stream().anyMatch(o->tile.x>=o.x()-2&&tile.x<o.x()+o.width()+2&&tile.z>=o.z()-2&&tile.z<o.z()+o.depth()+2)));
         List<Cell> original;
-        try{original=route(plot,start,roads,roomy,5+width/2,step);}catch(IllegalArgumentException tight){original=route(plot,start,roads,center,5+width/2,step);}
+        final Cell from=first;
+        try{original=route(plot,from,roads,roomy,5+width/2,step);}catch(IllegalArgumentException tight){original=route(plot,from,roads,center,5+width/2,step);}
         List<Point> bends=new ArrayList<>();bends.add(point(original.getFirst()));
         for(int i=1;i<original.size()-1;i++){Cell a=original.get(i-1),b=original.get(i),c=original.get(i+1);if(b.x-a.x!=c.x-b.x||b.z-a.z!=c.z-b.z)bends.add(point(b));}
         bends.add(point(original.getLast()));List<Point> curve=new ArrayList<>();curve.add(bends.getFirst());
@@ -76,7 +87,7 @@ public final class PathPlanner {
             for(int k=1;k<=16;k++){double t=k/16.0,u=1-t;curve.add(new Point(u*u*enter.x+2*u*t*b.x+t*t*exit.x,u*u*enter.z+2*u*t*b.z+t*t*exit.z));}
         }
         curve.add(bends.getLast());List<Cell> rounded=raster(curve,center,step);List<Cell> line=rounded==null?original:rounded;
-        Set<Cell> blocks=new LinkedHashSet<>();line.forEach(c->blocks.addAll(stamp(c,width)));
+        Set<Cell> blocks=new LinkedHashSet<>();line.forEach(c->stamp(c,width).forEach(t->{if(valid.test(t)&&step.test(c,t))blocks.add(t);}));
         if(blocks.stream().mapToDouble(c->roads.stream().mapToDouble(r->new PlotRect(c.x,c.z,1,1).gap(r)).min().orElse(99)).min().orElse(99)>5)
             throw new IllegalArgumentException("This path cannot reach close enough to the road.");
         return new Plan(List.copyOf(line),List.copyOf(blocks),width);
