@@ -43,6 +43,21 @@ public final class TownRoadAuthor {
         return List.copyOf(out);
     }
 
+    /** A road left unfinished in a world: its id and the box of columns it locks (minX, minZ, maxX, maxZ). */
+    public record Unfinished(UUID id,int[] box){}
+
+    /** Every road build left unfinished in this world. Each one keeps its cells locked and stops new claims. */
+    public static List<Unfinished> unfinished(World world){
+        var out=new java.util.ArrayList<Unfinished>();
+        for(var road:SplineRoadTool.service().roads()){
+            if(!road.world().equals(world.getName())||road.state()!=SplineRoadStore.State.PENDING||road.change()==null)continue;
+            int x0=Integer.MAX_VALUE,z0=Integer.MAX_VALUE,x1=Integer.MIN_VALUE,z1=Integer.MIN_VALUE;
+            for(var c:road.change().cells()){x0=Math.min(x0,c.x());z0=Math.min(z0,c.z());x1=Math.max(x1,c.x());z1=Math.max(z1,c.z());}
+            out.add(new Unfinished(road.id(),new int[]{x0,z0,x1,z1}));
+        }
+        return List.copyOf(out);
+    }
+
     /** Puts back the ground of a road whose build was interrupted. */
     public static void recover(World world,UUID actor,UUID id)throws Exception{SetupAccess.require(actor);SplineRoadTool.service().recover(world,actor,id);}
 

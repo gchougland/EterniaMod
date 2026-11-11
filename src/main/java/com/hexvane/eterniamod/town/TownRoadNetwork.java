@@ -87,7 +87,7 @@ public final class TownRoadNetwork {
     private static Runnable stopListening;
 
     /** A planned network waiting for the administrator's yes. */
-    public record Preview(UUID actor, String world, Mode mode, int[] anchor, Saved land, List<Road> roads, int cells, String summary, Instant expires, byte[] picture) {
+    public record Preview(UUID actor, String world, Mode mode, int[] anchor, Saved land, List<Road> roads, int cells, String summary, Instant expires, byte[] picture, String into) {
         public PlotRect plaza() { return land.plazaRect(); }
     }
     /** One road to build: its hexagons and the points it runs through (x, ground y or NaN, z). */
@@ -176,6 +176,7 @@ public final class TownRoadNetwork {
         var tmp = path.resolveSibling(path.getFileName() + ".pending");
         Files.writeString(tmp, JSON.toJson(ledger));
         Files.move(tmp, path, java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
+        TOWNS.put(world, townsOf(world, ledger));
     }
     private static void update(EterniaModPlugin plugin, String world, Network n) throws IOException {
         var l = ledger(plugin, world);
@@ -303,7 +304,7 @@ public final class TownRoadNetwork {
             try { return attempt.run(); }
             catch (Exception e) {
                 String why = TownBuilder.cause(e).toLowerCase(Locale.ROOT);
-                if (i >= 40 || !(why.contains("in flight") || why.contains("retry") || why.contains("loading"))) throw e;
+                if (i >= 40 || !(why.contains("in flight") || why.contains("retry") || why.contains("loading") || why.contains("saving") || why.contains("shortly"))) throw e;
                 Thread.sleep(250);
             }
         }
@@ -330,10 +331,19 @@ public final class TownRoadNetwork {
         HexLattice lattice = worldPlan.lattice();
         PlotRect plaza;
         int[] anchor = null;
+        String into = null;
+        boolean portalTown = false;
         if (mode == Mode.PLAZA) {
             plaza = worldPlan.portals().stream().min(Comparator.comparingDouble(r -> gap(r, x, z)))
                 .orElseThrow(() -> new IllegalStateException("This world has no plaza. Register one in /e admin setup, or place a portal town"));
             if (gap(plaza, x, z) > 300) throw new IllegalStateException("Stand in or near the plaza the roads should grow around");
+            // A town already recorded here: its roads must be cleared first, then new ones grow into the same record.
+            for (var old : ledger(plugin, world.getName()).networks) {
+                if ("undone".equals(old.state) || old.land == null || !Arrays.equals(old.land.plaza, new int[] {plaza.x(), plaza.z(), plaza.width(), plaza.depth()})) continue;
+                if (!"cleared".equals(old.state)) throw new IllegalStateException("This town already has roads. Take them away with /e admin town roads clear, then grow new ones");
+                into = old.id;
+                if ("PORTAL".equals(old.mode)) portalTown = true;
+            }
         } else {
             plaza = new PlotRect(x - PLATFORM_HALF, z - PLATFORM_HALF, 2 * PLATFORM_HALF + 1, 2 * PLATFORM_HALF + 1);
             var around = new PlotRect(plaza.x() - SKIRT, plaza.z() - SKIRT, plaza.width() + 2 * SKIRT, plaza.depth() + 2 * SKIRT);
@@ -359,7 +369,8 @@ public final class TownRoadNetwork {
         List<HexCoord> disk = HexCoord.disk(center, radius);
         TownBuilder.tell(player, "Surveying " + disk.size() + " hexagons of land...");
         var saved = new Saved();
-        saved.mode = mode.name();
+        // Regrowing a portal town: roads leave the platform's edges, as when it was first placed.
+        saved.mode = (portalTown ? Mode.PORTAL : mode).name();
         saved.plaza = new int[] {plaza.x(), plaza.z(), plaza.width(), plaza.depth()};
         saved.center = new int[] {center.q(), center.r()};
         saved.radius = radius;
@@ -390,7 +401,7 @@ public final class TownRoadNetwork {
             picture = TownRoadPicture.paint(lattice, disk, frame, TownRoadPicture.tiles(world, frame), worldPlan.roads(), worldPlan.portals(), plaza, roads);
             try { Files.createDirectories(TownBuilder.folder(plugin)); Files.write(TownBuilder.folder(plugin).resolve("last-plan.png"), picture); } catch (IOException ignored) { /* Only a convenience copy. */ }
         } catch (RuntimeException e) { plugin.getLogger().atWarning().withCause(e).log("Town road plan picture failed"); }
-        return new Preview(actor, world.getName(), mode, anchor, saved, List.copyOf(roads), reach[0], summary, Instant.now().plusSeconds(600), picture);
+        return new Preview(actor, world.getName(), mode, anchor, saved, List.copyOf(roads), reach[0], summary, Instant.now().plusSeconds(600), picture, into);
     }
 
     private static double gap(PlotRect r, int x, int z) {
@@ -603,7 +614,33 @@ public final class TownRoadNetwork {
         if (busy) throw new IllegalStateException("Town roads are already being built or removed");
         busy = true;
         JOBS.execute(() -> {
-            var n = new Network();
+            Network existing = null;
+            if (preview.into() != null) {
+                try { existing = ledger(plugin, world.getName()).networks.stream().filter(o -> o.id.equals(preview.into())).findFirst().orElse(null); }
+                catch (IOException ignored) {}
+            }
+            var n = existing != null ? existing : new Network();
+            if (existing != null) {
+                n.land = preview.land();
+                n.growing = !all;
+                n.lead = Math.max(0, Math.min(200, lead));
+                n.state = "building";
+                n.actor = preview.actor().toString();
+                try {
+                    update(plugin, world.getName(), n);
+                    grow(plugin, world, n, all, player);
+                    n.state = n.growing ? "growing" : "built";
+                    update(plugin, world.getName(), n);
+                    if (n.growing) TownBuilder.tell(player, "This town's roads now grow as homes are claimed.");
+                } catch (Exception e) {
+                    n.state = "stopped";
+                    n.growing = false;
+                    try { update(plugin, world.getName(), n); } catch (IOException ignored) {}
+                    TownBuilder.tell(player, "Town roads stopped: " + TownBuilder.cause(e) + ".");
+                    plugin.getLogger().atWarning().withCause(e).log("Town roads failed");
+                } finally { busy = false; }
+                return;
+            }
             n.id = UUID.randomUUID().toString();
             n.world = world.getName();
             n.mode = preview.mode().name();
@@ -621,7 +658,7 @@ public final class TownRoadNetwork {
             try {
                 SetupAccess.require(preview.actor());
                 update(plugin, world.getName(), n);
-                if (preview.mode() == Mode.PORTAL) platform(plugin, world, preview, n, player);
+                if (preview.mode() == Mode.PORTAL && preview.anchor() != null) platform(plugin, world, preview, n, player);
                 grow(plugin, world, n, all, player);
                 n.state = n.growing ? "growing" : "built";
                 update(plugin, world.getName(), n);
@@ -1191,22 +1228,75 @@ public final class TownRoadNetwork {
         sel.placeNoReturn(world, new Vector3i(0, 0, 0), world.getEntityStore().getStore());
     }
 
+    /**
+     * Puts backed up land back, newest first. A piece that cannot be put back (a road someone drew over it since) is
+     * named and skipped, so the rest still comes back. Background thread.
+     */
+    private static void restore(World world, NativeSnapshotStore store, List<TownBuilder.Backup> backups, PlayerRef player) throws Exception {
+        int missed = 0;
+        for (var b : List.copyOf(backups).reversed()) {
+            var bounds = new NativeSnapshotStore.Bounds(b.min[0], b.min[1], b.min[2], b.max[0], b.max[1], b.max[2]);
+            TownBuilder.loadArea(world, bounds.minX(), bounds.minZ(), bounds.maxX() - 1, bounds.maxZ() - 1);
+            try {
+                var snapshot = store.load(new SnapshotFiles.Saved(b.name, b.sha));
+                retrying(() -> { TownBuilder.on(world, () -> store.apply(world, snapshot, bounds.origin())).join(); return null; });
+            } catch (Exception e) {
+                missed++;
+                EterniaModPlugin.get().getLogger().atWarning().withCause(e).log("Town land near %d, %d could not be put back", bounds.minX(), bounds.minZ());
+                if (missed <= 3) TownBuilder.tell(player, "The land near " + bounds.minX() + ", " + bounds.minZ() + " could not be put back: " + TownBuilder.cause(e));
+            }
+            backups.remove(b);
+        }
+    }
+
+    /** Puts back every road build left unfinished in this world, so claims work again. */
+    public static void recoverUnfinished(EterniaModPlugin plugin, World world, UUID actor, PlayerRef player) {
+        JOBS.execute(() -> {
+            try {
+                SetupAccess.require(actor);
+                var roads = TownBuilder.supply(world, () -> TownRoadAuthor.unfinished(world));
+                if (roads.isEmpty()) { TownBuilder.tell(player, "No unfinished road work in this world. Claims are not blocked by roads."); return; }
+                int done = 0;
+                for (var road : roads) {
+                    TownBuilder.loadArea(world, road.box()[0] - 4, road.box()[1] - 4, road.box()[2] + 4, road.box()[3] + 4);
+                    try { retrying(() -> { TownBuilder.on(world, () -> TownRoadAuthor.recover(world, actor, road.id())).join(); return null; }); done++; }
+                    catch (Exception e) { TownBuilder.tell(player, "The road work near " + road.box()[0] + ", " + road.box()[1] + " could not be put back: " + TownBuilder.cause(e)); }
+                }
+                TownBuilder.tell(player, done + " of " + roads.size() + " unfinished roads put back." + (done == roads.size() ? " Claims work again." : ""));
+            } catch (Exception e) { TownBuilder.tell(player, "Could not check road work: " + TownBuilder.cause(e)); }
+        });
+    }
+
     // ---- names and travel ----------------------------------------------------------------------------------------------
     /** A portal town players can travel to: its name and where they arrive on its platform. */
-    public record PortalTown(String world, String name, double x, double y, double z, int centerX, int centerZ) {}
+    public record PortalTown(String world, String name, double x, double y, double z, int centerX, int centerZ, PlotRect plaza) {}
+
+    /** Portal towns by world, kept current on every save so the map can ask every tick without reading files. */
+    private static final Map<String, List<PortalTown>> TOWNS = new ConcurrentHashMap<>();
+
+    /** The portal towns standing in one world. */
+    public static List<PortalTown> portalTownsIn(String world) {
+        return TOWNS.computeIfAbsent(world, w -> {
+            try { return townsOf(w, ledger(EterniaModPlugin.get(), w)); } catch (IOException | RuntimeException e) { return List.of(); }
+        });
+    }
+
+    private static List<PortalTown> townsOf(String world, Ledger ledger) {
+        List<PortalTown> out = new ArrayList<>();
+        for (var n : ledger.networks) {
+            if (!"PORTAL".equals(n.mode) || "undone".equals(n.state) || n.anchor == null || n.plazaArea == null) continue;
+            var plaza = n.land != null ? n.land.plazaRect() : new PlotRect(n.anchor[0] - PLATFORM_HALF, n.anchor[2] - PLATFORM_HALF, 2 * PLATFORM_HALF + 1, 2 * PLATFORM_HALF + 1);
+            // Arrive on the platform a little south of the portal, clear of the middle podium.
+            out.add(new PortalTown(world, n.name == null || n.name.isBlank() ? "Portal town" : n.name, n.anchor[0] + .5, n.anchor[1], n.anchor[2] + 22.5, n.anchor[0], n.anchor[2], plaza));
+        }
+        out.sort(Comparator.comparing(PortalTown::name));
+        return List.copyOf(out);
+    }
 
     /** Every portal town standing, in every world, by name. */
     public static List<PortalTown> portalTowns(EterniaModPlugin plugin) {
         List<PortalTown> out = new ArrayList<>();
-        for (String world : plugin.getInfrastructure().worlds().keySet()) {
-            try {
-                for (var n : ledger(plugin, world).networks) {
-                    if (!"PORTAL".equals(n.mode) || "undone".equals(n.state) || n.anchor == null || n.plazaArea == null) continue;
-                    // Arrive on the platform a little south of the portal, clear of the middle podium.
-                    out.add(new PortalTown(world, n.name == null || n.name.isBlank() ? "Portal town" : n.name, n.anchor[0] + .5, n.anchor[1], n.anchor[2] + 22.5, n.anchor[0], n.anchor[2]));
-                }
-            } catch (IOException ignored) { /* An unreadable record lists nothing. */ }
-        }
+        for (String world : plugin.getInfrastructure().worlds().keySet()) out.addAll(portalTownsIn(world));
         out.sort(Comparator.comparing(PortalTown::name));
         return out;
     }
@@ -1234,7 +1324,13 @@ public final class TownRoadNetwork {
 
     // ---- undo ----------------------------------------------------------------------------------------------------------
     /** Takes away the network nearest to (x, z): its roads, newest first, then its bridges, portal, plaza and platform. */
-    public static void undo(EterniaModPlugin plugin, World world, UUID actor, int x, int z, PlayerRef player) {
+    public static void undo(EterniaModPlugin plugin, World world, UUID actor, int x, int z, PlayerRef player) { undo(plugin, world, actor, x, z, player, false); }
+
+    /**
+     * With {@code roadsOnly}, takes away just the nearest town's roads, bridges and the land work they did, keeping a
+     * portal town's platform, portal and plaza, so new roads can be grown with /e admin town roads grow.
+     */
+    public static void undo(EterniaModPlugin plugin, World world, UUID actor, int x, int z, PlayerRef player, boolean roadsOnly) {
         if (busy) throw new IllegalStateException("Town roads are already being built or removed");
         busy = true;
         JOBS.execute(() -> {
@@ -1278,9 +1374,38 @@ public final class TownRoadNetwork {
                         throw last;
                     }
                 }
+                if (roadsOnly) {
+                    if (!n.areas.isEmpty()) {
+                        List<String> bridges = List.copyOf(n.areas);
+                        TownBuilder.on(world, () -> {
+                            var infra = plugin.getInfrastructure();
+                            var snapshot = infra.snapshot();
+                            var before = snapshot.worlds().get(world.getName());
+                            if (before == null) return;
+                            var next = new TreeMap<>(before.areas());
+                            bridges.forEach(next::remove);
+                            infra.saveWorld(snapshot.revision(), world.getName(), before.withAreas(next));
+                        }).join();
+                        n.areas.clear();
+                        update(plugin, world.getName(), n);
+                    }
+                    // The platform's own backups (tile-...) stay, so a later full undo can still put that land back.
+                    List<TownBuilder.Backup> roadLand = new ArrayList<>();
+                    for (var b : n.backups) if (!b.name.contains("tile-")) roadLand.add(b);
+                    TownBuilder.tell(player, "Putting the land under the roads back...");
+                    restore(world, TownBuilder.store(plugin, "roads-" + n.id), roadLand, player);
+                    n.backups.removeIf(b -> !b.name.contains("tile-"));
+                    n.backedUp = new ArrayList<>();
+                    n.built = new ArrayList<>();
+                    n.failed = new ArrayList<>();
+                    n.state = "cleared";
+                    update(plugin, world.getName(), n);
+                    TownBuilder.tell(player, "This town's roads are gone. Grow new ones with /e admin town roads grow.");
+                    return;
+                }
                 if (n.portal != null) {
                     TownBuilder.loadArea(world, n.anchor[0] - 40, n.anchor[2] - 40, n.anchor[0] + 40, n.anchor[2] + 40);
-                    TownBuilder.on(world, () -> ManagedHubServices.removeById(plugin, world, actor, UUID.fromString(n.portal))).join();
+                    retrying(() -> { TownBuilder.on(world, () -> ManagedHubServices.removeById(plugin, world, actor, UUID.fromString(n.portal))).join(); return null; });
                     n.portal = null;
                     update(plugin, world.getName(), n);
                 }
@@ -1310,12 +1435,7 @@ public final class TownRoadNetwork {
                 if (!n.backups.isEmpty()) {
                     TownBuilder.tell(player, "Putting the land back...");
                     var store = TownBuilder.store(plugin, "roads-" + n.id);
-                    for (var b : n.backups.reversed()) {
-                        var bounds = new NativeSnapshotStore.Bounds(b.min[0], b.min[1], b.min[2], b.max[0], b.max[1], b.max[2]);
-                        TownBuilder.loadArea(world, bounds.minX(), bounds.minZ(), bounds.maxX() - 1, bounds.maxZ() - 1);
-                        var snapshot = store.load(new SnapshotFiles.Saved(b.name, b.sha));
-                        TownBuilder.on(world, () -> store.apply(world, snapshot, bounds.origin())).join();
-                    }
+                    restore(world, store, n.backups, player);
                 }
                 n.state = "undone";
                 update(plugin, world.getName(), n);

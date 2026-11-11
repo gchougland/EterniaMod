@@ -129,7 +129,16 @@ public final class HexMapOverlayService implements AutoCloseable {
         /** Bumped whenever {@link #labels} changes, so cached player tiles repaint. */
         int labelVersion;
         String labelSignature = "";
+        /** Portal town names, centred just north of each town's portal and allowed anywhere on its plaza. */
+        List<HexMapLabels.Spec> townLabels = List.of();
+        List<com.hexvane.eterniamod.housing.PlotRect> townPlazas = List.of();
         final Set<UUID> askedNames = new HashSet<>();
+
+        /** Land for a portal town's label: its plaza, keyed below every plot and street key. */
+        int townKeyAt(int x, int z) {
+            for (int i = 0; i < townPlazas.size(); i++) if (townPlazas.get(i).contains(x, z)) return -100 - i;
+            return HexMapPainter.NONE;
+        }
 
         void refreshLabels() {
             List<HexMapLabels.Spec> next = new ArrayList<>();
@@ -141,8 +150,15 @@ public final class HexMapOverlayService implements AutoCloseable {
                 next.add(new HexMapLabels.Spec(slot(plot.plotId()), text, middle(plot)));
                 signature.append(plot.plotId()).append(':').append(text).append(':').append(plot.cells()).append(';');
             }
+            List<HexMapLabels.Spec> towns = new ArrayList<>();
+            List<com.hexvane.eterniamod.housing.PlotRect> plazas = new ArrayList<>();
+            for (var town : com.hexvane.eterniamod.town.TownRoadNetwork.portalTownsIn(view.world())) {
+                towns.add(new HexMapLabels.Spec(-100 - plazas.size(), town.name(), town.centerX() + .5, town.centerZ() - 14.5));
+                plazas.add(town.plaza());
+                signature.append("town:").append(town.name()).append(':').append(town.centerX()).append(',').append(town.centerZ()).append(';');
+            }
             String sig = signature.toString();
-            if (!sig.equals(labelSignature)) { labelSignature = sig; labels = List.copyOf(next); labelVersion++; }
+            if (!sig.equals(labelSignature)) { labelSignature = sig; labels = List.copyOf(next); townLabels = List.copyOf(towns); townPlazas = List.copyOf(plazas); labelVersion++; }
         }
 
         /**
@@ -358,6 +374,7 @@ public final class HexMapOverlayService implements AutoCloseable {
             return plot == null ? null : HexMapPainter.Style.of(HexBorderPlanner.relation(view, plot, viewer));
         });
         HexMapLabels.draw(out, base.width, base.height, cx, cz, state.labels, state::keyAt);
+        HexMapLabels.draw(out, base.width, base.height, cx, cz, state.townLabels, state::townKeyAt);
         return HexMapPixels.pack(base.width, base.height, out);
     }
 

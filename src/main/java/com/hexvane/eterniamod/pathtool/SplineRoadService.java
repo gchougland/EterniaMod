@@ -76,7 +76,7 @@ final class SplineRoadService {
     private Plan plan(World world,List<SplineGeometry.Node> nodes,int width,UUID editing,boolean authoritative){
         requireWorld(world);
         var materials=pavingMaterials();var hints=SplineGeometry.footprint(nodes,width);var cells=new ArrayList<SplineGeometry.Cell>();var connections=new ArrayList<SplineGeometry.Cell>();var invalid=new LinkedHashMap<SplineGeometry.Column,String>();var forbidden=forbidden(world,authoritative);var publicRoads=connectionRoads(world,editing);
-        for(var hint:hints){var c=hint.column();boolean shared=publicRoads.stream().anyMatch(r->r.contains(c.x(),c.z()));Integer y=ground(world,c.x(),c.z(),hint.y(),shared,materials);if(y==null){invalid.put(c,"Load the ground under every part of the road");continue;}var cell=new SplineGeometry.Cell(c.x(),y,c.z());if(shared)connections.add(cell);else cells.add(cell);String problem=cellProblem(world,cell,forbidden,shared,materials);if(problem!=null)invalid.put(c,problem);}
+        for(var hint:hints){var c=hint.column();boolean shared=publicRoads.contains(c.x(),c.z(),null);Integer y=ground(world,c.x(),c.z(),hint.y(),shared,materials);if(y==null){invalid.put(c,"Load the ground under every part of the road");continue;}var cell=new SplineGeometry.Cell(c.x(),y,c.z());if(shared)connections.add(cell);else cells.add(cell);String problem=cellProblem(world,cell,forbidden,shared,materials);if(problem!=null)invalid.put(c,problem);}
         // This is a WorldEditor tool: follow each terrain column without imposing a slope limit,
         // including across the road's width. Only placed props obstruct entity clearance.
         var all=new ArrayList<>(cells);all.addAll(connections);var heights=new HashMap<SplineGeometry.Column,Integer>();all.forEach(c->heights.put(c.column(),c.y()));
@@ -159,7 +159,9 @@ final class SplineRoadService {
         EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots().forEach(p->{if(!p.isHex())result.add(NativeHousingChecks.rect(p.getFootprint()));});
         if(authoritative)plugin.getServices().batch(()->{for(var slot:plugin.getServices().housing().allSlots())if(slot.state()!=HousingService.State.PACKED)plugin.getServices().housing().location(slot.owner()).filter(l->l.worldId().equals(world.getName())&&!l.isHex()).ifPresent(l->result.add(new PlotRect(l.minX(),l.minZ(),l.width(),l.depth())));return null;});return result;
     }
-    private List<PlotRect> connectionRoads(World world,UUID editing){var edited=editing==null?null:find(editing);Set<String> own=edited==null||edited.current()==null?Set.of():edited.current().areas().keySet();return plugin.getInfrastructure().world(world.getName()).orElseThrow().areas().entrySet().stream().filter(e->!own.contains(e.getKey())).map(e->e.getValue().rect()).toList();}
+    /** Every registered road and plaza except the edited road's own, indexed by place. */
+    private com.hexvane.eterniamod.housing.AreaIndex connectionRoads(World world,UUID editing){var edited=editing==null?null:find(editing);Set<String> own=edited==null||edited.current()==null?Set.of():edited.current().areas().keySet();
+        var areas=new HashMap<>(plugin.getInfrastructure().world(world.getName()).orElseThrow().areas());areas.keySet().removeAll(own);return new com.hexvane.eterniamod.housing.AreaIndex(areas);}
     private String cellProblem(World world,SplineGeometry.Cell cell,List<PlotRect> forbidden,boolean shared,Set<String> materials){
         if(!shared&&ManagedHubServices.intersectsManaged(world.getName(),new PlotRect(cell.x(),cell.z(),1,1)))return "Move the road around the portal or service NPC";
         if(forbidden.stream().anyMatch(r->r.contains(cell.x(),cell.z())))return "Road crosses a plot, reserved claim or another protected road";

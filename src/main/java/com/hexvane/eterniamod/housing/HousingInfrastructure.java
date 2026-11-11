@@ -17,6 +17,11 @@ public final class HousingInfrastructure {
     public record Point(double x, double y, double z) {
         public Point { if(!Double.isFinite(x)||!Double.isFinite(y)||!Double.isFinite(z))throw new IllegalArgumentException("Arrival coordinates must be finite"); }
     }
+    /**
+     * Most registered areas one world holds. A spline road registers one rectangle per row it covers, so a town's roads
+     * need thousands; protection checks use {@link AreaIndex} so the count does not slow them down.
+     */
+    public static final int MAX_AREAS = 50_000;
     public enum AreaKind { ROAD, PORTAL }
     public record Area(AreaKind kind, PlotRect rect) {
         public Area { Objects.requireNonNull(kind); Objects.requireNonNull(rect); }
@@ -34,7 +39,7 @@ public final class HousingInfrastructure {
             if (!Set.of("hub", "housing", "adventure").contains(role)) throw new IllegalArgumentException("Unknown world role: " + role);
             if (housingEnabled && role.equals("adventure")) throw new IllegalArgumentException("Housing cannot be enabled in an adventure world");
             roads = List.copyOf(Objects.requireNonNull(roads)); portals = List.copyOf(Objects.requireNonNull(portals));
-            if(roads.size()+portals.size()>2048)throw new IllegalArgumentException("A world supports at most 2048 infrastructure areas");
+            if(roads.size()+portals.size()>MAX_AREAS)throw new IllegalArgumentException("A world supports at most "+MAX_AREAS+" infrastructure areas");
             if(areas==null) {
                 var migrated=new TreeMap<String,Area>();
                 for(var kind:AreaKind.values())for(var rect:kind==AreaKind.ROAD?roads:portals) {
@@ -161,6 +166,18 @@ public final class HousingInfrastructure {
         var remaining=new ArrayList<>(rectangles);for(var area:areas.values())if(area.kind==kind&&!remaining.remove(area.rect))return false;return remaining.isEmpty();
     }
     public Optional<WorldPlan> world(String name) { return Optional.ofNullable(worlds.get(name)); }
+    private record Indexed(WorldPlan plan, AreaIndex index) {}
+    private final java.util.concurrent.ConcurrentHashMap<String, Indexed> indexes = new java.util.concurrent.ConcurrentHashMap<>();
+    /** The area index of a world's current plan, rebuilt when the plan changes. Null when the world is not set up. */
+    public AreaIndex index(String world) {
+        var plan = worlds.get(world);
+        if (plan == null) return null;
+        var cached = indexes.get(world);
+        if (cached != null && cached.plan() == plan) return cached.index();
+        var built = new Indexed(plan, new AreaIndex(plan.areas()));
+        indexes.put(world, built);
+        return built.index();
+    }
     public Map<String, WorldPlan> worlds() { return worlds; }
     public boolean isHousing(String world) { return world(world).map(WorldPlan::supportsHousing).orElse(false); }
     /** Claim anchors deliberately use WorldPlan.roads(), which contains only administrator-authored roads. */
@@ -170,17 +187,20 @@ public final class HousingInfrastructure {
         return List.copyOf(roads);
     }
     public boolean publicProtectedColumn(String world, int x, int z) {
-        return world(world).map(p -> p.roads.stream().anyMatch(r -> r.contains(x,z)) || p.portals.stream().anyMatch(r -> r.contains(x,z))).orElse(false);
+        var index = index(world);
+        return index != null && index.contains(x, z, null);
     }
     public boolean publicPortalColumn(String world, int x, int z) {
-        return world(world).map(p -> p.portals.stream().anyMatch(r -> r.contains(x,z))).orElse(false);
+        var index = index(world);
+        return index != null && index.contains(x, z, AreaKind.PORTAL);
     }
     public boolean protectedColumn(String world, int x, int z) {
         if (com.hexvane.eterniamod.setup.paving.RoadPaving.protectedColumn(world,x,z)) return true;
         if (com.hexvane.eterniamod.pathtool.SplineRoadTool.pendingColumn(world,x,z)) return true;
         // A journalled spline write may restore only its own named road areas and exact cells.
-        if (world(world).map(p -> p.areas.entrySet().stream().anyMatch(e -> e.getValue().rect.contains(x,z)
-            && (e.getValue().kind == AreaKind.PORTAL || !com.hexvane.eterniamod.pathtool.SplineRoadTool.mayWriteArea(world,e.getKey(),x,z)))).orElse(false)) return true;
+        var index = index(world);
+        if (index != null) for (var e : index.near(x, z))
+            if (e.rect().contains(x,z) && (e.kind() == AreaKind.PORTAL || !com.hexvane.eterniamod.pathtool.SplineRoadTool.mayWriteArea(world,e.name(),x,z))) return true;
         RoadWrite scope = roadWrite.get();
         if (scope != null && scope.world.equals(world) && scope.exactRect.contains(x,z)) return false;
         return guildRoads.apply(world).stream().anyMatch(r -> r.contains(x,z));
@@ -188,7 +208,8 @@ public final class HousingInfrastructure {
     public boolean intersectsProtected(String world, PlotRect rect) {
         if (com.hexvane.eterniamod.setup.paving.RoadPaving.protectedRects(world).stream().anyMatch(rect::overlaps)) return true;
         if (com.hexvane.eterniamod.pathtool.SplineRoadTool.pendingRects(world).stream().anyMatch(rect::overlaps)) return true;
-        if (world(world).map(p -> p.roads.stream().anyMatch(r -> r.overlaps(rect)) || p.portals.stream().anyMatch(r -> r.overlaps(rect))).orElse(false)) return true;
+        var index = index(world);
+        if (index != null && index.overlaps(rect)) return true;
         RoadWrite scope = roadWrite.get();
         for (PlotRect road : guildRoads.apply(world)) {
             if (!road.overlaps(rect)) continue;

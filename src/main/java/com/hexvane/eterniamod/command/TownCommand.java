@@ -50,7 +50,7 @@ final class TownCommand extends AbstractCommandCollection {
     }
     /** /e admin town roads grow and undo. */
     private static final class Roads extends AbstractCommandCollection {
-        Roads(){super("roads","Grow a town's road network around the nearest plaza, or take one away");setPermissionGroups("hytale:WorldEditor");addSubCommand(new Grow());addSubCommand(new RoadsUndo());}
+        Roads(){super("roads","Grow a town's road network around the nearest plaza, or take one away");setPermissionGroups("hytale:WorldEditor");addSubCommand(new Grow());addSubCommand(new RoadsUndo());addSubCommand(new RoadsClear());addSubCommand(new RoadsRecover());}
     }
     private static final class Grow extends AbstractPlayerCommand {
         private final OptionalArg<Integer> radius=withOptionalArg("radius","How many hexagons out from the plaza the roads may reach (2 to 25, default 7)",ArgTypes.INTEGER);
@@ -90,6 +90,23 @@ final class TownCommand extends AbstractCommandCollection {
             if(!ref.isValid()){player.sendMessage(Message.raw(preview.summary()));return;}
             com.hexvane.eterniamod.town.TownRoadPlanPage.open(ref,store,player,world,preview,preview.picture(),lead);
         }));
+    }
+    private static final class RoadsClear extends AbstractPlayerCommand {
+        RoadsClear(){super("clear","Take away the nearest town's roads but keep the town, so new roads can be grown");setPermissionGroups("hytale:WorldEditor");}
+        @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){
+            var transform=store.getComponent(ref,TransformComponent.getComponentType());if(transform==null){player.sendMessage(Message.raw("Your position is unavailable."));return;}
+            var p=transform.getPosition();int x=(int)Math.floor(p.x),z=(int)Math.floor(p.z);
+            ChoicePage.open(ref,store,player,"Take away these roads?","Removes the roads and bridges of the town nearest to you and puts their land back. A portal town keeps its platform, portal and plaza. Grow new roads afterwards with /e admin town roads grow.",List.of(new ChoicePage.Choice("Take the roads away, keep the town","Clear",(r,s)->{
+                try{TownRoadNetwork.undo(EterniaModPlugin.get(),world,player.getUuid(),x,z,player,true);player.sendMessage(Message.raw("Taking the roads away..."));}catch(RuntimeException e){player.sendMessage(Message.raw(e.getMessage()));}
+            })));
+        }
+    }
+    private static final class RoadsRecover extends AbstractPlayerCommand {
+        RoadsRecover(){super("recover","Put back road work left unfinished in this world, which stops claims");setPermissionGroups("hytale:WorldEditor");}
+        @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){
+            player.sendMessage(Message.raw("Checking for unfinished road work..."));
+            TownRoadNetwork.recoverUnfinished(EterniaModPlugin.get(),world,player.getUuid(),player);
+        }
     }
     private static final class RoadsUndo extends AbstractPlayerCommand {
         RoadsUndo(){super("undo","Take away the town roads nearest to you, with their portal town if they had one");setPermissionGroups("hytale:WorldEditor");}
