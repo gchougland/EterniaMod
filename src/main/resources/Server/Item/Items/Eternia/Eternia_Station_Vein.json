@@ -1,0 +1,62 @@
+{
+  "TranslationProperties": {
+    "Name": "eternia_production.items.Eternia_Station_Vein.name",
+    "Description": "eternia_production.items.Eternia_Station_Vein.description"
+  },
+  "Icon": "Icons/ItemsGenerated/Ore_Copper_Stone.png",
+  "Categories": [
+    "Furniture.Misc"
+  ],
+  "Set": "Eternia",
+  "Recipe": null,
+  "MaxStack": 1,
+  "Quality": "Technical",
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "CubeWithModel",
+    "CustomModel": "Resources/Ores/Ore_Large.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Resources/Ores/Ore_Textures/Copper.png",
+        "Weight": 1
+      }
+    ],
+    "Group": "Stone",
+    "Textures": [
+      {
+        "Weight": 1,
+        "All": "BlockTextures/Rock_Stone.png"
+      }
+    ],
+    "BlockParticleSetId": "Ore",
+    "ParticleColor": "#ffa04a",
+    "BlockSoundSetId": "Ore",
+    "PhysicalMaterialId": "Stone",
+    "InteractionHint": "eternia_production.hint.work",
+    "Interactions": {
+      "Use": {
+        "Interactions": [
+          {
+            "Type": "EterniaStationUse",
+            "Route": "WORK"
+          }
+        ]
+      }
+    },
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Unbreakable"
+      }
+    }
+  },
+  "PlayerAnimationsId": "Block",
+  "Tags": {
+    "Type": [
+      "Furniture"
+    ],
+    "Family": [
+      "Eternia"
+    ]
+  },
+  "ItemSoundSetId": "ISS_Blocks_Wood"
+}

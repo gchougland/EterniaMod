@@ -26,6 +26,8 @@ final class HousingUseCapabilities {
             var root=RootInteraction.getAssetMap().getAsset(block.getInteractions().get(event.getInteractionType()));
             if(root==null)return Set.of("housing.container.open");
             var collector=new Behaviors();InteractionManager.walkChain(collector,event.getInteractionType(),event.getContext(),root);
+            // A station is looked at by anyone who may visit; who may collect or upgrade is decided by the station itself.
+            if(block.getId().startsWith("Eternia_Station_")&&!container&&collector.types.equals(Set.of("EterniaStationUse")))return Set.of("housing.visit");
             if("Eternia_Guild_Waygate".equals(block.getId())&&!container&&collector.types.equals(Set.of(EterniaHousingTool.class.getSimpleName())))return Set.of("convenience.use");
             return required(container,block.getBench() instanceof com.hypixel.hytale.server.core.asset.type.blocktype.config.bench.ProcessingBench,
                 "Eternia_Management_Block".equals(block.getId()),Set.of("Eternia_World_Portal","Eternia_Home_Portal").contains(block.getId()),door(store.getExternalData().getWorld(),p.x,p.y,p.z),block.getBeds()!=null,block.getBench()!=null,collector.types);

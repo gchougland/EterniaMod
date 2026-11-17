@@ -4,6 +4,9 @@
 
 ### Added
 
+- Production stations. Every player gets a Mine Shaft to place on their plot from Decorations. It digs ore while you are online anywhere in Eternia. Collect from its crate to watch the ore fly out, then spend it at its signboard on levels, tools and talents. New tiers change how the mine looks. There are rare finds to discover, golden moments to catch, and daily orders that pay Seals for your Estate. Open Production in Home in your Journal to see all your stations, orders and Seals at a glance.
+- House and production hexagons. Your plot starts with a house hexagon and one free production hexagon that you place beside it. You can add up to six production hexagons and a few more house hexagons, each with its own limit. Stations go on production hexagons and your house goes on house hexagons. The Claim Map marks them with a house or a pickaxe and asks which kind you want when you add one.
+- Admins can give houses, decorations, stations and collection items from a menu with `/e admin give`. Type a player's name or pick someone online, then press Give.
 - Eternia has its own chat. Press the walk key to open it, pick a channel with the tabs along the top, and add emotes from the smiley button or by typing a name between colons, like :heart:. New messages pop up for a few seconds while it is closed.
 - New plots are levelled for you. A freshly claimed hexagon is flattened to the height of the road beside it, and every hexagon you add later matches the rest of your plot. A guild's estate and its members' plots share one height. The edges either blend gently into the land around them or rise as a neat hexagon step. Trees, bushes, wild wheat, berry bushes, flowers and rubble are cleared while grass stays, on any kind of ground. A tree cut by your plot is removed whole, so no pieces are left floating beside it. Crops growing on farmland are left alone. Buildings, roads and other plots are never changed.
 - You can sell a hexagon back from your plot and get its Crowns back. Open Home in your Journal and press Sell a hexagon. Decorations on it go back to your inventory, and its ground goes back to how it was.
@@ -25,7 +28,7 @@
 
 ### Changed
 
-- Extra hexagons cost 500 Crowns each instead of coins.
+- Extra hexagons cost 500 Crowns each instead of coins, and a plot can now grow to 10 hexagons.
 - Roads built with the Road Designer use half blocks where they step up one block, so walking up them is smooth.
 - Placing the Eternia town now lays one short road out of each gate, lined up with it, instead of the whole road grid. Grow the rest with `/e admin town roads grow`.
 - Houses and decorations in Collections have a Place button. Stand on your plot and press it to start placing.

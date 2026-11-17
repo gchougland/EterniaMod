@@ -87,6 +87,16 @@ class ModerationServiceTest {
         assertEquals(List.of("1d", "3d", "7d", "30d", "perm"), bundled.steps().stream().map(BanDuration::compact).toList());
     }
 
+    @Test void missingOverrideIsWrittenFromTheDefault(@TempDir Path data) throws Exception {
+        Path folder = data.resolve("EterniaMod");
+        var ladder = BanLadder.load(folder, getClass().getClassLoader());
+        Path written = folder.resolve(BanLadder.OVERRIDE_FILE);
+        assertTrue(java.nio.file.Files.isRegularFile(written));
+        assertEquals(ladder, BanLadder.parse(java.nio.file.Files.newBufferedReader(written)));
+        java.nio.file.Files.writeString(written, "{\"Steps\":[\"1h\"]}");
+        assertEquals(List.of("1h"), BanLadder.load(folder, getClass().getClassLoader()).steps().stream().map(BanDuration::compact).toList());
+    }
+
     @Test void serverOverrideReplacesTheLadder(@TempDir Path data) throws Exception {
         java.nio.file.Files.writeString(data.resolve(BanLadder.OVERRIDE_FILE), "{\"Steps\":[\"2h\",\"perm\"]}");
         var ladder = BanLadder.load(data, getClass().getClassLoader());

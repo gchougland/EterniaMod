@@ -1,0 +1,415 @@
+{
+  "Id": "miner",
+  "Name": "Miner",
+  "Unit": "ore",
+  "CycleSeconds": 10,
+  "Quirk": "Veins. Now and then the mine strikes a vein, and the next few loads come up three times as rich.",
+  "Goods": [
+    {
+      "Name": "Stone",
+      "Item": "Rock_Stone"
+    },
+    {
+      "Name": "Copper",
+      "Item": "Ore_Copper"
+    },
+    {
+      "Name": "Iron",
+      "Item": "Ore_Iron"
+    },
+    {
+      "Name": "Silver",
+      "Item": "Ore_Silver"
+    },
+    {
+      "Name": "Thorium",
+      "Item": "Ore_Thorium"
+    },
+    {
+      "Name": "Cobalt",
+      "Item": "Ore_Cobalt"
+    },
+    {
+      "Name": "Gold",
+      "Item": "Ore_Gold"
+    },
+    {
+      "Name": "Adamantite",
+      "Item": "Ore_Adamantite"
+    }
+  ],
+  "Tools": [
+    "Pulley",
+    "Pickaxe",
+    "Ore Cart",
+    "Lantern"
+  ],
+  "Cards": [
+    {
+      "Id": "wide_tunnels",
+      "Path": "bounty",
+      "Milestone": 1,
+      "Name": "Wide Tunnels",
+      "Text": "The mine makes 30% more ore, all the time.",
+      "Effects": {
+        "output": 1.3
+      }
+    },
+    {
+      "Id": "glint_in_the_dark",
+      "Path": "fortune",
+      "Milestone": 1,
+      "Name": "Glint in the Dark",
+      "Text": "Veins strike twice as often.",
+      "Effects": {
+        "veinChance": 2
+      }
+    },
+    {
+      "Id": "pick_in_hand",
+      "Path": "vigor",
+      "Milestone": 1,
+      "Name": "Pick in Hand",
+      "Text": "Working the mine yourself is twice as strong.",
+      "Effects": {
+        "hand": 2
+      }
+    },
+    {
+      "Id": "deep_carts",
+      "Path": "bounty",
+      "Milestone": 2,
+      "Name": "Deep Carts",
+      "Text": "The stockpile holds twice as much.",
+      "Effects": {
+        "cap": 2
+      }
+    },
+    {
+      "Id": "lucky_pick",
+      "Path": "fortune",
+      "Milestone": 2,
+      "Name": "Lucky Pick",
+      "Text": "Rare finds are worth three times as much.",
+      "Effects": {
+        "rareValue": 3
+      }
+    },
+    {
+      "Id": "second_wind",
+      "Path": "vigor",
+      "Milestone": 2,
+      "Name": "Second Wind",
+      "Text": "Rush lasts a minute longer.",
+      "Effects": {
+        "rushSeconds": 60
+      }
+    },
+    {
+      "Id": "sturdy_props",
+      "Path": "bounty",
+      "Milestone": 3,
+      "Name": "Sturdy Props",
+      "Text": "The mine makes 40% more ore.",
+      "Effects": {
+        "output": 1.4
+      }
+    },
+    {
+      "Id": "long_seams",
+      "Path": "fortune",
+      "Milestone": 3,
+      "Name": "Long Seams",
+      "Text": "Each vein lasts 5 loads longer.",
+      "Effects": {
+        "veinCycles": 5
+      }
+    },
+    {
+      "Id": "fresh_air",
+      "Path": "vigor",
+      "Milestone": 3,
+      "Name": "Fresh Air",
+      "Text": "Your first collect each day is doubled.",
+      "Effects": {
+        "firstCollect": 2
+      }
+    },
+    {
+      "Id": "night_shift",
+      "Path": "bounty",
+      "Milestone": 4,
+      "Name": "Night Shift",
+      "Text": "Every load comes up 15% sooner.",
+      "Effects": {
+        "pace": 0.85
+      }
+    },
+    {
+      "Id": "prospectors_eye",
+      "Path": "fortune",
+      "Milestone": 4,
+      "Name": "Prospector's Eye",
+      "Text": "Rare finds turn up twice as often.",
+      "Effects": {
+        "luck": 2
+      }
+    },
+    {
+      "Id": "strong_arms",
+      "Path": "vigor",
+      "Milestone": 4,
+      "Name": "Strong Arms",
+      "Text": "Working the mine yourself is twice as strong again.",
+      "Effects": {
+        "hand": 2
+      }
+    },
+    {
+      "Id": "motherlode",
+      "Path": "bounty",
+      "Milestone": 5,
+      "Name": "Motherlode",
+      "Text": "The mine makes 60% more ore.",
+      "Effects": {
+        "output": 1.6
+      }
+    },
+    {
+      "Id": "rich_seams",
+      "Path": "fortune",
+      "Milestone": 5,
+      "Name": "Rich Seams",
+      "Text": "Veins strike more often and last 5 loads longer.",
+      "Effects": {
+        "veinChance": 1.5,
+        "veinCycles": 5
+      }
+    },
+    {
+      "Id": "foreman",
+      "Path": "vigor",
+      "Milestone": 5,
+      "Name": "Foreman",
+      "Text": "Hand work is half again as strong, and the mine makes 20% more ore.",
+      "Effects": {
+        "hand": 1.5,
+        "output": 1.2
+      }
+    },
+    {
+      "Id": "double_shifts",
+      "Path": "bounty",
+      "Milestone": 6,
+      "Name": "Double Shifts",
+      "Text": "The mine makes 50% more ore.",
+      "Effects": {
+        "output": 1.5
+      }
+    },
+    {
+      "Id": "deep_veins",
+      "Path": "fortune",
+      "Milestone": 6,
+      "Name": "Deep Veins",
+      "Text": "Veins strike more often, and rare finds are worth twice as much.",
+      "Effects": {
+        "veinChance": 1.5,
+        "rareValue": 2
+      }
+    },
+    {
+      "Id": "iron_lungs",
+      "Path": "vigor",
+      "Milestone": 6,
+      "Name": "Iron Lungs",
+      "Text": "Rush lasts a minute longer, and hand work is half again as strong.",
+      "Effects": {
+        "rushSeconds": 60,
+        "hand": 1.5
+      }
+    },
+    {
+      "Id": "grand_stores",
+      "Path": "bounty",
+      "Milestone": 7,
+      "Name": "Grand Stores",
+      "Text": "The stockpile holds twice as much again.",
+      "Effects": {
+        "cap": 2
+      }
+    },
+    {
+      "Id": "golden_touch",
+      "Path": "fortune",
+      "Milestone": 7,
+      "Name": "Golden Touch",
+      "Text": "Rare finds turn up twice as often again.",
+      "Effects": {
+        "luck": 2
+      }
+    },
+    {
+      "Id": "master_miner",
+      "Path": "vigor",
+      "Milestone": 7,
+      "Name": "Master Miner",
+      "Text": "Working the mine yourself is twice as strong, and every load comes up 10% sooner.",
+      "Effects": {
+        "hand": 2,
+        "pace": 0.9
+      }
+    }
+  ],
+  "Sets": {
+    "bounty": {
+      "cap": 1.5
+    },
+    "fortune": {
+      "rareValue": 3
+    },
+    "vigor": {
+      "firstCollect": 2
+    }
+  },
+  "Finds": [
+    {
+      "Id": "lost_lantern",
+      "Name": "Lost Lantern",
+      "Item": "Deco_Lantern",
+      "Text": "Still warm. Somebody was here before you."
+    },
+    {
+      "Id": "old_bucket",
+      "Name": "Old Bucket",
+      "Item": "Deco_Bucket",
+      "Text": "It has a hole in it. It always did."
+    },
+    {
+      "Id": "rusty_chain",
+      "Name": "Rusty Chain",
+      "Item": "Deco_Iron_Chain_Small",
+      "Text": "Whatever it held is long gone."
+    },
+    {
+      "Id": "runaway_cart",
+      "Name": "Runaway Cart",
+      "Item": "Rail_Kart",
+      "Text": "It rolled off years ago and kept going."
+    },
+    {
+      "Id": "glowing_lump",
+      "Name": "Silver Nugget",
+      "Item": "Ingredient_Bar_Silver",
+      "Text": "Somebody melted this down and then lost it."
+    },
+    {
+      "Id": "mithril_sliver",
+      "Name": "Mithril Sliver",
+      "Item": "Ore_Mithril",
+      "Text": "Light as a feather and worth a great deal more."
+    },
+    {
+      "Id": "onyxium_chunk",
+      "Name": "Onyxium Chunk",
+      "Item": "Ore_Onyxium",
+      "Text": "Darker than the tunnel it came from."
+    },
+    {
+      "Id": "prisma_shard",
+      "Name": "Prisma Shard",
+      "Item": "Ore_Prisma",
+      "Text": "It throws colours on the walls."
+    },
+    {
+      "Id": "lost_ingot",
+      "Name": "Lost Ingot",
+      "Item": "Ingredient_Bar_Gold",
+      "Text": "Someone's whole week, dropped down a shaft."
+    },
+    {
+      "Id": "old_bronze",
+      "Name": "Old Bronze",
+      "Item": "Ingredient_Bar_Bronze",
+      "Text": "Cast long before your plot was a plot."
+    },
+    {
+      "Id": "ancient_lamp",
+      "Name": "Ancient Lamp",
+      "Item": "Furniture_Human_Ruins_Lantern",
+      "Text": "It lights when nobody is looking."
+    },
+    {
+      "Id": "goblin_shackle",
+      "Name": "Goblin Shackle",
+      "Item": "Metal_Goblin_Iron_Chain_Small",
+      "Text": "The goblins dug here first."
+    }
+  ],
+  "Station": {
+    "Name": "Mine Shaft",
+    "Prefabs": [
+      "EterniaMod/Stations/Station_Mine_T1",
+      "EterniaMod/Stations/Station_Mine_T2",
+      "EterniaMod/Stations/Station_Mine_T3",
+      "EterniaMod/Stations/Station_Mine_T4",
+      "EterniaMod/Stations/Station_Mine_T5",
+      "EterniaMod/Stations/Station_Mine_T6",
+      "EterniaMod/Stations/Station_Mine_T7",
+      "EterniaMod/Stations/Station_Mine_T8"
+    ],
+    "Radius": 3,
+    "Depth": 5,
+    "Height": 8,
+    "Collect": [
+      3.5,
+      1,
+      1.5
+    ],
+    "Board": [
+      3.5,
+      1,
+      -0.5
+    ],
+    "Heap": [
+      3.5,
+      1,
+      1.5
+    ],
+    "Lift": [
+      0.5,
+      0,
+      0.5
+    ],
+    "LiftLow": -4.2,
+    "LiftHigh": 2.0,
+    "LiftBlock": "Deco_Bucket",
+    "CartFrom": [
+      -2.5,
+      1.1,
+      3.5
+    ],
+    "CartTo": [
+      2.5,
+      1.1,
+      3.5
+    ],
+    "CartBlock": "Rail_Kart"
+  },
+  "ToolItems": [
+    "Deco_Rope",
+    "Tool_Pickaxe_Iron",
+    "Rail_Kart",
+    "Deco_Lantern"
+  ],
+  "UpgradeItems": [
+    "Tool_Pickaxe_Wood",
+    "Tool_Pickaxe_Crude",
+    "Tool_Pickaxe_Copper",
+    "Tool_Pickaxe_Iron",
+    "Tool_Pickaxe_Thorium",
+    "Tool_Pickaxe_Cobalt",
+    "Tool_Pickaxe_Mithril",
+    "Tool_Pickaxe_Adamantite"
+  ]
+}

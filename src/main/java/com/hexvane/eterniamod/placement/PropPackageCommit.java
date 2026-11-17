@@ -102,6 +102,7 @@ public final class PropPackageCommit {
         plotManager.updatePlot(plot);
         plotManager.saveIfDirty();
         NativePlacementTransactions.complete(plugin,operation);
+        com.hexvane.eterniamod.production.ProductionRuntime.packed(world, match.prop().getInstanceId());
         var custody=plugin.getServices().provenance().find(match.prop().getInstanceId()).orElseThrow().owner();
         vanish(store, plugin, vanishAt);
         playerRef.sendMessage(custody.kind()==com.hexvane.eterniamod.domain.Owner.Kind.GUILD?Message.raw("Decoration returned to the guild build inventory."):Message.translation("eterniamod_common.eterniamod.common.propPackaged"));

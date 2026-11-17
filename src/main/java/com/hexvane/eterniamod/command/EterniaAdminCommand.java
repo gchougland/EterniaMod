@@ -21,6 +21,13 @@ public final class EterniaAdminCommand extends AbstractCommandCollection {
         addSubCommand(new Status());addSubCommand(new Reload());addSubCommand(new Inspect());addSubCommand(new Recover());addSubCommand(new Grant());addSubCommand(new EterniaSetupCommand());addSubCommand(new RoadTool());addSubCommand(new WipePlots());addSubCommand(new HubBuildCommand());addSubCommand(new TownCommand());addSubCommand(new TerraformCommand());
         com.hexvane.eterniamod.moderation.ModerationCommands.addTo(this);
         addSubCommand(new com.hexvane.eterniamod.stats.StatsAdminCommand());
+        addSubCommand(new com.hexvane.eterniamod.production.StationAdminCommand());
+        addSubCommand(new Give());
+    }
+    /** Opens the give screen: pick a player by name and press Give. The typed form is {@code grant}. */
+    private static final class Give extends AbstractPlayerCommand {
+        Give(){super("give","Give houses, decorations, stations and collection items to a player by name");setPermissionGroups("hytale:WorldEditor");}
+        @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){GrantPage.open(ref,store,player);}
     }
     private static final class RoadTool extends AbstractPlayerCommand {
         RoadTool(){super("roadtool","Get the held spline Road Designer");setPermissionGroups("hytale:WorldEditor");}

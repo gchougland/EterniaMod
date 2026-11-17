@@ -1,0 +1,14 @@
+{
+  "Layers": [
+    {
+      "Files": [
+        "Sounds/PlayerActions/Pickup/Player_Item_Pickup_01.ogg"
+      ]
+    }
+  ],
+  "PreventSoundInterruption": false,
+  "MaxInstance": 6,
+  "Volume": -4.0,
+  "Pitch": 12.0,
+  "Parent": "SFX_Attn_Moderate"
+}

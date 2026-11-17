@@ -54,6 +54,7 @@ public final class EterniaRuntime implements AutoCloseable {
         grant(owner,"eternia:mount/horse",OwnershipService.Kind.UNLOCK);
         grant(owner,"eternia:service/mailbox",OwnershipService.Kind.UNLOCK);
         grant(owner,"eternia:prop/aqua_lamp",OwnershipService.Kind.QUANTITY);
+        grant(owner,"eternia:prop/station_miner",OwnershipService.Kind.QUANTITY);
         grant(owner,"eternia:palette/cut_stone",OwnershipService.Kind.UNLOCK);
         grant(owner,"eternia:path/cobblestone",OwnershipService.Kind.UNLOCK);
         if(services.seasons().progress(player).stream().noneMatch(SeasonService.Progress::active))

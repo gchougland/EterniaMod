@@ -1,0 +1,9 @@
+items.Eternia_Station_Vein.name=Station Ore Face
+items.Eternia_Station_Vein.description=Part of a Mine Shaft. Work it by hand for a little extra ore.
+items.Eternia_Station_Stockpile.name=Station Stockpile
+items.Eternia_Station_Stockpile.description=Part of a production station. Collect what it has made here.
+items.Eternia_Station_Board.name=Station Board
+items.Eternia_Station_Board.description=Part of a production station. Upgrades are chosen here.
+hint.work=Press [{key}] to work the mine
+hint.collect=Press [{key}] to collect
+hint.open=Press [{key}] for upgrades

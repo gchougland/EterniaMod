@@ -1,0 +1,26 @@
+$T = "Theme/Citadel.ui";
+
+// One station in the Production menu: what it is mining, how fast, how full, and two buttons.
+Group #SjRow {
+  Anchor: (Height: 156, Bottom: 10);
+  Background: $T.@JournalInsetSurface;
+  Padding: (Full: 14);
+  LayoutMode: Left;
+  Group { Anchor: (Width: 112, Height: 112, Right: 16, Top: 8); Background: $T.@IconTilePrimarySurface; Padding: (Full: 10);
+    ItemIcon #SjItem { Anchor: (Width: 92, Height: 92); }
+  }
+  Group { FlexWeight: 1; LayoutMode: Top;
+    Group { Anchor: (Height: 32); LayoutMode: Left;
+      Label #SjName { FlexWeight: 1; Text: ""; Style: (FontName: "Secondary", FontSize: 22, TextColor: $T.@Text, RenderBold: true, VerticalAlignment: Center); }
+      Label #SjRate { Text: ""; Style: (FontSize: 16, TextColor: $T.@Primary, RenderBold: true, VerticalAlignment: Center); }
+    }
+    Label #SjSub { Anchor: (Height: 24, Bottom: 6); Text: ""; Style: (FontSize: 15, TextColor: $T.@Muted, VerticalAlignment: Center); }
+    Group { Anchor: (Height: 18); Background: #0b1518; LayoutMode: Left; Group #SjFill { Anchor: (Width: 0, Height: 18); Background: #85c5b3; } }
+    Label #SjStock { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text, VerticalAlignment: Center); }
+    Label #SjStatus { Anchor: (Height: 22); Text: ""; Style: (FontSize: 14, TextColor: $T.@Primary, RenderBold: true, VerticalAlignment: Center); }
+  }
+  Group { Anchor: (Width: 150, Left: 16); LayoutMode: Top; Padding: (Top: 14);
+    $T.@TextButton #SjOpen { Anchor: (Height: 46, Bottom: 8); Text: "Upgrades"; }
+    $T.@SecondaryTextButton #SjGo { Anchor: (Height: 46); Text: "Go there"; }
+  }
+}

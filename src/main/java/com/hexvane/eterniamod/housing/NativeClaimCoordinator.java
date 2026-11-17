@@ -219,7 +219,17 @@ public final class NativeClaimCoordinator {
         var context=HexLand.context(plugin,world).orElse(null);
         if(context==null)return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.NO_LATTICE));
         if(!com.hexvane.eterniamod.pathtool.SplineRoadTool.pendingRects(world.getName()).isEmpty())return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.ROAD_WORK));
-        var out=services.housing().expandPlot(owner,plotId,cell,slot.revision(),operation,kind,context,Owner.player(actor));
+        String role=com.hexvane.eterniamod.production.HexRoles.addRefusal(plugin,plot,cell);
+        if(role!=null)return HexCommitResult.failed(HexPlotText.plots("expand."+role,switch(role){
+            case "roleProductionFull"->"Your plot already has all six production hexagons.";
+            case "roleHouseFull"->"Your plot already has all its house hexagons.";
+            case "roleHouseTouch"->"A house hexagon has to touch one of your house hexagons.";
+            default->"Add your free production hexagon first.";}),plotId.toString());
+        // Every plot's first production hexagon is free, whatever size the plot started at.
+        var before=com.hexvane.eterniamod.production.HexRoles.of(plugin,plot);
+        boolean firstProduction=before!=null&&before.count(com.hexvane.eterniamod.production.PlotRoles.Role.PRODUCTION)==0;
+        var out=services.housing().expandPlot(owner,plotId,cell,slot.revision(),operation,kind,context,Owner.player(actor),firstProduction);
+        if(!out.ok())com.hexvane.eterniamod.production.HexRoles.forget(plotId,cell);
         if(!out.ok())return HexCommitResult.refused(out.result());
         applyCells(manager,plot,out.cells());
         // The new hexagon's ground (already shaped) joins the plot's saved ground now, so packing puts it back exactly.
@@ -302,6 +312,10 @@ public final class NativeClaimCoordinator {
         }
         var verdict=HexClaimRules.sell(plot.getCells().asSet(),cell,kind,settings,houseCells,pathCells);
         if(!verdict.valid())return HexCommitResult.refused(verdict);
+        var kept=com.hexvane.eterniamod.production.HexRoles.of(plugin,plot);String keep=kept==null?null:kept.canSell(cell);
+        if(keep!=null)return HexCommitResult.failed(HexPlotText.plots("sell."+keep,keep.equals("roleLastHouse")
+            ?"This is your only house hexagon. Your plot keeps one."
+            :"This is your only production hexagon. Your plot keeps one."),plotId.toString());
         onCell.sort(Comparator.comparingLong((ProvenanceService.Instance i)->Long.parseLong(i.nativeData().getOrDefault("placedAt","0"))).reversed());
         int packed=0;
         for(var item:onCell) {

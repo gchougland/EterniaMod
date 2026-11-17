@@ -227,6 +227,11 @@ public final class HousingService extends DomainSupport {
      * Replaying the same operation id returns the saved result without charging again.
      */
     public HexOutcome expandPlot(Owner owner,UUID propertyId,HexCoord cell,long expectedRevision,UUID operationId,HexClaimRules.Kind kind,HexContext context,Owner payer) {
+        return expandPlot(owner,propertyId,cell,expectedRevision,operationId,kind,context,payer,false);
+    }
+
+    /** As above; {@code firstProduction} marks the plot's first production hexagon, which every plot gets for nothing. */
+    public HexOutcome expandPlot(Owner owner,UUID propertyId,HexCoord cell,long expectedRevision,UUID operationId,HexClaimRules.Kind kind,HexContext context,Owner payer,boolean firstProduction) {
         Objects.requireNonNull(cell);Objects.requireNonNull(kind);Objects.requireNonNull(context);
         var outcome=store.transaction(tx->{
             var found=tx.find("housing_slot",owner.key());
@@ -244,7 +249,7 @@ public final class HousingService extends DomainSupport {
             var land=land(context,worldRows(tx,location.worldId(),null));
             var verdict=HexClaimRules.expand(land,kind,location.cells().asSet(),cell,context.settings());
             if(!verdict.valid())return HexOutcome.rejected(verdict);
-            long price=context.settings().expansionPrice(location.cells().size());
+            long price=context.settings().expansionPrice(location.cells().size(),firstProduction);
             if(price>0) {
                 require(payer!=null,INVALID_INPUT,"A paid expansion needs a payer");
                 if(context.settings().crownPriced()) {

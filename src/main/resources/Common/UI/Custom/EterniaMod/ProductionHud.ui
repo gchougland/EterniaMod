@@ -1,0 +1,85 @@
+$T = "Theme/Citadel.ui";
+
+@Slot = Group {
+  Anchor: (Height: 40, Bottom: 6);
+  Visible: false;
+  Background: PatchStyle(TexturePath: "Chat/DockHudLine.png", Border: 14);
+  Padding: (Horizontal: 12, Vertical: 6);
+  LayoutMode: Top;
+  Group {
+    Anchor: (Height: 18);
+    LayoutMode: Left;
+    Label #Name { FlexWeight: 1; Text: ""; Style: (FontSize: 13, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+    Label #State { Text: ""; Style: (FontSize: 12, TextColor: #b5c3b8, VerticalAlignment: Center); }
+  }
+  Group {
+    Anchor: (Height: 6, Top: 4);
+    Background: #0b1518;
+    LayoutMode: Left;
+    Group #Fill { Anchor: (Width: 0, Height: 6); Background: #85c5b3; }
+    Group #FillFull { Anchor: (Width: 0, Height: 6); Background: #d8b66b; }
+  }
+};
+
+Group #ProdTracker {
+  Anchor: (Top: 64, Right: 24, Width: 240, Height: 300);
+  LayoutMode: Top;
+  @Slot #Slot0 { }
+  @Slot #Slot1 { }
+  @Slot #Slot2 { }
+  @Slot #Slot3 { }
+  @Slot #Slot4 { }
+  @Slot #Slot5 { }
+}
+
+Group #ProdBannerStrip {
+  Anchor: (Left: 0, Right: 0, Top: 96, Height: 84);
+  LayoutMode: Center;
+  Group #ProdBanner {
+    Visible: false;
+    Anchor: (Width: 560, Height: 84);
+    Background: PatchStyle(TexturePath: "Chat/DockTabActive.png", Border: 12);
+    Padding: (Horizontal: 24, Vertical: 12);
+    LayoutMode: Top;
+    Label #BannerTitle { Anchor: (Height: 20); Text: ""; Style: (FontSize: 14, TextColor: #d8b66b, RenderBold: true, HorizontalAlignment: Center); }
+    Label #BannerText { Anchor: (Height: 36); Text: ""; Style: (FontSize: 26, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center); }
+  }
+}
+
+Group #ProdHaulStrip {
+  Anchor: (Left: 0, Right: 0, Bottom: 300, Height: 170);
+  LayoutMode: Center;
+  Group #ProdHaul {
+    Visible: false;
+    Anchor: (Width: 520, Height: 170);
+    LayoutMode: Top;
+    Label #HaulTitle { Anchor: (Height: 20); Text: "HAUL"; Style: (FontSize: 15, TextColor: #d8b66b, RenderBold: true, HorizontalAlignment: Center); }
+    Label #HaulNumber { Anchor: (Height: 70); Text: ""; Style: (FontSize: 60, TextColor: #f0d79a, RenderBold: true, HorizontalAlignment: Center, OutlineColor: #1a1406); }
+    Label #HaulNote { Anchor: (Height: 22); Text: ""; Style: (FontSize: 15, TextColor: #f0e8d5, HorizontalAlignment: Center, OutlineColor: #101e22); }
+    Label #HaulWord { Anchor: (Height: 44, Top: 6); Text: ""; Style: (FontSize: 30, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center, OutlineColor: #1a1406); }
+  }
+}
+
+Group #ProdRushStrip {
+  Anchor: (Left: 0, Right: 0, Bottom: 214, Height: 44);
+  LayoutMode: Center;
+  Group #ProdRush {
+    Visible: false;
+    Anchor: (Width: 260, Height: 44);
+    Background: PatchStyle(TexturePath: "Chat/DockHudLine.png", Border: 14);
+    Padding: (Horizontal: 14, Vertical: 7);
+    LayoutMode: Top;
+    Group {
+      Anchor: (Height: 16);
+      LayoutMode: Left;
+      Label { FlexWeight: 1; Text: "RUSH"; Style: (FontSize: 12, TextColor: #e8a06a, RenderBold: true, VerticalAlignment: Center); }
+      Label #RushEnergy { Text: ""; Style: (FontSize: 12, TextColor: #f0e8d5, VerticalAlignment: Center); }
+    }
+    Group {
+      Anchor: (Height: 8, Top: 5);
+      Background: #0b1518;
+      LayoutMode: Left;
+      Group #RushFill { Anchor: (Width: 0, Height: 8); Background: #e8a06a; }
+    }
+  }
+}

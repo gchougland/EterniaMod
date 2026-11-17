@@ -34,7 +34,8 @@ public final class ClaimMapScreen {
         new Binding("#Recentre", "Recentre", null), new Binding("#ShapePrev", "ShapePrev", null),
         new Binding("#ShapeNext", "ShapeNext", null), new Binding("#Claim", "Claim", null),
         new Binding("#Back", "Back", null), new Binding("#ScopeMine", "ScopeMine", null),
-        new Binding("#ScopeGuild", "ScopeGuild", null), new Binding("#Close", "Close", null));
+        new Binding("#ScopeGuild", "ScopeGuild", null), new Binding("#Close", "Close", null),
+        new Binding("#RoleProduction", "RoleProduction", null), new Binding("#RoleHouse", "RoleHouse", null));
 
     /** Appends the page and one transparent hexagon button per brick. The layout is the same for every window. */
     public static void open(UICommandBuilder c, ClaimMapGeometry g) {
@@ -52,6 +53,8 @@ public final class ClaimMapScreen {
         c.set("#CostLabel.TextSpans", text("cost.label"));
         c.set("#LegendTitle.TextSpans", text("legend"));
         c.set("#MapLoadingText.TextSpans", text("loading"));
+        c.set("#LegendHouse.TextSpans", text("legend.house"));
+        c.set("#LegendProduction.TextSpans", text("legend.production"));
         for (CellState state : CellState.values()) c.set("#Legend" + camel(state) + ".TextSpans", HexLand.stateName(state));
     }
 

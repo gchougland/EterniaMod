@@ -122,6 +122,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         }
         // Adventure Records open in their own page, after the Journal's sections.
         if (journal) bind(events, JournalChrome.navTab(commands, desk.sections.size(), "Records", "board", false, busy), "records");
+        // Production opens in its own page too.
+        if (journal) bind(events, JournalChrome.navTab(commands, desk.sections.size() + 1, "Production", "storage", false, busy), "home_production");
         if (deskHome) { buildDeskHome(commands, events, ref, store); return; }
         commands.append("#ServicesBody", "EterniaMod/" + layout() + ".ui");
         JournalChrome.section(commands, sectionName(section), sectionIcon(section), sectionNote(section));
@@ -220,7 +222,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         case HOUSING->{
             if(desk!=Desk.JOURNAL)yield List.of();
             String current=mode.isEmpty()?"home":mode;
-            List<Tab> list=new ArrayList<>(List.of(new Tab("Your home","home_view:home","housing",current.equals("home")),new Tab("Houses","home_view:houses","housing",current.equals("houses")),
+            List<Tab> list=new ArrayList<>(List.of(new Tab("Your home","home_view:home","housing",current.equals("home")),new Tab("Production","home_production","storage",false),new Tab("Houses","home_view:houses","housing",current.equals("houses")),
                 new Tab("Decorations","home_view:decorations","furnishing",current.equals("decorations")),new Tab("Palettes and paths","home_view:materials","palette",current.equals("materials"))));
             if(homeGuild){list.add(new Tab("Guild estate","home_view:guild","guild",current.equals("guild")));list.add(new Tab("Guild decorations","home_view:guild_decorations","furnishing",current.equals("guild_decorations")));}
             yield list;
@@ -273,12 +275,24 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         String world = location == null ? "an unloaded world" : com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId());
         String houseName = house == null ? "No house yet" : UiPresentation.contentName(house.contentId());
         var settings = com.hexvane.eterniamod.hexplots.HexPlotSettings.current();
-        String summary = (cells > 0 ? (cells == 1 ? "1 hexagon" : cells + " hexagons") + " in " : "In ") + world + " · " + houseName
+        // House and production hexagons are counted apart: they are separate allowances.
+        String land = cells == 1 ? "1 hexagon" : cells + " hexagons";
+        int productionCells = 0;
+        if (cells > 0) {
+            var production = com.hexvane.eterniamod.production.ProductionRuntime.get();
+            String saved = production == null ? "" : production.plot(slot.propertyId()).plot().roles;
+            var roles = com.hexvane.eterniamod.production.PlotRoles.resolve(location.cells(), saved, java.util.Set.of(), null);
+            productionCells = roles.count(com.hexvane.eterniamod.production.PlotRoles.Role.PRODUCTION);
+            int houseCells = cells - productionCells;
+            land = houseCells + (houseCells == 1 ? " house hexagon" : " house hexagons") + ", " + productionCells + " production";
+        }
+        String summary = (cells > 0 ? land + " in " : "In ") + world + " · " + houseName
             + (cells > 0 ? " · " + placed + " of " + cells * settings.propsPerCell() + " decorations placed" : "");
         if (services.journal().unfinished().stream().anyMatch(op -> op.owner().equals(owner)))
             rows.add(Row.card("Fix my plot", "Something did not finish. Nothing is lost.", "Fix", "home_fix:" + side, "eternia:guild_voucher/fix"));
         rows.add(Row.card("Go to plot", "Travel to its edge", "Go", "home_go:" + side, "eternia:plot/visit"));
-        if (cells > 0) rows.add(Row.card("Add a hexagon", settings.priceText(settings.expansionPrice(cells)), "Add", "home_add:" + side, "eternia:plot/add"));
+        if (cells > 0) rows.add(Row.card("Add a hexagon", productionCells == 0 ? "Place your free production hexagon on the map"
+            : "House or production. " + settings.priceText(settings.expansionPrice(cells)), "Open map", "home_add:" + side, "eternia:plot/add"));
         if (cells > 1) rows.add(Row.card("Sell a hexagon", settings.priceText(settings.sellRefund(cells)) + " back", "Sell", "home_sell:" + side, "eternia:coins/sell"));
         long credits = services.ownership().available(owner, HousingService.MOVE_CREDIT);
         rows.add(Row.card("Move plot", credits + (credits == 1 ? " move credit" : " move credits"), "Move", "home_move:" + side, "eternia:move/plot"));
@@ -517,6 +531,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (route.startsWith("season_view:")) { mode = "rewards"; focus = route.substring(12); page = 0; refresh(ref, store, ""); return; }
         if (route.equals("season_quests")) { mode = "quests"; page = 0; refresh(ref, store, ""); return; }
         if (route.equals("season_rewards")) { mode = "rewards"; page = 0; refresh(ref, store, ""); return; }
+        if (route.equals("home_production")) { if (!com.hexvane.eterniamod.production.ProductionJournalPage.open(ref, store, playerRef)) homeStatus("Production is not running right now."); return; }
         if (route.startsWith("home_view:")) { mode = route.substring(10).equals("home") ? "" : route.substring(10); focus = ""; page = 0; refresh(ref, store, ""); return; }
         if (route.startsWith("home_")) { homeAction(ref, store, route); return; }
         if (route.startsWith("collection_view:")) { mode = route.substring(16); focus = ""; previewContent = ""; page = 0; refresh(ref, store, ""); return; }

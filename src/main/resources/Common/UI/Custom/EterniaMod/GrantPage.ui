@@ -1,0 +1,42 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    Group { Anchor: (Width: 700); LayoutMode: Top; Padding: (Top: 22);
+      Label { Anchor: (Height: 36); Text: "Give content"; Style: (...$T.@CodexTitleStyle, FontSize: 30); }
+      Label { Anchor: (Height: 22); Text: "Admin"; Style: $T.@CodexKickerStyle; }
+    }
+    Group { FlexWeight: 1; }
+    $T.@CodexClose #Close {}
+  }
+  $T.@CodexBody {
+    $T.@CodexPanel { Anchor: (Width: 420, Right: 24);
+      Label { Anchor: (Height: 22, Bottom: 6); Text: "GIVE TO"; Style: $T.@CodexKickerStyle; }
+      $T.@TextField #GrantPlayer { Anchor: (Height: 48, Bottom: 8); PlaceholderText: "Player name"; MaxLength: 32; }
+      Label { Anchor: (Height: 40, Bottom: 14); Text: "Type a name, or pick someone who is online. The player must have joined Eternia before."; Style: (...$T.@MutedStyle, FontSize: 14); }
+      Label { Anchor: (Height: 22, Bottom: 6); Text: "ONLINE NOW"; Style: $T.@CodexKickerStyle; }
+      $T.@SecondaryTextButton #Online0 { Anchor: (Height: 44, Bottom: 6); Visible: false; }
+      $T.@SecondaryTextButton #Online1 { Anchor: (Height: 44, Bottom: 6); Visible: false; }
+      $T.@SecondaryTextButton #Online2 { Anchor: (Height: 44, Bottom: 6); Visible: false; }
+      $T.@SecondaryTextButton #Online3 { Anchor: (Height: 44, Bottom: 6); Visible: false; }
+      $T.@SecondaryTextButton #Online4 { Anchor: (Height: 44, Bottom: 6); Visible: false; }
+      $T.@SecondaryTextButton #Online5 { Anchor: (Height: 44, Bottom: 6); Visible: false; }
+      Group { FlexWeight: 1; }
+      Label #GrantStatus { Anchor: (Height: 72); Text: ""; Style: (FontSize: 16, TextColor: $T.@Primary, RenderBold: true, Wrap: true); }
+    }
+    $T.@CodexPanel { FlexWeight: 1;
+      Group { Anchor: (Height: 44, Bottom: 14); LayoutMode: Left;
+        $T.@SecondaryTextButton #CatStations { Anchor: (Width: 150, Height: 44, Right: 6); Text: "Stations"; }
+        $T.@SecondaryTextButton #CatDecorations { Anchor: (Width: 170, Height: 44, Right: 6); Text: "Decorations"; }
+        $T.@SecondaryTextButton #CatHouses { Anchor: (Width: 150, Height: 44, Right: 6); Text: "Houses"; }
+        $T.@SecondaryTextButton #CatCollection { Anchor: (Width: 170, Height: 44, Right: 6); Text: "Collection"; }
+        Group { FlexWeight: 1; }
+        Label #GrantCount { Anchor: (Width: 220); Text: ""; Style: (...$T.@MutedStyle, FontSize: 14, HorizontalAlignment: End, VerticalAlignment: Center); }
+      }
+      Label #GrantTitle { Anchor: (Height: 30, Bottom: 8); Text: ""; Style: (...$T.@SubtitleStyle, FontSize: 20); }
+      Group #GrantRows { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+    }
+  }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
+}

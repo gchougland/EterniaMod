@@ -34,12 +34,13 @@ public final class PropPlacementValidator {
         if (plugin == null || !(preview?com.hexvane.eterniamod.housing.HousingAccess.previewCan(plugin,plot,playerUuid,"housing.prop.place"):com.hexvane.eterniamod.housing.HousingAccess.can(plugin,plot,playerUuid,"housing.prop.place"))) {
             return "notYourPlot";
         }
-        Path prefabPath = PrefabResolveUtil.resolvePrefabPath(def.getPrefabPath());
+        String prefabKey = HexPlacement.isGenerator(def) ? com.hexvane.eterniamod.production.StationPlacement.prefab(def, previewSignAnchor.y - com.hexvane.eterniamod.EterniaModConstants.PLOT_SIGN_BLOCK_Y_ABOVE_LOGICAL_ANCHOR) : def.getPrefabPath();
+        Path prefabPath = PrefabResolveUtil.resolvePrefabPath(prefabKey);
         if(def.getId().equals("guild_waygate")&&!com.hexvane.eterniamod.runtime.GuildWaygate.canPlace(plugin,plot,com.hexvane.eterniamod.housing.HousingAccess.owner(plot),preview))return "notYourPlot";
         if (prefabPath == null) {
             return "prefabMissing";
         }
-        IPrefabBuffer buf = PrefabResolveUtil.resolvePrefabBuffer(def.getPrefabPath());
+        IPrefabBuffer buf = PrefabResolveUtil.resolvePrefabBuffer(prefabKey);
         if (buf == null) {
             return "prefabMissing";
         }
@@ -77,10 +78,15 @@ public final class PropPlacementValidator {
         if (!PlotFootprintUtil.hasSolidVoxels(prefabYaw, buf)) {
             return "prefabMissing";
         }
-        if (!PropPrefabOps.canPlaceSolids(world, propAnchor, prefabYaw, buf)) {
+        // A station cuts into the ground like a house does, so solid ground under it is expected, not in the way.
+        boolean station = HexPlacement.isGenerator(def);
+        if (station) {
+            String refused = com.hexvane.eterniamod.production.StationPlacement.check(plugin, world, plot, def, propFp);
+            if (refused != null) return refused;
+        } else if (!PropPrefabOps.canPlaceSolids(world, propAnchor, prefabYaw, buf)) {
             return "blocked";
         }
-        String mutation = com.hexvane.eterniamod.housing.NativeHousingChecks.mutation(world, plot, propAnchor, prefabYaw, buf, false);
+        String mutation = com.hexvane.eterniamod.housing.NativeHousingChecks.mutation(world, plot, propAnchor, prefabYaw, buf, station);
         if (mutation != null) return mutation;
         return null;
     }

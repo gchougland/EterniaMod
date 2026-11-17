@@ -1,0 +1,13 @@
+{
+  "$Comment": "A short gold sparkle for production stations. Every spawner here is a burst, and the system ends after a second, so repeats never pile up (the vanilla Dust_Sparkles systems never end).",
+  "Spawners": [
+    {
+      "SpawnerId": "Crown_Gold_Rays_Sparks"
+    },
+    {
+      "SpawnerId": "Example_Star_Flash"
+    }
+  ],
+  "LifeSpan": 1.0,
+  "CullDistance": 40
+}

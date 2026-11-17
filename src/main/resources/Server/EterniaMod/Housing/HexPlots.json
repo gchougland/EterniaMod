@@ -8,7 +8,7 @@
     "GuildMember": "Single",
     "GuildMemberUpgraded": "Triangle"
   },
-  "MaxCells": { "Personal": 7, "GuildEstate": 19 },
+  "MaxCells": { "Personal": 10, "GuildEstate": 19 },
   "ClaimPrice": { "Coins": 0 },
   "ExpansionPrice": { "Crowns": 500, "Coins": 0, "CoinsPerOwnedCell": 0 },
   "PerCell": { "Props": 24, "Generators": 2 },

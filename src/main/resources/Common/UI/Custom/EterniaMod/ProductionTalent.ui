@@ -1,0 +1,47 @@
+$T = "Theme/Citadel.ui";
+
+// The talent choice: shown when a station reaches a milestone. Three large cards, one per path; the player keeps one.
+// Filled by ProductionTalentPage.
+
+@Card = Group {
+  FlexWeight: 1; Background: $T.@CodexCardSurface; Padding: (Full: 28); LayoutMode: Top;
+  Group { Anchor: (Height: 176, Bottom: 14); LayoutMode: Center;
+    Group { Anchor: (Width: 176, Height: 176); Background: $T.@IconTilePrimarySurface; Padding: (Full: 16);
+      ItemIcon #TcItem { Anchor: (Width: 144, Height: 144); }
+    }
+  }
+  Label #TcPath { Anchor: (Height: 24); Text: ""; Style: (...$T.@CodexKickerStyle, FontSize: 16, HorizontalAlignment: Center); }
+  Label #TcName { Anchor: (Height: 48, Bottom: 8); Text: ""; Style: (FontName: "Secondary", FontSize: 30, TextColor: $T.@Primary, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+  Label #TcText { Anchor: (Height: 108, Bottom: 8); Text: ""; Style: (FontSize: 19, TextColor: $T.@Text, HorizontalAlignment: Center, Wrap: true); }
+  Group { Anchor: (Height: 76, Bottom: 14); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 14, Vertical: 8); LayoutMode: Top;
+    Label #TcSet { Anchor: (Height: 24); Text: ""; Style: (FontSize: 15, TextColor: $T.@Accent, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+    Label #TcSetNote { Anchor: (Height: 36); Text: ""; Style: (FontSize: 13, TextColor: $T.@Muted, HorizontalAlignment: Center, Wrap: true); }
+  }
+  Group { FlexWeight: 1; }
+  $T.@TextButton #TcTake { Anchor: (Height: 60); Text: "Keep this card"; }
+};
+
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    Group { Anchor: (Width: 84, Height: 104); Padding: (Top: 16);
+      Group { Anchor: (Width: 72, Height: 72); Background: $T.@IconTilePrimarySurface; Padding: (Full: 6);
+        ItemIcon #TcHeadItem { Anchor: (Width: 60, Height: 60); }
+      }
+    }
+    Group { FlexWeight: 1; Anchor: (Left: 14); LayoutMode: Top; Padding: (Top: 22);
+      Label #TcTitle { Anchor: (Height: 36); Text: ""; Style: (...$T.@CodexTitleStyle, FontSize: 30); }
+      Label #TcKicker { Anchor: (Height: 22); Text: ""; Style: $T.@CodexKickerStyle; }
+    }
+    $T.@CodexClose #Close {}
+  }
+  $T.@CodexBody { LayoutMode: Top; Padding: (Horizontal: 120, Top: 24, Bottom: 24);
+    Label #TcHeadline { Anchor: (Height: 56); Text: ""; Style: (FontName: "Secondary", FontSize: 40, TextColor: $T.@Primary, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+    Label #TcSub { Anchor: (Height: 30, Bottom: 20); Text: ""; Style: (FontSize: 18, TextColor: $T.@Muted, HorizontalAlignment: Center, VerticalAlignment: Center); }
+    Group { FlexWeight: 1; LayoutMode: Left;
+      Group { FlexWeight: 1; Anchor: (Right: 24); @Card #TcCard0 { Anchor: (Full: 0); } }
+      Group { FlexWeight: 1; Anchor: (Right: 24); @Card #TcCard1 { Anchor: (Full: 0); } }
+      Group { FlexWeight: 1; @Card #TcCard2 { Anchor: (Full: 0); } }
+    }
+  }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Choose later"; } }
+}

@@ -74,6 +74,8 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
     private ClaimMapGeometry tilesAsked;
     private Runnable stopListening;
     private Set<HexCoord> packedSpots = Set.of();
+    /** The kind the player picked for the hexagon they are adding; null takes the suggested one. */
+    private com.hexvane.eterniamod.production.PlotRoles.Role addRole;
     private static final int PACKED_RADIUS = 7, PACKED_LIMIT = 60;
 
     private ClaimMapPage(PlayerRef player, EterniaModPlugin plugin, World world, Mode mode, HousingRules.Scope scope, UUID plotId, ClaimMapGeometry window) {
@@ -119,7 +121,11 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
         for (ClaimMapScreen.Binding b : ClaimMapScreen.cellBindings())
             e.addEventBinding(CustomUIEventBindingType.Activating, b.selector(), new EventData().append("Action", b.action()).append("Slot", b.slot()), false);
         HexLandView view = HexLand.view(plugin, world).orElse(null);
-        if (view != null) ClaimMapScreen.show(c, ClaimMapLogic.panel(situation(view)));
+        if (view != null) {
+            var situation = situation(view);
+            ClaimMapScreen.show(c, ClaimMapLogic.panel(situation));
+            ClaimMapRoles.show(c, roleView(view, situation));
+        }
         if (stopListening == null) stopListening = HexLandEvents.listen(this::landChanged);
         loadAccount(ref, store, view);
         paint(ref, store);
@@ -154,7 +160,7 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
                 if (working || shown == null) return;
                 HexCoord cell = shown.cellOfSlot(parse(data.slot));
                 if (cell == null) return;
-                if (!cell.equals(selected)) option = 0;
+                if (!cell.equals(selected)) { option = 0; addRole = null; }
                 selected = cell;
                 confirming = false;
                 result = null;
@@ -171,6 +177,12 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
             case "ShapePrev" -> { option--; confirming = false; result = null; }
             case "ShapeNext" -> { option++; confirming = false; result = null; }
             case "Back" -> confirming = false;
+            case "RoleProduction", "RoleHouse" -> {
+                if (working || mode != Mode.EXPAND) return;
+                addRole = data.action.equals("RoleHouse") ? com.hexvane.eterniamod.production.PlotRoles.Role.HOUSE : com.hexvane.eterniamod.production.PlotRoles.Role.PRODUCTION;
+                confirming = false;
+                result = null;
+            }
             case "ScopeMine", "ScopeGuild" -> {
                 if (mode != Mode.CLAIM || working) return;
                 HousingRules.Scope next = data.action.equals("ScopeGuild") ? HousingRules.Scope.GUILD_MEMBER : HousingRules.Scope.PUBLIC;
@@ -185,8 +197,11 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
                 if (working) return;
                 HexLandView view = view();
                 if (view == null) return;
-                Set<HexCoord> cells = ClaimMapLogic.chosen(situation(view));
+                var situation = situation(view);
+                Set<HexCoord> cells = ClaimMapLogic.chosen(situation);
                 if (cells.isEmpty()) return;
+                // Adding a hexagon: the kind the panel shows must be one this plot may still add.
+                if (mode == Mode.EXPAND && roleView(view, situation).blocked()) return;
                 if (!confirming) {
                     confirming = true;
                     result = null;
@@ -209,6 +224,12 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
         confirming = false;
         result = null;
         var commits = HexClaimCommits.current();
+        HexCoord adding = mode == Mode.EXPAND ? cells.iterator().next() : null;
+        UUID addingTo = plotId;
+        if (adding != null) {
+            var roles = roles(view);
+            if (roles != null) com.hexvane.eterniamod.production.HexRoles.want(addingTo, adding, ClaimMapRoles.picked(roles, adding, addRole, maxHouse()));
+        }
         var future = mode == Mode.EXPAND
             ? commits.expandPlot(playerRef, world, plotId.toString(), cells.iterator().next())
             : mode == Mode.SELL
@@ -224,7 +245,9 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
                 result = done.message();
                 resultOk = done.ok();
             }
+            if (!resultOk && adding != null) com.hexvane.eterniamod.production.HexRoles.forget(addingTo, adding);
             if (resultOk) {
+                addRole = null;
                 // The land is theirs now: reload what they own (a new plot turns the map into "add a hexagon").
                 selected = null;
                 option = 0;
@@ -358,13 +381,16 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
         if (plan != null) { roads.addAll(plan.roads()); roads.addAll(plan.portals()); }
         double[] at = position(ref, store);
         var scene = ClaimMapLogic.scene(situation(view), g, roads, at[0], at[1]);
+        var marks = roleMarks(view);
         var maps = world.getWorldMapManager();
         var tiles = ClaimMapTiles.inMemory(maps, g);
         String packId = new PluginIdentifier(plugin.getManifest()).toString();
         PAINTERS.execute(() -> {
             byte[] png = null;
             try {
-                png = ClaimMapRenderer.png(ClaimMapRenderer.render(scene, tiles.source()));
+                var image = ClaimMapRenderer.render(scene, tiles.source());
+                ClaimMapRoleArt.paint(image, g, marks);
+                png = ClaimMapRenderer.png(image);
             } catch (RuntimeException failure) {
                 plugin.getLogger().atWarning().withCause(failure).log("Claim map picture failed");
             }
@@ -408,6 +434,7 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
         var situation = situation(view);
         var c = new UICommandBuilder();
         ClaimMapScreen.show(c, ClaimMapLogic.panel(situation));
+        ClaimMapRoles.show(c, roleView(view, situation));
         sendUpdate(c, null, false);
         focus(situation);
     }
@@ -427,6 +454,50 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
     }
 
     private HexLandView view() { return HexLand.view(plugin, world).orElse(null); }
+
+    // ---------------------------------------------------------------------------------------------------------------
+    // House and production hexagons
+    // ---------------------------------------------------------------------------------------------------------------
+
+    /** The plot this page is about: the one being grown or sold, else the player's own for the scope. Null for none. */
+    private com.hexvane.eterniamod.hub.HubPlotRecord ownRecord(HexLandView view) {
+        UUID id = (mode == Mode.EXPAND || mode == Mode.SELL) && plotId != null ? plotId : null;
+        if (id == null) {
+            HexLandView.PlotInfo own = ClaimMapLogic.ownPlot(view, account, scope);
+            id = own == null ? null : own.plotId();
+        }
+        return id == null ? null : com.hexvane.eterniamod.hub.EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin).getPlot(id);
+    }
+
+    private com.hexvane.eterniamod.production.PlotRoles roles(HexLandView view) {
+        return com.hexvane.eterniamod.production.HexRoles.of(plugin, ownRecord(view));
+    }
+
+    private int maxHouse() {
+        HexLandView view = view();
+        var record = view == null ? null : ownRecord(view);
+        return record == null ? 1 : com.hexvane.eterniamod.production.HexRoles.maxHouse(record);
+    }
+
+    private ClaimMapRoles.View roleView(HexLandView view, ClaimMapLogic.Situation situation) {
+        var record = ownRecord(view);
+        var roles = com.hexvane.eterniamod.production.HexRoles.of(plugin, record);
+        return roles == null ? ClaimMapRoles.View.NONE : ClaimMapRoles.view(situation, roles, addRole, com.hexvane.eterniamod.production.HexRoles.maxHouse(record));
+    }
+
+    /** What each hexagon of the player's own land is (their plot and their guild's estate), for the picture. */
+    private java.util.Map<HexCoord, com.hexvane.eterniamod.production.PlotRoles.Role> roleMarks(HexLandView view) {
+        var out = new java.util.HashMap<HexCoord, com.hexvane.eterniamod.production.PlotRoles.Role>();
+        var manager = com.hexvane.eterniamod.hub.EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin);
+        UUID me = playerRef.getUuid(), guild = account == null ? null : account.guild();
+        for (HexLandView.PlotInfo plot : view.plots().values()) {
+            boolean mine = plot.ownerKind() == HexLandView.OwnerKind.PLAYER ? me.equals(plot.ownerId()) : guild != null && guild.equals(plot.ownerId());
+            if (!mine && !plot.plotId().equals(plotId)) continue;
+            var roles = com.hexvane.eterniamod.production.HexRoles.of(plugin, manager.getPlot(plot.plotId()));
+            if (roles != null) out.putAll(roles.all());
+        }
+        return out;
+    }
 
     /** The packed home's owner: the guild for an estate, else the player. */
     private Owner packedOwner() {

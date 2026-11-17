@@ -50,6 +50,7 @@ $T.@CodexScreen {
       Label #Kicker { Anchor: (Height: 22); Style: @KickerStyle; }
     }
     Group #Navigation { FlexWeight: 1; LayoutMode: Center; }
+    Group #CurrencyWallet { Anchor: (Width: 220, Height: 64, Top: 20, Right: 12); LayoutMode: Left; }
     Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30, Right: 10); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
     $T.@CodexClose #Close {}
   }

@@ -1,0 +1,58 @@
+{
+  "TranslationProperties": {
+    "Name": "eternia_production.items.Eternia_Station_Board.name",
+    "Description": "eternia_production.items.Eternia_Station_Board.description"
+  },
+  "Icon": "Icons/ItemsGenerated/Furniture_Lumberjack_Sign.png",
+  "Categories": [
+    "Furniture.Misc"
+  ],
+  "Set": "Eternia",
+  "Recipe": null,
+  "MaxStack": 1,
+  "Quality": "Technical",
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "Opacity": "Transparent",
+    "CustomModel": "Blocks/Decorative_Sets/Lumberjack/Sign.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Weight": 1,
+        "Texture": "Blocks/Decorative_Sets/Lumberjack/Sign_Texture.png"
+      }
+    ],
+    "HitboxType": "Sign_Tall",
+    "VariantRotation": "NESW",
+    "BlockParticleSetId": "Wood",
+    "ParticleColor": "#5b3222",
+    "BlockSoundSetId": "Wood",
+    "PhysicalMaterialId": "Wood",
+    "InteractionHint": "eternia_production.hint.open",
+    "Interactions": {
+      "Use": {
+        "Interactions": [
+          {
+            "Type": "EterniaStationUse",
+            "Route": "OPEN"
+          }
+        ]
+      }
+    },
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Unbreakable"
+      }
+    }
+  },
+  "PlayerAnimationsId": "Block",
+  "Tags": {
+    "Type": [
+      "Furniture"
+    ],
+    "Family": [
+      "Eternia"
+    ]
+  },
+  "ItemSoundSetId": "ISS_Blocks_Wood"
+}

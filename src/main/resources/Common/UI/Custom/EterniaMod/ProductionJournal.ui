@@ -1,0 +1,62 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+
+// The Production menu, opened from Home in the Journal: every station the player owns with live numbers in the middle,
+// the plot's Estate on the left and today's orders on the right. Rows are appended by ProductionJournalPage.
+
+@StatValue = LabelStyle(FontName: "Secondary", FontSize: 22, TextColor: $T.@Text, RenderBold: true, VerticalAlignment: Center);
+@StatLabel = LabelStyle(FontSize: 13, TextColor: $T.@Muted, VerticalAlignment: Center);
+@StatTile = Group { Anchor: (Height: 72, Bottom: 8); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 12, Vertical: 8); LayoutMode: Left; };
+@StatIcon = Group { Anchor: (Width: 56, Height: 56, Right: 12); Background: $T.@IconTileSurface; Padding: (Full: 6); };
+
+$T.@CodexScreen {
+  // The Journal's own top bar: wordmark, the same tabs (Production is lit), Home, Close.
+  $T.@CodexTopBar {
+    Group { Anchor: (Width: 200, Height: 104); LayoutMode: Middle;
+      Group { Anchor: (Width: 180, Height: 40, Left: 0); Background: "Theme/Surfaces/EterniaWordmark.png"; }
+    }
+    Group #Navigation { FlexWeight: 1; LayoutMode: Center; }
+    Group #CurrencyWallet { Anchor: (Width: 220, Height: 64, Top: 20, Right: 12); LayoutMode: Left; }
+    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30, Right: 10); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+    $T.@CodexClose #Close {}
+  }
+  $T.@CodexBody {
+    $T.@CodexPanel { Anchor: (Width: 420, Right: 24);
+      Label { Anchor: (Height: 20, Bottom: 6); Text: "ESTATE"; Style: $T.@CodexKickerStyle; }
+      Group { Anchor: (Height: 76); LayoutMode: Left;
+        Group { Anchor: (Width: 72, Height: 72, Right: 14); Background: $T.@IconTilePrimarySurface; Padding: (Full: 8); ItemIcon #PjSealItem { Anchor: (Width: 56, Height: 56); } }
+        Label #PjSeals { Anchor: (Right: 12); Text: ""; Style: (FontName: "Secondary", FontSize: 52, TextColor: $T.@Primary, RenderBold: true, VerticalAlignment: Center); }
+        Label #PjSealsWord { FlexWeight: 1; Anchor: (Top: 14); Text: ""; Style: (FontSize: 18, TextColor: $T.@Muted, VerticalAlignment: Center); }
+      }
+      Label #PjSealsNote { Anchor: (Height: 62, Bottom: 10); Text: ""; Style: (...$T.@MutedStyle, FontSize: 14); }
+      @StatTile { @StatIcon { ItemIcon #PjStatItem0 { Anchor: (Width: 44, Height: 44); } }
+        Group { FlexWeight: 1; LayoutMode: Top; Label #PjStatValue0 { Anchor: (Height: 32); Text: ""; Style: @StatValue; } Label #PjStatLabel0 { Anchor: (Height: 22); Text: ""; Style: @StatLabel; } } }
+      @StatTile { @StatIcon { ItemIcon #PjStatItem1 { Anchor: (Width: 44, Height: 44); } }
+        Group { FlexWeight: 1; LayoutMode: Top; Label #PjStatValue1 { Anchor: (Height: 32); Text: ""; Style: @StatValue; } Label #PjStatLabel1 { Anchor: (Height: 22); Text: ""; Style: @StatLabel; } } }
+      @StatTile { @StatIcon { ItemIcon #PjStatItem2 { Anchor: (Width: 44, Height: 44); } }
+        Group { FlexWeight: 1; LayoutMode: Top; Label #PjStatValue2 { Anchor: (Height: 32); Text: ""; Style: @StatValue; } Label #PjStatLabel2 { Anchor: (Height: 22); Text: ""; Style: @StatLabel; } } }
+      Label { Anchor: (Height: 20, Top: 8, Bottom: 6); Text: "ESTATE RANKS"; Style: $T.@CodexKickerStyle; }
+      Group #PjEstate { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+    }
+    $T.@CodexPanel { FlexWeight: 1; Anchor: (Right: 24);
+      Group { Anchor: (Height: 64, Bottom: 14); LayoutMode: Left;
+        Group { Anchor: (Width: 64, Height: 64, Right: 14); Background: $T.@IconTilePrimarySurface; Padding: (Full: 6);
+          ItemIcon #PjHeadItem { Anchor: (Width: 52, Height: 52); }
+        }
+        Group { FlexWeight: 1; LayoutMode: Top;
+          Label { Anchor: (Height: 38); Text: "Production"; Style: (...$T.@CodexTitleStyle, FontSize: 30); }
+          Label #PjKicker { Anchor: (Height: 22); Text: ""; Style: $T.@CodexKickerStyle; }
+        }
+        Label #PjCount { Text: ""; Style: (FontSize: 15, TextColor: $T.@Primary, RenderBold: true, VerticalAlignment: Center); }
+      }
+      Group #PjStations { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+      Label #PjHint { Anchor: (Height: 44, Top: 8); Text: ""; Style: (...$T.@MutedStyle, FontSize: 14); }
+    }
+    $T.@CodexPanel { Anchor: (Width: 520);
+      Label { Anchor: (Height: 20, Bottom: 4); Text: "TODAY'S ORDERS"; Style: $T.@CodexKickerStyle; }
+      Label #PjOrdersNote { Anchor: (Height: 44, Bottom: 8); Text: ""; Style: (...$T.@MutedStyle, FontSize: 14); }
+      Group #PjOrders { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+    }
+  }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
+}

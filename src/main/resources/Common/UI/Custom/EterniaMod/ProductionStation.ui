@@ -1,0 +1,167 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+
+@TierText = LabelStyle(FontSize: 16, TextColor: $T.@Text, VerticalAlignment: Center);
+
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    Group { Anchor: (Width: 84, Height: 104); Padding: (Top: 16);
+      Group { Anchor: (Width: 72, Height: 72); Background: $T.@IconTilePrimarySurface; Padding: (Full: 6);
+        ItemIcon #HeadItem { Anchor: (Width: 60, Height: 60); }
+      }
+    }
+    Group { Anchor: (Width: 640, Left: 14); LayoutMode: Top; Padding: (Top: 22);
+      Label #StationName { Anchor: (Height: 36); Text: ""; Style: (...$T.@CodexTitleStyle, FontSize: 30); }
+      Label #StationSub { Anchor: (Height: 22); Text: ""; Style: $T.@CodexKickerStyle; }
+    }
+    Group { FlexWeight: 1; }
+    Group { Anchor: (Width: 420, Height: 104); LayoutMode: Top; Padding: (Top: 24);
+      Label #Purse { Anchor: (Height: 32); Text: ""; Style: (FontSize: 24, TextColor: $T.@Primary, RenderBold: true, HorizontalAlignment: End); }
+      Label #PurseNote { Anchor: (Height: 20); Text: ""; Style: (FontSize: 14, TextColor: $T.@Muted, HorizontalAlignment: End); }
+    }
+    Group { Anchor: (Width: 60, Height: 104); Padding: (Top: 22, Left: 10);
+      ItemIcon #PurseItem { Anchor: (Width: 48, Height: 48); }
+    }
+    Group { Anchor: (Width: 12); }
+    $T.@CodexClose #Close {}
+  }
+  $T.@CodexBody {
+    $T.@CodexPanel { Anchor: (Width: 380, Right: 24);
+      Label { Anchor: (Height: 20); Text: "LEVEL"; Style: $T.@CodexKickerStyle; }
+      Label #Level { Anchor: (Height: 76); Text: ""; Style: (FontName: "Secondary", FontSize: 72, TextColor: $T.@Primary, RenderBold: true, VerticalAlignment: Center); }
+      Label #Renown { Anchor: (Height: 22, Bottom: 8); Text: ""; Style: (FontSize: 15, TextColor: $T.@Primary); }
+      Label { Anchor: (Height: 22, Bottom: 6); Text: "GOODS LADDER"; Style: $T.@CodexKickerStyle; }
+      Group #TierRow0 { Anchor: (Height: 44, Bottom: 4); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 8); LayoutMode: Left;
+        ItemIcon #TierItem0 { Anchor: (Width: 36, Height: 36, Top: 4, Right: 10); }
+        Label #Tier0 { FlexWeight: 1; Text: ""; Style: @TierText; }
+        Label #TierNote0 { Anchor: (Width: 120); Text: ""; Style: (FontSize: 14, TextColor: $T.@Muted, HorizontalAlignment: End, VerticalAlignment: Center); }
+      }
+      Group #TierRow1 { Anchor: (Height: 44, Bottom: 4); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 8); LayoutMode: Left;
+        ItemIcon #TierItem1 { Anchor: (Width: 36, Height: 36, Top: 4, Right: 10); }
+        Label #Tier1 { FlexWeight: 1; Text: ""; Style: @TierText; }
+        Label #TierNote1 { Anchor: (Width: 120); Text: ""; Style: (FontSize: 14, TextColor: $T.@Muted, HorizontalAlignment: End, VerticalAlignment: Center); }
+      }
+      Group #TierRow2 { Anchor: (Height: 44, Bottom: 4); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 8); LayoutMode: Left;
+        ItemIcon #TierItem2 { Anchor: (Width: 36, Height: 36, Top: 4, Right: 10); }
+        Label #Tier2 { FlexWeight: 1; Text: ""; Style: @TierText; }
+        Label #TierNote2 { Anchor: (Width: 120); Text: ""; Style: (FontSize: 14, TextColor: $T.@Muted, HorizontalAlignment: End, VerticalAlignment: Center); }
+      }
+      Group #TierRow3 { Anchor: (Height: 44, Bottom: 4); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 8); LayoutMode: Left;
+        ItemIcon #TierItem3 { Anchor: (Width: 36, Height: 36, Top: 4, Right: 10); }
+        Label #Tier3 { FlexWeight: 1; Text: ""; Style: @TierText; }
+        Label #TierNote3 { Anchor: (Width: 120); Text: ""; Style: (FontSize: 14, TextColor: $T.@Muted, HorizontalAlignment: End, VerticalAlignment: Center); }
+      }
+      Group #TierRow4 { Anchor: (Height: 44, Bottom: 4); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 8); LayoutMode: Left;
+        ItemIcon #TierItem4 { Anchor: (Width: 36, Height: 36, Top: 4, Right: 10); }
+        Label #Tier4 { FlexWeight: 1; Text: ""; Style: @TierText; }
+        Label #TierNote4 { Anchor: (Width: 120); Text: ""; Style: (FontSize: 14, TextColor: $T.@Muted, HorizontalAlignment: End, VerticalAlignment: Center); }
+      }
+      Group #TierRow5 { Anchor: (Height: 44, Bottom: 4); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 8); LayoutMode: Left;
+        ItemIcon #TierItem5 { Anchor: (Width: 36, Height: 36, Top: 4, Right: 10); }
+        Label #Tier5 { FlexWeight: 1; Text: ""; Style: @TierText; }
+        Label #TierNote5 { Anchor: (Width: 120); Text: ""; Style: (FontSize: 14, TextColor: $T.@Muted, HorizontalAlignment: End, VerticalAlignment: Center); }
+      }
+      Group #TierRow6 { Anchor: (Height: 44, Bottom: 4); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 8); LayoutMode: Left;
+        ItemIcon #TierItem6 { Anchor: (Width: 36, Height: 36, Top: 4, Right: 10); }
+        Label #Tier6 { FlexWeight: 1; Text: ""; Style: @TierText; }
+        Label #TierNote6 { Anchor: (Width: 120); Text: ""; Style: (FontSize: 14, TextColor: $T.@Muted, HorizontalAlignment: End, VerticalAlignment: Center); }
+      }
+      Group #TierRow7 { Anchor: (Height: 44, Bottom: 4); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 8); LayoutMode: Left;
+        ItemIcon #TierItem7 { Anchor: (Width: 36, Height: 36, Top: 4, Right: 10); }
+        Label #Tier7 { FlexWeight: 1; Text: ""; Style: @TierText; }
+        Label #TierNote7 { Anchor: (Width: 120); Text: ""; Style: (FontSize: 14, TextColor: $T.@Muted, HorizontalAlignment: End, VerticalAlignment: Center); }
+      }
+      Group { FlexWeight: 1; }
+      Label #Quirk { Anchor: (Height: 66); Text: ""; Style: (...$T.@MutedStyle, FontSize: 14); }
+    }
+    $T.@CodexPanel { FlexWeight: 1; Anchor: (Right: 24);
+      Group { Anchor: (Height: 96); LayoutMode: Left;
+        Group { Anchor: (Width: 96, Height: 96, Right: 18); Background: $T.@IconTilePrimarySurface; Padding: (Full: 8);
+          ItemIcon #RateItem { Anchor: (Width: 80, Height: 80); }
+        }
+        Group { FlexWeight: 1; LayoutMode: Top;
+          Group { Anchor: (Height: 66); LayoutMode: Left;
+            Label #Rate { Anchor: (Right: 14); Text: ""; Style: (FontName: "Secondary", FontSize: 56, TextColor: $T.@Text, RenderBold: true, VerticalAlignment: Center); }
+            Label #RateUnit { FlexWeight: 1; Anchor: (Top: 14); Text: ""; Style: (FontSize: 18, TextColor: $T.@Muted, VerticalAlignment: Center); }
+          }
+          Label #Status { Anchor: (Height: 26); Text: ""; Style: (FontSize: 16, TextColor: $T.@Primary, RenderBold: true); }
+        }
+      }
+
+      Group { Anchor: (Height: 40, Top: 16); LayoutMode: Left;
+        Label #MilestoneLeft { FlexWeight: 1; Text: ""; Style: (FontSize: 15, TextColor: $T.@Text, RenderBold: true, VerticalAlignment: Center); }
+        Label #MilestoneRight { Text: ""; Style: (FontSize: 15, TextColor: $T.@Primary, RenderBold: true, VerticalAlignment: Center); }
+        ItemIcon #NextItem { Anchor: (Width: 36, Height: 36, Left: 8, Top: 2); }
+      }
+      Group { Anchor: (Height: 16, Bottom: 18); Background: #0b1518; LayoutMode: Left; Group #MilestoneFill { Anchor: (Width: 0, Height: 16); Background: #d8b66b; } }
+
+      Group { Anchor: (Height: 40); LayoutMode: Left;
+        ItemIcon #StockItem { Anchor: (Width: 36, Height: 36, Right: 8, Top: 2); }
+        Label { FlexWeight: 1; Text: "STOCKPILE"; Style: $T.@CodexKickerStyle; }
+        Label #StockState { Text: ""; Style: (FontSize: 15, TextColor: $T.@Muted, VerticalAlignment: Center); }
+      }
+      Group { Anchor: (Height: 24); Background: #0b1518; LayoutMode: Left; Group #StockFill { Anchor: (Width: 0, Height: 24); Background: #85c5b3; } }
+      Label #StockText { Anchor: (Height: 28, Bottom: 12); Text: ""; Style: (FontSize: 16, TextColor: $T.@Text); }
+
+      Group { Anchor: (Height: 84, Top: 6); LayoutMode: Left;
+        Group { FlexWeight: 1; Anchor: (Height: 84, Right: 10); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 12, Vertical: 10); LayoutMode: Left;
+          Group { Anchor: (Width: 60, Height: 60, Right: 12, Top: 2); Background: $T.@IconTileSurface; Padding: (Full: 6); ItemIcon #StatItem0 { Anchor: (Width: 48, Height: 48); } }
+          Group { FlexWeight: 1; LayoutMode: Top;
+            Label #StatValue0 { Anchor: (Height: 34); Text: ""; Style: (FontName: "Secondary", FontSize: 24, TextColor: $T.@Text, RenderBold: true, VerticalAlignment: Center); }
+            Label #StatLabel0 { Anchor: (Height: 22); Text: ""; Style: (FontSize: 13, TextColor: $T.@Muted, VerticalAlignment: Center); }
+          }
+        }
+        Group { FlexWeight: 1; Anchor: (Height: 84, Right: 10); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 12, Vertical: 10); LayoutMode: Left;
+          Group { Anchor: (Width: 60, Height: 60, Right: 12, Top: 2); Background: $T.@IconTileSurface; Padding: (Full: 6); ItemIcon #StatItem1 { Anchor: (Width: 48, Height: 48); } }
+          Group { FlexWeight: 1; LayoutMode: Top;
+            Label #StatValue1 { Anchor: (Height: 34); Text: ""; Style: (FontName: "Secondary", FontSize: 24, TextColor: $T.@Text, RenderBold: true, VerticalAlignment: Center); }
+            Label #StatLabel1 { Anchor: (Height: 22); Text: ""; Style: (FontSize: 13, TextColor: $T.@Muted, VerticalAlignment: Center); }
+          }
+        }
+        Group { FlexWeight: 1; Anchor: (Height: 84, Right: 0); Background: $T.@JournalInsetSurface; Padding: (Horizontal: 12, Vertical: 10); LayoutMode: Left;
+          Group { Anchor: (Width: 60, Height: 60, Right: 12, Top: 2); Background: $T.@IconTileSurface; Padding: (Full: 6); ItemIcon #StatItem2 { Anchor: (Width: 48, Height: 48); } }
+          Group { FlexWeight: 1; LayoutMode: Top;
+            Label #StatValue2 { Anchor: (Height: 34); Text: ""; Style: (FontName: "Secondary", FontSize: 24, TextColor: $T.@Text, RenderBold: true, VerticalAlignment: Center); }
+            Label #StatLabel2 { Anchor: (Height: 22); Text: ""; Style: (FontSize: 13, TextColor: $T.@Muted, VerticalAlignment: Center); }
+          }
+        }
+      }
+
+      Group { FlexWeight: 1; }
+      Group { Background: $T.@JournalInsetSurface; Padding: (Full: 20); Anchor: (Height: 214); LayoutMode: Left;
+        Group { Anchor: (Width: 112, Height: 112, Right: 20, Top: 20); Background: $T.@IconTileSurface; Padding: (Full: 10);
+          ItemIcon #UpgradeItem { Anchor: (Width: 92, Height: 92); }
+        }
+        Group { FlexWeight: 1; LayoutMode: Top;
+          Label { Anchor: (Height: 20); Text: "UPGRADE"; Style: $T.@CodexKickerStyle; }
+          Label #UpgradeTitle { Anchor: (Height: 36); Text: ""; Style: (FontName: "Secondary", FontSize: 26, TextColor: $T.@Text, RenderBold: true); }
+          Label #UpgradeGain { Anchor: (Height: 26, Bottom: 10); Text: ""; Style: (FontSize: 16, TextColor: $T.@Accent, RenderBold: true); }
+          Group { Anchor: (Height: 50); LayoutMode: Left;
+            $T.@TextButton #Buy1 { FlexWeight: 1; Anchor: (Height: 50, Right: 8); Text: ""; }
+            $T.@SecondaryTextButton #Buy10 { FlexWeight: 1; Anchor: (Height: 50, Right: 8); Text: ""; }
+            $T.@SecondaryTextButton #BuyMax { FlexWeight: 1; Anchor: (Height: 50); Text: ""; }
+          }
+          // Each button's price on its own line, so a long number is never cut off.
+          Group { Anchor: (Height: 26); LayoutMode: Left;
+            Label #Cost1 { FlexWeight: 1; Anchor: (Right: 8); Text: ""; Style: (FontSize: 15, TextColor: $T.@Primary, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+            Label #Cost10 { FlexWeight: 1; Anchor: (Right: 8); Text: ""; Style: (FontSize: 15, TextColor: $T.@Muted, HorizontalAlignment: Center, VerticalAlignment: Center); }
+            Label #CostMax { FlexWeight: 1; Text: ""; Style: (FontSize: 15, TextColor: $T.@Muted, HorizontalAlignment: Center, VerticalAlignment: Center); }
+          }
+        }
+      }
+    }
+    $T.@CodexPanel { Anchor: (Width: 580);
+      Group { Anchor: (Height: 44, Bottom: 14); LayoutMode: Left;
+        $T.@SecondaryTextButton #TabTools { FlexWeight: 1; Anchor: (Height: 44, Right: 6); Text: "Tools"; }
+        $T.@SecondaryTextButton #TabTalents { FlexWeight: 1; Anchor: (Height: 44, Right: 6); Text: "Talents"; }
+        $T.@SecondaryTextButton #TabAlbum { FlexWeight: 1; Anchor: (Height: 44, Right: 6); Text: "Album"; }
+        $T.@SecondaryTextButton #TabOrders { FlexWeight: 1; Anchor: (Height: 44, Right: 6); Text: "Orders"; }
+        $T.@SecondaryTextButton #TabEstate { FlexWeight: 1; Anchor: (Height: 44); Text: "Estate"; }
+      }
+      Label #TabTitle { Anchor: (Height: 30); Text: ""; Style: (...$T.@SubtitleStyle, FontSize: 20); }
+      Label #TabNote { Anchor: (Height: 44, Bottom: 8); Text: ""; Style: (...$T.@MutedStyle, FontSize: 14); }
+      Group #TabRows { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+    }
+  }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
+}

@@ -47,15 +47,27 @@ public record BanLadder(List<BanDuration> steps) {
         return new BanLadder(steps);
     }
 
-    /** The data folder override when present, otherwise the bundled default. */
+    /**
+     * The data folder override when present, otherwise the bundled default. When the override is missing it is
+     * written from the default first, so staff have a file to edit. Failing to write it never stops the ladder loading.
+     */
     public static BanLadder load(Path dataDirectory, ClassLoader loader) throws IOException {
         Path override = dataDirectory == null ? null : dataDirectory.resolve(OVERRIDE_FILE);
         if (override != null && Files.isRegularFile(override)) {
             try (Reader reader = Files.newBufferedReader(override, StandardCharsets.UTF_8)) { return parse(reader); }
         }
+        byte[] bundled;
         try (InputStream stream = loader.getResourceAsStream(RESOURCE)) {
             if (stream == null) throw new IOException("Missing " + RESOURCE);
-            return parse(new InputStreamReader(stream, StandardCharsets.UTF_8));
+            bundled = stream.readAllBytes();
         }
+        BanLadder ladder = parse(new InputStreamReader(new java.io.ByteArrayInputStream(bundled), StandardCharsets.UTF_8));
+        if (override != null && Files.notExists(override)) {
+            try {
+                Files.createDirectories(dataDirectory);
+                Files.write(override, bundled, java.nio.file.StandardOpenOption.CREATE_NEW);
+            } catch (IOException ignored) { /* read only or racing another writer: the default still applies */ }
+        }
+        return ladder;
     }
 }

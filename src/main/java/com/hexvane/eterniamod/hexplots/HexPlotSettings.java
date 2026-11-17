@@ -134,7 +134,15 @@ public record HexPlotSettings(
         return ownedCells <= 1 ? 0 : expansionPrice(ownedCells - 1);
     }
 
-    /** The price of adding one cell to a plot that already has {@code ownedCells}, in Crowns when Crown priced, else coins. */
+    /**
+     * The price of adding one cell to a plot: nothing for its first production hexagon, whatever size the plot started
+     * at, else {@link #expansionPrice(int)}.
+     */
+    public long expansionPrice(int ownedCells, boolean firstProduction) {
+        return firstProduction ? 0 : expansionPrice(ownedCells);
+    }
+
+    /** The price of a paid cell for a plot that already has {@code ownedCells}, in Crowns when Crown priced, else coins. */
     public long expansionPrice(int ownedCells) {
         if (crownPriced()) return expandCrowns;
         return Math.addExact(expandCoins, Math.multiplyExact(expandCoinsPerOwnedCell, (long) Math.max(0, ownedCells)));

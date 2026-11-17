@@ -1,0 +1,17 @@
+$T = "Theme/Citadel.ui";
+
+Group #ProdRow {
+  Anchor: (Height: 88, Bottom: 8);
+  Background: $T.@JournalInsetSurface;
+  Padding: (Horizontal: 14, Vertical: 10);
+  LayoutMode: Left;
+  Group #PRowTile { Anchor: (Width: 64, Height: 64, Right: 14, Top: 2); Background: $T.@IconTileSurface; Padding: (Full: 6);
+    ItemIcon #PRowItem { Anchor: (Width: 52, Height: 52); Visible: false; }
+    Label #PRowMark { Anchor: (Width: 52, Height: 52); Text: "?"; Visible: false; Style: (FontName: "Secondary", FontSize: 30, TextColor: $T.@Muted, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+  }
+  Group { FlexWeight: 1; LayoutMode: Top;
+    Label #PRowTitle { Anchor: (Height: 24); Text: ""; Style: (FontSize: 17, TextColor: $T.@Text, RenderBold: true); }
+    Label #PRowText { FlexWeight: 1; Text: ""; Style: (...$T.@MutedStyle, FontSize: 14); }
+  }
+  $T.@TextButton #PRowAction { Anchor: (Width: 150, Height: 44, Left: 12, Top: 12); Text: ""; }
+}

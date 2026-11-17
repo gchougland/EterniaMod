@@ -55,7 +55,8 @@ public final class PropPlacementCommit {
             return false;
         }
         Vector3i propAnchor = def.resolvePrefabAnchorWorld(session.getAnchor(), session.getPrefabYaw());
-        Path prefabPath = PrefabResolveUtil.resolvePrefabPath(def.getPrefabPath());
+        Path prefabPath = PrefabResolveUtil.resolvePrefabPath(HexPlacement.isGenerator(def)
+            ? com.hexvane.eterniamod.production.StationPlacement.prefab(def, propAnchor.y) : def.getPrefabPath());
         if (prefabPath == null) {
             return false;
         }
@@ -65,7 +66,7 @@ public final class PropPlacementCommit {
         try {
             var source=session.getCustodyOwner()!=null?session.getCustodyOwner():NativePlacementTransactions.owner(plot);
             com.hexvane.eterniamod.housing.HousingCustody.require(plugin,plot,actor.getUuid(),source,com.hexvane.eterniamod.housing.HousingCustody.PLACE);
-            placed=NativePlacementTransactions.place(plugin,world,plot,actor.getUuid(),session.getPropId(),propAnchor,session.getPrefabYaw(),buffer,false,source);
+            placed=NativePlacementTransactions.place(plugin,world,plot,actor.getUuid(),session.getPropId(),propAnchor,session.getPrefabYaw(),buffer,false,source,com.hexvane.eterniamod.placement.HexPlacement.isGenerator(def),false);
         }
         catch (Exception failure) { plugin.getLogger().atWarning().withCause(failure).log("Prop placement did not complete"); actor.sendMessage(com.hypixel.hytale.server.core.Message.raw(failure.getMessage())); return false; }
         try {
@@ -83,6 +84,7 @@ public final class PropPlacementCommit {
         plotManager.updatePlot(plot);
         plotManager.saveIfDirty();
         NativePlacementTransactions.complete(plugin,placed.operation());
+        if (HexPlacement.isGenerator(def)) com.hexvane.eterniamod.production.ProductionRuntime.placed(plugin, world, plot, instanceId, def, actor);
         return true;
         } catch (Exception failure) { plugin.getLogger().atWarning().withCause(failure).log("Prop placement metadata did not complete"); NativePlacementTransactions.lock(plugin,placed.operation()); actor.sendMessage(com.hypixel.hytale.server.core.Message.raw("Placement metadata needs recovery; its snapshot is retained.")); return false; }
     }

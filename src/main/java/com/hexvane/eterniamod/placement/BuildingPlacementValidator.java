@@ -96,6 +96,10 @@ public final class BuildingPlacementValidator {
         if (plot.isHex()) {
             String hex = HexPlacement.house(plot.getCells(), HexPlacement.rect(buildingFp), plugin.getInfrastructure().structureRoads(world.getName()), com.hexvane.eterniamod.hexplots.HexPlotSettings.current().houseSetback());
             if (hex != null) return hex;
+            var touched = plot.getCells().lattice().cellsTouching(HexPlacement.rect(buildingFp));
+            var roles = com.hexvane.eterniamod.production.HexRoles.of(plugin, plot);
+            if (roles != null) for (var cell : touched)
+                if (roles.cells().contains(cell) && roles.of(cell) == com.hexvane.eterniamod.production.PlotRoles.Role.PRODUCTION) return "houseOnProduction";
             if (!PlotFootprintUtil.hasSolidVoxels(prefabYaw, buf)) return "prefabMissing";
             return com.hexvane.eterniamod.housing.NativeHousingChecks.mutation(world, plot, buildingAnchor, prefabYaw, buf, true);
         }

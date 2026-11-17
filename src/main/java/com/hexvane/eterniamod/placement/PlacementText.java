@@ -17,7 +17,7 @@ public final class PlacementText {
         int colon = code.indexOf(':');
         String key = colon < 0 ? code : code.substring(0, colon);
         String count = colon < 0 ? "" : code.substring(colon + 1);
-        if (key.startsWith("hex")) return Message.translation("eternia_hexplots.plots.place." + key).param("count", count);
+        if (key.startsWith("hex") || key.startsWith("station") || key.equals("houseOnProduction")) return Message.translation("eternia_hexplots.plots.place." + key).param("count", count);
         return Message.translation("eterniamod_common.eterniamod.common." + key);
     }
 

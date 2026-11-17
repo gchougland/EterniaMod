@@ -1,0 +1,12 @@
+{
+  "id": "station_miner",
+  "displayName": "Mine Shaft",
+  "prefabPath": "EterniaMod/Stations/Station_Mine_T1.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None",
+  "category": "generator"
+}

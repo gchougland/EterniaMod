@@ -72,6 +72,9 @@ public final class StatsPage extends EterniaInteractiveCustomUIPage<ChoicePage.D
             events.addEventBinding(CustomUIEventBindingType.Activating, tab, new EventData().append("Action", "nav:" + section.name()), false);
         }
         com.hexvane.eterniamod.ui.JournalChrome.navTab(commands, sections.size(), "Records", "board", true, false);
+        events.addEventBinding(CustomUIEventBindingType.Activating, com.hexvane.eterniamod.ui.JournalChrome.navTab(commands, sections.size() + 1, "Production", "storage", false, false),
+            new EventData().append("Action", "production"), false);
+        showWallet(commands, ref, store);
     }
 
     @Override public void handleDataEvent(Ref<EntityStore> ref, Store<EntityStore> store, ChoicePage.Data data) {
@@ -79,6 +82,7 @@ public final class StatsPage extends EterniaInteractiveCustomUIPage<ChoicePage.D
         store.getExternalData().getWorld().execute(() -> {
             if (isDismissed() || !ref.isValid()) return;
             if ("Close".equals(data.action)) { close(); return; }
+            if ("production".equals(data.action)) { com.hexvane.eterniamod.production.ProductionJournalPage.open(ref, store, playerRef); return; }
             if (data.action.startsWith("nav:")) {
                 try { com.hexvane.eterniamod.socialui.SocialUiBootstrap.openJournal(ref, store, playerRef, com.hexvane.eterniamod.socialui.EterniaServicesPage.Section.valueOf(data.action.substring(4))); }
                 catch (IllegalArgumentException unknown) { /* not a Journal section */ }

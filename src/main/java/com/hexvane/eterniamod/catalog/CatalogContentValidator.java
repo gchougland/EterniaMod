@@ -34,7 +34,7 @@ public final class CatalogContentValidator {
         if (building) {
             vector(definition, "spawnLocalPos", false, false, errors);
             if (definition.has("housingKind") && !Set.of("personal","guild").contains(String.valueOf(string(definition,"housingKind")))) errors.add("housingKind must be personal or guild");
-        } else if (definition.has("category") && !Set.of("prop","addition").contains(String.valueOf(string(definition,"category")))) errors.add("category must be prop or addition");
+        } else if (definition.has("category") && !Set.of("prop","addition","generator").contains(String.valueOf(string(definition,"category")))) errors.add("category must be prop, addition or generator");
         vector(definition, "dimensions", false, true, errors);
         if (definition.has("rotationYaw") && !ROTATIONS.contains(string(definition, "rotationYaw") == null
             ? "" : string(definition, "rotationYaw"))) errors.add("rotationYaw must be None, Ninety, OneEighty or TwoSeventy");

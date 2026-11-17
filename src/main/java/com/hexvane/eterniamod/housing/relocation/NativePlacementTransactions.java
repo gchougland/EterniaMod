@@ -146,6 +146,13 @@ public final class NativePlacementTransactions {
     }
     /** Explicit source owner enables a permitted guild quantity to remain guild-owned on an attached member plot. */
     public static Placed place(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID actor,String catalogId,Vector3i origin,Rotation yaw,IPrefabBuffer buffer,boolean house,Owner custodyOwner) throws IOException {
+        return place(plugin,world,plot,actor,catalogId,origin,yaw,buffer,house,custodyOwner,house,false);
+    }
+    /**
+     * {@code carve} writes the prefab's air cells too, so a station can cut its pit into the ground the way a house
+     * clears its rooms. {@code fresh} places the catalog prefab even when a packed copy exists (a station changing tier).
+     */
+    public static Placed place(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID actor,String catalogId,Vector3i origin,Rotation yaw,IPrefabBuffer buffer,boolean house,Owner custodyOwner,boolean carve,boolean fresh) throws IOException {
         healPickups(plugin,world,plot);
         Owner owner=owner(plot);String content=(house?"eternia:house/":"eternia:prop/")+catalogId;
         var packed=plugin.getServices().batch(()->{
@@ -162,7 +169,7 @@ public final class NativePlacementTransactions {
         int[] min={Integer.MAX_VALUE,Integer.MAX_VALUE,Integer.MAX_VALUE},max={Integer.MIN_VALUE,Integer.MIN_VALUE,Integer.MIN_VALUE};
         var call=new PrefabBufferCall(new FastRandom(),PrefabRotation.fromRotation(yaw));
         buffer.forEach(IPrefabBuffer.iterateAllColumns(),(x,y,z,b,h,s,r,f,t,fluid,level)->{
-            if(!house&&b==0&&f==0&&fluid==0)return;
+            if(!carve&&b==0&&f==0&&fluid==0)return;
             int wx=Math.addExact(origin.x,x),wz=Math.addExact(origin.z,z);
             if(!plot.getFootprint().containsHorizontal(wx,wz)||plugin.getInfrastructure().protectedColumn(world.getName(),wx,wz))throw new IllegalStateException("Prefab crosses plot or protected infrastructure");
             min[0]=Math.min(min[0],x);min[1]=Math.min(min[1],y);min[2]=Math.min(min[2],z);max[0]=Math.max(max[0],x);max[1]=Math.max(max[1],y);max[2]=Math.max(max[2],z);
@@ -181,7 +188,7 @@ public final class NativePlacementTransactions {
         var before=nativeStore.save(operation+"-before.json",bounds,cells,nativeStore.capture(world,bounds,ColumnMask.of(cells),Set.of(),true,false));
         BlockSelection desired=SelectionPrefabSerializer.deserialize(before.document());
         buffer.forEach(IPrefabBuffer.iterateAllColumns(),(x,y,z,b,h,s,r,f,t,fluid,level)->{
-            if(!house&&b==0&&f==0&&fluid==0)return;
+            if(!carve&&b==0&&f==0&&fluid==0)return;
             var block=BlockType.getAssetMap().getAsset(b);
             if(block==null)throw new IllegalStateException("Unknown prefab block asset");
             var holder=h!=null?h.clone():f==0&&block.getBlockEntity()!=null?block.getBlockEntity().clone():null;
@@ -200,7 +207,7 @@ public final class NativePlacementTransactions {
                 savedContent=GuildWaygateSnapshot.withoutPlinth(savedContent).orElseThrow(()->new IllegalStateException("This saved portal needs review before it can be placed."));
                 sameBounds=bounds.maxX()-bounds.minX()==1&&bounds.maxY()-bounds.minY()==1&&bounds.maxZ()-bounds.minZ()==1;
             }
-            boolean turned=!yaw.name().equals(packed.nativeData().get("yaw"));
+            boolean turned=fresh||!yaw.name().equals(packed.nativeData().get("yaw"));
             if(turned){
                 // Turned since it was packed: its saved copy only fits the old direction. A decoration holding nothing is
                 // the same as a fresh one from the catalog, so place that at the new direction; one holding items keeps them.
