@@ -13,5 +13,5 @@
   "ExpansionPrice": { "Crowns": 500, "Coins": 0, "CoinsPerOwnedCell": 0 },
   "PerCell": { "Props": 24, "Generators": 2 },
   "HouseSetback": 5,
-  "GuildEstateMembers": 5
+  "GuildEstateMembers": 3
 }

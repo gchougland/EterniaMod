@@ -201,7 +201,7 @@ public final class ChatService implements AutoCloseable {
         for (PlayerRef ref : audience) { byId.put(ref.getUuid(), ref); listeners.add(listener(ref)); }
         byId.put(sender.getUuid(), sender);
         List<UUID> recipients = ChatRouting.recipients(channel, listener(sender), listeners, members, settings.nearbyRadius());
-        ChatLine line = ChatLine.chat(channel, ChatFormat.speakerName(sender), ChatFormat.rank(sender), text);
+        ChatLine line = ChatLine.chat(channel, ChatFormat.speakerName(sender), ChatFormat.speakerColor(sender), ChatFormat.rank(sender), text);
         for (UUID id : recipients) ChatDock.deliver(byId.get(id), line);
         log(channel, sender, text);
         if (ChatRouting.onlySender(recipients)) {

@@ -43,7 +43,7 @@ public final class GuildChannel {
                 return services.guilds().roster(actor).stream().map(member -> member.playerId())
                     .filter(id -> services.guilds().can(id, guild, "guild.chat")).toList();
             });
-            var line = ChatLine.chat(ChatChannel.GUILD, ChatFormat.speakerName(sender), ChatFormat.rank(sender), text);
+            var line = ChatLine.chat(ChatChannel.GUILD, ChatFormat.speakerName(sender), ChatFormat.speakerColor(sender), ChatFormat.rank(sender), text);
             var allowed = new HashSet<>(members);
             int heard = 0;
             for (PlayerRef recipient : ChatService.audience(sender, Universe.get().getPlayers())) {

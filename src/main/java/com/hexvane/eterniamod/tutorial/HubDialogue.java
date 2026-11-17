@@ -44,14 +44,26 @@ public final class HubDialogue {
         return List.of(key(npc, "opening"));
     }
 
+    /** The Hub NPC behind a tutorial key, or null for an unknown key. */
+    @Nullable
+    public static HubNpcIdentity identity(String npc) {
+        for (var identity : HubNpcIdentity.values()) if (npc.equals(npcKey(identity))) return identity;
+        return null;
+    }
+
     /** A short display name for the walkthrough panel and chat, such as "Bramble Hearthleaf". */
     public static String name(String npc) {
-        for (var identity : HubNpcIdentity.values()) if (npc.equals(npcKey(identity))) return identity.characterName();
-        return npc;
+        var identity = identity(npc);
+        return identity == null ? npc : identity.characterName();
     }
 
     public static String profession(String npc) {
-        for (var identity : HubNpcIdentity.values()) if (npc.equals(npcKey(identity))) return identity.profession();
-        return "";
+        var identity = identity(npc);
+        return identity == null ? "" : identity.profession();
+    }
+
+    /** The panel's line saying why a step's NPC is worth meeting. */
+    public static String why(TutorialStep step) {
+        return text(step.kind() == TutorialStep.Kind.RETURN_GUIDE ? "hud.why.return" : "hud.why." + step.npc());
     }
 }

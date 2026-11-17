@@ -44,7 +44,9 @@ public final class GuildService extends DomainSupport {
     public List<Role> roles(UUID actor) { return store.transaction(tx->{var me=currentMember(tx,actor);UUID guild=UUID.fromString(me.value("guild"));return tx.scan("guild_role").stream().filter(r->r.value("guild").equals(guild.toString())).map(r->role(tx,guild,r.value("id"))).sorted(Comparator.comparingInt(Role::rank)).toList();}); }
     public Optional<Guild> find(UUID guildId) { return store.transaction(tx->tx.find("guild",guildId.toString()).map(GuildService::guild)); }
     public boolean can(UUID actor,UUID guildId,String capability) { return store.transaction(tx->{try{requireCapability(tx,actor,guildId,capability);return true;}catch(DomainException e){if(e.code()==FORBIDDEN||e.code()==NOT_FOUND)return false;throw e;}}); }
-    public boolean eligibleForRoot(UUID actor) { return store.transaction(tx->{var me=currentMember(tx,actor);UUID guild=UUID.fromString(me.value("guild"));requireCapability(tx,actor,guild,"housing.claim");return tx.scan("guild_member").stream().filter(r->r.value("active").equals("true")&&r.value("guild").equals(guild.toString())).count()>=5;}); }
+    /** Members a guild needs before it can claim its estate. */
+    public static final int GUILD_ESTATE_MEMBERS = 3;
+    public boolean eligibleForRoot(UUID actor) { return store.transaction(tx->{var me=currentMember(tx,actor);UUID guild=UUID.fromString(me.value("guild"));requireCapability(tx,actor,guild,"housing.claim");return tx.scan("guild_member").stream().filter(r->r.value("active").equals("true")&&r.value("guild").equals(guild.toString())).count()>=GUILD_ESTATE_MEMBERS;}); }
     public void defineRole(UUID leader,Role role) {
         text(role.id,"role id",50);text(role.name,"role name",50);require(role.id.matches("[a-z][a-z0-9_-]*")&&role.rank>0,INVALID_INPUT,"Invalid custom role");require(Collections.disjoint(role.capabilities,LEADER_ONLY),FORBIDDEN,"Custom roles cannot receive leader powers");
         for(String cap:role.capabilities){text(cap,"capability",100);require(cap.matches("[a-z][a-z0-9_.-]*"),INVALID_INPUT,"Invalid capability id");}

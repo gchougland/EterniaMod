@@ -1,51 +1,67 @@
 package com.hexvane.eterniamod.tutorial;
 
-import com.hexvane.eterniamod.domain.TutorialService;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
+import com.hypixel.hytale.server.core.ui.PatchStyle;
+import com.hypixel.hytale.server.core.ui.Value;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-/** The walkthrough panel in the Hub: the next thing to do and every townsperson, green once met. */
+/** The walkthrough panel in the Hub: which step this is, who to talk to and why, and an arrow pointing the way. */
 final class TutorialHud extends CustomUIHud {
     static final String ID = "eternia:tutorial";
-    private static final String MET = "#7fbf8a", TODO = "#e6dcc6";
-    private TutorialService.State shown;
-    private java.util.List<String> shownPeople;
+
+    /** Where the arrow points and how far away the NPC is; null when the NPC is not placed in this world. */
+    record Pointer(int frame, int distance) {}
+
+    private TutorialStep shownStep;
+    private Pointer shownPointer;
+    private boolean drawn;
 
     TutorialHud(PlayerRef player) { super(player, ID, 0); }
 
     @Override
     protected void build(@Nonnull UICommandBuilder commands) { commands.append("EterniaMod/TutorialHud.ui"); }
 
-    void refresh(TutorialService.State state, java.util.List<String> people) {
-        if (state.equals(shown) && people.equals(shownPeople)) return;
-        shown = state;
-        shownPeople = people;
-        update(false, commands(state, people));
+    void refresh(TutorialStep step, @Nullable Pointer pointer) {
+        if (drawn && step.equals(shownStep) && Objects.equals(pointer, shownPointer)) return;
+        boolean sameStep = drawn && step.equals(shownStep);
+        shownStep = step;
+        shownPointer = pointer;
+        drawn = true;
+        update(false, sameStep ? pointerCommands(new UICommandBuilder(), pointer) : commands(step, pointer));
     }
 
-    /** The panel's commands for a state. Package private for the render check in tests. */
-    static UICommandBuilder commands(TutorialService.State state, java.util.List<String> people) {
+    /** The panel's commands for a step. Package private for the render check in tests. */
+    static UICommandBuilder commands(TutorialStep step, @Nullable Pointer pointer) {
         var c = new UICommandBuilder();
         c.set("#Title.TextSpans", Message.translation(HubDialogue.text("hud.title")));
-        Message step;
-        if (!state.met().contains(TutorialService.GUIDE)) step = Message.translation(HubDialogue.text("hud.meetGuide"));
-        else if (!state.metEveryone(people)) step = Message.translation(HubDialogue.text("hud.meetTown"))
-            .param("count", String.valueOf(state.townspeopleMet(people))).param("total", String.valueOf(people.size()));
-        else step = Message.translation(HubDialogue.text("hud.returnGuide"));
-        c.set("#Step.TextSpans", step);
-        for (int i = 0; i < 7; i++) {
-            String selector = "#Town" + i;
-            if (i >= people.size()) { c.set(selector + ".Visible", false); continue; }
-            String npc = people.get(i);
-            boolean met = state.met().contains(npc);
-            c.set(selector + ".Visible", true);
-            c.set(selector + ".TextSpans", Message.raw((met ? "Met  " : "")).color(MET)
-                .insert(Message.raw(HubDialogue.name(npc) + ", " + HubDialogue.profession(npc)).color(met ? MET : TODO)));
-        }
+        c.set("#Count.TextSpans", Message.translation(HubDialogue.text("hud.step"))
+            .param("number", String.valueOf(step.number())).param("total", String.valueOf(step.total())));
+        Message instruction = switch (step.kind()) {
+            case MEET_GUIDE -> Message.translation(HubDialogue.text("hud.meetGuide"));
+            case MEET_NPC -> Message.translation(HubDialogue.text("hud.meetNpc"))
+                .param("name", HubDialogue.name(step.npc())).param("profession", HubDialogue.profession(step.npc()));
+            case RETURN_GUIDE -> Message.translation(HubDialogue.text("hud.returnGuide"));
+        };
+        c.set("#Step.TextSpans", instruction);
+        c.set("#Why.TextSpans", Message.translation(HubDialogue.why(step)));
         c.set("#Footer.TextSpans", Message.translation(HubDialogue.text("hud.footer")));
+        return pointerCommands(c, pointer);
+    }
+
+    private static UICommandBuilder pointerCommands(UICommandBuilder c, @Nullable Pointer pointer) {
+        c.set("#Pointer.Visible", pointer != null);
+        if (pointer == null) return c;
+        c.setObject("#Arrow.Background", new PatchStyle(Value.of(arrowTexture(pointer.frame()))));
+        c.set("#Distance.TextSpans", pointer.distance() <= 3
+            ? Message.translation(HubDialogue.text("hud.here"))
+            : Message.translation(HubDialogue.text("hud.distance")).param("distance", String.valueOf(pointer.distance())));
         return c;
     }
+
+    static String arrowTexture(int frame) { return String.format("EterniaMod/Tutorial/Arrow%02d.png", Math.floorMod(frame, TutorialStep.FRAMES)); }
 }

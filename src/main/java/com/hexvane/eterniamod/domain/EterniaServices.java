@@ -23,6 +23,7 @@ public final class EterniaServices {
     private final CommerceService commerce;
     private final PremiumService premium;
     private final CurrencyGrantService currencyGrants;
+    private final PlaytestService playtest;
     private final CollectionService collection;
     private final CommerceIngressService commerceIngress;
     private final ActivitySourceService activitySources;
@@ -46,6 +47,7 @@ public final class EterniaServices {
         seasons=new SeasonService(store,clock,ids,ownership,economy);
         provenance=new ProvenanceService(store,clock,ids);premium=new PremiumService(store,clock,ids,ownership);commerce=new CommerceService(store,clock,ids,ownership,premium);
         currencyGrants=new CurrencyGrantService(store,clock,ids,premium,economy);
+        playtest=new PlaytestService(store,clock,ids,premium,economy);
         collection=new CollectionService(store,clock,ids,ownership);
         commerceIngress=new CommerceIngressService(store,clock,ids,commerce);
         activitySources=new ActivitySourceService(store,clock,ids,seasons,economy);
@@ -90,6 +92,7 @@ public final class EterniaServices {
     public CommerceService commerce(){return commerce;}
     public PremiumService premium(){return premium;}
     public CurrencyGrantService currencyGrants(){return currencyGrants;}
+    public PlaytestService playtest(){return playtest;}
     public CollectionService collection(){return collection;}
     public CommerceIngressService commerceIngress(){return commerceIngress;}
     public ActivitySourceService activitySources(){return activitySources;}

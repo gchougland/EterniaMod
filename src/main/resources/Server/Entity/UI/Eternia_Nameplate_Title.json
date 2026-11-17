@@ -1,0 +1,24 @@
+{
+  "$Comment": "A player's worn title, just above their name. The server sends the text and its colour, and sends it again before it runs out.",
+  "Type": "CombatText",
+  "HitboxOffset": {
+    "X": 0,
+    "Y": -24
+  },
+  "RandomPositionOffsetRange": {
+    "X": {
+      "Min": 0,
+      "Max": 0
+    },
+    "Y": {
+      "Min": 0,
+      "Max": 0
+    }
+  },
+  "ViewportMargin": 0,
+  "Duration": 10,
+  "HitAngleModifierStrength": 0,
+  "FontSize": 16,
+  "TextColor": "#ffffff",
+  "AnimationEvents": []
+}

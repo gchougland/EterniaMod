@@ -67,7 +67,7 @@ public final class ChatDock implements AutoCloseable {
         ChatDock dock = active;
         if (dock != null) { dock.add(recipient, line); return; }
         recipient.sendMessage(line.isSystem() ? line.system()
-            : ChatFormat.line(line.channel(), Message.raw(line.speaker()), line.text()));
+            : ChatFormat.line(line.channel(), Message.raw(line.speaker()), line.speakerColor(), line.text()));
     }
 
     // ---- capture: everything headed for the game's chat box ----

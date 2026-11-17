@@ -25,6 +25,17 @@ class PersonalMemoriesTest {
         assertEquals(Set.of("Trork"),memories.recorded(second).keySet());
         assertEquals(2,memories.recorded(first).size());
     }
+    @Test void eachWorldGroupKeepsItsOwnMemories() {
+        var memories=new EterniaServices(new InMemoryStore()).memories();UUID player=UUID.randomUUID();
+        memories.record(player,"world:Orbis",List.of(entry("Kweebec")));
+        memories.record(player,"world:Aetherhaven",List.of(entry("Trork")));
+        assertEquals(Set.of("Kweebec"),memories.recorded(player,"world:Orbis").keySet());
+        assertEquals(Set.of("Trork"),memories.recorded(player,"world:Aetherhaven").keySet());
+        assertTrue(memories.recorded(player,MemoryService.SHARED_SET).isEmpty());
+        memories.record(player,List.of(entry("Feran")));
+        assertEquals(Set.of("Feran"),memories.recorded(player,MemoryService.SHARED_SET).keySet(),"memories recorded before sets existed are the Hub and housing set");
+        assertEquals(com.hexvane.eterniamod.inventory.WorldInventoryBook.SHARED,MemoryService.SHARED_SET,"inventories and memories name the shared group the same way");
+    }
     @Test void recordingAgainKeepsTheFirstMemory() {
         var memories=new EterniaServices(new InMemoryStore()).memories();UUID player=UUID.randomUUID();
         memories.record(player,List.of(entry("Kweebec")));

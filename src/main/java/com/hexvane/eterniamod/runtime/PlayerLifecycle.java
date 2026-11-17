@@ -37,6 +37,7 @@ public final class PlayerLifecycle implements AutoCloseable {
         plugin.getEntityStoreRegistry().registerSystem(new TeleportEntityRange());
         plugin.getEventRegistry().registerGlobal(PlayerConnectEvent.class,event->{
             var player=event.getPlayerRef();
+            if(plugin.getRuntime().closedForReset()){player.getPacketHandler().disconnect(com.hypixel.hytale.server.core.Message.raw("Eternia is being reset for the next test. Please come back soon."));return;}
             // Reject stale backups before the loaded player can enter a world and move native items.
             try{plugin.getItemEscrow().recoverLoadedInventory(event.getHolder(),player);}
             catch(RuntimeException failure){plugin.getLogger().atWarning().withCause(failure).log("Player inventory recovery failed");return;}

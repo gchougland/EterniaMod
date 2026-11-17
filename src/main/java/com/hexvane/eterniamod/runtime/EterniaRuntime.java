@@ -7,6 +7,16 @@ import java.util.UUID;
 
 public final class EterniaRuntime implements AutoCloseable {
     private final TransactionalStore store;
+    private volatile PlaytestSettings playtest=PlaytestSettings.OFF;
+    /** Alpha tester tracking and the starting allowance, from the server settings. */
+    public void setPlaytest(PlaytestSettings settings){playtest=java.util.Objects.requireNonNull(settings);}
+    public PlaytestSettings playtest(){return playtest;}
+    /** The store underneath the services' cache, for the beta wipe only. The server must restart after using it. */
+    public TransactionalStore rawStore(){return store;}
+    private volatile boolean closedForReset;
+    /** After the beta wipe: everyone joining is turned away until the server restarts, because caches still hold old data. */
+    public void closeForReset(){closedForReset=true;}
+    public boolean closedForReset(){return closedForReset;}
     private final EterniaServices services;
     private final RuntimeConfig config;
     private GameBridgeServer bridge;
@@ -57,6 +67,10 @@ public final class EterniaRuntime implements AutoCloseable {
         grant(owner,"eternia:prop/station_miner",OwnershipService.Kind.QUANTITY);
         grant(owner,"eternia:palette/cut_stone",OwnershipService.Kind.UNLOCK);
         grant(owner,"eternia:path/cobblestone",OwnershipService.Kind.UNLOCK);
+        var settings=playtest;
+        if(settings.alpha())services.playtest().recordAlphaTester(player,name);
+        if(services.playtest().isAlphaTester(player))services.ownership().grant(new OwnershipService.GrantRequest("alpha-tester:"+player,owner,PlaytestService.ALPHA_TITLE,OwnershipService.Kind.UNLOCK,1,null));
+        services.playtest().grantStartingAllowance(player,settings.startingCrowns(),settings.startingCoins());
         if(services.seasons().progress(player).stream().noneMatch(SeasonService.Progress::active))
             services.seasons().definitions().stream().findFirst().ifPresent(def->services.seasons().select(player,def.id()));
     }

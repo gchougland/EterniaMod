@@ -1,18 +1,19 @@
 $T = "Theme/Citadel.ui";
 Group {
-  Anchor: (Top: 64, Right: 24, Width: 330, Height: 356);
+  Anchor: (Top: 64, Right: 24, Width: 330, Height: 278);
   Background: $T.@JournalPanelSurface;
   Padding: (Full: 18);
   LayoutMode: Top;
-  Label #Title { Anchor: (Height: 26, Bottom: 6); Text: "WELCOME TO ETERNIA"; Style: (FontSize: 17, TextColor: #d8b66b, RenderBold: true); }
-  Label #Step { Anchor: (Height: 46, Bottom: 8); Text: ""; Style: (FontSize: 15, TextColor: #85c5b3, Wrap: true); }
+  Label #Title { Anchor: (Height: 26, Bottom: 2); Text: "WELCOME TO ETERNIA"; Style: (FontSize: 17, TextColor: #d8b66b, RenderBold: true); }
+  Label #Count { Anchor: (Height: 20, Bottom: 6); Text: ""; Style: (...$T.@MutedStyle, FontSize: 13); }
+  Label #Step { Anchor: (Height: 44, Bottom: 4); Text: ""; Style: (FontSize: 15, TextColor: #85c5b3, RenderBold: true, Wrap: true); }
+  Label #Why { Anchor: (Height: 40, Bottom: 8); Text: ""; Style: (FontSize: 14, TextColor: $T.@Text, Wrap: true); }
   Group { Anchor: (Height: 2, Bottom: 10); Background: #45615d; }
-  Label #Town0 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
-  Label #Town1 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
-  Label #Town2 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
-  Label #Town3 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
-  Label #Town4 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
-  Label #Town5 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
-  Label #Town6 { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: $T.@Text); }
+  Group #Pointer {
+    Anchor: (Height: 56);
+    LayoutMode: Left;
+    Group #Arrow { Anchor: (Width: 56, Height: 56); Background: "Tutorial/Arrow00.png"; }
+    Label #Distance { FlexWeight: 1; Padding: (Left: 14); Text: ""; Style: (FontSize: 16, TextColor: $T.@Text, VerticalAlignment: Center); }
+  }
   Label #Footer { Anchor: (Height: 22, Top: 8); Text: ""; Style: (...$T.@MutedStyle, FontSize: 13); }
 }

@@ -37,6 +37,7 @@ public final class CollectionRuntime implements AutoCloseable {
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(task -> { var thread = new Thread(task,"Eternia-collections"); thread.setDaemon(true); return thread; });
     private final Map<UUID,Appearance> appearances = new ConcurrentHashMap<>();
     private final Map<UUID,String> displayNames = new ConcurrentHashMap<>();
+    private final Map<UUID,TitleLook> looks = new ConcurrentHashMap<>();
     private final Map<UUID,String> statuses = new ConcurrentHashMap<>();
     private final Map<String,Map<UUID,VisiblePet>> worldPets = new ConcurrentHashMap<>();
     private volatile boolean closed;
@@ -45,6 +46,11 @@ public final class CollectionRuntime implements AutoCloseable {
     CollectionRuntime(EterniaModPlugin plugin,EterniaServices services) { this.plugin=plugin;this.services=services;executor.scheduleWithFixedDelay(this::reconcile,2,2,TimeUnit.SECONDS); }
     public String status(UUID player) { return closed?"Collection renderer is unavailable.":statuses.getOrDefault(player,"Collection changes apply within two seconds."); }
     public String displayName(PlayerRef player) { return displayNames.getOrDefault(player.getUuid(),player.getUsername()); }
+    /** The titles an online player wears and the colour they give, as text shown to players. Empty fields when none. */
+    public record TitleLook(String prefix,String suffix,String colour) {
+        public static final TitleLook NONE=new TitleLook("","",null);
+    }
+    public TitleLook look(UUID player) { return looks.getOrDefault(player,TitleLook.NONE); }
     public void refresh() {
         if(closed||!refreshQueued.compareAndSet(false,true))return;
         try{executor.execute(()->{refreshQueued.set(false);reconcile();});}
@@ -74,7 +80,7 @@ public final class CollectionRuntime implements AutoCloseable {
                     Map<String,String> outfit=Map.of();var outfitDefinition=catalog.get(selected.outfit());
                     if(outfitDefinition!=null)outfit=SkinComposer.outfit(plugin.getDataDirectory(),outfitDefinition.assetId());
                     Map<String,CollectionService.Definition> wearables=new HashMap<>();selected.wearables().forEach((slot,id)->{var definition=catalog.get(id);if(definition!=null)wearables.put(slot,definition);});
-                    selections.put(actor,new Selection(prefix,suffix,outfit,Map.copyOf(wearables)));
+                    selections.put(actor,new Selection(prefix,suffix,TitleColors.get().forWorn(prefix.isEmpty()?null:selected.prefix(),suffix.isEmpty()?null:selected.suffix()),outfit,Map.copyOf(wearables)));
                 } catch(RuntimeException failure) {statuses.put(actor,"Collection asset unavailable: "+safe(failure.getMessage()));}
             }
             var properties=snapshot.properties();
@@ -213,6 +219,7 @@ public final class CollectionRuntime implements AutoCloseable {
         if(!component.getPlayerSkin().equals(desired))store.putComponent(ref,PlayerSkinComponent.getComponentType(),new PlayerSkinComponent(desired));
         CustomWearables.apply(ref,store,selection!=null&&selection.wearables.values().stream().anyMatch(d->d.assetId().equals("Eternia_Prowl_Shirt")));
         state.lastApplied=new PlayerSkin(desired);
+        if(selection==null)looks.remove(actor);else looks.put(actor,new TitleLook(selection.prefix,selection.suffix,selection.colour));
         if(!name.equals(displayNames.put(actor,name)))store.putComponent(ref,DisplayNameComponent.getComponentType(),new DisplayNameComponent(Message.raw(name)));
     }
 
@@ -335,7 +342,7 @@ public final class CollectionRuntime implements AutoCloseable {
     void departed(RemovedPlayerFromWorldEvent event) {
         var player=event.getHolder().getComponent(PlayerRef.getComponentType());if(player==null)return;
         CustomWearables.departed(event.getHolder());
-        UUID actor=player.getUuid();Appearance state=appearances.remove(actor);displayNames.remove(actor);statuses.remove(actor);
+        UUID actor=player.getUuid();Appearance state=appearances.remove(actor);displayNames.remove(actor);looks.remove(actor);statuses.remove(actor);
         if(state!=null){event.getHolder().putComponent(PlayerSkinComponent.getComponentType(),new PlayerSkinComponent(new PlayerSkin(state.original)));
             event.getHolder().putComponent(DisplayNameComponent.getComponentType(),state.originalName==null?new DisplayNameComponent(Message.raw(player.getUsername())):state.originalName);}
         World world=event.getWorld();world.execute(()->{var pets=worldPets.get(world.getName());if(pets==null)return;var iterator=pets.values().iterator();while(iterator.hasNext()){var pet=iterator.next();if(pet.plan.property==null&&pet.plan.pet.owner().equals(Owner.player(actor))){remove(world.getEntityStore().getStore(),pet);iterator.remove();}}});
@@ -350,10 +357,10 @@ public final class CollectionRuntime implements AutoCloseable {
                 store.putComponent(ref,PlayerSkinComponent.getComponentType(),new PlayerSkinComponent(new PlayerSkin(state.original)));
                 store.putComponent(ref,DisplayNameComponent.getComponentType(),state.originalName==null?new DisplayNameComponent(Message.raw(player.getUsername())):state.originalName);}
         });
-        displayNames.clear();statuses.clear();
+        displayNames.clear();looks.clear();statuses.clear();
     }
     private static String safe(String text){return text==null?"Invalid content":text.length()>180?text.substring(0,180):text;}
-    private record Selection(String prefix,String suffix,Map<String,String> outfit,Map<String,CollectionService.Definition> wearables){}
+    private record Selection(String prefix,String suffix,String colour,Map<String,String> outfit,Map<String,CollectionService.Definition> wearables){}
     private record Property(UUID id,HousingService.ClaimLocation location){}
     private record PetPlan(CollectionService.Pet pet,CollectionService.Definition definition,Property property){}
     private static final class Appearance {PlayerSkin original,lastApplied;final DisplayNameComponent originalName;Appearance(PlayerSkin original,DisplayNameComponent name){this.original=original;this.originalName=name;}}

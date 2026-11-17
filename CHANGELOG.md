@@ -6,6 +6,12 @@
 
 - Production stations. Every player gets a Mine Shaft to place on their plot from Decorations. It digs ore while you are online anywhere in Eternia. Collect from its crate to watch the ore fly out, then spend it at its signboard on levels, tools and talents. New tiers change how the mine looks. There are rare finds to discover, golden moments to catch, and daily orders that pay Seals for your Estate. Open Production in Home in your Journal to see all your stations, orders and Seals at a glance.
 - House and production hexagons. Your plot starts with a house hexagon and one free production hexagon that you place beside it. You can add up to six production hexagons and a few more house hexagons, each with its own limit. Stations go on production hexagons and your house goes on house hexagons. The Claim Map marks them with a house or a pickaxe and asks which kind you want when you add one.
+- Each adventure world now keeps its own inventory and memories. Whatever you carry and remember in the Hub and the housing worlds stays there, and you pick up your adventure gear and memories again when you return to that world.
+- Type /hub to go back to the Hub from anywhere.
+- Titles now come with a colour. Your title and name show in that colour in chat and above your head.
+- The name above a player's head now shows their title on a small line above it and their guild underneath. Turn on Display Combat Text in the game's settings to see them.
+- Everyone who plays the alpha test earns the Alpha Tester title, and keeps it when the beta starts.
+- Playtesters get free starting Crowns and Coins the first time they join, to try everything out.
 - Admins can give houses, decorations, stations and collection items from a menu with `/e admin give`. Type a player's name or pick someone online, then press Give.
 - Eternia has its own chat. Press the walk key to open it, pick a channel with the tabs along the top, and add emotes from the smiley button or by typing a name between colons, like :heart:. New messages pop up for a few seconds while it is closed.
 - New plots are levelled for you. A freshly claimed hexagon is flattened to the height of the road beside it, and every hexagon you add later matches the rest of your plot. A guild's estate and its members' plots share one height. The edges either blend gently into the land around them or rise as a neat hexagon step. Trees, bushes, wild wheat, berry bushes, flowers and rubble are cleared while grass stays, on any kind of ground. A tree cut by your plot is removed whole, so no pieces are left floating beside it. Crops growing on farmland are left alone. Buildings, roads and other plots are never changed.
@@ -32,6 +38,10 @@
 - Roads built with the Road Designer use half blocks where they step up one block, so walking up them is smooth.
 - Placing the Eternia town now lays one short road out of each gate, lined up with it, instead of the whole road grid. Grow the rest with `/e admin town roads grow`.
 - Houses and decorations in Collections have a Place button. Stand on your plot and press it to start placing.
+- The Hub walkthrough now takes you to one townsperson at a time. The panel shows which step you are on, who to talk to next and why, and an arrow that points the way with how far you have to go.
+- Hexvane's rules now show in one list you can scroll instead of pages.
+- A guild now needs 3 members to claim its estate instead of 5.
+- Prowl no longer has a Travel button. Step through the Hub portal to travel to the worlds.
 - Home in the Journal is now your whole housing menu on one page. Go to your plot, add or sell hexagons, pack or move your whole plot, and find your houses, decorations, palettes and paths in their own tabs, with your guild estate beside them. The old stack of housing menus is gone.
 
 ## [1.1.0]

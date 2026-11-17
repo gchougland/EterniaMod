@@ -44,6 +44,18 @@ public final class NativeTravelService {
         if(target==null||plan.arrival()==null){player.sendMessage(Message.raw("This destination is not available yet."));return;}
         arrive(player,target,new Vector3d(plan.arrival().x(),plan.arrival().y(),plan.arrival().z()),null).thenAccept(ok->{if(!ok)player.sendMessage(Message.raw("The destination is obstructed. An administrator needs to clear its arrival point."));});
     }
+    /**
+     * Takes a player to the Hub's arrival from anywhere, for {@code /hub}. Unlike {@link #selectWorld} it needs no portal:
+     * going home to the Hub is always allowed. Returns a message for the player when it cannot.
+     */
+    public Optional<String> goToHub(PlayerRef player) {
+        var hub=plugin.getInfrastructure().worlds().entrySet().stream().filter(e->e.getValue().role().equals("hub")).findFirst().orElse(null);
+        if(hub==null)return Optional.of("The Hub has not been set up yet.");
+        World target=Universe.get().getWorld(hub.getKey());var arrival=hub.getValue().arrival();
+        if(target==null||arrival==null)return Optional.of("The Hub is not available right now. Try again in a moment.");
+        arrive(player,target,new Vector3d(arrival.x(),arrival.y(),arrival.z()),null).thenAccept(ok->{if(!ok)player.sendMessage(Message.raw("The Hub arrival is blocked. Please tell an administrator."));});
+        return Optional.empty();
+    }
     /** A world visited before resumes where the player left it; a first visit starts at the world's spawn. */
     private void enterAdventure(PlayerRef player,Ref<EntityStore> ref,Store<EntityStore> store,World target,HousingInfrastructure.WorldPlan plan) {
         var component=store.getComponent(ref,Player.getComponentType());

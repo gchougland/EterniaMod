@@ -122,9 +122,10 @@ class TitleCatalogTest {
                     id + ": selector " + selector + " matches no 0.7.6 role");
             }
         }
-        // Wayfarer and of the Hearth predate this set and are already placed in the Foundations pass.
+        // Wayfarer and of the Hearth predate this set and are already placed in the Foundations pass. Alpha Tester is
+        // given to everyone who played the alpha, not earned by a goal.
         titleIds.removeAll(seen);
-        assertEquals(Set.of("eternia:title/wayfarer", "eternia:title/of_the_hearth"), titleIds);
+        assertEquals(Set.of("eternia:title/wayfarer", "eternia:title/of_the_hearth", "eternia:title/alpha_tester"), titleIds);
     }
 
     @Test void slugRejectsOtherContent() {

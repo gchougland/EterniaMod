@@ -42,9 +42,9 @@ class ChatEmotesTest {
     @Test
     void onlyYoungLinesPopUpNewestLast() {
         long now = 100_000;
-        var old = new ChatLine(ChatChannel.SERVER, "A", null, "old", null, now - ChatDock.POPUP_MILLIS - 1);
-        var first = new ChatLine(ChatChannel.SERVER, "A", null, "first", null, now - 2_000);
-        var second = new ChatLine(ChatChannel.SERVER, "A", null, "second", null, now - 1_000);
+        var old = new ChatLine(ChatChannel.SERVER, "A", null, null, "old", null, now - ChatDock.POPUP_MILLIS - 1);
+        var first = new ChatLine(ChatChannel.SERVER, "A", null, null, "first", null, now - 2_000);
+        var second = new ChatLine(ChatChannel.SERVER, "A", null, null, "second", null, now - 1_000);
         assertEquals(List.of(first, second), ChatDock.recent(List.of(old, first, second), now));
     }
 }

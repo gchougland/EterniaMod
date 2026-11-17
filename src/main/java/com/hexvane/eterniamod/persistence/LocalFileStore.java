@@ -52,6 +52,7 @@ public final class LocalFileStore implements TransactionalStore,AutoCloseable {
                 if(old==null||old.revision()!=revision)throw new DomainException(DomainException.Code.CONFLICT,"Record revision changed");
                 copy.remove(ns+"\0"+key);dirty=true;
             }
+            public List<String> namespaces(){check();return copy.values().stream().map(Row::namespace).distinct().sorted().toList();}
         }
         var tx=new Tx();
         try{T result=work.apply(tx);if(tx.dirty)persist(copy);records=copy;return result;}

@@ -17,25 +17,33 @@ import org.bson.BsonDocument;
 import org.bson.BsonInt64;
 import org.bson.BsonString;
 
-/** The world thread's view of each online player's recorded memories. Nothing counts until a player's memories have loaded. */
+/**
+ * The world thread's view of each online player's recorded memories, in the set of the world group they are in now
+ * (the group their inventory belongs to: Hub and housing worlds share one, each adventure world has its own). Nothing
+ * counts until that set has loaded.
+ */
 public final class PersonalMemories {
     private final EterniaServices services;
     private final HytaleLogger logger;
-    private final Map<UUID,Map<String,MemoryService.Entry>> loaded=new ConcurrentHashMap<>();
-    private final Set<UUID> loading=ConcurrentHashMap.newKeySet();
+    /** Keyed by player and set ({@code uuid|set}). */
+    private final Map<String,Map<String,MemoryService.Entry>> loaded=new ConcurrentHashMap<>();
+    private final Set<String> loading=ConcurrentHashMap.newKeySet();
 
     PersonalMemories(EterniaServices services,HytaleLogger logger){this.services=services;this.logger=logger;}
 
     /** Returns null and starts loading when the player's memories are not in memory yet. */
     @Nullable public Map<String,MemoryService.Entry> recorded(UUID player) {
-        var memories=loaded.get(player);
-        if(memories==null&&loading.add(player))CompletableFuture.runAsync(()->{
-            try{loaded.put(player,services.memories().recorded(player));}
+        String set=set(player);String key=key(player,set);
+        var memories=loaded.get(key);
+        if(memories==null&&loading.add(key))CompletableFuture.runAsync(()->{
+            try{loaded.put(key,services.memories().recorded(player,set));}
             catch(RuntimeException e){logger.atWarning().withCause(e).log("Memories could not load for %s",player);}
-            finally{loading.remove(player);}
+            finally{loading.remove(key);}
         });
         return memories;
     }
+    private static String set(UUID player){return com.hexvane.eterniamod.inventory.WorldInventories.currentGroup(player);}
+    private static String key(UUID player,String set){return player+"|"+set;}
     public int level(UUID player,GameplayConfig gameplayConfig) {
         var memories=recorded(player);var config=MemoriesGameplayConfig.get(gameplayConfig);
         return memories==null||config==null?1:MemoryService.level(memories.size(),config.getMemoriesAmountPerLevel());
@@ -44,10 +52,11 @@ public final class PersonalMemories {
     public void recordCarried(UUID player,PlayerMemories carried) {
         var entries=new ArrayList<MemoryService.Entry>();
         for(Memory memory:carried.getRecordedMemories())entries.add(entry(memory));
-        loaded.put(player,services.memories().record(player,entries));
+        String set=set(player);
+        loaded.put(key(player,set),services.memories().record(player,set,entries));
         carried.takeMemories(new HashSet<>());
     }
-    void forget(UUID player){loaded.remove(player);}
+    void forget(UUID player){String prefix=player+"|";loaded.keySet().removeIf(key->key.startsWith(prefix));}
 
     /** Vanilla keeps the location private, so it is read and written through the memory's own saved form. */
     static MemoryService.Entry entry(Memory memory) {

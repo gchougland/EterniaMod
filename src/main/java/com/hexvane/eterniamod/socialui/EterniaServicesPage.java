@@ -40,7 +40,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     public enum Desk {
         JOURNAL(null, null, List.of(Section.COLLECTION, Section.QUESTS, Section.SEASON, Section.MAIL, Section.GUILD, Section.HOUSING),
             Set.of(SocialUiActions.Action.HOUSING_INVENTORY, SocialUiActions.Action.ITEM_DESK)),
-        GUIDE(HubNpcIdentity.GREETER, "worlds", List.of(Section.GREETER), Set.of(SocialUiActions.Action.WORLD_SELECT, SocialUiActions.Action.HUB_TRAVEL)),
+        GUIDE(HubNpcIdentity.GREETER, "worlds", List.of(Section.GREETER), Set.of()),
         STEWARD(HubNpcIdentity.HOUSING, "housing", List.of(Section.HOUSING), Set.of(SocialUiActions.Action.HOUSING_CLAIM, SocialUiActions.Action.HOUSING_MANAGE,
             SocialUiActions.Action.HOUSING_INVENTORY, SocialUiActions.Action.ARCHITECT_LEDGER)),
         MARSHAL(HubNpcIdentity.GUILD, "guild", List.of(Section.GUILD), Set.of(SocialUiActions.Action.GUILD_HOUSING)),
@@ -205,7 +205,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     @Override protected void rebuild(){super.rebuild();if(isDismissed())return;preview.show(section==Section.COLLECTION&&!deskHome&&!previewContent.isEmpty()?previewContent:null);}
     @Override public void onDismiss(@Nonnull Ref<EntityStore> ref,@Nonnull Store<EntityStore> store){preview.clear();super.onDismiss(ref,store);}
     private boolean collectionGrid(){return section==Section.COLLECTION&&!mode.equals("pet")||section==Section.HOUSING&&desk==Desk.JOURNAL;}
-    private int visiblePageSize(){return (section==Section.COLLECTION||section==Section.HOUSING)&&(mode.equals("inventory")||collectionGrid())?Math.max(PAGE_SIZE,view.rows.size()):PAGE_SIZE;}
+    /** Rows shown at once. The rules, inventories and collection grids show everything in one scrolling list. */
+    private int visiblePageSize(){if(section==Section.RULES)return Math.max(PAGE_SIZE,view.rows.size());return (section==Section.COLLECTION||section==Section.HOUSING)&&(mode.equals("inventory")||collectionGrid())?Math.max(PAGE_SIZE,view.rows.size()):PAGE_SIZE;}
 
     private String layout(){if(section==Section.HOUSING&&desk==Desk.JOURNAL)return "ServicesCollection";return switch(section){case GREETER,HOUSING,WORLDS,COMING_SOON->"ServicesOverview";case GUILD->"ServicesRoster";case MAIL->"ServicesMail";case SEASON->"ServicesSeason";case COLLECTION->"ServicesCollection";default->"ServicesDirectory";};}
     private List<Tab> tabs(){return switch(section){
@@ -681,7 +682,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 Row.info("Select a season pass and earn progress through normal play. Old seasons never expire."),
                 Row.info("Bramble Hearthleaf helps with plots and homes. Torren Ironbough handles guilds. Nima Quicktail runs the market. Varek Dawnmantle keeps the season passes at the Gatehouse."),
                 Row.info("Press O any time to open your Journal: mail, guild, quests, seasons and your collection.")),
-                noFields(), buttons("Starter toolkit", "intro_toolkit", "Travel", "external:WORLD_SELECT", "", ""), null);
+                noFields(), buttons("Starter toolkit", "intro_toolkit", "", "", "", ""), null);
             case HOUSING -> {
                 if (request.desk == Desk.JOURNAL) yield homeView(input);
                 var housing = services.housing().find(Owner.player(actor)).orElse(null);
@@ -735,8 +736,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         return switch (desk) {
             case GUIDE -> View.desk("Welcome to Eternia! I'm Prowl. Build a home, find your people and explore at your own pace.", List.of(
                 new Tile("Getting started", "How plots, guilds and seasons work.", "charter", "nav:GREETER", true),
-                new Tile("Starter toolkit", "Your housing deed and packing wand.", "toolkit", "intro_toolkit", false),
-                new Tile("Travel", "Visit the worlds beyond the Hub.", "worlds", "external:WORLD_SELECT", false)));
+                new Tile("Starter toolkit", "Your housing deed and packing wand.", "toolkit", "intro_toolkit", false)));
             case STEWARD -> {
                 boolean home = services.housing().find(Owner.player(actor)).isPresent();
                 yield View.desk(home ? "Welcome back! Want to change something about your home, or find a new view?"

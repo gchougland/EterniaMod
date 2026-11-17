@@ -75,13 +75,43 @@ class TutorialTest {
             for (String line : List.of("opening", "recurring")) assertTrue(lang.containsKey("npc." + npc + "." + line), npc + " " + line);
         }
         assertEquals(new HashSet<>(TutorialService.TOWNSPEOPLE), new HashSet<>(npcs) {{ remove(TutorialService.GUIDE); }});
-        for (String key : List.of("npc.greeter.returning1", "npc.greeter.returning2", "npc.greeter.waiting", "npc.rules.opening2", "hud.title", "hud.meetGuide", "hud.meetTown", "hud.returnGuide", "dialogue.continue", "dialogue.next"))
+        for (String key : List.of("npc.greeter.returning1", "npc.greeter.returning2", "npc.greeter.waiting", "npc.rules.opening2", "hud.title", "hud.step", "hud.meetGuide", "hud.meetNpc", "hud.returnGuide", "hud.distance", "hud.here", "hud.why.return", "step.done", "step.doneLast", "dialogue.continue", "dialogue.next"))
             assertTrue(lang.containsKey(key), key);
+        for (String npc : npcs) assertTrue(lang.containsKey("hud.why." + npc), "why line for " + npc);
         for (var section : EterniaServicesPage.Section.values()) {
             String npc = TutorialRuntime.npcKey(section);
             if (npc != null) assertTrue(npcs.contains(npc), section.name());
         }
         for (Object value : lang.values()) assertFalse(value.toString().contains(" - "), "no dashes in player text: " + value);
+    }
+
+    @Test void theWalkthroughGoesOneTownspersonAtATime() {
+        var people = List.of("rules", "housing", "store");
+        var step = TutorialStep.next(tutorial.state(player), people);
+        assertEquals(new TutorialStep(TutorialStep.Kind.MEET_GUIDE, TutorialService.GUIDE, 1, 5), step);
+        tutorial.meet(player, TutorialService.GUIDE);
+        assertEquals(new TutorialStep(TutorialStep.Kind.MEET_NPC, "rules", 2, 5), TutorialStep.next(tutorial.state(player), people));
+        tutorial.meet(player, "store");
+        assertEquals(new TutorialStep(TutorialStep.Kind.MEET_NPC, "rules", 3, 5), TutorialStep.next(tutorial.state(player), people), "someone met early still counts");
+        tutorial.meet(player, "rules");
+        assertEquals("housing", TutorialStep.next(tutorial.state(player), people).npc());
+        tutorial.meet(player, "housing");
+        assertEquals(new TutorialStep(TutorialStep.Kind.RETURN_GUIDE, TutorialService.GUIDE, 5, 5), TutorialStep.next(tutorial.state(player), people));
+    }
+
+    @Test void theArrowPointsTheWayRelativeToWhereThePlayerLooks() {
+        // Yaw 0 faces north (negative Z); the arrow's frame 0 is straight ahead and frames turn clockwise.
+        assertEquals(0, TutorialStep.arrowFrame(0, 0, 0, 0, -10), "ahead");
+        assertEquals(6, TutorialStep.arrowFrame(0, 0, 0, 10, 0), "east is to the right when facing north");
+        assertEquals(18, TutorialStep.arrowFrame(0, 0, 0, -10, 0), "west is to the left");
+        assertEquals(12, TutorialStep.arrowFrame(0, 0, 0, 0, 10), "behind");
+        assertEquals(6, TutorialStep.arrowFrame(0, 0, Math.PI / 2, 0, -10), "facing west, north is to the right");
+        assertEquals(0, TutorialStep.arrowFrame(5, 5, 0, 5, 5), "standing on it");
+        assertEquals(7, TutorialStep.shownDistance(0, 0, 7.2, 0));
+        assertEquals(45, TutorialStep.shownDistance(0, 0, 0, 46));
+        assertEquals("EterniaMod/Tutorial/Arrow06.png", TutorialHud.arrowTexture(6));
+        for (int frame = 0; frame < TutorialStep.FRAMES; frame++)
+            assertTrue(Files.isRegularFile(Path.of("src/main/resources/Common/UI/Custom/" + TutorialHud.arrowTexture(frame))), "arrow " + frame);
     }
 
     @Test void theRulesListLoads() {

@@ -27,6 +27,14 @@ public interface TransactionalStore {
         Row save(String namespace, String key, long expectedRevision, Map<String, String> fields);
         /** Removes a record at its exact current revision. Admin resets only. */
         default void delete(String namespace, String key, long expectedRevision) { throw new UnsupportedOperationException("This store cannot delete records"); }
+        /** Every namespace that holds at least one record. Admin resets only. */
+        default List<String> namespaces() { throw new UnsupportedOperationException("This store cannot list its namespaces"); }
+        /** Removes every record in a namespace and returns how many. Admin resets only. */
+        default int clear(String namespace) {
+            var rows = scan(namespace);
+            for (var row : rows) delete(namespace, row.key(), row.revision());
+            return rows.size();
+        }
     }
     <T> T transaction(Function<Transaction, T> work);
 }

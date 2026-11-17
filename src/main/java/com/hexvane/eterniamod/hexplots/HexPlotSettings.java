@@ -76,7 +76,7 @@ public record HexPlotSettings(
     }
 
     /** Fallback when the data file is missing or unreadable (coin priced); the shipped HexPlots.json prices hexagons in Crowns. */
-    public static final HexPlotSettings DEFAULTS = new HexPlotSettings(32, 20, defaultShapes(), 7, 19, 0, 0, 1000, 24, 2, 5, 5);
+    public static final HexPlotSettings DEFAULTS = new HexPlotSettings(32, 20, defaultShapes(), 7, 19, 0, 0, 1000, 24, 2, 5, 3);
 
     private static volatile HexPlotSettings current = DEFAULTS;
 

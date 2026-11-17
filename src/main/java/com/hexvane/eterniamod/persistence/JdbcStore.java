@@ -93,5 +93,16 @@ public final class JdbcStore implements TransactionalStore, AutoCloseable {
                 if(q.executeUpdate()!=1) throw new DomainException(DomainException.Code.CONFLICT,"Record revision changed");
             } catch(SQLException e) { throw storage(e); }
         }
+        public List<String> namespaces() {
+            check();
+            try(var q=connection.prepareStatement("SELECT DISTINCT namespace FROM eternia_records ORDER BY namespace");var rs=q.executeQuery()) {
+                var names=new ArrayList<String>();while(rs.next())names.add(rs.getString(1));return List.copyOf(names);
+            } catch(SQLException e) { throw storage(e); }
+        }
+        public int clear(String ns) {
+            check(); RecordCodec.validateKey(ns,"clear");
+            try(var q=connection.prepareStatement("DELETE FROM eternia_records WHERE namespace=?")) { q.setString(1,ns); return q.executeUpdate(); }
+            catch(SQLException e) { throw storage(e); }
+        }
     }
 }

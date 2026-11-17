@@ -15,22 +15,30 @@ public final class MemoryService extends DomainSupport {
     private static final String TITLE="title:",LOCATION="location:",AT="at:";
     MemoryService(TransactionalStore store,Clock clock,Supplier<UUID> ids){super(store,clock,ids);}
 
-    public Map<String,Entry> recorded(UUID player) {
-        Objects.requireNonNull(player);
-        return store.transaction(tx->tx.find(NAMESPACE,player.toString()).map(MemoryService::entries).orElseGet(Map::of));
+    /** The set of memories every Hub and housing world shares; each adventure world keeps its own set. */
+    public static final String SHARED_SET="shared";
+
+    public Map<String,Entry> recorded(UUID player){return recorded(player,SHARED_SET);}
+    /** A player's recorded memories in one set. */
+    public Map<String,Entry> recorded(UUID player,String set) {
+        Objects.requireNonNull(player);String key=rowKey(player,set);
+        return store.transaction(tx->tx.find(NAMESPACE,key).map(MemoryService::entries).orElseGet(Map::of));
     }
+    /** The shared set keeps the row every player already had, so memories recorded before sets existed stay there. */
+    static String rowKey(UUID player,String set){Objects.requireNonNull(set);return set.equals(SHARED_SET)?player.toString():player+"@"+set;}
+    public Map<String,Entry> record(UUID player,Collection<Entry> memories){return record(player,SHARED_SET,memories);}
     /** Adds what the player does not have yet and returns all of their memories. The first recording of a memory is kept. */
-    public Map<String,Entry> record(UUID player,Collection<Entry> memories) {
-        Objects.requireNonNull(player);Objects.requireNonNull(memories);
+    public Map<String,Entry> record(UUID player,String set,Collection<Entry> memories) {
+        Objects.requireNonNull(player);Objects.requireNonNull(memories);String key=rowKey(player,set);
         return store.transaction(tx->{
-            var existing=tx.find(NAMESPACE,player.toString());
+            var existing=tx.find(NAMESPACE,key);
             var fields=new TreeMap<>(existing.map(TransactionalStore.Row::fields).orElseGet(Map::of));boolean changed=false;
             for(Entry memory:memories) {
                 if(fields.containsKey(AT+memory.id))continue;
                 fields.put(TITLE+memory.id,memory.title);fields.put(LOCATION+memory.id,memory.location);fields.put(AT+memory.id,Long.toString(memory.capturedAt));changed=true;
             }
             if(!changed)return existing.map(MemoryService::entries).orElseGet(Map::of);
-            return entries(tx.save(NAMESPACE,player.toString(),existing.map(TransactionalStore.Row::revision).orElse(0L),fields));
+            return entries(tx.save(NAMESPACE,key,existing.map(TransactionalStore.Row::revision).orElse(0L),fields));
         });
     }
     private static Map<String,Entry> entries(TransactionalStore.Row row) {

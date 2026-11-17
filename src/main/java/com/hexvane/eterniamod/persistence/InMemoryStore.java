@@ -30,6 +30,7 @@ public final class InMemoryStore implements TransactionalStore {
                 if (old == null || old.revision() != revision) throw new DomainException(DomainException.Code.CONFLICT, "Record revision changed");
                 copy.remove(ns + "\0" + key);
             }
+            public List<String> namespaces() { check(); return copy.values().stream().map(Row::namespace).distinct().sorted().toList(); }
         }
         var tx = new Tx();
         try { T result = work.apply(tx); records = copy; return result; }

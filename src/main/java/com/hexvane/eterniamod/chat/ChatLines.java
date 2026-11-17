@@ -24,7 +24,7 @@ final class ChatLines {
         int n = 0;
         pic(c, row, n++, "Channel_" + line.channel().id());
         if (line.rank() != null) pic(c, row, n++, "Rank_" + line.rank());
-        String color = line.channel() == ChatChannel.SERVER ? SERVER_NAME_COLOR : line.channel().color();
+        String color = line.speakerColor() != null ? line.speakerColor() : line.channel() == ChatChannel.SERVER ? SERVER_NAME_COLOR : line.channel().color();
         word(c, row, n++, Message.raw(line.speaker()).bold(true).color(color));
         for (var piece : ChatEmotes.pieces(line.text())) {
             if (piece.isEmote()) pic(c, row, n++, "Emote_" + piece.emote());

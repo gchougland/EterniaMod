@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 class ChatFormatTest {
     @Test void aLineIsTagNameAndMessage() {
-        Message line = ChatFormat.line(ChatChannel.PARTY, Message.raw("Hexvane"), "on my way, [north] gate!");
+        Message line = ChatFormat.line(ChatChannel.PARTY, Message.raw("Hexvane"), null, "on my way, [north] gate!");
         var parts = line.getChildren();
         assertEquals(5, parts.size());
         assertEquals("eternia_chat.channel.party.tag", parts.get(0).getMessageId());
@@ -28,9 +28,31 @@ class ChatFormatTest {
     }
 
     @Test void serverNamesKeepTheDefaultColour() {
-        var parts = ChatFormat.line(ChatChannel.SERVER, Message.raw("Hexvane"), "hi").getChildren();
+        var parts = ChatFormat.line(ChatChannel.SERVER, Message.raw("Hexvane"), null, "hi").getChildren();
         assertEquals("eternia_chat.channel.server.tag", parts.get(0).getMessageId());
         assertNull(parts.get(2).getColor());
+    }
+
+    @Test void aTitledNameTakesItsTitleColourOnEveryChannel() {
+        for (ChatChannel channel : ChatChannel.values())
+            assertEquals("#ffcf4a", ChatFormat.line(channel, Message.raw("Hexvane"), "#ffcf4a", "hi").getChildren().get(2).getColor(), channel.id());
+    }
+
+    @Test void titleColoursShipForEveryTitleAndPreferThePrefix() throws IOException {
+        var colours = com.hexvane.eterniamod.collections.TitleColors.get();
+        assertEquals("#ffcf4a", colours.of("eternia:title/alpha_tester"));
+        assertEquals("#ffcf4a", colours.forWorn("eternia:title/alpha_tester", "eternia:title/dragonslayer"), "the prefix wins");
+        assertEquals("#ff7a45", colours.forWorn(null, "eternia:title/dragonslayer"));
+        assertNull(colours.forWorn(null, null));
+        try (InputStream index = getClass().getClassLoader().getResourceAsStream("Server/EterniaMod/Collections/catalog.index")) {
+            for (String file : new String(index.readAllBytes(), StandardCharsets.UTF_8).lines().filter(l -> !l.isBlank() && !l.startsWith("#")).toList()) {
+                try (InputStream json = getClass().getClassLoader().getResourceAsStream("Server/EterniaMod/Collections/" + file)) {
+                    var definition = com.google.gson.JsonParser.parseString(new String(json.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
+                    if (definition.get("kind").getAsString().endsWith("_TITLE"))
+                        assertNotNull(colours.of(definition.get("id").getAsString()), "every title has a colour: " + definition.get("id"));
+                }
+            }
+        }
     }
 
     @Test void everyChannelHasItsOwnColour() {

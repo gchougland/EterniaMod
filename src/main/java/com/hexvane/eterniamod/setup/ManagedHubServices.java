@@ -78,6 +78,12 @@ public final class ManagedHubServices implements AutoCloseable {
         var service=active;if(service==null)return Optional.empty();
         return service.registry.entries().stream().filter(e->e.live()&&e.world().equals(world.getName())&&(role==null?e.kind()==Kind.PORTAL:e.kind()==Kind.NPC&&e.role().equals(role))).map(Entry::id).findFirst();
     }
+    /** The middle of the block where the live managed NPC with this role stands in this world, if any. */
+    public static Optional<Vector3d> standing(World world,String role){
+        var service=active;if(service==null)return Optional.empty();
+        return service.registry.entries().stream().filter(e->e.live()&&e.kind()==Kind.NPC&&e.world().equals(world.getName())&&e.role().equals(role))
+            .findFirst().map(e->new Vector3d(e.pose().x()+.5,e.pose().y(),e.pose().z()+.5));
+    }
     /** Removes a managed service by id, as Hub services, Manage, Remove does. Used to undo a town placement. */
     public static void removeById(EterniaModPlugin plugin,World world,UUID actor,UUID id)throws Exception{
         SetupAccess.require(actor);world.getEntityStore().getStore().assertThread();var service=require(plugin);

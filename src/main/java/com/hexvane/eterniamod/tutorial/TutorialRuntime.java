@@ -15,6 +15,8 @@ import com.hypixel.hytale.component.system.RefSystem;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.modules.entity.component.HeadRotation;
+import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -32,7 +34,8 @@ import javax.annotation.Nullable;
  * they stand in the Hub world, and turns talking to a Hub NPC into a meeting (dialogue first, then their desk).
  */
 public final class TutorialRuntime {
-    private static final long CHECK_MILLIS = 1000;
+    /** Often enough for the arrow to follow the player turning; the panel only redraws when something it shows changes. */
+    private static final long CHECK_MILLIS = 250;
     private static final Map<UUID, TutorialService.State> STATES = new ConcurrentHashMap<>();
     private static final Set<UUID> LOADING = ConcurrentHashMap.newKeySet();
     private static final Map<UUID, Long> CHECKED = new ConcurrentHashMap<>();
@@ -85,8 +88,12 @@ public final class TutorialRuntime {
                     STATES.put(id, meeting.state());
                     refresh(ref, store, player);
                     if (meeting.finishedNow()) player.sendMessage(Message.translation(HubDialogue.text("finished")).param("player", player.getUsername()));
-                    else if (meeting.first() && meeting.state().active() && TutorialService.TOWNSPEOPLE.contains(npc))
-                        player.sendMessage(Message.translation(HubDialogue.text("step.done")).param("name", HubDialogue.name(npc)));
+                    else if (meeting.first() && meeting.state().active() && TutorialService.TOWNSPEOPLE.contains(npc)) {
+                        var next = TutorialStep.next(meeting.state(), required);
+                        player.sendMessage(next.kind() == TutorialStep.Kind.RETURN_GUIDE
+                            ? Message.translation(HubDialogue.text("step.doneLast")).param("name", HubDialogue.name(npc))
+                            : Message.translation(HubDialogue.text("step.done")).param("name", HubDialogue.name(npc)).param("next", HubDialogue.name(next.npc())));
+                    }
                     var pages = HubDialogue.pages(npc, meeting);
                     NpcDialoguePage.open(ref, store, player, npc, pages, pages.isEmpty() ? open : afterDialogue);
                 });
@@ -143,7 +150,24 @@ public final class TutorialRuntime {
         TutorialHud hud;
         if (huds.getCustomHud(TutorialHud.ID) instanceof TutorialHud existing) hud = existing;
         else { hud = new TutorialHud(player); huds.addCustomHud(player, hud); }
-        hud.refresh(state, townspeople(store.getExternalData().getWorld()));
+        World world = store.getExternalData().getWorld();
+        TutorialStep step = TutorialStep.next(state, townspeople(world));
+        hud.refresh(step, pointer(ref, store, world, step));
+    }
+
+    /** Where the arrow points from the player's head to the step's NPC, or null when that NPC is not placed here. */
+    @Nullable
+    private static TutorialHud.Pointer pointer(Ref<EntityStore> ref, Store<EntityStore> store, World world, TutorialStep step) {
+        var identity = HubDialogue.identity(step.npc());
+        if (identity == null) return null;
+        var target = com.hexvane.eterniamod.setup.ManagedHubServices.standing(world, identity.role()).orElse(null);
+        TransformComponent transform = store.getComponent(ref, TransformComponent.getComponentType());
+        HeadRotation head = store.getComponent(ref, HeadRotation.getComponentType());
+        if (target == null || transform == null) return null;
+        var at = transform.getPosition();
+        float yaw = head != null ? head.getRotation().yaw() : transform.getRotation().yaw();
+        return new TutorialHud.Pointer(TutorialStep.arrowFrame(at.x, at.z, yaw, target.x, target.z),
+            TutorialStep.shownDistance(at.x, at.z, target.x, target.z));
     }
 
     /** Once a second per player: load progress the first time, then keep the panel matching the world they are in. */

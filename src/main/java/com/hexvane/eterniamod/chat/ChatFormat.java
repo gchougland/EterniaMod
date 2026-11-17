@@ -25,9 +25,13 @@ public final class ChatFormat {
         return Message.translation(channel.langKey("name")).color(channel.color()).bold(true);
     }
 
-    /** One chat line. {@code name} comes from {@link #speaker}, the only place a rank or title prefix is added. */
-    public static Message line(ChatChannel channel, Message name, String text) {
-        if (channel != ChatChannel.SERVER) name = name.color(channel.color());
+    /**
+     * One chat line. {@code name} comes from {@link #speaker}, the only place a rank or title prefix is added. A titled
+     * speaker's name takes their title's colour ({@code nameColor}) on every channel; otherwise the channel colour.
+     */
+    public static Message line(ChatChannel channel, Message name, String nameColor, String text) {
+        if (nameColor != null) name = name.color(nameColor);
+        else if (channel != ChatChannel.SERVER) name = name.color(channel.color());
         return Message.join(tag(channel), Message.raw(" "), name, Message.raw(": "), Message.raw(text));
     }
 
@@ -38,6 +42,13 @@ public final class ChatFormat {
      * formats through this method, so one change covers all of chat.
      */
     public static Message speaker(PlayerRef player) { return Message.raw(speakerName(player)); }
+
+    /** The colour of the speaker's worn title, or null when they wear no coloured title. */
+    public static String speakerColor(PlayerRef player) {
+        var plugin = EterniaModPlugin.get();
+        var collections = plugin == null ? null : plugin.getCollectionRuntime();
+        return collections == null ? null : collections.look(player.getUuid()).colour();
+    }
 
     /** The same name as plain text, for the chat dock. */
     public static String speakerName(PlayerRef player) {

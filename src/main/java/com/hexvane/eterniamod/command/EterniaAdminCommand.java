@@ -23,6 +23,7 @@ public final class EterniaAdminCommand extends AbstractCommandCollection {
         addSubCommand(new com.hexvane.eterniamod.stats.StatsAdminCommand());
         addSubCommand(new com.hexvane.eterniamod.production.StationAdminCommand());
         addSubCommand(new Give());
+        addSubCommand(new PlaytestCommand());
     }
     /** Opens the give screen: pick a player by name and press Give. The typed form is {@code grant}. */
     private static final class Give extends AbstractPlayerCommand {

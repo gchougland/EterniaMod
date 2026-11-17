@@ -31,7 +31,7 @@ public final class HousingRules {
         if (plots.stream().anyMatch(p -> p.rect.overlaps(candidate.rect))) return Result.no("overlap", "Another plot occupies this space.");
         if (portals.stream().anyMatch(p -> p.overlaps(candidate.rect))) return Result.no("portal", "Public portal land must remain clear.");
         if (candidate.scope == Scope.GUILD_ROOT) {
-            if (candidate.guildMemberCount < (localTesting ? 1 : 5)) return Result.no("members", localTesting ? "Create or join a guild before claiming its plot." : "A guild needs at least five members to claim a guild plot.");
+            if (candidate.guildMemberCount < (localTesting ? 1 : com.hexvane.eterniamod.domain.GuildService.GUILD_ESTATE_MEMBERS)) return Result.no("members", localTesting ? "Create or join a guild before claiming its plot." : "A guild needs at least three members to claim a guild plot.");
             if (plots.stream().anyMatch(p -> p.scope == Scope.GUILD_ROOT && p.guildId.equals(candidate.guildId)))
                 return Result.no("guildSlot", "This guild already has a plot.");
             if (!network.near(candidate.rect)) return Result.no("connector", "An administrator must approve a connecting road before this guild plot can be claimed.");

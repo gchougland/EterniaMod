@@ -12,7 +12,7 @@ public final class ServerSettings {
     private static final Set<String> KEYS = Set.of(
         "ETERNIA_MODE", "ETERNIA_DATABASE_URL", "ETERNIA_DATABASE_USER", "ETERNIA_DATABASE_PASSWORD",
         "ETERNIA_WEBSITE_URL", "ETERNIA_BRIDGE_ADDRESS", "ETERNIA_BRIDGE_PORT", "ETERNIA_BRIDGE_TOKEN",
-        "ETERNIA_TEBEX_WEBHOOK_SECRET");
+        "ETERNIA_TEBEX_WEBHOOK_SECRET", "ETERNIA_ALPHA", "ETERNIA_STARTING_CROWNS", "ETERNIA_STARTING_COINS");
     private static final String TEMPLATE = """
         # Eternia server settings. Keep this file private and outside source control.
         # Fill in values after = without surrounding quotes, then stop and start the server.
@@ -30,6 +30,12 @@ public final class ServerSettings {
         ETERNIA_BRIDGE_PORT=
         ETERNIA_BRIDGE_TOKEN=
         ETERNIA_TEBEX_WEBHOOK_SECRET=
+
+        # Playtests. ETERNIA_ALPHA=true remembers everyone who joins as an alpha tester (they keep the Alpha Tester
+        # title after the beta wipe). The starting amounts are given once to each player the first time they join.
+        ETERNIA_ALPHA=false
+        ETERNIA_STARTING_CROWNS=0
+        ETERNIA_STARTING_COINS=0
         """;
 
     private ServerSettings() {}

@@ -94,6 +94,9 @@ public final class EterniaModPlugin extends JavaPlugin {
             com.hexvane.eterniamod.runtime.ServerSettings.source("ETERNIA_DATABASE_URL", System.getenv(), serverEnvironment));
         runtime = new com.hexvane.eterniamod.runtime.EterniaRuntime(dataDirectory,
             com.hexvane.eterniamod.runtime.RuntimeConfig.from(serverEnvironment));
+        var playtest = com.hexvane.eterniamod.runtime.PlaytestSettings.from(serverEnvironment);
+        runtime.setPlaytest(playtest);
+        getLogger().atInfo().log("Eternia %s", playtest);
         com.hexvane.eterniamod.seasonsales.SeasonSaleSync.sync(getServices(), dataDirectory, warning -> getLogger().atWarning().log("%s", warning));
         com.hexvane.eterniamod.hexplots.HexPlotSettings.install(EterniaModPlugin.class.getClassLoader());
         com.hexvane.eterniamod.hexplots.terraform.TerraformSettings.install(EterniaModPlugin.class.getClassLoader(), dataDirectory);
@@ -107,6 +110,8 @@ public final class EterniaModPlugin extends JavaPlugin {
         relocation = new com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator(this);
         plotMover = new com.hexvane.eterniamod.housing.VoluntaryPlotMover(this);
         com.hexvane.eterniamod.inventory.InventoryReceipts.register(getEntityStoreRegistry());
+        com.hexvane.eterniamod.inventory.WorldInventories.register(getEntityStoreRegistry());
+        com.hexvane.eterniamod.inventory.WorldInventories.install(this);
         itemEscrow = new com.hexvane.eterniamod.inventory.NativeItemEscrow(this);
         buildingCatalog = BuildingCatalog.load(getClass().getClassLoader(), dataDirectory.resolve("Buildings"));
         propCatalog = PropCatalog.load(getClass().getClassLoader(), dataDirectory.resolve("Props"));
@@ -123,6 +128,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         socialUi = com.hexvane.eterniamod.socialui.SocialUiBootstrap.register(this,getServices(),menuActions);
         collectionRuntime = com.hexvane.eterniamod.collections.CollectionBootstrap.register(this,getServices());
         com.hexvane.eterniamod.chat.ChatBootstrap.register(this);
+        com.hexvane.eterniamod.nameplate.NameplateRuntime.register(this);
         com.hexvane.eterniamod.production.ProductionBootstrap.register(this);
         gameplayAdapters = new com.hexvane.eterniamod.runtime.GameplayAdapters(this,serverEnvironment);
         customization = com.hexvane.eterniamod.customization.CustomizationBootstrap.register(this);
@@ -152,6 +158,7 @@ public final class EterniaModPlugin extends JavaPlugin {
 
     @Override
     protected void shutdown() {
+        com.hexvane.eterniamod.nameplate.NameplateRuntime.shutdown();
         com.hexvane.eterniamod.hexplots.HexLand.clearCaches();
         com.hexvane.eterniamod.hexplots.HexLandEvents.clearListeners();
         com.hexvane.eterniamod.moderation.ModerationBootstrap.shutdown();
@@ -180,6 +187,8 @@ public final class EterniaModPlugin extends JavaPlugin {
     @Override
     protected void start() {
         com.hexvane.eterniamod.memories.MemoryBootstrap.start(this);
+        // After every built-in plugin's setup, so this /hub replaces the Creative Hub one instead of being replaced by it.
+        getCommandRegistry().registerCommand(new com.hexvane.eterniamod.command.EterniaHubCommand());
         if (!getManifest().includesAssetPack()) {
             return;
         }

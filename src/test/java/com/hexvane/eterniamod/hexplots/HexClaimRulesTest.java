@@ -121,7 +121,9 @@ class HexClaimRulesTest {
         var settings = HexPlotSettings.DEFAULTS;
         var solo = new HexClaimRules.Candidate(HexClaimRules.Kind.GUILD_ESTATE, false, 1, false, false);
         assertEquals(HexClaimRules.Reason.MEMBERS, HexClaimRules.claim(land, solo, flower, Set.of(), settings).reason());
-        assertEquals(5, HexClaimRules.claim(land, solo, flower, Set.of(), settings).count());
+        assertEquals(3, HexClaimRules.claim(land, solo, flower, Set.of(), settings).count(), "a guild needs three members");
+        var trio = new HexClaimRules.Candidate(HexClaimRules.Kind.GUILD_ESTATE, false, 3, false, false);
+        assertNotEquals(HexClaimRules.Reason.MEMBERS, HexClaimRules.claim(land, trio, flower, Set.of(), settings).reason());
         var local = new HexClaimRules.Candidate(HexClaimRules.Kind.GUILD_ESTATE, false, 1, false, true);
         assertTrue(HexClaimRules.claim(land, local, flower, Set.of(), settings).valid());
         Set<HexCoord> farFlower = Set.copyOf(HexCoord.disk(new HexCoord(0, 6), 1));
