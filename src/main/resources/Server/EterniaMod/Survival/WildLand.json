@@ -1,0 +1,16 @@
+{
+  "_Notes": [
+    "Land claims in adventure worlds. Prices are in Coins. The first hexagon is always free; the second costs ExtraCoins, and each one after that StepCoins more than the one before.",
+    "Prices, when given, overrides that: the price of the 2nd, 3rd, 4th ... hexagon, and past the end of the list the last price plus StepCoins each time.",
+    "BufferRings: how many rings of hexagons around someone else's land nobody else may claim. 0 lets claims touch.",
+    "RefundShare: the part of a hexagon's price given back when it is given up (0.5 is half).",
+    "Worlds: the adventure worlds with land claims. Empty means every adventure world.",
+    "Changing CellWidth or BodyDepth after people have claimed land hides their claims, so pick the size before opening."
+  ],
+  "Worlds": [],
+  "Lattice": { "CellWidth": 32, "BodyDepth": 20 },
+  "BufferRings": 1,
+  "RefundShare": 0.5,
+  "Player": { "MaxCells": 16, "ExtraCoins": 250, "StepCoins": 100 },
+  "Guild": { "MaxCells": 40, "ExtraCoins": 500, "StepCoins": 100 }
+}

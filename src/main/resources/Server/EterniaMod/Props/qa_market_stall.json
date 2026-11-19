@@ -1,0 +1,12 @@
+{
+  "id": "qa_market_stall",
+  "displayName": "Market Stall",
+  "prefabPath": "Eternia_QA_Market_Stall.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None",
+  "category": "prop"
+}

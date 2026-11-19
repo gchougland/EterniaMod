@@ -45,3 +45,10 @@ stone_counter.json
 stone_kitchen.json
 wall_axes.json
 welcome_mat.json
+qa_mailbox.json
+qa_crown_kiosk.json
+qa_season_board.json
+qa_market_stall.json
+qa_production_ledger.json
+qa_guild_board.json
+qa_guild_treasury.json

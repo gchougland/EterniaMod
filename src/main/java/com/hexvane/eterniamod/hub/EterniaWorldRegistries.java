@@ -23,6 +23,12 @@ public final class EterniaWorldRegistries {
         );
     }
 
+    /** The world's plot manager if it has been opened, without opening one. */
+    @javax.annotation.Nullable
+    public static HubPlotManager existing(@Nonnull World world) {
+        return HUB_PLOTS_BY_WORLD.get(world.getName());
+    }
+
     public static void unloadWorld(@Nonnull World world) {
         HubPlotManager manager = HUB_PLOTS_BY_WORLD.remove(world.getName());
         if (manager != null) {

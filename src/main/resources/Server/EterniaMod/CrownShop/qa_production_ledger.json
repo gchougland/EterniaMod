@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/qa_production_ledger",
+  "revision": 1,
+  "name": "Production Ledger",
+  "description": "A desk with a ledger and an abacus. Check every production station you own from your plot.",
+  "category": "Quick access",
+  "price": 400,
+  "benefits": [
+    {
+      "contentId": "eternia:prop/qa_production_ledger",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

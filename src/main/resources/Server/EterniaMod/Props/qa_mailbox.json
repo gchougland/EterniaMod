@@ -1,0 +1,12 @@
+{
+  "id": "qa_mailbox",
+  "displayName": "Mailbox",
+  "prefabPath": "Eternia_QA_Mailbox.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None",
+  "category": "prop"
+}

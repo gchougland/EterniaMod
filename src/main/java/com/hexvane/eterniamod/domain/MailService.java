@@ -23,6 +23,8 @@ public final class MailService extends DomainSupport {
             input.putAll(fields("claimed",items.isEmpty(),"read",false,"archived",false,"at",clock.instant()));return message(tx.save("mail",id,0,input));});
     }
     public List<Message> inbox(UUID recipient){return store.transaction(tx->tx.scan("mail").stream().filter(r->r.value("recipient").equals(recipient.toString())&&!r.value("archived").equals("true")).map(MailService::message).toList());}
+    /** Everyone with at least one unread letter still in their mailbox. */
+    public Set<UUID> recipientsWithUnread(){return store.transaction(tx->{var out=new HashSet<UUID>();for(var r:tx.scan("mail"))if(!r.value("archived").equals("true")&&!r.value("read").equals("true"))out.add(UUID.fromString(r.value("recipient")));return out;});}
     public List<Message> sent(UUID sender){return store.transaction(tx->tx.scan("mail").stream().filter(r->r.value("sender").equals(sender.toString())).map(MailService::message).toList());}
     public void markRead(UUID recipient,String id){store.transaction(tx->{var r=recipient(tx,recipient,id);save(tx,r,"read",true);return null;});}
     public void claim(UUID recipient,String id){store.transaction(tx->{claimIn(tx,recipient,id);return null;});}

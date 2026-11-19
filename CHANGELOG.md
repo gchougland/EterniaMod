@@ -49,6 +49,15 @@
 
 - Extra hexagons cost 500 Crowns each instead of coins. Selling a hexagon gives back what you paid for it, and free hexagons give nothing back.
 - Plots can no longer be claimed beside a guild. Every player plot stands on its own.
+- New quick access decorations in the Crown Store: a Crown Store Kiosk, Season Banner, Market Stall and Production Ledger. Place one on your plot to open the store, buy season passes, visit the market or check production right there, without going to the Hub.
+- Every player now gets a free Mailbox for their plot. Mail is read and sent there, and its flag goes up when you have new mail.
+- The Journal still shows your season passes and lets you choose which one is active. New passes are bought at the Hub or a Season Banner.
+- Guilds can buy a Guild Notice Board and a Guild Treasury as charters. Redeem them for your guild and place them from Guild decorations. Any member can use them to see the guild page or give Coins and Crowns to the guild.
+- Claim land in adventure worlds. Open the land map with `/e land map` (or `/e claim` while in an adventure world) and pick open hexagons to make them yours. Nobody else can break, place, open chests or use things on your land, and explosions leave it alone.
+- Your first hexagon of land is free. After that land costs Coins, and each new hexagon costs a little more than the last, up to a set number of hexagons. Giving a hexagon up gives back half of what it cost.
+- A gap is kept around every claim, so nobody can claim right next to someone else's land.
+- Guilds can claim land together on the Guild tab of the land map, paid from the guild's Coins. Any member can give Coins to the guild under Guild estate, Guild Coins. Guild roles decide who may claim it, build on it, open its chests and use its doors.
+- Share your land with friends from the land map or with `/e land friend NAME`, and choose whether each friend may build, open chests or use doors and benches. You can also let everyone use doors and benches.
 - Hexagons are bigger, so one hexagon holds a starter cabin with room to decorate around it. Plots that already exist keep their size.
 - The old placeholder house is gone.
 - Roads built with the Road Designer use half blocks where they step up one block, so walking up them is smooth.

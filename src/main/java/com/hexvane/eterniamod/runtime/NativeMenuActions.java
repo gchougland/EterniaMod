@@ -30,6 +30,7 @@ public final class NativeMenuActions implements SocialUiActions {
                 new ChoicePage.Choice("Stand on the estate, then choose Guild decorations to place your unlocked Waygate portal","Place Waygate",(r,s)->HousingInventory.open(plugin,r,s,player),"eternia:prop/guild_waygate"),
                 new ChoicePage.Choice("Plan or remove a community road","Roads",(r,s)->com.hexvane.eterniamod.guildroads.GuildRoads.open(r,s,player)),
                 new ChoicePage.Choice("See and give the guild's own Crowns, spent on more guild plots and hexagons","Guild Crowns",(r,s)->GuildCrownsMenu.open(plugin,r,s,player)),
+                new ChoicePage.Choice("See and give the guild's Coins, spent on guild land in adventure worlds","Guild Coins",(r,s)->com.hexvane.eterniamod.wildland.GuildCoinsMenu.open(plugin,r,s,player)),
                 new ChoicePage.Choice("Redeem a purchased guild upgrade","Review vouchers",(r,s)->GuildBenefitsMenu.open(plugin,r,s,player))));
             case WORLD_SELECT -> {
                 WorldDestinationsMenu.open(plugin,ref,store,player);

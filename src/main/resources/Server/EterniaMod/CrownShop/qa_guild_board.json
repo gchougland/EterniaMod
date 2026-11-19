@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/qa_guild_board",
+  "revision": 1,
+  "name": "Guild Notice Board Charter",
+  "description": "A notice board with your guild's shield. Redeem it for your guild, then place it from Guild decorations. Members see the guild page here.",
+  "category": "Guild charters",
+  "price": 600,
+  "benefits": [
+    {
+      "contentId": "eternia:guild_voucher/qa_guild_board",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

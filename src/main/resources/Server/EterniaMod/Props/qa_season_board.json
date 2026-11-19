@@ -1,0 +1,12 @@
+{
+  "id": "qa_season_board",
+  "displayName": "Season Banner",
+  "prefabPath": "Eternia_QA_Season_Board.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None",
+  "category": "prop"
+}

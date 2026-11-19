@@ -38,8 +38,10 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     }
     /** Where the page was opened: the Journal (personal sections, anywhere) or one Hub NPC's own desk. */
     public enum Desk {
-        JOURNAL(null, null, List.of(Section.COLLECTION, Section.QUESTS, Section.SEASON, Section.MAIL, Section.GUILD, Section.HOUSING),
+        JOURNAL(null, null, List.of(Section.COLLECTION, Section.QUESTS, Section.SEASON, Section.GUILD, Section.HOUSING),
             Set.of(SocialUiActions.Action.HOUSING_INVENTORY, SocialUiActions.Action.ITEM_DESK)),
+        /** The mailbox on a player's plot: mail is read and sent only there. */
+        MAILBOX(null, "mail", List.of(Section.MAIL), Set.of(SocialUiActions.Action.ITEM_DESK)),
         GUIDE(HubNpcIdentity.GREETER, "worlds", List.of(Section.GREETER), Set.of()),
         STEWARD(HubNpcIdentity.HOUSING, "housing", List.of(Section.HOUSING), Set.of(SocialUiActions.Action.HOUSING_CLAIM, SocialUiActions.Action.HOUSING_MANAGE,
             SocialUiActions.Action.HOUSING_INVENTORY, SocialUiActions.Action.ARCHITECT_LEDGER)),
@@ -68,7 +70,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         "housing.structure", "housing.palette", "housing.addition", "housing.prop.place", "housing.prop.move", "housing.prop.pack",
         "housing.block.build", "housing.block.break", "housing.road.manage", "inventory.deposit", "inventory.reserve_for_build", "inventory.withdraw",
         "shop.manage", "mail.attachments.claim", "treasury.deposit", "treasury.withdraw", "housing.door.use", "housing.bed.use", "housing.bench.use",
-        "housing.container.open", "convenience.use", "housing.visit", "audit.view");
+        "housing.container.open", "convenience.use", "housing.visit", "audit.view", "treasury.crowns.spend",
+        "wild.claim", "wild.build", "wild.containers", "wild.use");
     private final SocialUiBootstrap.Registration registration;
     private final EterniaServices services;
     private final UUID actor;
@@ -95,7 +98,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     EterniaServicesPage(PlayerRef player, SocialUiBootstrap.Registration registration, Desk desk, Section section, boolean deskHome) {
         super(player, CustomPageLifetime.CanDismissOrCloseThroughInteraction, Data.CODEC);
         this.registration = registration; this.services = registration.services; this.actor = player.getUuid();
-        this.desk = desk; this.section = desk.sections.contains(section) ? section : desk.sections.getFirst(); this.deskHome = deskHome && desk != Desk.JOURNAL;
+        this.desk = desk; this.section = desk.sections.contains(section) ? section : desk.sections.getFirst(); this.deskHome = deskHome && desk.identity != null;
         this.preview = new com.hexvane.eterniamod.ui.PrefabCardPreview(player);
     }
 
@@ -108,11 +111,12 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         allowedActions.clear();
         boolean journal = desk == Desk.JOURNAL;
         if (journal) JournalChrome.header(commands, "Journal", "Journal", null);
+        else if (desk.identity == null) JournalChrome.header(commands, "Mailbox", "Your letters", desk.emblem);
         else JournalChrome.header(commands, desk.identity.characterName(), desk.identity.profession(), desk.emblem);
         commands.set("#JournalShortcut.Visible", !journal);
         commands.set("#HintJournal.Visible", !journal);
         commands.set("#HintCloseText.TextSpans", Message.raw(journal ? "Close" : "Goodbye"));
-        boolean backToDesk = !journal && !deskHome;
+        boolean backToDesk = desk.identity != null && !deskHome;
         commands.set("#Return.Visible", backToDesk || hasReturnPage());
         bind(events, "#Return", backToDesk ? "desk_home" : "return_parent");
         bind(events, "#Close", "close");
@@ -483,7 +487,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (route.equals("close")) { close(); return; }
         if (busy) return;
         if(!allowed(route))return;
-        if(route.equals("desk_home")&&desk!=Desk.JOURNAL){deskHome=true;section=desk.sections.getFirst();mode="";focus="";page=0;one=two=three="";draftCapabilities=null;pending=null;refresh(ref,store,"");return;}
+        if(route.equals("desk_home")&&desk.identity!=null){deskHome=true;section=desk.sections.getFirst();mode="";focus="";page=0;one=two=three="";draftCapabilities=null;pending=null;refresh(ref,store,"");return;}
         if(route.equals("return_parent")){store.getExternalData().getWorld().execute(()->{if(ref.isValid()&&!isDismissed())returnOrClose(ref,store);});return;}
         if(route.equals("records")){store.getExternalData().getWorld().execute(()->{if(ref.isValid()&&!isDismissed())com.hexvane.eterniamod.stats.StatsPage.open(ref,store,playerRef,playerRef.getUuid(),playerRef.getUsername());});return;}
         if (route.startsWith("nav:")) {
@@ -681,7 +685,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 Row.info("Guilds share a house and can grow a neighborhood of member plots."),
                 Row.info("Select a season pass and earn progress through normal play. Old seasons never expire."),
                 Row.info("Bramble Hearthleaf helps with plots and homes. Torren Ironbough handles guilds. Nima Quicktail runs the market. Varek Dawnmantle keeps the season passes at the Gatehouse."),
-                Row.info("Press O any time to open your Journal: mail, guild, quests, seasons and your collection.")),
+                Row.info("Press O any time to open your Journal: guild, quests, seasons and your collection. Read mail at the mailbox on your plot.")),
                 noFields(), buttons("Starter toolkit", "intro_toolkit", "", "", "", ""), null);
             case HOUSING -> {
                 if (request.desk == Desk.JOURNAL) yield homeView(input);
@@ -771,7 +775,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 new Tile("Minigames", "Coming soon.", "games", "", true)));
             case ARMS -> View.desk("Welcome back. There have been no changes to our laws.", List.of(
                 new Tile("Rules of the realm", "Read the rules every adventurer agrees to.", "charter", "nav:RULES", true)));
-            case JOURNAL -> throw new IllegalStateException("The Journal has no desk home.");
+            case JOURNAL, MAILBOX -> throw new IllegalStateException("The Journal and the mailbox have no desk home.");
         };
     }
 

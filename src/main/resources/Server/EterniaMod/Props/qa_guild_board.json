@@ -1,0 +1,12 @@
+{
+  "id": "qa_guild_board",
+  "displayName": "Guild Notice Board",
+  "prefabPath": "Eternia_QA_Guild_Board.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None",
+  "category": "prop"
+}

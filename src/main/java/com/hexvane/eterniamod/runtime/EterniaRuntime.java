@@ -65,6 +65,8 @@ public final class EterniaRuntime implements AutoCloseable {
         // Free starter houses and decorations, chosen in the admin starter and shop menu. A newly added one reaches
         // existing players the next time they join.
         for(String content:services.starters().free())grant(owner,content,content.startsWith("eternia:house/")?OwnershipService.Kind.UNLOCK:OwnershipService.Kind.QUANTITY);
+        // Every player starts with a mailbox for their plot: mail is read and sent only there.
+        grant(owner,"eternia:prop/qa_mailbox",OwnershipService.Kind.QUANTITY);
         grant(owner,"eternia:palette/cut_stone",OwnershipService.Kind.UNLOCK);
         grant(owner,"eternia:path/cobblestone",OwnershipService.Kind.UNLOCK);
         // Staff rank titles follow the player's permission groups, so a new or removed Admin, Mod or Builder sees it here.

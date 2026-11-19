@@ -15,9 +15,9 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import java.util.*;
 
 /** Classifies native behavior, not an item-name substring; unknown actions retain storage protection. */
-final class HousingUseCapabilities {
+public final class HousingUseCapabilities {
     static final String PORTAL_SERVICE="housing.portal.service";
-    static Set<String> required(Store<EntityStore> store,UseBlockEvent.Pre event) {
+    public static Set<String> required(Store<EntityStore> store,UseBlockEvent.Pre event) {
         try {
             var block=event.getBlockType();var p=event.getTargetBlock();
             var holder=ChunkSectionBlockUtil.blockEntityHolderAt(store.getExternalData().getWorld(),p.x,p.y,p.z);
@@ -28,6 +28,8 @@ final class HousingUseCapabilities {
             var collector=new Behaviors();InteractionManager.walkChain(collector,event.getInteractionType(),event.getContext(),root);
             // A station is looked at by anyone who may visit; who may collect or upgrade is decided by the station itself.
             if(block.getId().startsWith("Eternia_Station_")&&!container&&collector.types.equals(Set.of("EterniaStationUse")))return Set.of("housing.visit");
+            // Guild quick access blocks (notice board, treasury) serve every member of the guild.
+            if(block.getId().startsWith("Eternia_QA_Guild_")&&!container&&collector.types.equals(Set.of(EterniaHousingTool.class.getSimpleName())))return Set.of("convenience.use");
             if("Eternia_Guild_Waygate".equals(block.getId())&&!container&&collector.types.equals(Set.of(EterniaHousingTool.class.getSimpleName())))return Set.of("convenience.use");
             return required(container,block.getBench() instanceof com.hypixel.hytale.server.core.asset.type.blocktype.config.bench.ProcessingBench,
                 "Eternia_Management_Block".equals(block.getId()),Set.of("Eternia_World_Portal","Eternia_Home_Portal").contains(block.getId()),door(store.getExternalData().getWorld(),p.x,p.y,p.z),block.getBeds()!=null,block.getBench()!=null,collector.types);

@@ -1,0 +1,12 @@
+{
+  "id": "qa_guild_treasury",
+  "displayName": "Guild Treasury",
+  "prefabPath": "Eternia_QA_Guild_Treasury.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None",
+  "category": "prop"
+}

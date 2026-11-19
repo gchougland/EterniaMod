@@ -132,18 +132,18 @@ $T.@CodexScreen {
       Label #LegendTitle { Anchor: (Height: 20, Bottom: 6); Text: ""; Style: $T.@CodexKickerStyle; }
       Group { Anchor: (Height: 130); LayoutMode: Left;
         Group { FlexWeight: 1; LayoutMode: Top;
-          Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchFrontageFree.png"; } Label #LegendFrontageFree { FlexWeight: 1; Text: ""; Style: @LegendText; } }
+          Group #LegendFrontageRow { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchFrontageFree.png"; } Label #LegendFrontageFree { FlexWeight: 1; Text: ""; Style: @LegendText; } }
           Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchMine.png"; } Label #LegendMine { FlexWeight: 1; Text: ""; Style: @LegendText; } }
           Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchMyGuild.png"; } Label #LegendMyGuild { FlexWeight: 1; Text: ""; Style: @LegendText; } }
           Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchReserved.png"; } Label #LegendReserved { FlexWeight: 1; Text: ""; Style: @LegendText; } }
-          Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchHouse.png"; } Label #LegendHouse { FlexWeight: 1; Text: "House hexagon"; Style: @LegendText; } }
+          Group #LegendHouseRow { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchHouse.png"; } Label #LegendHouse { FlexWeight: 1; Text: "House hexagon"; Style: @LegendText; } }
         }
         Group { FlexWeight: 1; LayoutMode: Top;
-          Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchStreet.png"; } Label #LegendStreet { FlexWeight: 1; Text: ""; Style: @LegendText; } }
+          Group #LegendStreetRow { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchStreet.png"; } Label #LegendStreet { FlexWeight: 1; Text: ""; Style: @LegendText; } }
           Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchOtherPlayer.png"; } Label #LegendOtherPlayer { FlexWeight: 1; Text: ""; Style: @LegendText; } }
           Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchOtherGuild.png"; } Label #LegendOtherGuild { FlexWeight: 1; Text: ""; Style: @LegendText; } }
           Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchFree.png"; } Label #LegendFree { FlexWeight: 1; Text: ""; Style: @LegendText; } }
-          Group { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchProduction.png"; } Label #LegendProduction { FlexWeight: 1; Text: "Production hexagon"; Style: @LegendText; } }
+          Group #LegendProductionRow { Anchor: (Height: 26); LayoutMode: Left; @Swatch { Background: "ClaimMap/SwatchProduction.png"; } Label #LegendProduction { FlexWeight: 1; Text: "Production hexagon"; Style: @LegendText; } }
         }
       }
     }

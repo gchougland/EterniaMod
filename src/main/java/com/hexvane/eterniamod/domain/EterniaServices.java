@@ -27,6 +27,7 @@ public final class EterniaServices {
     private final RankService ranks;
     private final StarterContentService starters;
     private final GuildCrownService guildCrowns;
+    private final WildLandService wildLand;
     private final CollectionService collection;
     private final CommerceIngressService commerceIngress;
     private final ActivitySourceService activitySources;
@@ -54,6 +55,7 @@ public final class EterniaServices {
         ranks=new RankService(store,clock,ids,ownership);
         starters=new StarterContentService(store,clock,ids);
         guildCrowns=new GuildCrownService(store,clock,ids);
+        wildLand=new WildLandService(store,clock,ids,economy);
         collection=new CollectionService(store,clock,ids,ownership);
         commerceIngress=new CommerceIngressService(store,clock,ids,commerce);
         activitySources=new ActivitySourceService(store,clock,ids,seasons,economy);
@@ -104,6 +106,7 @@ public final class EterniaServices {
     public StarterContentService starters(){return starters;}
     /** Each guild's own Crowns. */
     public GuildCrownService guildCrowns(){return guildCrowns;}
+    public WildLandService wildLand(){return wildLand;}
     public CollectionService collection(){return collection;}
     public CommerceIngressService commerceIngress(){return commerceIngress;}
     public ActivitySourceService activitySources(){return activitySources;}

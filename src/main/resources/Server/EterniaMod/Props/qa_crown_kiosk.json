@@ -1,0 +1,12 @@
+{
+  "id": "qa_crown_kiosk",
+  "displayName": "Crown Store Kiosk",
+  "prefabPath": "Eternia_QA_Crown_Kiosk.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None",
+  "category": "prop"
+}

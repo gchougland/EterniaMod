@@ -53,6 +53,7 @@ public final class EterniaModPlugin extends JavaPlugin {
 
     public com.hexvane.eterniamod.memories.PersonalMemories getMemories() { return memories; }
     public com.hexvane.eterniamod.housing.HousingInfrastructure getInfrastructure() { return infrastructure; }
+    private com.hexvane.eterniamod.customization.MailboxFlags mailboxFlags;
     public com.hexvane.eterniamod.domain.EterniaServices getServices() { return runtime.services(); }
     public com.hexvane.eterniamod.runtime.RuntimeConfig getRuntimeConfig() { return runtime.config(); }
     public com.hexvane.eterniamod.runtime.EterniaRuntime getRuntime() { return runtime; }
@@ -112,7 +113,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         // Once: plots saved one per owner are stored per plot, and existing guilds' leaders and officers may spend guild Crowns.
         try {
             int moved = getServices().housing().migrateToPlotKeys();
-            int roles = getServices().guilds().grantCrownSpending();
+            int roles = getServices().guilds().grantCrownSpending() + getServices().guilds().grantWildLand();
             // Larger plot sizes are gone: every plot grows hexagon by hexagon, so these two upgrades would do nothing.
             for (String retired : java.util.List.of("eternia:store/personal_32", "eternia:store/guild_plot"))
                 if (getServices().premium().items().stream().anyMatch(i -> i.id().equals(retired))) getServices().premium().setListed(retired, false);
@@ -144,6 +145,8 @@ public final class EterniaModPlugin extends JavaPlugin {
         boundaryFog = com.hexvane.eterniamod.boundary.BoundaryBootstrap.register(this,
             (world,x,z) -> infrastructure.protectedColumn(world.getName(),x,z));
         com.hexvane.eterniamod.housing.HousingProtection.register(this);
+        // Land in adventure worlds: plain block claims on hexagons, bought with Coins.
+        com.hexvane.eterniamod.wildland.WildLand.start(this, dataDirectory);
         lifecycle = new com.hexvane.eterniamod.runtime.PlayerLifecycle(this);
         menuActions = new com.hexvane.eterniamod.runtime.NativeMenuActions(this);
         socialUi = com.hexvane.eterniamod.socialui.SocialUiBootstrap.register(this,getServices(),menuActions);
@@ -173,6 +176,8 @@ public final class EterniaModPlugin extends JavaPlugin {
         departures = new com.hexvane.eterniamod.housing.relocation.GuildDepartureWorker(this,
             error -> getLogger().atWarning().withCause(error).log("Guild property return needs recovery"));
         departures.start();
+        mailboxFlags = new com.hexvane.eterniamod.customization.MailboxFlags(this);
+        mailboxFlags.start();
         try { runtime.startBridge(gameplayAdapters.webhookHandler(),gameplayAdapters.tebexPackages()); } catch (java.io.IOException e) { runtime.close(); throw new java.io.UncheckedIOException(e); }
         getLogger().atInfo().log("EterniaMod v%s loaded.", getManifest().getVersion().toString());
     }
@@ -188,6 +193,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         com.hexvane.eterniamod.production.ProductionBootstrap.close();
         if (socialUi != null) socialUi.close();
         if (departures != null) departures.close();
+        if (mailboxFlags != null) mailboxFlags.close();
         if (plotMover != null) plotMover.close();
         com.hexvane.eterniamod.guildroads.GuildRoads.close();
         com.hexvane.eterniamod.setup.paving.RoadPaving.close();

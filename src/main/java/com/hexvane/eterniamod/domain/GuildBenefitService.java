@@ -26,7 +26,9 @@ public final class GuildBenefitService extends DomainSupport {
     public record Redemption(UUID actor,UUID guild,String sourceGrantId,String benefitId,String grantReceipt,boolean active) {}
     public static final List<Benefit> BENEFITS=List.of(
         new Benefit("eternia:guild_voucher/large_plot","Larger guild estate","eternia:plot/guild_64"),
-        new Benefit("eternia:guild_voucher/teleporter","Guild Waygate","eternia:convenience/teleporter"));
+        new Benefit("eternia:guild_voucher/teleporter","Guild Waygate","eternia:convenience/teleporter"),
+        new Benefit("eternia:guild_voucher/qa_guild_board","Guild Notice Board","eternia:prop/qa_guild_board"),
+        new Benefit("eternia:guild_voucher/qa_guild_treasury","Guild Treasury","eternia:prop/qa_guild_treasury"));
     private final OwnershipService ownership;
     GuildBenefitService(TransactionalStore store,Clock clock,Supplier<UUID> ids,OwnershipService ownership){super(store,clock,ids);this.ownership=ownership;}
 
@@ -56,7 +58,9 @@ public final class GuildBenefitService extends DomainSupport {
             require(!ownership.ownsIn(tx,Owner.guild(confirmedGuild),benefit.entitlementId),CONFLICT,"This guild already has that benefit");
             save(tx,source,"available",source.number("available")-1);
             String derivedReceipt="guild-redemption:"+id;
-            var derived=ownership.grantIn(tx,new OwnershipService.GrantRequest(derivedReceipt,Owner.guild(confirmedGuild),benefit.entitlementId,OwnershipService.Kind.CAPABILITY,1,null));
+            // A decoration is placed from the guild's decorations, which count copies; an unlock is a capability.
+            var kind=benefit.entitlementId.startsWith("eternia:prop/")?OwnershipService.Kind.QUANTITY:OwnershipService.Kind.CAPABILITY;
+            var derived=ownership.grantIn(tx,new OwnershipService.GrantRequest(derivedReceipt,Owner.guild(confirmedGuild),benefit.entitlementId,kind,1,null));
             tx.save("grant_derivation",derived.id(),0,fields("parent",source.key(),"child",derived.id()));
             if(benefit.entitlementId.equals(WAYGATE))ensureWaygatePropIn(tx,confirmedGuild);
             input.putAll(fields("benefit",benefit.entitlementId,"grantReceipt",derivedReceipt));

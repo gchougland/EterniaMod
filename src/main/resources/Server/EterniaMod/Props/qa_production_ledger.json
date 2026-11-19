@@ -1,0 +1,12 @@
+{
+  "id": "qa_production_ledger",
+  "displayName": "Production Ledger",
+  "prefabPath": "Eternia_QA_Production_Ledger.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None",
+  "category": "prop"
+}

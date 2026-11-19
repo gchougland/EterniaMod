@@ -18,14 +18,14 @@ import java.util.UUID;
  * The guild's own Crowns: how many it has, the latest gifts and spending, and giving some of your own. Members whose
  * role may spend guild Crowns use them on more guild plots and hexagons from the Claim Map.
  */
-final class GuildCrownsMenu {
+public final class GuildCrownsMenu {
     private static final long[] AMOUNTS = {100, 500, 1000, 2500};
 
     private GuildCrownsMenu() {}
 
     private record Snapshot(String guildName, long guildCrowns, long myCrowns, boolean maySpend, List<GuildCrownService.Entry> history) {}
 
-    static void open(EterniaModPlugin plugin, Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player) {
+    public static void open(EterniaModPlugin plugin, Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player) {
         var services = plugin.getServices();
         UUID actor = player.getUuid();
         Snapshot snap;

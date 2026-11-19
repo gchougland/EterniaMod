@@ -1,0 +1,68 @@
+{
+  "TranslationProperties": {
+    "Name": "eternia_customization.qa.production_ledger.name",
+    "Description": "eternia_customization.qa.production_ledger.description"
+  },
+  "Icon": "Icons/ItemsGenerated/Eternia_QA_Production_Ledger.png",
+  "Categories": [
+    "Furniture.Furniture"
+  ],
+  "PlayerAnimationsId": "Block",
+  "Quality": "Technical",
+  "MaxStack": 1,
+  "Interactions": {
+    "Primary": "Block_Primary",
+    "Secondary": "Block_Secondary"
+  },
+  "BlockType": {
+    "DrawType": "Model",
+    "Material": "Solid",
+    "Opacity": "Transparent",
+    "CustomModel": "Blocks/Eternia/QuickAccess/Production_Ledger.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/Eternia/QuickAccess/Production_Ledger_Texture.png",
+        "Weight": 1
+      }
+    ],
+    "HitboxType": "Eternia_QA_Production_Ledger",
+    "VariantRotation": "NESW",
+    "BlockParticleSetId": "Wood",
+    "BlockSoundSetId": "Wood",
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Unbreakable"
+      }
+    },
+    "Interactions": {
+      "Use": {
+        "Interactions": [
+          {
+            "Type": "EterniaHousingTool",
+            "Route": "QA_PRODUCTION"
+          }
+        ]
+      }
+    },
+    "InteractionHint": "eternia_customization.qa.production_ledger.hint",
+    "RequiresAlphaBlending": true
+  },
+  "Tags": {
+    "Family": [
+      "Eternia"
+    ]
+  },
+  "IconProperties": {
+    "Scale": 0.55,
+    "Rotation": [
+      22.5,
+      45,
+      22.5
+    ],
+    "Translation": [
+      0,
+      -10
+    ]
+  },
+  "ItemSoundSetId": "ISS_Blocks_Wood"
+}

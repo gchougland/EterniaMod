@@ -1,0 +1,67 @@
+{
+  "TranslationProperties": {
+    "Name": "eternia_customization.qa.market_stall.name",
+    "Description": "eternia_customization.qa.market_stall.description"
+  },
+  "Icon": "Icons/ItemsGenerated/Eternia_QA_Market_Stall.png",
+  "Categories": [
+    "Furniture.Furniture"
+  ],
+  "PlayerAnimationsId": "Block",
+  "Quality": "Technical",
+  "MaxStack": 1,
+  "Interactions": {
+    "Primary": "Block_Primary",
+    "Secondary": "Block_Secondary"
+  },
+  "BlockType": {
+    "DrawType": "Model",
+    "Material": "Solid",
+    "Opacity": "Transparent",
+    "CustomModel": "Blocks/Eternia/QuickAccess/Market_Stall.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/Eternia/QuickAccess/Market_Stall_Texture.png",
+        "Weight": 1
+      }
+    ],
+    "HitboxType": "Eternia_QA_Market_Stall",
+    "VariantRotation": "NESW",
+    "BlockParticleSetId": "Wood",
+    "BlockSoundSetId": "Wood",
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Unbreakable"
+      }
+    },
+    "Interactions": {
+      "Use": {
+        "Interactions": [
+          {
+            "Type": "EterniaHousingTool",
+            "Route": "QA_SHOP"
+          }
+        ]
+      }
+    },
+    "InteractionHint": "eternia_customization.qa.market_stall.hint"
+  },
+  "Tags": {
+    "Family": [
+      "Eternia"
+    ]
+  },
+  "IconProperties": {
+    "Scale": 0.55,
+    "Rotation": [
+      22.5,
+      45,
+      22.5
+    ],
+    "Translation": [
+      0,
+      -10
+    ]
+  },
+  "ItemSoundSetId": "ISS_Blocks_Wood"
+}

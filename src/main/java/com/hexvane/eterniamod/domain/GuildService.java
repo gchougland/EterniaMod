@@ -12,7 +12,7 @@ public final class GuildService extends DomainSupport {
     public record Role(String id,String name,int rank,Set<String> capabilities) { public Role { capabilities=Set.copyOf(capabilities); } }
     public record DepartureJob(String id,UUID playerId,UUID guildId,Instant dueAt,String state,String worker,long revision) {}
     private static final Set<String> LEADER_ONLY=Set.of("role.edit","leadership.transfer","guild.disband","housing.claim","housing.move","housing.resize","commerce.purchase_for_guild");
-    private static final Set<String> BASE=Set.of("guild.view","guild.chat","board.read","board.post","party.create","inventory.deposit","treasury.deposit","housing.door.use","housing.bed.use","housing.bench.use","convenience.use","housing.visit");
+    private static final Set<String> BASE=Set.of("guild.view","guild.chat","board.read","board.post","party.create","inventory.deposit","treasury.deposit","housing.door.use","housing.bed.use","housing.bench.use","convenience.use","housing.visit","wild.build","wild.containers","wild.use");
     GuildService(TransactionalStore s,Clock c,Supplier<UUID> i) { super(s,c,i); }
     public Guild create(UUID leader,String name,String receiptId) {
         text(name,"guild name",48);return store.transaction(tx->{
@@ -43,6 +43,17 @@ public final class GuildService extends DomainSupport {
     public List<Membership> roster(UUID actor) { return store.transaction(tx->{var me=currentMember(tx,actor);return tx.scan("guild_member").stream().filter(r->r.value("active").equals("true")&&r.value("guild").equals(me.value("guild"))).map(GuildService::membership).toList();}); }
     public List<Role> roles(UUID actor) { return store.transaction(tx->{var me=currentMember(tx,actor);UUID guild=UUID.fromString(me.value("guild"));return tx.scan("guild_role").stream().filter(r->r.value("guild").equals(guild.toString())).map(r->role(tx,guild,r.value("id"))).sorted(Comparator.comparingInt(Role::rank)).toList();}); }
     public Optional<Guild> find(UUID guildId) { return store.transaction(tx->tx.find("guild",guildId.toString()).map(GuildService::guild)); }
+    /** A player's current guild and what their role there may do, in one read; empty outside a guild. */
+    public record Standing(UUID guildId,Set<String> capabilities) { public Standing { capabilities=Set.copyOf(capabilities); } }
+    public Optional<Standing> standing(UUID player) {
+        return store.transaction(tx->{
+            var m=tx.find("guild_member",player.toString()).filter(r->r.value("active").equals("true"));
+            if(m.isEmpty())return Optional.<Standing>empty();
+            UUID guild=UUID.fromString(m.get().value("guild"));
+            try{return Optional.of(new Standing(guild,role(tx,guild,m.get().value("role")).capabilities));}
+            catch(DomainException missing){return Optional.of(new Standing(guild,Set.of()));}
+        });
+    }
     public boolean can(UUID actor,UUID guildId,String capability) { return store.transaction(tx->{try{requireCapability(tx,actor,guildId,capability);return true;}catch(DomainException e){if(e.code()==FORBIDDEN||e.code()==NOT_FOUND)return false;throw e;}}); }
     /** Members a guild needs before it can claim its estate. */
     public static final int GUILD_ESTATE_MEMBERS = 3;
@@ -130,8 +141,27 @@ public final class GuildService extends DomainSupport {
             }
             return changed;});
     }
+    /**
+     * Guilds made before land in adventure worlds: every built in role may build, open chests and use things on guild
+     * land, and leaders and officers may claim and share it. Custom roles are left as their leader set them.
+     */
+    public int grantWildLand() {
+        return store.transaction(tx->{int changed=0;
+            // Once only, so a leader who later takes these from a role keeps it that way.
+            if(tx.find("migration","wild-land-roles").isPresent())return 0;
+            tx.save("migration","wild-land-roles",0,fields("at",clock.millis()));
+            for(var r:tx.scan("guild_role")){
+                String id=r.value("id");
+                if(!Set.of("leader","officer","architect","quartermaster","member").contains(id))continue;
+                var caps=new TreeSet<>(Arrays.asList(r.value("caps").split("\n")));
+                boolean grew=caps.addAll(Set.of("wild.build","wild.containers","wild.use"));
+                if(Set.of("leader","officer").contains(id))grew|=caps.add(WildLandService.MANAGE);
+                if(grew){save(tx,r,"caps",String.join("\n",caps));changed++;}
+            }
+            return changed;});
+    }
     private void seedRoles(TransactionalStore.Transaction tx,UUID guild) {
-        var officer=new HashSet<>(BASE);officer.addAll(Set.of("board.moderate","member.invite","member.remove","member.role.assign","audit.view",GuildCrownService.SPEND));
+        var officer=new HashSet<>(BASE);officer.addAll(Set.of("board.moderate","member.invite","member.remove","member.role.assign","audit.view",GuildCrownService.SPEND,WildLandService.MANAGE));
         var architect=new HashSet<>(BASE);architect.addAll(Set.of("housing.structure","housing.palette","housing.addition","housing.prop.place","housing.prop.move","housing.prop.pack","housing.block.build","housing.block.break","housing.road.manage","inventory.reserve_for_build"));
         var quarter=new HashSet<>(BASE);quarter.addAll(Set.of("inventory.withdraw","shop.manage","mail.attachments.claim","treasury.withdraw","housing.container.open","audit.view"));
         var leader=new HashSet<>(officer);leader.addAll(architect);leader.addAll(quarter);leader.addAll(LEADER_ONLY);

@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/qa_guild_treasury",
+  "revision": 1,
+  "name": "Guild Treasury Charter",
+  "description": "An iron bound chest. Redeem it for your guild, then place it from Guild decorations. Members give Coins and Crowns to the guild here.",
+  "category": "Guild charters",
+  "price": 750,
+  "benefits": [
+    {
+      "contentId": "eternia:guild_voucher/qa_guild_treasury",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

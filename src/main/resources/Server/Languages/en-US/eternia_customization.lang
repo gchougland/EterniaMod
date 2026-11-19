@@ -1,7 +1,7 @@
 deed.name=Housing Deed
 deed.description=Use it where you want your home to plan your plot there. Your account holds the plot rights, so a copy of this deed grants no extra plot.
 ledger.name=Architect's Ledger
-ledger.description=Open your housing dashboard. Your mail, guild and collection are in your Journal.
+ledger.description=Open your housing dashboard. Your guild, quests and collection are in your Journal. Read mail at your mailbox.
 
 portal.name = Eternia World Portal
 portal.description = Choose an Eternia destination. Public travel requires a registered portal location.
@@ -11,3 +11,26 @@ home_portal.hint = Press [{key}] to go home
 guildWaygate.name = Guild Waygate Portal
 guildWaygate.description = Place from your guild build inventory. Guild members can choose a destination here.
 guildWaygate.hint = Press [{key}] to use Guild Waygate
+
+# Quick access blocks for housing plots (tools/models/quickaccess.assets.py).
+qa.mailbox.name = Mailbox
+qa.mailbox.description = Open your mail here.
+qa.mailbox.hint = Press [{key}] to read your mail
+qa.crown_kiosk.name = Crown Store Kiosk
+qa.crown_kiosk.description = Open the Crown Store here.
+qa.crown_kiosk.hint = Press [{key}] to open the Crown Store
+qa.season_board.name = Season Banner
+qa.season_board.description = Buy season passes here.
+qa.season_board.hint = Press [{key}] to see the season passes
+qa.market_stall.name = Market Stall
+qa.market_stall.description = Visit the market here.
+qa.market_stall.hint = Press [{key}] to visit the market
+qa.production_ledger.name = Production Ledger
+qa.production_ledger.description = Check your production here.
+qa.production_ledger.hint = Press [{key}] to check your production
+qa.guild_board.name = Guild Notice Board
+qa.guild_board.description = See your guild here.
+qa.guild_board.hint = Press [{key}] to see your guild
+qa.guild_treasury.name = Guild Treasury
+qa.guild_treasury.description = Give to your guild here.
+qa.guild_treasury.hint = Press [{key}] to give to your guild

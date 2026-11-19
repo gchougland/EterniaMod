@@ -19,6 +19,15 @@ import org.joml.Vector3i;
 public final class HousingInteractionGuard {
     private static volatile EterniaModPlugin active;
     private HousingInteractionGuard() {}
+    /** Another owner of land (claims in adventure worlds) that may refuse a bucket on a block. */
+    public interface BlockGuard { boolean refuses(World world,com.hypixel.hytale.component.Ref<EntityStore> actor,CommandBuffer<EntityStore> commands,int x,int y,int z); }
+    private static volatile BlockGuard extra;
+    public static void guard(BlockGuard guard) { extra=guard; }
+    private static boolean refusedByLand(World world,InteractionContext context,CommandBuffer<EntityStore> commands,int x,int y,int z) {
+        var g=extra;
+        if(g==null)return false;
+        try{return g.refuses(world,context.getOwningEntity(),commands,x,y,z);}catch(RuntimeException failure){return true;}
+    }
     static void register(EterniaModPlugin plugin) {
         if (Interaction.CODEC.getClassFor("PlaceFluid") != PlaceFluidInteraction.class
                 || Interaction.CODEC.getClassFor("RefillContainer") != RefillContainerInteraction.class)
@@ -47,7 +56,7 @@ public final class HousingInteractionGuard {
         public PlaceFluid() {}
         @Override protected void interactWithBlock(World world,CommandBuffer<EntityStore> commands,InteractionType type,
                 InteractionContext context,ItemStack item,Vector3i target,CooldownHandler cooldown) {
-            if (blocked(world)) { context.getState().state=InteractionState.Failed;return; }
+            if (blocked(world)||target!=null&&refusedByLand(world,context,commands,target.x,target.y,target.z)) { context.getState().state=InteractionState.Failed;return; }
             super.interactWithBlock(world,commands,type,context,item,target,cooldown);
         }
     }
@@ -55,7 +64,9 @@ public final class HousingInteractionGuard {
         public static final BuilderCodec<RefillContainer> CODEC=BuilderCodec.builder(RefillContainer.class,RefillContainer::new,RefillContainerInteraction.CODEC).build();
         public RefillContainer() {}
         @Override protected void firstRun(InteractionType type,InteractionContext context,CooldownHandler cooldown) {
-            if (blocked(context.getCommandBuffer().getExternalData().getWorld())) {
+            var world=context.getCommandBuffer().getExternalData().getWorld();
+            var at=context.getTargetBlock();
+            if (blocked(world)||at!=null&&refusedByLand(world,context,context.getCommandBuffer(),at.x,at.y,at.z)) {
                 context.getState().state=InteractionState.Failed;return;
             }
             super.firstRun(type,context,cooldown);

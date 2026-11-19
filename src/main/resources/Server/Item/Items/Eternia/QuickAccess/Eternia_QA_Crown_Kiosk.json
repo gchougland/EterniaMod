@@ -1,0 +1,67 @@
+{
+  "TranslationProperties": {
+    "Name": "eternia_customization.qa.crown_kiosk.name",
+    "Description": "eternia_customization.qa.crown_kiosk.description"
+  },
+  "Icon": "Icons/ItemsGenerated/Eternia_QA_Crown_Kiosk.png",
+  "Categories": [
+    "Furniture.Furniture"
+  ],
+  "PlayerAnimationsId": "Block",
+  "Quality": "Technical",
+  "MaxStack": 1,
+  "Interactions": {
+    "Primary": "Block_Primary",
+    "Secondary": "Block_Secondary"
+  },
+  "BlockType": {
+    "DrawType": "Model",
+    "Material": "Solid",
+    "Opacity": "Transparent",
+    "CustomModel": "Blocks/Eternia/QuickAccess/Crown_Kiosk.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/Eternia/QuickAccess/Crown_Kiosk_Texture.png",
+        "Weight": 1
+      }
+    ],
+    "HitboxType": "Eternia_QA_Crown_Kiosk",
+    "VariantRotation": "NESW",
+    "BlockParticleSetId": "Wood",
+    "BlockSoundSetId": "Wood",
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Unbreakable"
+      }
+    },
+    "Interactions": {
+      "Use": {
+        "Interactions": [
+          {
+            "Type": "EterniaHousingTool",
+            "Route": "QA_STORE"
+          }
+        ]
+      }
+    },
+    "InteractionHint": "eternia_customization.qa.crown_kiosk.hint"
+  },
+  "Tags": {
+    "Family": [
+      "Eternia"
+    ]
+  },
+  "IconProperties": {
+    "Scale": 0.55,
+    "Rotation": [
+      22.5,
+      45,
+      22.5
+    ],
+    "Translation": [
+      0,
+      -10
+    ]
+  },
+  "ItemSoundSetId": "ISS_Blocks_Wood"
+}

@@ -25,6 +25,8 @@ public final class ClaimMapRoutes {
 
     /** Claim a personal plot (or, in hex worlds, grow the one they already have here). Resumes a rectangle draft. */
     public static void claim(EterniaModPlugin plugin, Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player) {
+        // Adventure worlds have plain land claims instead of housing plots.
+        if (com.hexvane.eterniamod.wildland.WildMapPage.open(plugin, ref, store, player, false)) return;
         if (inHexWorld(store) && ClaimMapPage.open(plugin, ref, store, player, ClaimMapLogic.Mode.CLAIM, HousingRules.Scope.PUBLIC, null)) return;
         PlotClaimPage.open(ref, store, player, plugin);
     }

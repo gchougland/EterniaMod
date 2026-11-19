@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/qa_market_stall",
+  "revision": 1,
+  "name": "Market Stall",
+  "description": "A little market stall. Visit player shops, your item desk and trades from your plot.",
+  "category": "Quick access",
+  "price": 500,
+  "benefits": [
+    {
+      "contentId": "eternia:prop/qa_market_stall",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}

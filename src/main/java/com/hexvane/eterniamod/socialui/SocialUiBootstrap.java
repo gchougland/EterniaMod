@@ -46,6 +46,14 @@ public final class SocialUiBootstrap {
         registration.open(ref, store, player, section);
     }
 
+    /** Opens one desk where the player stands: the mailbox's own page, or the season desk from a Season Banner. */
+    public static void openDesk(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServices services,
+        EterniaServicesPage.Desk desk, EterniaServicesPage.Section section, boolean deskHome) {
+        Registration registration = active;
+        if (registration == null || registration.closed || registration.services != services) return;
+        registration.show(ref, store, player, desk, section, deskHome, false);
+    }
+
     static void openNpc(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServicesPage.Section section) {
         Registration registration = active;
         if (registration != null && !registration.closed) registration.openNpc(ref, store, player, section);

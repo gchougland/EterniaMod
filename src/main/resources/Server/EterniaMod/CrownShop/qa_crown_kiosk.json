@@ -1,0 +1,16 @@
+{
+  "id": "eternia:store/qa_crown_kiosk",
+  "revision": 1,
+  "name": "Crown Store Kiosk",
+  "description": "A lectern with a golden crown. Open the Crown Store from your plot.",
+  "category": "Quick access",
+  "price": 300,
+  "benefits": [
+    {
+      "contentId": "eternia:prop/qa_crown_kiosk",
+      "kind": "QUANTITY",
+      "quantity": 1,
+      "expiresWithSubscription": false
+    }
+  ]
+}
