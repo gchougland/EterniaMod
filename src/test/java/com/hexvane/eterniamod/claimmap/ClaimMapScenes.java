@@ -35,7 +35,7 @@ import java.util.function.Function;
  * (ClaimMapScreen through ClaimMapLogic) as a test case for the Hytale MCP {@code ui_render}.
  */
 final class ClaimMapScenes {
-    static final HexLattice L = HexLattice.DEFAULT;
+    static final HexLattice L = com.hexvane.eterniamod.hexplots.TestLattices.CLASSIC;
     static final String PROJECT = "_worktrees/EterniaMod-hex-map";
     static final String GUILD_NAME = "The Fellowship of the Northern Wildflower Meadows";
 

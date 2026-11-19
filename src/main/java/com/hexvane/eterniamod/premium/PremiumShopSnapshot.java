@@ -15,7 +15,7 @@ public record PremiumShopSnapshot(PremiumService.Balance balance,List<PremiumSer
         return services.readView(new CacheKey(actor),java.time.Duration.ofSeconds(2),() -> loadInBatch(services,actor));
     }
     private static PremiumShopSnapshot loadInBatch(EterniaServices services,UUID actor){
-        var premium=services.premium();var items=premium.items();var owned=new HashSet<String>();
+        var premium=services.premium();var items=premium.listed();var owned=new HashSet<String>();
         for(var item:items)if(premium.alreadyOwned(actor,item))owned.add(item.id());
         Instant now=services.seasons().now();
         return new PremiumShopSnapshot(premium.balance(actor),items,owned,premium.sales(items,now),now);

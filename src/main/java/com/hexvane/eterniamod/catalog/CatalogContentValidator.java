@@ -53,7 +53,11 @@ public final class CatalogContentValidator {
 
     /** Bound actual authored dimensions, not only an optional definition hint. */
     public static List<String> validatePrefab(JsonObject prefab) {
-        if (prefab == null || !prefab.has("blocks") || !prefab.get("blocks").isJsonArray()
+        if (prefab == null) return List.of("prefab must contain blocks");
+        // A decoration may be made only of placed items (a table setting, a rug), with no blocks at all.
+        boolean decorated = prefab.has("entities") && prefab.get("entities").isJsonArray() && !prefab.getAsJsonArray("entities").isEmpty();
+        if (decorated && (!prefab.has("blocks") || prefab.getAsJsonArray("blocks").isEmpty())) return List.of();
+        if (!prefab.has("blocks") || !prefab.get("blocks").isJsonArray()
             || prefab.getAsJsonArray("blocks").isEmpty()) return List.of("prefab must contain blocks");
         int[] min = {Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE};
         int[] max = {Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
@@ -71,7 +75,7 @@ public final class CatalogContentValidator {
             String name = string(block, "name");
             solid |= name != null && !name.equals("Empty");
         }
-        if (!solid) return List.of("prefab must contain at least one nonempty block");
+        if (!solid && !decorated) return List.of("prefab must contain at least one nonempty block");
         for (int axis = 0; axis < 3; axis++) {
             if ((long) max[axis] - min[axis] + 1 > 512) return List.of("prefab dimensions must not exceed 512 blocks on an axis");
         }

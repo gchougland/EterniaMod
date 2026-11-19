@@ -112,9 +112,10 @@ public final class NameplateRuntime {
     }
 
     /** Looks up every online player's titles and guild, off the world thread. */
-    private static void refreshPlans(EterniaModPlugin plugin) {
+    private static void refreshPlans(EterniaModPlugin plugin, boolean soon) {
         long now = System.currentTimeMillis();
-        if (now - plannedAt < PLAN_MILLIS) return;
+        // A player still waiting for their first lines gets them within a second rather than at the next round.
+        if (now - plannedAt < (soon ? 1000 : PLAN_MILLIS)) return;
         plannedAt = now;
         var services = plugin.getServices();
         var collections = plugin.getCollectionRuntime();
@@ -149,7 +150,7 @@ public final class NameplateRuntime {
             Long last = CHECKED.get(id);
             if (last != null && now - last < CHECK_MILLIS) return;
             CHECKED.put(id, now);
-            refreshPlans(plugin);
+            refreshPlans(plugin, !PLANS.containsKey(id));
             Ref<EntityStore> ref = chunk.getReferenceTo(index);
             World world = store.getExternalData().getWorld();
             world.execute(() -> { if (ref.isValid()) step(ref, store, world, player, now); });
@@ -159,16 +160,14 @@ public final class NameplateRuntime {
     private static void step(Ref<EntityStore> ref, Store<EntityStore> store, World world, PlayerRef player, long now) {
         UUID id = player.getUuid();
         hideGameNameplate(ref, store);
+        // Nothing until the player's real lines are known: a stand in name replaced a moment later lingered on screen,
+        // faded grey, for several seconds after login.
         var lines = PLANS.get(id);
-        if (lines == null) lines = NameplateLines.of(player.getUsername(), "", "", null, null);
-        var shown = SHOWN.get(id);
-        boolean stale = shown == null || !shown.world().equals(world.getName()) || !shown.lines().equals(lines)
-            || shown.anchors().stream().anyMatch(anchor -> !anchor.ref().isValid());
-        if (stale) {
-            if (shown != null && shown.world().equals(world.getName())) despawn(store, shown);
-            shown = spawn(ref, store, world, lines);
-            if (shown == null) return;
-            SHOWN.put(id, shown);
+        if (lines != null) {
+            var shown = SHOWN.get(id);
+            if (shown == null || !shown.world().equals(world.getName())) shown = new Shown(world.getName(), List.of(), List.of());
+            var next = reconcile(ref, store, shown, lines);
+            if (next != null) SHOWN.put(id, next);
         }
         send(ref, store, world, id, now);
     }
@@ -179,17 +178,44 @@ public final class NameplateRuntime {
         if (nameplate != null && !nameplate.getText().isEmpty()) nameplate.setText("");
     }
 
-    private static Shown spawn(Ref<EntityStore> player, Store<EntityStore> store, World world, List<NameplateLines.Line> lines) {
+    /**
+     * Brings a player's anchors in line with {@code lines}, replacing only lines that changed: a removed line's text
+     * stays on screen, fading, for a moment. Returns the new state, or null when the anchor model is missing.
+     */
+    private static Shown reconcile(Ref<EntityStore> player, Store<EntityStore> store, Shown shown, List<NameplateLines.Line> lines) {
         var asset = ModelAsset.getAssetMap().getAsset(ANCHOR_MODEL);
         var transform = store.getComponent(player, TransformComponent.getComponentType());
         if (asset == null || transform == null) return null;
-        var at = transform.getPosition();
-        var anchors = new java.util.ArrayList<Anchor>(lines.size());
-        for (int i = 0; i < lines.size(); i++) {
-            var line = lines.get(i);
-            // Anchors at one point stand in each other's line of sight, and the client fades floating text it cannot
-            // see: lines flickered grey as the player moved. Each line's anchor sits a little lower than the one above.
-            float height = HEAD_HEIGHT + ((lines.size() - 1) / 2f - i) * LINE_SPACING;
+        var kept = new java.util.ArrayList<Anchor>();
+        boolean changed = false;
+        for (var anchor : shown.anchors()) {
+            if (anchor.ref().isValid() && lines.contains(anchor.line())) { kept.add(anchor); continue; }
+            if (anchor.ref().isValid() && anchor.ref().getStore() == store) store.removeEntity(anchor.ref(), RemoveReason.REMOVE);
+            changed = true;
+        }
+        for (var line : lines) {
+            if (kept.stream().anyMatch(anchor -> anchor.line().equals(line))) continue;
+            var anchor = spawn(player, store, asset, transform.getPosition(), line);
+            if (anchor != null) { kept.add(anchor); changed = true; }
+        }
+        return changed ? new Shown(shown.world(), lines, List.copyOf(kept)) : shown;
+    }
+
+    /**
+     * Where each line's anchor sits. Anchors at one point stand in each other's line of sight, and the client fades
+     * floating text it cannot see (lines flickered grey as the player moved), so each line has its own height.
+     */
+    private static float height(NameplateLines.Line line) {
+        return switch (line.style()) {
+            case NameplateLines.TITLE_STYLE -> HEAD_HEIGHT + LINE_SPACING;
+            case NameplateLines.GUILD_STYLE -> HEAD_HEIGHT - LINE_SPACING;
+            default -> HEAD_HEIGHT;
+        };
+    }
+
+    private static Anchor spawn(Ref<EntityStore> player, Store<EntityStore> store, ModelAsset asset, Vector3d at, NameplateLines.Line line) {
+        {
+            float height = height(line);
             var holder = EntityStore.REGISTRY.newHolder();
             holder.addComponent(NetworkId.getComponentType(), new NetworkId(store.getExternalData().takeNextNetworkId()));
             holder.addComponent(EntityStore.REGISTRY.getNonSerializedComponentType(), NonSerialized.get());
@@ -199,9 +225,8 @@ public final class NameplateRuntime {
             holder.addComponent(UIComponentList.getComponentType(), new UIComponentList(new String[] {line.style()}));
             holder.addComponent(MountedComponent.getComponentType(), new MountedComponent(player, new Vector3f(0, height, 0), MountController.Minecart));
             var anchor = store.addEntity(holder, AddReason.SPAWN);
-            if (anchor != null) anchors.add(new Anchor(line, anchor));
+            return anchor == null ? null : new Anchor(line, anchor);
         }
-        return new Shown(world.getName(), lines, List.copyOf(anchors));
     }
 
     /** Sends this viewer the text of every other player's anchors they can see, when it is new to them or nearly gone. */

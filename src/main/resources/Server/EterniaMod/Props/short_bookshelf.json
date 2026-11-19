@@ -1,0 +1,11 @@
+{
+  "id": "short_bookshelf",
+  "displayName": "Short Bookshelf",
+  "prefabPath": "EterniaMod/Props/Pack_Short_Bookshelf.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

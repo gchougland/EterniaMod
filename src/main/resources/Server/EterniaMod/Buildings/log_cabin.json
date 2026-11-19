@@ -1,0 +1,17 @@
+{
+  "id": "log_cabin",
+  "displayName": "Log Cabin",
+  "prefabPath": "EterniaMod/Houses/House_Log_Cabin.prefab.json",
+  "plotAnchorOffset": [
+    7,
+    0,
+    6
+  ],
+  "spawnLocalPos": [
+    2,
+    0,
+    0
+  ],
+  "rotationYaw": "None",
+  "housingKind": "personal"
+}

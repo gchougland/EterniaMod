@@ -26,7 +26,7 @@ import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 
 class ClaimMapTest {
-    private static final HexLattice L = HexLattice.DEFAULT;
+    private static final HexLattice L = com.hexvane.eterniamod.hexplots.TestLattices.CLASSIC;
     private static final HexPlotSettings S = HexPlotSettings.DEFAULTS;
 
     // ---- cell to pixel mapping and hit testing ----

@@ -103,17 +103,22 @@ public final class NativeClaimCoordinator {
         Objects.requireNonNull(player);Objects.requireNonNull(world);Objects.requireNonNull(cells);Objects.requireNonNull(kind);
         UUID operation=UUID.randomUUID();UUID actor=player.getUuid();
         // The land is shaped before the claim commits, so the terrain baseline the claim saves is the shaped ground.
+        // A claim that does not go through puts the land back as it was before the shaping.
         var request=new com.hexvane.eterniamod.hexplots.terraform.PlotTerraformer.Request(world.getName(),cells.lattice(),cells.asSet(),()->claimGroup(actor,kind),null);
         return onWorld(world,()->loadGround(world,cells.bounds())).thenCompose(f->f)
             .thenCompose(v->terraformer.shapeThen(world,request,()->HexClaimCheck.validate(plugin,world,actor,cells.cells(),scope(kind),paidFor(kind,cells.size())).valid(),outcome->{
                 HexCommitResult done;
                 try{done=claimCellsNow(world,actor,cells,kind,groundY(world,player,cells),operation);if(done.ok())recordLevel(world,done.plotId(),outcome,true);}
+                // The ground copy found chunks the shaping just wrote still being saved; nothing was reserved, so try again shortly.
+                catch(com.hexvane.eterniamod.housing.relocation.NativeSnapshotStore.StorageBusy busy){throw new com.hexvane.eterniamod.hexplots.terraform.PlotTerraformer.RetryLater(busy);}
                 catch(RuntimeException failure){
                     plugin.getLogger().atWarning().withCause(failure).log("Hex claim did not finish");
-                    done=HexCommitResult.failed(HexPlotText.plots("claim.failed","Your claim could not finish. Open My Plots to check it before you try again."),null);
+                    // If the claim got as far as reserving, its plot is named, so the shaped land it saved is kept.
+                    String reserved=plugin.getServices().housing().properties().stream().filter(p->p.slot().operationId().equals(operation)).map(p->p.slot().propertyId().toString()).findFirst().orElse(null);
+                    done=HexCommitResult.failed(HexPlotText.plots("claim.failed","Your claim could not finish. Open My Plots to check it before you try again."),reserved);
                 }
                 tell(player,done);return done;
-            }))
+            },NativeClaimCoordinator::keepsShapedLand))
             .exceptionallyAsync(error->{
                 plugin.getLogger().atWarning().withCause(error).log("Hex claim could not load its ground");
                 var done=HexCommitResult.failed(HexPlotText.plots("claim.retry","The land here is still loading. Try again in a moment."),null);
@@ -144,6 +149,12 @@ public final class NativeClaimCoordinator {
                 tell(player,done);return done;
             },world);
     }
+
+    /**
+     * Whether the shaped land stays after a claim: when it went through, and when a packed home was being set down (that
+     * may already have written blocks, which its own recovery looks after). A plain refusal puts the land back.
+     */
+    static boolean keepsShapedLand(HexCommitResult result) { return result.ok() || result.plotId() != null; }
 
     /** World thread. The synchronous claim: validate, baseline, reserve, native tail. Chunks under the cells must be loaded. */
     public synchronized HexCommitResult claimCellsNow(World world,UUID actor,PlotCells cells,HexClaimRules.Kind kind,int groundY,UUID operation) {
@@ -446,6 +457,8 @@ public final class NativeClaimCoordinator {
     }
 
     /** Every chunk column and section under {@code box}, so the terrain baseline can be captured. Call on the world thread. */
+    /** Loads every chunk section under {@code box} so its ground can be read and restored. Call on the world thread. */
+    public static CompletableFuture<Void> loadGroundFor(World world,PlotRect box) { return loadGround(world,box); }
     private static CompletableFuture<Void> loadGround(World world,PlotRect box) {
         int minX=Math.floorDiv(box.x(),32),maxX=Math.floorDiv(box.endX()-1,32),minZ=Math.floorDiv(box.z(),32),maxZ=Math.floorDiv(box.endZ()-1,32);
         int minY=Math.floorDiv(ChunkUtil.MIN_Y,32),maxY=Math.floorDiv(com.hexvane.eterniamod.housing.relocation.NativeSnapshotStore.MAX_Y-1,32);

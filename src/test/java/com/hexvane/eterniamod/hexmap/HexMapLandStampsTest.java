@@ -14,7 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 class HexMapLandStampsTest {
-    private static final HexLattice L = HexLattice.DEFAULT;
+    private static final HexLattice L = com.hexvane.eterniamod.hexplots.TestLattices.CLASSIC;
 
     @AfterEach void clean() { HexLandEvents.clearListeners(); }
 

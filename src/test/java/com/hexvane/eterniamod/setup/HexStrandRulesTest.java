@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 /** Road and plaza edits in a hex world: never pave a claimed hexagon, never cut a plot off from its road. */
 class HexStrandRulesTest {
-    private static final HexLattice L = HexLattice.DEFAULT;
+    private static final HexLattice L = com.hexvane.eterniamod.hexplots.TestLattices.CLASSIC;
     /** Along the body of row 0 (z 8 to 27), cells q 0..3. */
     private static final PlotRect MAIN = new PlotRect(0, 15, 128, 4);
 

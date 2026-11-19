@@ -1,0 +1,302 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Village_Table",
+      "filler": 31,
+      "rotation": 3
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "name": "Furniture_Village_Table",
+      "filler": 63,
+      "rotation": 3
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Village_Table",
+      "rotation": 3
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "name": "Furniture_Village_Table",
+      "filler": 32,
+      "rotation": 3
+    }
+  ],
+  "fluids": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "name": "Empty",
+      "level": 0
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Salad_Caesar"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.0542163848876953,
+            "Y": 1.4149398803710938,
+            "Z": 0.48633503913879395
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 2.6654562950134277,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "34BC/rvORBewwaCbGV3iYg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.7515200972557068
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Salad_Caesar",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Chair"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.2046241760253906,
+            "Y": 0.5452651977539062,
+            "Z": -0.41316676139831543
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 3.088747024536133,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "t/RN6lOnR+usYKtOJ1LNzA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Chair",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Chair"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.6232261657714844,
+            "Y": 0.48450469970703125,
+            "Z": 1.3353971242904663
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.9993250370025635,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "XOED1jtYTCq2trOX7WnROQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Chair",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Pie_Pumpkin"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.502899169921875,
+            "Y": 1.32965087890625,
+            "Z": 1.5569438338279724
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 0.5285651683807373,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "BKQygLTNTtq30ZruR0lwjw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5080000162124634
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Pie_Pumpkin",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Lumberjack_Lantern"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.5651569366455078,
+            "Y": 1.280609130859375,
+            "Z": 1.425068736076355
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 1.2063195705413818,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "QY94peXvTWix4T3rA4L7jg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.537132740020752
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Lumberjack_Lantern",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

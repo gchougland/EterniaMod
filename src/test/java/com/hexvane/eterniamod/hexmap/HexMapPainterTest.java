@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class HexMapPainterTest {
-    private static final HexLattice L = HexLattice.DEFAULT;
+    private static final HexLattice L = com.hexvane.eterniamod.hexplots.TestLattices.CLASSIC;
     private static final int GRASS = 0x5A8A3CFF;
 
     /** Plot 0 on cell (0,0), plot 1 on its east neighbour (1,0), street on (0,1). */

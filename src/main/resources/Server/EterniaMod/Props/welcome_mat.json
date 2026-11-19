@@ -1,0 +1,11 @@
+{
+  "id": "welcome_mat",
+  "displayName": "Welcome Mat",
+  "prefabPath": "EterniaMod/Props/Pack_Welcome_Mat.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

@@ -56,6 +56,10 @@ public final class ModerationBootstrap implements AutoCloseable {
                 if (reason.isPresent()) { event.setReason(reason.get()); event.setCancelled(true); }
             });
         }
+        // Muted players are stopped before anything they type reaches any chat channel.
+        com.hexvane.eterniamod.chat.ChatGate.install(sender -> bootstrap.service.activeMute(sender).map(mute -> mute.permanent()
+            ? Message.translation("eternia_moderation.mute.blockedPermanent")
+            : Message.translation("eternia_moderation.mute.blocked").param("time", TimeWords.between(Instant.now(), mute.until()))));
         bootstrap.worker.scheduleWithFixedDelay(bootstrap::sweep, SWEEP_SECONDS, SWEEP_SECONDS, TimeUnit.SECONDS);
         active = bootstrap;
         plugin.getLogger().atInfo().log("Moderation ready: ban ladder %s", ladder.steps().stream().map(BanDuration::compact).toList());

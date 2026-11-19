@@ -31,7 +31,7 @@ public final class HousingInventory {
     public static void openCards(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
         var cards=new ArrayList<IllustratedMenuPage.Card>();
         Owner personal=Owner.player(player.getUuid());
-        cards.add(new IllustratedMenuPage.Card("YOUR HOUSE STYLES","Browse your homes. Stand on your personal plot to place one.",ContentImages.path("eternia:house/hub_house",false),"House styles",(r,s)->houses(plugin,r,s,player,personal)));
+        cards.add(new IllustratedMenuPage.Card("YOUR HOUSE STYLES","Browse your homes. Stand on your personal plot to place one.",ContentImages.path("eternia:house/log_cabin",false),"House styles",(r,s)->houses(plugin,r,s,player,personal)));
         cards.add(new IllustratedMenuPage.Card("YOUR DECORATIONS","Furniture, garden treasures and packed belongings for your own plot.",ContentImages.path("eternia:prop/potion_shelf",false),"Decorations",(r,s)->props(plugin,r,s,player,personal)));
         var membership=plugin.getServices().guilds().membership(player.getUuid()).orElse(null);
         if(membership!=null){

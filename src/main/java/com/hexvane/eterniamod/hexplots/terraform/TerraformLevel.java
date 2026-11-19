@@ -114,6 +114,18 @@ public final class TerraformLevel {
         return near.stream().mapToInt(Integer::intValue).toArray();
     }
 
+    /**
+     * Road columns ({x, z, surface y}) that can really be road: protected columns also cover plaza buildings (the Hub castle's walls and
+     * roofs), whose top block is far above the ground. Columns more than {@code rise} above the median of the land being
+     * shaped are left out. With no known ground every height is kept.
+     */
+    public static java.util.List<int[]> roadNearGround(java.util.List<int[]> roads, int[] ground, int rise) {
+        int middle = median(ground);
+        if (roads == null) return java.util.List.of();
+        if (middle == UNKNOWN) return roads;
+        return roads.stream().filter(c -> c[2] <= middle + rise).toList();
+    }
+
     /** True when some cell of {@code a} shares a side with a cell of {@code b} (or is in it). */
     public static boolean touches(Set<HexCoord> a, Set<HexCoord> b) {
         for (HexCoord cell : b) {

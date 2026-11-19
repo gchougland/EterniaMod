@@ -11,7 +11,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 class HexClaimRulesTest {
-    private static final HexLattice L = HexLattice.DEFAULT;
+    private static final HexLattice L = com.hexvane.eterniamod.hexplots.TestLattices.CLASSIC;
     /** An east/west road through the body of row 0: cells (0..3, 0) become street. */
     private static final List<PlotRect> ROAD = List.of(new PlotRect(0, 15, 128, 5));
     private static final HexCoord NORTH = new HexCoord(1, -1), SOUTH = new HexCoord(0, 1), FAR = new HexCoord(0, 3);

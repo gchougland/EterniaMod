@@ -35,7 +35,7 @@ public final class EterniaSetupCommand extends AbstractPlayerCommand {
     }
     private static final class Action extends AbstractPlayerCommand {
         private final String action;private final RequiredArg<String> value;
-        Action(String name){super(name,"Eternia setup "+name);action=name;setPermissionGroups("hytale:WorldEditor");value=switch(name){case "world"->withRequiredArg("role","hub-housing, hub, housing or adventure",ArgTypes.STRING);case "corner"->withRequiredArg("number","1 or 2 at the current player position",ArgTypes.STRING);case "road","portal","remove"->withRequiredArg("name","Stable lowercase area name",ArgTypes.STRING);case "lattice"->withRequiredArg("mode","show, here, origin, hex or rect",ArgTypes.STRING);default->null;};}
+        Action(String name){super(name,"Eternia setup "+name);action=name;setPermissionGroups("hytale:WorldEditor");value=switch(name){case "world"->withRequiredArg("role","hub-housing, hub, housing or adventure",ArgTypes.STRING);case "corner"->withRequiredArg("number","1 or 2 at the current player position",ArgTypes.STRING);case "road","portal","remove"->withRequiredArg("name","Stable lowercase area name",ArgTypes.STRING);case "lattice"->withRequiredArg("mode","show, here, origin, size, hex or rect",ArgTypes.STRING);default->null;};}
         @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world) {
             try{
                 SetupAccess.require(player.getUuid());var plugin=EterniaModPlugin.get();

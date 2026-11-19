@@ -18,11 +18,13 @@ public final class EterniaAdminCommand extends AbstractCommandCollection {
     public EterniaAdminCommand(){
         super("admin","Eternia administration");setPermissionGroups("hytale:WorldEditor");
         addSubCommand(new CurrencyGrantCommand(CurrencyGrantService.Currency.CROWNS));addSubCommand(new CurrencyGrantCommand(CurrencyGrantService.Currency.COINS));
-        addSubCommand(new Status());addSubCommand(new Reload());addSubCommand(new Inspect());addSubCommand(new Recover());addSubCommand(new Grant());addSubCommand(new EterniaSetupCommand());addSubCommand(new RoadTool());addSubCommand(new WipePlots());addSubCommand(new HubBuildCommand());addSubCommand(new TownCommand());addSubCommand(new TerraformCommand());
+        addSubCommand(new Status());addSubCommand(new Reload());addSubCommand(new Inspect());addSubCommand(new Recover());addSubCommand(new Grant());addSubCommand(new EterniaSetupCommand());addSubCommand(new RoadTool());addSubCommand(new WipePlots());addSubCommand(new HubBuildCommand("hytale:WorldEditor"));addSubCommand(new TownCommand());addSubCommand(new TerraformCommand());
         com.hexvane.eterniamod.moderation.ModerationCommands.addTo(this);
         addSubCommand(new com.hexvane.eterniamod.stats.StatsAdminCommand());
         addSubCommand(new com.hexvane.eterniamod.production.StationAdminCommand());
         addSubCommand(new Give());
+        addSubCommand(new Catalog());
+        addSubCommand(new com.hexvane.eterniamod.worldborder.WorldBorderCommand());
         addSubCommand(new PlaytestCommand());
     }
     /** Opens the give screen: pick a player by name and press Give. The typed form is {@code grant}. */
@@ -30,20 +32,26 @@ public final class EterniaAdminCommand extends AbstractCommandCollection {
         Give(){super("give","Give houses, decorations, stations and collection items to a player by name");setPermissionGroups("hytale:WorldEditor");}
         @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){GrantPage.open(ref,store,player);}
     }
+    /** Opens the starter and shop screen: which houses and decorations are free at the start and which are sold. */
+    private static final class Catalog extends AbstractPlayerCommand {
+        Catalog(){super("catalog","Choose which houses and decorations are free at the start and which are sold for Crowns");setPermissionGroups("hytale:WorldEditor");}
+        @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){CatalogManagerPage.open(ref,store,player);}
+    }
     private static final class RoadTool extends AbstractPlayerCommand {
         RoadTool(){super("roadtool","Get the held spline Road Designer");setPermissionGroups("hytale:WorldEditor");}
         @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){com.hexvane.eterniamod.pathtool.SplineRoadTool.give(ref,store,player);}
     }
-    /** Test worlds: removes every plot in this world, saved and placed, so its plot shape can change. Old blocks stay. */
+    /** Test worlds: packs what stands on every plot, puts the ground back, then removes the plots so the plot shape can change. */
     private static final class WipePlots extends AbstractPlayerCommand {
         WipePlots(){super("wipeplots","Remove every plot in this world (test worlds only)");setPermissionGroups("hytale:WorldEditor");}
         @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world){
             var p=EterniaModPlugin.get();if(p==null)return;
-            var manager=com.hexvane.eterniamod.hub.EterniaWorldRegistries.getOrCreateHubPlotManager(world,p);
-            int placed=0;for(var plot:manager.listPlots())if(manager.removePlot(plot.getPlotId()))placed++;
-            manager.saveIfDirty();
-            int saved=p.getServices().housing().wipeWorld(world.getName());
-            player.sendMessage(Message.raw("Removed "+Math.max(placed,saved)+" plot(s) from "+world.getName()+". You can now change its plot shape."));
+            player.sendMessage(Message.raw("Clearing every plot in "+world.getName()+"..."));
+            com.hexvane.eterniamod.housing.PlotWipe.wipe(p,world).whenComplete((done,failure)->{
+                if(failure!=null){p.getLogger().atWarning().withCause(failure).log("Wipe of %s did not finish",world.getName());player.sendMessage(Message.raw("The wipe stopped partway: "+failure.getMessage()+". Run it again to finish."));return;}
+                player.sendMessage(Message.raw("Removed "+done.plots()+" plot(s) from "+world.getName()+". Packed "+done.packed()+" placed thing(s) back to their owners and restored the ground of "+done.grounds()+" plot(s). You can now change its plot shape."));
+                for(var problem:done.problems().stream().limit(5).toList())player.sendMessage(Message.raw(problem));
+            });
         }
     }
     private static final class Status extends CommandBase {

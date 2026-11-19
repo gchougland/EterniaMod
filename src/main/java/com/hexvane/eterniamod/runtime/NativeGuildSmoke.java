@@ -62,7 +62,7 @@ final class NativeGuildSmoke {
         var memberPlot = manager.getPlot(memberProperty);
         check(memberPlot != null && guild.id().equals(memberPlot.getAttachedGuildUuid()),
             "Personal fixture plot must be attached to this guild");
-        var house = placeHouse(plugin, world, memberPlot, architect, "hub_house", new Vector3i(112, 1, 20));
+        var house = placeHouse(plugin, world, memberPlot, architect, "log_cabin", new Vector3i(112, 1, 20));
         stage = stage(plugin, "attached member plot and native personal house committed", stage);
 
         String content = "eternia:prop/potion_shelf";
@@ -140,7 +140,7 @@ final class NativeGuildSmoke {
             "Guild entities must remain absent from both the vacated and restored player plots");
         var restoredHouse = services.provenance().find(house.instanceId()).orElseThrow();
         check(restoredHouse.state().equals("PLACED") && restoredHouse.owner().equals(memberOwner)
-                && restoredHouse.sourceReference().equals("unlock:eternia:house/hub_house"),
+                && restoredHouse.sourceReference().equals("unlock:eternia:house/log_cabin"),
             "Restoration must preserve the player's house instance and original unlock source");
         var houseAfter = snapshots.load(new SnapshotFiles.Saved(restoredHouse.nativeData().get("after"),
             restoredHouse.nativeData().get("afterHash")));

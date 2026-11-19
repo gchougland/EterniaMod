@@ -1,0 +1,223 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Tavern_Planter"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "name": "Plant_Flower_Bushy_Red"
+    }
+  ],
+  "fluids": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Grass_Cave_Short"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5774116516113281,
+            "Y": 1.1127700805664062,
+            "Z": 0.3938558101654053
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.02991107665002346,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "m0WrntOnSyuP0FeY9Qai3g==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Grass_Cave_Short",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Grass_Cave_Short"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3147315979003906,
+            "Y": 1.1765289306640625,
+            "Z": 0.5330108404159546
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.02991107665002346,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "sjBvvhGXT9ut6O1vadtxPg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Grass_Cave_Short",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Grass_Cave_Short"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4023017883300781,
+            "Y": 1.1304855346679688,
+            "Z": 0.3803146481513977
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.6799891591072083,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "unqiroNHQfePT2gN0NYTIg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Grass_Cave_Short",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Grass_Cave_Short"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.6857490539550781,
+            "Y": 1.1198577880859375,
+            "Z": 0.5250532627105713
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.02991107665002346,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "k4tnBTP5RyuMc5W9+8wpBg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Grass_Cave_Short",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,1207 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 1,
+  "anchorZ": 0,
+  "blocks": [],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Bench"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.042354583740234375,
+            "Y": 1.37799072265625,
+            "Z": 2.9253082275390625
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.008993618190288544,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Wp2L74XEPhe14QeMgj6nOg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.8999999761581421
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Bench",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Flower_Common_Pink2"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4836235046386719,
+            "Y": 1.9879226684570312,
+            "Z": 1.3675289154052734
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.08684103935956955,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "TWbPb8N0N3a/1czRmimV8w==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.20000000298023224
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Flower_Common_Pink2",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Gray_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.33541107177734375,
+            "Y": 1.017547607421875,
+            "Z": 1.3712654113769531
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -3.1109323501586914,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "SsbVsihoMl2u5oTfn0V5IA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Gray_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Wood_Darkwood_Beam"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.3864212036132812,
+            "Y": 1.7461013793945312,
+            "Z": 2.858367919921875
+          },
+          "Rotation": {
+            "Pitch": 0.07430227100849152,
+            "Yaw": 1.5744563341140747,
+            "Roll": 1.620035171508789
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "qyhSNFVPOC6OdHLkkq03Mw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Wood_Darkwood_Beam",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Cyan_Stairs"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.9788970947265625,
+            "Y": 1.694793701171875,
+            "Z": 2.8837528228759766
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.02474057488143444,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "YsbnZUJePraVTqLYPog2AQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Cyan_Stairs",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Chair"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.8332366943359375,
+            "Y": 1.410003662109375,
+            "Z": 0.26201629638671875
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -2.471369981765747,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "PXP8WmyGOLWmnLER8eI5tQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.8999999761581421
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Chair",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Gray_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4590911865234375,
+            "Y": 1.01165771484375,
+            "Z": 2.373929977416992
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -3.1109323501586914,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "rxQf6HXUMFunkkzBASFvuQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Gray_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Wood_Darkwood_Beam"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.3773231506347656,
+            "Y": 1.699798583984375,
+            "Z": 2.892110824584961
+          },
+          "Rotation": {
+            "Pitch": 0.07430227100849152,
+            "Yaw": 1.5744563341140747,
+            "Roll": 1.620035171508789
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "iwo9sg8LOYSPrWhkZujtnw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Wood_Darkwood_Beam",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Gray_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.4492607116699219,
+            "Y": 1.0101776123046875,
+            "Z": 1.3065357208251953
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -3.1109323501586914,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "WGkv/Xw/Ow2f2FueKDj9Eg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Gray_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Gray_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.3188209533691406,
+            "Y": 1.0119247436523438,
+            "Z": 1.9016571044921875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -3.1109323501586914,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "shjOQO0sOneRXAYXAd/llw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Gray_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Table"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.17151641845703125,
+            "Y": 1.3468704223632812,
+            "Z": 1.5058422088623047
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5857967138290405,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "EyH8IBbNPVqymzLNgRDXDw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Table",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Gray_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.4492301940917969,
+            "Y": 1.0063018798828125,
+            "Z": 1.782644271850586
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -3.1109323501586914,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "DmvTXXiHOPWqr9FbdwmFZw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Gray_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Cyan_Stairs"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.030261993408203125,
+            "Y": 1.6847381591796875,
+            "Z": 2.902568817138672
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.02474057488143444,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "1C+LPxFnMkidDjaIaW7tWA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Cyan_Stairs",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Gray_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.18906021118164062,
+            "Y": 1.002716064453125,
+            "Z": 0.8795623779296875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -3.1109323501586914,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "cmJBhXTJNhuUEJigEuOSRg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Gray_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Flower_Tall_Blue"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3687629699707031,
+            "Y": 1.8694000244140625,
+            "Z": 1.1992111206054688
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.8921348452568054,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Or6AtSHsNimYreUmxPBvKQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Flower_Tall_Blue",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Cyan_Stairs"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.2947998046875,
+            "Y": 1.689544677734375,
+            "Z": 2.8976917266845703
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.02474057488143444,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "nqJo2FwoMqaImMcMoQQn5g==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Cyan_Stairs",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Human_Ruins_Pot_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4917945861816406,
+            "Y": 1.8921966552734375,
+            "Z": 1.2306995391845703
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 3.074493646621704,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Pq2xNvtgNquOVCBQBiir/Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.49999991059303284
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Human_Ruins_Pot_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Wood_Darkwood_Beam"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.6144027709960938,
+            "Y": 1.7065811157226562,
+            "Z": -0.25315093994140625
+          },
+          "Rotation": {
+            "Pitch": 0.07430316507816315,
+            "Yaw": 0.4631226360797882,
+            "Roll": 1.6200356483459473
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "zG4k7IfhOeOl5kDcryrKeA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Wood_Darkwood_Beam",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Chair"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.8530616760253906,
+            "Y": 1.47998046875,
+            "Z": 0.040225982666015625
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.1222586631774902,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "ZoZkAN4JNui3W1fApkW19w==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.8999999761581421
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Chair",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Wood_Darkwood_Beam"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.42430877685546875,
+            "Y": 1.7177810668945312,
+            "Z": 0.07546234130859375
+          },
+          "Rotation": {
+            "Pitch": 0.07430250942707062,
+            "Yaw": 2.263099193572998,
+            "Roll": 1.620036005973816
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "N2DIuH1rMvW4i0YX/yvW3g==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Wood_Darkwood_Beam",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Gray_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.3181686401367188,
+            "Y": 1.0032577514648438,
+            "Z": 0.36940765380859375
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -3.1109323501586914,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "eZmFO90aPberH+KYbNCJ1g==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Gray_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Cyan_Stairs"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.8206367492675781,
+            "Y": 1.7269363403320312,
+            "Z": 0.0561981201171875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.125472068786621,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "kIXX9NblNfCWpnjG9EBNZw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Cyan_Stairs",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Cyan_Stairs"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.8039970397949219,
+            "Y": 1.6641693115234375,
+            "Z": 0.2825164794921875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -2.468010902404785,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "+uq5gD4DP8Oisn6DnyHdJA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Cyan_Stairs",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Gray_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.46848297119140625,
+            "Y": 1.0038604736328125,
+            "Z": 0.9345550537109375
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -3.1109323501586914,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "m8+852njMCS+BSk9yJt+qQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Gray_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Gray_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3809928894042969,
+            "Y": 1.0024185180664062,
+            "Z": 0.2811851501464844
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -3.1109323501586914,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "P1+t4ndXPyqbMjVpvrpBdg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Gray_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Flower_Orchid_Orange"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.6208343505859375,
+            "Y": 2.081512451171875,
+            "Z": 1.1498832702636719
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -2.8324975967407227,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "ZRy8GyMyPBC0KKhOhwgpKA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.30588188767433167
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Flower_Orchid_Orange",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

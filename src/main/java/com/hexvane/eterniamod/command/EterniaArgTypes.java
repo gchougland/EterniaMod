@@ -54,7 +54,7 @@ public final class EterniaArgTypes {
         new SingleArgumentType<>(
             "eterniamod_commands.commands.eternia.args.buildingId.name",
             "eterniamod_commands.commands.eternia.args.buildingId.usage",
-            "hub_house"
+            "log_cabin"
         ) {
             @Override
             public String parse(@Nonnull String input, @Nonnull ParseResult parseResult) {

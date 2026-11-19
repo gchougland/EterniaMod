@@ -264,4 +264,27 @@ class ModerationServiceTest {
         assertTrue(ModerationCommands.isLadderWord("auto"));
         assertFalse(ModerationCommands.isLadderWord("griefing"));
     }
+
+    @Test void aTimedMuteEndsByItselfAndCanBeLifted() {
+        var mute = service.mute(player, "Shouter", staff, BanDuration.parse("30m").orElseThrow(), "spam");
+        assertFalse(mute.permanent());
+        assertTrue(service.activeMute(player).isPresent());
+        clock.advance(java.time.Duration.ofMinutes(29));
+        assertTrue(service.activeMute(player).isPresent());
+        clock.advance(java.time.Duration.ofMinutes(2));
+        assertTrue(service.activeMute(player).isEmpty(), "the mute ran out");
+        assertTrue(service.unmute(player).isEmpty(), "nothing left to lift");
+        service.mute(player, "Shouter", staff, BanDuration.PERMANENT, "");
+        clock.advance(java.time.Duration.ofDays(400));
+        assertTrue(service.activeMute(player).orElseThrow().permanent(), "a permanent mute lasts until lifted");
+        assertTrue(service.unmute(player).isPresent());
+        assertTrue(service.activeMute(player).isEmpty());
+        assertThrows(IllegalArgumentException.class, () -> service.mute(staff.id(), "Warden", staff, BanDuration.PERMANENT, ""), "no muting yourself");
+    }
+
+    @Test void muteTextShips() throws Exception {
+        var lang = java.nio.file.Files.readString(java.nio.file.Path.of("src/main/resources/Server/Languages/en-US/eternia_moderation.lang"));
+        for (String key : List.of("kick.done", "kick.notOnline", "kick.notice", "kick.noticeReason", "mute.done", "mute.donePermanent", "mute.blocked", "mute.blockedPermanent", "unmute.done", "unmute.notMuted"))
+            assertTrue(lang.lines().anyMatch(line -> line.startsWith(key + " = ")), key);
+    }
 }

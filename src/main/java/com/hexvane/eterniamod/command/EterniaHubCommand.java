@@ -17,7 +17,8 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 public final class EterniaHubCommand extends AbstractPlayerCommand {
     public EterniaHubCommand() {
         super("hub", "Return to the Eternia Hub");
-        setPermissionGroups("hytale:Adventurer");
+        // Every rank: players, and staff groups that do not inherit from Adventurer.
+        setPermissionGroups("hytale:Adventurer", com.hexvane.eterniamod.ranks.RankPermissions.MOD_GROUP, com.hexvane.eterniamod.ranks.RankPermissions.BUILDER_GROUP);
     }
 
     @Override

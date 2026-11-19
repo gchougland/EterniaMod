@@ -96,7 +96,7 @@ class BatchedStoreTest {
         var snapshot=PremiumShopSnapshot.load(services,actor);
         assertEquals(40,snapshot.items().size());assertEquals(Set.of("eternia:store/title_0"),snapshot.owned());
         assertEquals(1,counted.transactions);
-        assertEquals(2,counted.scans,"Catalog and grants each load once, not once per item");
+        assertEquals(3,counted.scans,"Catalog, store listings and grants each load once, not once per item");
         assertEquals(1,counted.finds,"One Crown balance lookup");
         services.ownership().grant(new OwnershipService.GrantRequest("second",Owner.player(actor),"eternia:title/1",OwnershipService.Kind.UNLOCK,1,null));
         assertEquals(2,PremiumShopSnapshot.load(services,actor).owned().size(),"A new page must see new grants");

@@ -9,10 +9,17 @@
 - Each adventure world now keeps its own inventory and memories. Whatever you carry and remember in the Hub and the housing worlds stays there, and you pick up your adventure gear and memories again when you return to that world.
 - Type /hub to go back to the Hub from anywhere.
 - Titles now come with a colour. Your title and name show in that colour in chat and above your head.
+- Ranks: Admin, Mod, Builder, Streamer, Founder, Wanderer, Starborn, Celestial, Cosmic and Eternal. Each comes with a coloured title you can wear from your Collection.
+- Moderators can now kick players and mute them in chat, for a set time or until unmuted.
+- Builders can turn on building in housing worlds as well as the Hub.
 - The name above a player's head now shows their title on a small line above it and their guild underneath. Turn on Display Combat Text in the game's settings to see them.
 - Everyone who plays the alpha test earns the Alpha Tester title, and keeps it when the beta starts.
 - Playtesters get free starting Crowns and Coins the first time they join, to try everything out.
 - Admins can give houses, decorations, stations and collection items from a menu with `/e admin give`. Type a player's name or pick someone online, then press Give.
+- Three new starter homes: the Darkwood Cabin, the Lightwood Cabin and the Log Cabin. Every player gets all three free.
+- 17 new decorations, from cozy kitchens and bookshelves to wall axes and a welcome mat.
+- Worlds can have a border that players cannot walk past, shown as a glowing force field when you come near it. Admins set it per world with `/e admin border set` followed by how far it reaches from the centre.
+- Admins can choose which houses and decorations every player gets free, and which are sold in the Crown store and for how much, with `/e admin catalog`.
 - Eternia has its own chat. Press the walk key to open it, pick a channel with the tabs along the top, and add emotes from the smiley button or by typing a name between colons, like :heart:. New messages pop up for a few seconds while it is closed.
 - New plots are levelled for you. A freshly claimed hexagon is flattened to the height of the road beside it, and every hexagon you add later matches the rest of your plot. A guild's estate and its members' plots share one height. The edges either blend gently into the land around them or rise as a neat hexagon step. Trees, bushes, wild wheat, berry bushes, flowers and rubble are cleared while grass stays, on any kind of ground. A tree cut by your plot is removed whole, so no pieces are left floating beside it. Crops growing on farmland are left alone. Buildings, roads and other plots are never changed.
 - You can sell a hexagon back from your plot and get its Crowns back. Open Home in your Journal and press Sell a hexagon. Decorations on it go back to your inventory, and its ground goes back to how it was.
@@ -31,10 +38,14 @@
 - Records now shows the Journal tabs along the top, like every other page.
 - Buying, selling and moving hexagons, and packing up a plot, are much faster.
 - Making a world the Hub in world setup now works when an old test world still held the Hub role, so Hub building can be turned on there.
+- The hexagon under your mouse on the claim map is outlined whole, instead of with its top and bottom cut off.
+- Wiping a test world's plots now also packs up the houses, decorations, stations and paths on them back to their owners and puts the land back to how it was when the plot was claimed.
 
 ### Changed
 
 - Extra hexagons cost 500 Crowns each instead of coins, and a plot can now grow to 10 hexagons.
+- Hexagons are bigger, so one hexagon holds a starter cabin with room to decorate around it. Plots that already exist keep their size.
+- The old placeholder house is gone.
 - Roads built with the Road Designer use half blocks where they step up one block, so walking up them is smooth.
 - Placing the Eternia town now lays one short road out of each gate, lined up with it, instead of the whole road grid. Grow the rest with `/e admin town roads grow`.
 - Houses and decorations in Collections have a Place button. Stand on your plot and press it to start placing.

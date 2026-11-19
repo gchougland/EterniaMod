@@ -57,6 +57,9 @@ public final class EterniaModPlugin extends JavaPlugin {
     public com.hexvane.eterniamod.runtime.RuntimeConfig getRuntimeConfig() { return runtime.config(); }
     public com.hexvane.eterniamod.runtime.EterniaRuntime getRuntime() { return runtime; }
     public com.hexvane.eterniamod.housing.NativeClaimCoordinator getClaims() { return claims; }
+    private com.hexvane.eterniamod.worldborder.WorldBorders worldBorders;
+    /** Each world's border, set with {@code /e admin border}. */
+    public com.hexvane.eterniamod.worldborder.WorldBorders getWorldBorders() { return worldBorders; }
     public com.hexvane.eterniamod.runtime.NativeTravelService getTravel() { return travel; }
     public com.hexvane.eterniamod.runtime.JoinSpawns getJoinSpawns() { return joinSpawns; }
     public com.hexvane.eterniamod.runtime.NativeMenuActions getMenuActions() { return menuActions; }
@@ -96,7 +99,13 @@ public final class EterniaModPlugin extends JavaPlugin {
             com.hexvane.eterniamod.runtime.RuntimeConfig.from(serverEnvironment));
         var playtest = com.hexvane.eterniamod.runtime.PlaytestSettings.from(serverEnvironment);
         runtime.setPlaytest(playtest);
+        com.hexvane.eterniamod.ranks.RankPermissions.install();
         getLogger().atInfo().log("Eternia %s", playtest);
+        // World borders: any world, one square each, kept beside the other settings.
+        worldBorders = new com.hexvane.eterniamod.worldborder.WorldBorders(dataDirectory.resolve("world-borders.json"));
+        try { worldBorders.load(); getLogger().atInfo().log("World borders: %s", worldBorders.all().keySet()); }
+        catch (java.io.IOException | RuntimeException failure) { getLogger().atSevere().withCause(failure).log("world-borders.json could not be read; no world has a border until it is fixed"); }
+        getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.worldborder.WorldBorderSystem(worldBorders));
         com.hexvane.eterniamod.seasonsales.SeasonSaleSync.sync(getServices(), dataDirectory, warning -> getLogger().atWarning().log("%s", warning));
         com.hexvane.eterniamod.hexplots.HexPlotSettings.install(EterniaModPlugin.class.getClassLoader());
         com.hexvane.eterniamod.hexplots.terraform.TerraformSettings.install(EterniaModPlugin.class.getClassLoader(), dataDirectory);
@@ -187,6 +196,7 @@ public final class EterniaModPlugin extends JavaPlugin {
     @Override
     protected void start() {
         com.hexvane.eterniamod.memories.MemoryBootstrap.start(this);
+        com.hexvane.eterniamod.ranks.RankPermissions.refresh();
         // After every built-in plugin's setup, so this /hub replaces the Creative Hub one instead of being replaced by it.
         getCommandRegistry().registerCommand(new com.hexvane.eterniamod.command.EterniaHubCommand());
         if (!getManifest().includesAssetPack()) {
@@ -209,17 +219,11 @@ public final class EterniaModPlugin extends JavaPlugin {
                 Universe.get().broadcastPacketNoCache(new RequestCommonAssetsRebuild());
             }
         }
-        Path housePrefab = PrefabResolveUtil.resolvePrefabPath("House.prefab.json");
         var catalogErrors=com.hexvane.eterniamod.catalog.CatalogAssetValidator.validateResolvedPrefabs(buildingCatalog,propCatalog);
         if(!catalogErrors.isEmpty())throw new IllegalStateException("Invalid Eternia catalog assets: "+String.join("; ",catalogErrors));
         com.hexvane.eterniamod.customization.HousingWorldPolicy.refreshAll().whenComplete((unused,failure)->{
             if(failure!=null)getLogger().atSevere().withCause(failure).log("Housing world policy could not be applied to an already loaded world");
         });
-        if (housePrefab == null) {
-            getLogger().atWarning().log("House.prefab.json was not resolved — building placement preview will not work");
-        } else {
-            getLogger().atInfo().log("Resolved House.prefab.json at %s", housePrefab);
-        }
     }
 
     /**

@@ -1,0 +1,2818 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 1,
+  "anchorZ": 0,
+  "blocks": [],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3832664489746094,
+            "Y": 1.0073471069335938,
+            "Z": 0.33920860290527344
+          },
+          "Rotation": {
+            "Pitch": -1.398916244506836,
+            "Yaw": -1.575527548789978,
+            "Roll": -3.136932134628296
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "BlIIjBXEMtma5VNNsyE+aA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4133186340332031,
+            "Y": 1.0015411376953125,
+            "Z": -0.13778114318847656
+          },
+          "Rotation": {
+            "Pitch": -1.5664563179016113,
+            "Yaw": 1.5708149671554565,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "oirgxUipNSab472JOEFaNA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.45288658142089844,
+            "Y": 1.013763427734375,
+            "Z": 0.4956474304199219
+          },
+          "Rotation": {
+            "Pitch": -1.4972411394119263,
+            "Yaw": -1.5508185625076294,
+            "Roll": 1.195282220840454
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "xXcrqT6CPiOc5N1oPJ1t6w==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5140247344970703,
+            "Y": 1.0065994262695312,
+            "Z": 0.4992218017578125
+          },
+          "Rotation": {
+            "Pitch": -1.398906946182251,
+            "Yaw": -2.808825731277466,
+            "Roll": -3.1369290351867676
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "3/MlG6JaNG2WBAb6fMJvmQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3042430877685547,
+            "Y": 1.0518798828125,
+            "Z": 0.9322700500488281
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "sWy0YrbUNPahRePuVtlIOQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4627876281738281,
+            "Y": 1.0245742797851562,
+            "Z": 0.11023902893066406
+          },
+          "Rotation": {
+            "Pitch": -1.3989288806915283,
+            "Yaw": -2.7383828163146973,
+            "Roll": -3.1369264125823975
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "GrVdGo9zNVKfMFpvrDnxJA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3262481689453125,
+            "Y": 1.047576904296875,
+            "Z": 0.9307422637939453
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "yM3A6DbgMxaWvOijWeBRkw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.2435131072998047,
+            "Y": 1.046356201171875,
+            "Z": 0.9127101898193359
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "ibQ4YyK3M8KEr6kV9DpKiQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.6170024871826172,
+            "Y": 1.0612640380859375,
+            "Z": 1.2113304138183594
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "ni2yPLIoOguQ5H/dPWtLkA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.49176597595214844,
+            "Y": 1.0241622924804688,
+            "Z": 0.15765380859375
+          },
+          "Rotation": {
+            "Pitch": -1.3988991975784302,
+            "Yaw": 2.6175546646118164,
+            "Roll": -3.1369335651397705
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "LCGBgjyDO3OT1m7JdHhsng==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.456695556640625,
+            "Y": 0.9936981201171875,
+            "Z": 0.7496109008789062
+          },
+          "Rotation": {
+            "Pitch": -1.398916244506836,
+            "Yaw": -1.575527548789978,
+            "Roll": -3.136932134628296
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "uR0RWld7P5mpPvSiVTmB9Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5891017913818359,
+            "Y": 1.0599365234375,
+            "Z": 1.2454452514648438
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "TE/eid3mMR+hjc4mvriVRA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3740520477294922,
+            "Y": 0.9996414184570312,
+            "Z": -0.030424118041992188
+          },
+          "Rotation": {
+            "Pitch": -1.3989288806915283,
+            "Yaw": -0.5372432470321655,
+            "Roll": -3.1369237899780273
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "cHocOaonPq+es1T+HUnCcA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5028228759765625,
+            "Y": 1.0322952270507812,
+            "Z": 0.08203315734863281
+          },
+          "Rotation": {
+            "Pitch": -1.3988991975784302,
+            "Yaw": 2.6175546646118164,
+            "Roll": -3.1369335651397705
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "wKs3RpzBNJSmCG9Nnaao2Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.43904876708984375,
+            "Y": 1.060089111328125,
+            "Z": 1.1005744934082031
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "T2K4XPCXNm2aPD8tscqjeg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4879131317138672,
+            "Y": 1.0008468627929688,
+            "Z": 0.36386871337890625
+          },
+          "Rotation": {
+            "Pitch": -1.398906946182251,
+            "Yaw": -2.808825731277466,
+            "Roll": -3.1369290351867676
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "rWGXdp8COuyGy4tPYQJitA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.6164836883544922,
+            "Y": 1.0599365234375,
+            "Z": 1.0217456817626953
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "VzK1yK11PhGYebNo1gI8fQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.42683982849121094,
+            "Y": 1.0619277954101562,
+            "Z": 1.2744197845458984
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "5b70l4YsPQ2wAVto+ovGxw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5190200805664062,
+            "Y": 1.0043411254882812,
+            "Z": 0.33643150329589844
+          },
+          "Rotation": {
+            "Pitch": -1.398916244506836,
+            "Yaw": -1.575527548789978,
+            "Roll": -3.136932134628296
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "jp62yaO/ObGISGxMnE0wOQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4716911315917969,
+            "Y": 1.0288772583007812,
+            "Z": 0.053035736083984375
+          },
+          "Rotation": {
+            "Pitch": -1.3989288806915283,
+            "Yaw": -2.7383828163146973,
+            "Roll": -3.1369264125823975
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "mirBljZSNKmB1jsVex+0DQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.16519737243652344,
+            "Y": 1.0527801513671875,
+            "Z": 1.304605484008789
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "WZydKptZNGi0R4gwvReu+A==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.42314720153808594,
+            "Y": 1.0007247924804688,
+            "Z": -0.09353446960449219
+          },
+          "Rotation": {
+            "Pitch": -1.398916244506836,
+            "Yaw": -1.575527548789978,
+            "Roll": -3.136932134628296
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "ypxVO2qDPgK//T98LADRbw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.1753978729248047,
+            "Y": 1.044403076171875,
+            "Z": 0.9122123718261719
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "fjVGEI18PQSuFKl1zZcIFg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5288333892822266,
+            "Y": 1.026611328125,
+            "Z": 0.6396236419677734
+          },
+          "Rotation": {
+            "Pitch": -1.553402066230774,
+            "Yaw": -0.6714317202568054,
+            "Roll": 0.7381452918052673
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "/BGqf+tYOYWGP9H2Wwn6nw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3401336669921875,
+            "Y": 1.0154800415039062,
+            "Z": 0.6487865447998047
+          },
+          "Rotation": {
+            "Pitch": -1.553402066230774,
+            "Yaw": -0.6714317202568054,
+            "Roll": 0.7381452918052673
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "H365vEyDOAays+P4DsFtVQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4321479797363281,
+            "Y": 1.0091705322265625,
+            "Z": 0.6454486846923828
+          },
+          "Rotation": {
+            "Pitch": -1.553402066230774,
+            "Yaw": -0.6714317202568054,
+            "Roll": 0.7381452918052673
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "XueNhNyLMe2VRtqpKgLthg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4128532409667969,
+            "Y": 0.9659652709960938,
+            "Z": 0.8482284545898438
+          },
+          "Rotation": {
+            "Pitch": -1.3989288806915283,
+            "Yaw": -0.5372432470321655,
+            "Roll": -3.1369237899780273
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "eVaZajGdPwO0QxloVSkevQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.24190902709960938,
+            "Y": 1.0104293823242188,
+            "Z": 0.6549301147460938
+          },
+          "Rotation": {
+            "Pitch": -1.553402066230774,
+            "Yaw": -0.6714317202568054,
+            "Roll": 0.7381452918052673
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "pnpUDWdvN4+lQYBEbOFGLg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.16831207275390625,
+            "Y": 0.9979476928710938,
+            "Z": 0.6604194641113281
+          },
+          "Rotation": {
+            "Pitch": -1.553402066230774,
+            "Yaw": -0.6714317202568054,
+            "Roll": 0.7381452918052673
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "mu8SWxSRMqi2SZWxt/1AyA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.22154998779296875,
+            "Y": 1.0557861328125,
+            "Z": 1.304952621459961
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "O0yxsbWLOwC1Gy16c4A7Hg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5356578826904297,
+            "Y": 1.0606002807617188,
+            "Z": 1.2438201904296875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "i/XMg2EfMm6pDs8NGBngfw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5610294342041016,
+            "Y": 1.0579299926757812,
+            "Z": 1.0594863891601562
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "z/bS4C9TMKaE7TYE417zQw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3311195373535156,
+            "Y": 0.999786376953125,
+            "Z": -0.10569381713867188
+          },
+          "Rotation": {
+            "Pitch": -1.398916244506836,
+            "Yaw": -1.575527548789978,
+            "Roll": -3.136932134628296
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "V30Aj0lWP06v5Hswc35IIw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4923820495605469,
+            "Y": 1.0022201538085938,
+            "Z": -0.08081245422363281
+          },
+          "Rotation": {
+            "Pitch": -1.398916244506836,
+            "Yaw": -1.575527548789978,
+            "Roll": -3.136932134628296
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Hb/3ZjBjOxCv+m6rmS0rcA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4283905029296875,
+            "Y": 1.0549545288085938,
+            "Z": 1.1272659301757812
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "wPEjUBMsPWOJfyy3iqylBg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.49651336669921875,
+            "Y": 1.0612640380859375,
+            "Z": 1.2745494842529297
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "ab+v4d4uMqK24/77hZlGeQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4250335693359375,
+            "Y": 1.0152359008789062,
+            "Z": 0.2537059783935547
+          },
+          "Rotation": {
+            "Pitch": -1.4972419738769531,
+            "Yaw": -0.7551632523536682,
+            "Roll": 1.1952859163284302
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "O4x6lgkyMpKdj7V+zNeMvA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5033512115478516,
+            "Y": 1.007720947265625,
+            "Z": 0.2946147918701172
+          },
+          "Rotation": {
+            "Pitch": -1.3988957405090332,
+            "Yaw": -0.4874957501888275,
+            "Roll": -3.1369338035583496
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "2XnD8kBnOg6tX3iEPKtG2w==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5017070770263672,
+            "Y": 1.0173263549804688,
+            "Z": 0.18633270263671875
+          },
+          "Rotation": {
+            "Pitch": -1.3989044427871704,
+            "Yaw": 3.0871152877807617,
+            "Roll": -3.1369330883026123
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "FcJsZ4soP+KjtLRbIMz9/A==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5057697296142578,
+            "Y": 0.9942550659179688,
+            "Z": 0.8259391784667969
+          },
+          "Rotation": {
+            "Pitch": -1.39887273311615,
+            "Yaw": -3.1075172424316406,
+            "Roll": -3.136932611465454
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "lutg3UdaPWa7TegUfQc7jQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5343723297119141,
+            "Y": 1.000579833984375,
+            "Z": 0.8065166473388672
+          },
+          "Rotation": {
+            "Pitch": -1.398916244506836,
+            "Yaw": -1.575527548789978,
+            "Roll": -3.136932134628296
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "VVO1tdL/Mj2D6QPlBZRnGw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4627571105957031,
+            "Y": 1.0028533935546875,
+            "Z": 0.7796974182128906
+          },
+          "Rotation": {
+            "Pitch": -1.398916244506836,
+            "Yaw": -1.575527548789978,
+            "Roll": -3.136932134628296
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "7XNegFwvMeCArcteGQUQyg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.36818885803222656,
+            "Y": 0.970916748046875,
+            "Z": 0.77276611328125
+          },
+          "Rotation": {
+            "Pitch": -1.398916244506836,
+            "Yaw": -1.575527548789978,
+            "Roll": -3.136932134628296
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "feM0T5qIPeGhD6moVpaAvA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.38735198974609375,
+            "Y": 1.005828857421875,
+            "Z": 0.48224830627441406
+          },
+          "Rotation": {
+            "Pitch": -1.398916244506836,
+            "Yaw": -1.575527548789978,
+            "Roll": -3.136932134628296
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "hhiZu5pENEu/IqPpg9yrJw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4396076202392578,
+            "Y": 1.0063552856445312,
+            "Z": 0.3551807403564453
+          },
+          "Rotation": {
+            "Pitch": -1.4972411394119263,
+            "Yaw": -1.5508185625076294,
+            "Roll": 1.195282220840454
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "lBZ6Ce3MPYCmDrOwhLIQMQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.304840087890625,
+            "Y": 1.0632553100585938,
+            "Z": 1.2759342193603516
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "66b6ah/iNReW99j2Bt/T4Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5123119354248047,
+            "Y": 1.0586318969726562,
+            "Z": 1.129739761352539
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "E3TqH1aVO8yhEAJ5dLnIrQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4102497100830078,
+            "Y": 1.0512542724609375,
+            "Z": 0.9312286376953125
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "8vnzjcOIPuWpXa5uDxRD9w==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4382305145263672,
+            "Y": 1.0154647827148438,
+            "Z": 0.18641281127929688
+          },
+          "Rotation": {
+            "Pitch": -1.3989044427871704,
+            "Yaw": 3.0871152877807617,
+            "Roll": -3.1369330883026123
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Pf+IrXwzPratENpp4r/RGw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5339603424072266,
+            "Y": 0.9989242553710938,
+            "Z": 0.47563934326171875
+          },
+          "Rotation": {
+            "Pitch": -1.398916244506836,
+            "Yaw": -1.575527548789978,
+            "Roll": -3.136932134628296
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "7/WQVIvGNb2e2ixaJYxrGA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5250167846679688,
+            "Y": 1.0593643188476562,
+            "Z": 1.0935516357421875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "LAbhepDGOKiyEKGP20aO6Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.46566009521484375,
+            "Y": 1.0494155883789062,
+            "Z": 0.9306716918945312
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "r4ybm4+dNTeBkDi8rrG8wg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5603904724121094,
+            "Y": 1.0592727661132812,
+            "Z": 1.1475944519042969
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "kHhrTA0sM9a8hw38p6C57Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5508098602294922,
+            "Y": 1.0499954223632812,
+            "Z": 0.9453144073486328
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "9gdFqs0mNNmIUP0AtT7hOg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Cyan_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.44051551818847656,
+            "Y": 1.0058135986328125,
+            "Z": 1.0992965698242188
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.006168103776872158,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "lvmau1sNMsuDr0AYsadR/Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.8999999761581421
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Cyan_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4725933074951172,
+            "Y": 1.0100021362304688,
+            "Z": -0.048980712890625
+          },
+          "Rotation": {
+            "Pitch": -1.39887273311615,
+            "Yaw": -3.1075172424316406,
+            "Roll": -3.136932611465454
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "zu9Z/PaPN0SCS5yzv1NNBQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3571624755859375,
+            "Y": 1.062591552734375,
+            "Z": 1.2756156921386719
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "XvOYpG+ZNNWHZxnVyeKTxg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Cyan_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4321727752685547,
+            "Y": 1.0054779052734375,
+            "Z": 0.20916748046875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.006168103776872158,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "SC1O8pMfMim7xtrmdsM5Gg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.8999999761581421
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Cyan_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5968532562255859,
+            "Y": 1.05792236328125,
+            "Z": 0.9888134002685547
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5716050863265991,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "aFXVmh6aPDG/6T9qm/VWEg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.40487098693847656,
+            "Y": 1.0026626586914062,
+            "Z": -0.13908958435058594
+          },
+          "Rotation": {
+            "Pitch": -1.398882508277893,
+            "Yaw": 0.3719738721847534,
+            "Roll": -3.1369378566741943
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "2moeD+zbO3+WHcpD9WSLzQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Cloth_Block_Wool_Pink_Light_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4352588653564453,
+            "Y": 0.9977569580078125,
+            "Z": 0.7499351501464844
+          },
+          "Rotation": {
+            "Pitch": -1.3988957405090332,
+            "Yaw": 0.18623529374599457,
+            "Roll": -3.1369402408599854
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "jsHMhrfYPkOtjuppGJ9jaQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Cloth_Block_Wool_Pink_Light_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

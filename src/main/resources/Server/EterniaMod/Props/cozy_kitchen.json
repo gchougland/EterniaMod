@@ -1,0 +1,11 @@
+{
+  "id": "cozy_kitchen",
+  "displayName": "Cozy Kitchen",
+  "prefabPath": "EterniaMod/Props/Pack_Cozy_Kitchen.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

@@ -1,0 +1,254 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": -1,
+      "name": "Furniture_Village_Platform",
+      "rotation": 1
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Tavern_Planter"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "name": "Plant_Flower_Orchid_Red"
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "name": "Furniture_Village_Platform",
+      "rotation": 1
+    }
+  ],
+  "fluids": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": -1,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "name": "Empty",
+      "level": 0
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 0.3762798309326172,
+            "Y": 0.39073944091796875,
+            "Z": 1.7177371978759766
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.889702558517456,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "yACDHurhTKKVu6Ihu5xNIw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Utility_Leather_Medium_Backpack",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.8897051811218262,
+            "Roll": 0.0
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Popcorn"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.6184234619140625,
+            "Y": 1.3229217529296875,
+            "Z": 1.6040661334991455
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.5760095715522766,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "M4B1rGUnRnOqODzSAXKfRg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5080000162124634
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Popcorn",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Grass_Sharp"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4740486145019531,
+            "Y": 1.1807098388671875,
+            "Z": 0.46941375732421875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.7926048040390015,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Tv4VX0gPR9uKoeJdI7U7kQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.49999991059303284
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Grass_Sharp",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Grass_Sharp"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.47405052185058594,
+            "Y": 1.1807174682617188,
+            "Z": 0.46941375732421875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.8146460652351379,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "t9+trMUeRAW8tZSTM30JJw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.49999991059303284
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Grass_Sharp",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

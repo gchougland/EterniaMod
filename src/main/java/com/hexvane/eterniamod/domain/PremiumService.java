@@ -55,7 +55,21 @@ public final class PremiumService extends DomainSupport {
         adjust(tx,UUID.fromString(r.get().value("player")),Math.negateExact(r.get().number("amount")));save(tx,r.get(),"reversed",true,"reversedAt",clock.instant());
     }
     public void register(Item item){store.transaction(tx->{var data=encode(item);String key=item.id()+":"+item.revision();var r=tx.find("premium_item",key);if(r.isPresent())require(r.get().fields().equals(data),CONFLICT,"Crown item revisions are immutable");else tx.save("premium_item",key,0,data);return null;});}
-    public List<Item> items(){return store.transaction(tx->{var latest=new TreeMap<String,Item>();for(var r:tx.scan("premium_item")){Item i=decode(r);latest.merge(i.id(),i,(a,b)->a.revision()>b.revision()?a:b);}return List.copyOf(latest.values());});}
+    /** Takes an item off the Crown store, or puts it back. Owners keep what they bought. */
+    public void setListed(String itemId,boolean listed){content(itemId);store.transaction(tx->{
+        var r=tx.find("premium_listing",itemId);String value=listed?"listed":"retired";
+        if(r.isEmpty())tx.save("premium_listing",itemId,0,fields("state",value));
+        else if(!r.get().value("state").equals(value))tx.save("premium_listing",itemId,r.get().revision(),changed(r.get(),"state",value));
+        return null;});}
+    private static boolean retired(TransactionalStore.Transaction tx,String itemId){return tx.find("premium_listing",itemId).map(r->r.value("state").equals("retired")).orElse(false);}
+    /** The latest revision of every item on sale, leaving out items taken off the store. */
+    public List<Item> listed(){return store.transaction(tx->{var retired=retiredIn(tx);var out=new ArrayList<Item>();for(Item i:latestIn(tx))if(!retired.contains(i.id()))out.add(i);return List.copyOf(out);});}
+    /** Ids of the items taken off the store. */
+    public Set<String> retiredIds(){return store.transaction(PremiumService::retiredIn);}
+    private static Set<String> retiredIn(TransactionalStore.Transaction tx){var out=new TreeSet<String>();for(var r:tx.scan("premium_listing"))if(r.value("state").equals("retired"))out.add(r.key());return Collections.unmodifiableSet(out);}
+    /** The latest revision of every item ever registered, including items taken off the store. */
+    public List<Item> items(){return store.transaction(PremiumService::latestIn);}
+    private static List<Item> latestIn(TransactionalStore.Transaction tx){var latest=new TreeMap<String,Item>();for(var r:tx.scan("premium_item")){Item i=decode(r);latest.merge(i.id(),i,(a,b)->a.revision()>b.revision()?a:b);}return List.copyOf(latest.values());}
     public boolean alreadyOwned(UUID player,Item item){return store.transaction(tx->owned(tx,player,item));}
     private boolean owned(TransactionalStore.Transaction tx,UUID player,Item item){return item.benefits().stream().allMatch(b->b.kind()!=OwnershipService.Kind.QUANTITY&&ownership.ownsIn(tx,Owner.player(player),b.contentId()));}
     /** Expected price/revision comes from the server-rendered confirmation; never from a client price field. */
@@ -67,6 +81,7 @@ public final class PremiumService extends DomainSupport {
             Item item=decode(row(tx,"premium_item",itemId+":"+revision));
             require(tx.scan("premium_item").stream().map(PremiumService::decode).noneMatch(i->i.id().equals(itemId)&&i.revision()>revision),CONFLICT,"This item has changed. Reopen the store to review its current price.");
             require(item.price()==expectedPrice,CONFLICT,"This price has changed. Reopen the store.");
+            require(!retired(tx,itemId),INVALID_STATE,"This item is no longer in the store.");
             require(!owned(tx,player,item),INVALID_STATE,"You already own this item.");
             // Season items sell only inside their season's window. Retries of an earlier order returned above.
             var season=seasonOf(item);

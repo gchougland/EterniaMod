@@ -1,0 +1,11 @@
+{
+  "id": "cozy_counter",
+  "displayName": "Cozy Counter",
+  "prefabPath": "EterniaMod/Props/Pack_Cozy_Counter.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

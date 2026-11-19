@@ -78,33 +78,99 @@ public final class PlotTerraformer {
     /**
      * Shapes {@code request} with the current settings, then runs {@code commit} on the world thread. The shaping and the
      * commit run as one job, so two claims never shape the same land at once. {@code commit} runs even when shaping is
-     * off or fails; the returned future completes with its result.
+     * off or fails; the returned future completes with its result. The shaped land is always kept.
      */
     public <T> CompletableFuture<T> shapeThen(World world, Request request, Supplier<Boolean> stillWanted, java.util.function.Function<Outcome, T> commit) {
-        return shapeThen(world, request, TerraformSettings.current(), stillWanted, commit);
+        return shapeThen(world, request, TerraformSettings.current(), stillWanted, commit, null);
     }
 
     public <T> CompletableFuture<T> shapeThen(World world, Request request, TerraformSettings settings, Supplier<Boolean> stillWanted, java.util.function.Function<Outcome, T> commit) {
+        return shapeThen(world, request, settings, stillWanted, commit, null);
+    }
+
+    /** Like the others, but when {@code kept} says the commit did not go through, the land is put back as it was. */
+    public <T> CompletableFuture<T> shapeThen(World world, Request request, Supplier<Boolean> stillWanted, java.util.function.Function<Outcome, T> commit, java.util.function.Predicate<T> kept) {
+        return shapeThen(world, request, TerraformSettings.current(), stillWanted, commit, kept);
+    }
+
+    /** A commit that cannot run yet (its chunks are still being saved) and has changed nothing; it is tried again shortly. */
+    public static final class RetryLater extends RuntimeException {
+        public RetryLater(Throwable cause) { super(cause.getMessage(), cause); }
+    }
+
+    public <T> CompletableFuture<T> shapeThen(World world, Request request, TerraformSettings settings, Supplier<Boolean> stillWanted,
+            java.util.function.Function<Outcome, T> commit, java.util.function.Predicate<T> kept) {
         return CompletableFuture.supplyAsync(() -> {
             Outcome outcome;
-            try { outcome = shape(world, request, settings, stillWanted); }
+            // A copy of the land is only taken when the commit may not go through ({@code kept} given).
+            NativeSnapshotStore.Snapshot[] undo = kept == null ? null : new NativeSnapshotStore.Snapshot[1];
+            try { outcome = shape(world, request, settings, stillWanted, undo); }
             catch (RuntimeException failure) {
                 plugin.getLogger().atWarning().withCause(failure).log("Plot terraform for %s did not finish; the claim goes ahead on the land as it is", request.cells());
                 outcome = Outcome.none(settings.mode(), "failed: " + failure.getMessage());
             }
             Outcome done = outcome;
-            return CompletableFuture.supplyAsync(() -> commit.apply(done), world).join();
+            NativeSnapshotStore.Snapshot copy = undo == null ? null : undo[0];
+            try {
+                T result;
+                try { result = commitWhenReady(world, () -> commit.apply(done)); }
+                catch (RuntimeException failure) { putBack(world, request, copy); throw failure; }
+                if (kept != null && !kept.test(result)) putBack(world, request, copy);
+                return result;
+            } finally { forget(copy); }
         }, JOBS);
     }
 
+    /** Runs the commit on the world thread; a commit that asks to wait ({@link RetryLater}) is tried again, for up to a minute. */
+    private static <T> T commitWhenReady(World world, Supplier<T> commit) {
+        for (int attempt = 1; ; attempt++) {
+            try { return CompletableFuture.supplyAsync(commit, world).join(); }
+            catch (java.util.concurrent.CompletionException e) {
+                if (!(e.getCause() instanceof RetryLater) || attempt >= COMMIT_RETRIES) throw e;
+            }
+            sleep(COMMIT_WAIT_MS);
+        }
+    }
+
+    /** Puts the land back from the copy taken just before shaping, when the claim did not go through. Background thread. */
+    private void putBack(World world, Request request, NativeSnapshotStore.Snapshot undo) {
+        if (undo == null) return;
+        try {
+            var store = com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions.snapshots(plugin);
+            on(world, () -> { store.apply(world, undo, undo.bounds().origin()); return null; });
+            plugin.getLogger().atInfo().log("Plot terraform for %s was put back, because the claim did not go through", request.cells());
+        } catch (RuntimeException failure) {
+            plugin.getLogger().atWarning().withCause(failure).log("Plot terraform for %s could not be put back after the claim did not go through", request.cells());
+        }
+    }
+
+    /** Deletes the land copy once the job is over, whatever happened. */
+    private void forget(NativeSnapshotStore.Snapshot copy) {
+        if (copy == null) return;
+        try {
+            var store = com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions.snapshots(plugin);
+            java.nio.file.Files.deleteIfExists(store.files().resolve(copy.file().reference()));
+        } catch (java.io.IOException | RuntimeException failure) {
+            plugin.getLogger().atWarning().withCause(failure).log("A terraform land copy could not be deleted");
+        }
+    }
+
+    private static void sleep(int ms) {
+        try { Thread.sleep(ms); }
+        catch (InterruptedException stop) { Thread.currentThread().interrupt(); throw new java.util.concurrent.CompletionException(stop); }
+    }
+
+    /** How long a commit or the land copy waits for chunks still being saved: up to a minute, a quarter second at a time. */
+    static final int COMMIT_RETRIES = 240, COMMIT_WAIT_MS = 250;
+
     /** Background thread. Reads, plans and writes; never commits anything. */
-    Outcome shape(World world, Request request, TerraformSettings settings, Supplier<Boolean> stillWanted) {
+    Outcome shape(World world, Request request, TerraformSettings settings, Supplier<Boolean> stillWanted, NativeSnapshotStore.Snapshot[] undo) {
         long started = System.nanoTime();
-        try { return shapeTimed(world, request, settings, stillWanted); }
+        try { return shapeTimed(world, request, settings, stillWanted, undo); }
         finally { plugin.getLogger().atInfo().log("Housing terraform took %d ms", (System.nanoTime() - started) / 1_000_000); }
     }
 
-    private Outcome shapeTimed(World world, Request request, TerraformSettings settings, Supplier<Boolean> stillWanted) {
+    private Outcome shapeTimed(World world, Request request, TerraformSettings settings, Supplier<Boolean> stillWanted, NativeSnapshotStore.Snapshot[] undo) {
         if (settings.mode() == TerraformSettings.Mode.OFF) return Outcome.none(settings.mode(), "off");
         if (request.cells().isEmpty()) return Outcome.none(settings.mode(), "no hexagons");
         boolean smooth = settings.mode() == TerraformSettings.Mode.SMOOTH;
@@ -142,6 +208,7 @@ public final class PlotTerraformer {
         // Columns that change height, and claimed columns with plants or rubble to clear even where the height stays.
         for (int i = 0; i < grid.size(); i++) if (target[i] != TerraformField.UNKNOWN && (target[i] != grid.natural[i] || grid.role[i] == TerraformField.OWN && survey.growth[i])) changing.add(i);
         if (!on(world, stillWanted)) return Outcome.none(settings.mode(), "no longer wanted");
+        if (undo != null) undo[0] = copyBeforeWriting(world, grid, target, changing);
         for (var slice : slices(changing, settings.maxColumnsPerTick())) on(world, () -> {
             var sel = new BlockSelection();
             sel.setPosition(0, 0, 0);
@@ -158,6 +225,40 @@ public final class PlotTerraformer {
             settings.mode().displayName(), counts[0], level, source, request.cells(), counts[1]);
         if (felled > 0) plugin.getLogger().atInfo().log("Plot terraform removed %d tree blocks left hanging outside %s", felled, request.cells());
         return new Outcome(settings.mode(), level, source, counts[0], counts[1], "");
+    }
+
+    /**
+     * A copy of the land about to change (the shaped box, from just under the lowest changed ground to above the plants on
+     * the highest), taken once its chunks are idle, so a claim that does not go through can put it back. Trees felled
+     * outside the box are not in it. Background thread.
+     */
+    private NativeSnapshotStore.Snapshot copyBeforeWriting(World world, TerraformField.Grid grid, int[] target, List<Integer> changing) {
+        if (changing.isEmpty()) return null;
+        int low = Integer.MAX_VALUE, high = Integer.MIN_VALUE;
+        for (int i : changing) {
+            int natural = grid.natural[i] == TerraformField.UNKNOWN ? target[i] : grid.natural[i];
+            low = Math.min(low, Math.min(natural, target[i]));
+            high = Math.max(high, Math.max(natural, target[i]));
+        }
+        var bounds = new NativeSnapshotStore.Bounds(grid.minX, Math.max(ChunkUtil.MIN_Y, low - 2), grid.minZ,
+            grid.minX + grid.width, Math.min(NativeSnapshotStore.MAX_Y, high + GROWTH + 1), grid.minZ + grid.depth);
+        var store = com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions.snapshots(plugin);
+        for (int attempt = 1; ; attempt++) {
+            try {
+                return on(world, () -> {
+                    try { return store.save("terraform-undo-" + UUID.randomUUID() + ".json", bounds, store.capture(world, bounds, Set.of(), false, false)); }
+                    catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
+                });
+            } catch (RuntimeException e) {
+                Throwable cause = e instanceof java.util.concurrent.CompletionException && e.getCause() != null ? e.getCause() : e;
+                if (!(cause instanceof NativeSnapshotStore.StorageBusy) || attempt >= COMMIT_RETRIES) {
+                    // Levelling still goes ahead; only the putting back after a failed claim is lost.
+                    plugin.getLogger().atWarning().withCause(cause).log("Plot terraform could not copy the land first; it cannot be put back if the claim fails");
+                    return null;
+                }
+            }
+            sleep(COMMIT_WAIT_MS);
+        }
     }
 
     /** How far from the shaped land the rest of a cleared tree, and any tree joined to it, is followed. */
@@ -298,25 +399,35 @@ public final class PlotTerraformer {
         var g = survey.grid;
         List<Integer> ground = new ArrayList<>();
         Map<UUID, List<Integer>> plotGround = new HashMap<>();
-        int[] roads = TerraformLevel.nearestRoad(roadColumns, request.lattice(), request.cells(), ROAD_BAND);
         for (int i = 0; i < g.size(); i++) {
             if (g.role[i] == TerraformField.OWN) ground.add(g.natural[i]);
             UUID plot = survey.plot[i];
             if (plot != null && g.natural[i] != TerraformLevel.UNKNOWN) plotGround.computeIfAbsent(plot, k -> new ArrayList<>()).add(g.natural[i]);
         }
+        List<int[]> realRoad = TerraformLevel.roadNearGround(roadColumns, ints(ground), ROAD_RISE);
+        int[] roads = TerraformLevel.nearestRoad(realRoad, request.lattice(), request.cells(), ROAD_BAND);
         context.decision = TerraformLevel.decide(context.group, request.cells(), request.growing(), context.plots,
             p -> TerraformLevel.median(ints(plotGround.get(p.plotId()))), roads, ints(ground));
         return context.decision.level();
     }
 
+    /** A road column more than this many blocks above the land's own ground is a building on a plaza, not road. */
+    static final int ROAD_RISE = 8;
+
     /** Road columns further than this past the nearest one are not part of the road the land faces. */
     static final int ROAD_BAND = 4;
 
-    /** {x, z, surface y} of every road or plaza column in {@code street}. World thread. */
+    /**
+     * {x, z, surface y} of every road column in {@code street}. Portal and plaza areas are left out: they hold buildings
+     * (the Hub castle), whose roofs are no guide to the road's height. World thread.
+     */
     static List<int[]> roadColumns(World world, EterniaModPlugin plugin, Request request, HexCoord street) {
         List<int[]> out = new ArrayList<>();
+        List<PlotRect> plazas = plugin.getInfrastructure().world(request.world()).map(p -> p.portals()).orElse(List.of());
         for (var span : request.lattice().spans(street)) for (int x = span.fromX(); x < span.toX(); x++) {
             if (!plugin.getInfrastructure().protectedColumn(request.world(), x, span.z())) continue;
+            int column = x, row = span.z();
+            if (plazas.stream().anyMatch(r -> r.contains(column, row))) continue;
             int y = Column.solidTop(world, x, span.z());
             if (y != TerraformLevel.UNKNOWN) out.add(new int[] {x, span.z(), y});
         }

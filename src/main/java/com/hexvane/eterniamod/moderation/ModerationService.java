@@ -178,6 +178,64 @@ public final class ModerationService {
             .toList());
     }
 
+    // ---- chat mutes ------------------------------------------------------------------------------------------------
+
+    static final String MUTES = "moderation_mute";
+
+    /** A chat mute as it stands. {@code until} is null for a permanent mute. */
+    public record Mute(UUID player, String name, String reason, Actor by, Instant at, Instant until) {
+        public boolean permanent() { return until == null; }
+        public boolean endedBy(Instant now) { return until != null && !until.isAfter(now); }
+    }
+
+    /** Mutes a player in every chat channel, replacing any mute they already had. */
+    public Mute mute(UUID player, String name, Actor by, BanDuration length, String reason) {
+        Objects.requireNonNull(player);
+        Objects.requireNonNull(by);
+        Objects.requireNonNull(length);
+        if (player.equals(by.id())) throw new IllegalArgumentException("Staff cannot mute themselves");
+        return store.transaction(tx -> {
+            Instant now = clock.instant();
+            var fields = new TreeMap<String, String>();
+            fields.put("name", clean(name, 64));
+            fields.put("reason", clean(reason, MAX_REASON));
+            fields.put("by", by.id() == null ? "" : by.id().toString());
+            fields.put("byName", by.name());
+            fields.put("at", now.toString());
+            fields.put("until", length.permanent() ? "" : now.plus(length.length()).toString());
+            var existing = tx.find(MUTES, player.toString());
+            return mute(tx.save(MUTES, player.toString(), existing.map(TransactionalStore.Row::revision).orElse(0L), fields));
+        });
+    }
+
+    /** Lifts a mute. Empty when the player was not muted (or their mute had already run out). */
+    public Optional<Mute> unmute(UUID player) {
+        return store.transaction(tx -> {
+            var row = tx.find(MUTES, player.toString());
+            if (row.isEmpty()) return Optional.<Mute>empty();
+            tx.delete(MUTES, row.get().key(), row.get().revision());
+            var mute = mute(row.get());
+            return mute.endedBy(clock.instant()) ? Optional.<Mute>empty() : Optional.of(mute);
+        });
+    }
+
+    /** The mute stopping this player from chatting right now, if any. A mute that has run out is cleared. */
+    public Optional<Mute> activeMute(UUID player) {
+        return store.transaction(tx -> {
+            var row = tx.find(MUTES, player.toString());
+            if (row.isEmpty()) return Optional.<Mute>empty();
+            var mute = mute(row.get());
+            if (!mute.endedBy(clock.instant())) return Optional.of(mute);
+            tx.delete(MUTES, row.get().key(), row.get().revision());
+            return Optional.<Mute>empty();
+        });
+    }
+
+    private static Mute mute(TransactionalStore.Row row) {
+        return new Mute(UUID.fromString(row.key()), row.value("name"), row.value("reason"), actor(row), Instant.parse(row.value("at")),
+            row.value("until").isEmpty() ? null : Instant.parse(row.value("until")));
+    }
+
     private TransactionalStore.Row expireIfDue(TransactionalStore.Transaction tx, TransactionalStore.Row row, Instant now) {
         if (State.valueOf(row.value("state")) != State.ACTIVE) return row;
         Ban ban = ban(row);

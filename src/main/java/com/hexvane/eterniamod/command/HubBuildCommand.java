@@ -12,12 +12,13 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 final class HubBuildCommand extends AbstractPlayerCommand {
     private final Boolean mode;
-    HubBuildCommand() {
-        super("build","Toggle your Hub building mode"); mode=null;setPermissionGroups("hytale:WorldEditor");
-        addSubCommand(new HubBuildCommand("on",true));addSubCommand(new HubBuildCommand("off",false));
+    /** Under {@code /e admin} for world editors, and at {@code /e build} for the Builder rank too. */
+    HubBuildCommand(String... groups) {
+        super("build","Turn building on or off in the Hub and housing worlds"); mode=null;setPermissionGroups(groups);
+        addSubCommand(new HubBuildCommand("on",true,groups));addSubCommand(new HubBuildCommand("off",false,groups));
     }
-    private HubBuildCommand(String name,boolean mode) {
-        super(name,"Turn your Hub building mode "+name);this.mode=mode;setPermissionGroups("hytale:WorldEditor");
+    private HubBuildCommand(String name,boolean mode,String... groups) {
+        super(name,"Turn your building mode "+name);this.mode=mode;setPermissionGroups(groups);
     }
     @Override protected void execute(CommandContext context,Store<EntityStore> store,Ref<EntityStore> ref,PlayerRef player,World world) {
         try {
@@ -25,8 +26,8 @@ final class HubBuildCommand extends AbstractPlayerCommand {
             boolean enabled=mode!=null?mode:!HubBuildMode.enabled(plugin,player.getUuid(),world);
             HubBuildMode.set(plugin,player,world,enabled);
             context.sendMessage(Message.raw(enabled
-                ?"Hub building is on for you. Place and break blocks on unclaimed ground and in public plazas. Homes, roads and service areas stay protected. Leaving the world or signing out turns it off."
-                :"Hub building is off for you."));
+                ?"Building is on for you. Place and break blocks on unclaimed ground and in public plazas. Homes, roads and service areas stay protected. Leaving the world or signing out turns it off."
+                :"Building is off for you."));
         } catch (RuntimeException failure) { context.sendMessage(Message.raw(failure.getMessage())); }
     }
 }

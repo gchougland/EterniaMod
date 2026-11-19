@@ -40,6 +40,14 @@ public final class ClaimMapScreen {
     /** Appends the page and one transparent hexagon button per brick. The layout is the same for every window. */
     public static void open(UICommandBuilder c, ClaimMapGeometry g) {
         c.append(DOCUMENT);
+        // The picture's height follows the world's cell shape (770 for 32 block cells, 780 for 44 block cells).
+        var stage = new Anchor();
+        stage.setWidth(Value.of(g.pixelWidth()));
+        stage.setHeight(Value.of(g.pixelHeight()));
+        c.setObject("#MapStage.Anchor", stage);
+        var marks = new Anchor();
+        marks.setHeight(Value.of(g.pixelHeight()));
+        c.setObject("#Marks.Anchor", marks);
         for (ClaimMapGeometry.Slot slot : g.slots()) {
             c.append(CELLS, switch (slot.kind()) {
                 case FULL -> "EterniaMod/ClaimMapCell.ui";
@@ -152,6 +160,12 @@ public final class ClaimMapScreen {
     }
 
     private static Message orBlank(Message m) { return m != null ? m : Message.raw(""); }
+
+    /** Shows the whole hexagon outline under the mouse at {@code mark}, or hides it for null. */
+    public static void hover(UICommandBuilder c, Mark mark) {
+        c.set("#Hover.Visible", mark != null);
+        if (mark != null) c.setObject("#Hover.Anchor", markBox(mark));
+    }
 
     private static Anchor markBox(Mark m) {
         return box((int) Math.round(m.x() - MARK_WIDTH / 2.0), (int) Math.round(m.y() - MARK_HEIGHT / 2.0), MARK_WIDTH, MARK_HEIGHT);

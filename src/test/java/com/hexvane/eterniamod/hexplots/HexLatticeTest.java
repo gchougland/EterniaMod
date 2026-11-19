@@ -11,7 +11,17 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class HexLatticeTest {
-    private static final HexLattice L = HexLattice.DEFAULT;
+    private static final HexLattice L = com.hexvane.eterniamod.hexplots.TestLattices.CLASSIC;
+
+    @Test void liveCellHoldsTheStarterCabins() {
+        HexLattice live = HexLattice.DEFAULT;
+        assertEquals(44, live.cellWidth());
+        assertEquals(11, live.tipDepth());
+        assertEquals(50, live.cellDepth());
+        assertEquals(39, live.rowPitch());
+        assertEquals(1716, live.cellArea());
+        assertEquals(live.cellArea(), live.spans(HexCoord.ORIGIN).stream().mapToInt(HexLattice.Span::length).sum());
+    }
 
     @Test void defaultCellDimensions() {
         assertEquals(32, L.cellWidth());

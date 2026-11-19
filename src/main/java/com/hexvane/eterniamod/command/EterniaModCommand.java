@@ -20,6 +20,9 @@ public final class EterniaModCommand extends AbstractCommandCollection {
         this.addSubCommand(new EterniaPlayCommand("shopreturn"));
         this.addSubCommand(new EterniaPlayCommand("worlds"));
         this.addSubCommand(new EterniaAdminCommand());
+        this.addSubCommand(new ModCommand());
+        this.addSubCommand(new com.hexvane.eterniamod.ranks.RankCommand());
+        this.addSubCommand(new HubBuildCommand("hytale:WorldEditor", com.hexvane.eterniamod.ranks.RankPermissions.BUILDER_GROUP));
         this.addSubCommand(new EterniaPartyCommand());
         this.addSubCommand(new EterniaGuildChatCommand());
         this.addSubCommand(new com.hexvane.eterniamod.chat.EterniaChatCommand());

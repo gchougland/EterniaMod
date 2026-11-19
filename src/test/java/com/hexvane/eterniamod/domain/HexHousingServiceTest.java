@@ -64,9 +64,9 @@ class HexHousingServiceTest {
         assertEquals(HousingService.State.CLAIMING, outcome.slot().state());
         var row = services.store().transaction(tx -> tx.find("housing_slot", Owner.player(mira).key())).orElseThrow();
         assertEquals("0:1", row.value("cells"));
-        assertEquals("hex:32:20:0:0", row.value("lattice"));
+        assertEquals("hex:44:28:0:0", row.value("lattice"));
         assertEquals(String.valueOf(L.minX(SOUTH)), row.value("minX"));
-        assertEquals("36", row.value("depth"));
+        assertEquals("50", row.value("depth"));
         var location = services.housing().location(Owner.player(mira)).orElseThrow();
         assertEquals(PlotCells.of(L, Set.of(SOUTH)), location.cells());
 

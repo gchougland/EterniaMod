@@ -28,28 +28,28 @@ class HexPlacementTest {
     }
 
     @Test void housesNeedTheirShapeOfHexagons() {
-        assertEquals(HexShape.SINGLE, HexPlacement.shapeFor(new PlotRect(0, 0, 14, 12)));
-        assertEquals(HexShape.TRIANGLE, HexPlacement.shapeFor(new PlotRect(0, 0, 22, 18)));
+        assertEquals(HexShape.SINGLE, HexPlacement.shapeFor(new PlotRect(0, 0, 24, 18)));
+        assertEquals(HexShape.TRIANGLE, HexPlacement.shapeFor(new PlotRect(0, 0, 34, 28)));
         assertEquals(HexShape.FLOWER, HexPlacement.shapeFor(new PlotRect(0, 0, 38, 38)));
         assertEquals(HexShape.FLOWER, HexPlacement.shapeFor(new PlotRect(0, 0, 60, 60)), "anything larger asks for the largest shape");
 
-        assertNull(HexPlacement.house(ONE, fit(ONE, 14), List.of(), SETBACK), "a cottage fits one hexagon");
-        assertEquals("hexHouseShape:3", HexPlacement.house(ONE, new PlotRect(0, 0, 22, 22), List.of(), SETBACK), "a manor never fits one hexagon");
-        assertNull(HexPlacement.house(MANOR, fit(MANOR, 22), List.of(), SETBACK), "a manor fits the triangle");
+        assertNull(HexPlacement.house(ONE, fit(ONE, 24), List.of(), SETBACK), "a cottage fits one hexagon");
+        assertEquals("hexHouseShape:3", HexPlacement.house(ONE, new PlotRect(0, 0, 34, 34), List.of(), SETBACK), "a manor never fits one hexagon");
+        assertNull(HexPlacement.house(MANOR, fit(MANOR, 34), List.of(), SETBACK), "a manor fits the triangle");
         assertEquals("hexHouseShape:7", HexPlacement.house(MANOR, new PlotRect(0, 0, 38, 38), List.of(), SETBACK));
         assertNull(HexPlacement.house(KEEP, fit(KEEP, 38), List.of(), SETBACK), "a keep fits the flower");
     }
 
     @Test void edgeSetbackIsMeasuredFromTheOuterBorderOnly() {
-        PlotRect centred = fit(ONE, 14);
+        PlotRect centred = fit(ONE, 24);
         assertNull(HexPlacement.structure(ONE, centred, List.of(), SETBACK));
-        PlotRect nudged = new PlotRect(centred.x() + 3, centred.z(), 14, 14);
+        PlotRect nudged = new PlotRect(centred.x() + 3, centred.z(), 24, 24);
         assertEquals("hexEdge:5", HexPlacement.structure(ONE, nudged, List.of(), SETBACK), "inside the hexagon but too close to its edge");
-        PlotRect out = new PlotRect(centred.x() + 20, centred.z(), 14, 14);
+        PlotRect out = new PlotRect(centred.x() + 30, centred.z(), 24, 24);
         assertEquals("outsidePlot", HexPlacement.structure(ONE, out, List.of(), SETBACK));
 
         // Across an inner cell edge of the same plot no setback applies: the manor straddles three cells.
-        PlotRect manor = fit(MANOR, 22);
+        PlotRect manor = fit(MANOR, 34);
         assertTrue(HexFit.cellsUnder(L, manor).size() > 1, "the manor stands on more than one hexagon");
         assertNull(HexPlacement.structure(MANOR, manor, List.of(), SETBACK));
     }

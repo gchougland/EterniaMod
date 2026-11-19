@@ -1,0 +1,11 @@
+{
+  "id": "plant_pot",
+  "displayName": "Plant Pot",
+  "prefabPath": "EterniaMod/Props/Pack_Plant_Pot_1.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

@@ -1,0 +1,4267 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 1,
+  "anchorY": 1,
+  "anchorZ": 0,
+  "blocks": [],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Bench_Furnace"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3512382507324219,
+            "Y": 1.34881591796875,
+            "Z": 2.672922134399414
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.8057804703712463,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "w7zkbXILPQ+d8esTriY9qg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Bench_Furnace",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Bench_Cooking"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.2825164794921875,
+            "Y": 1.466033935546875,
+            "Z": 0.7249011993408203
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5880281925201416,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "EVuncXVHPv60A478WXb8LQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.8999999761581421
+        },
+        "Item": {
+          "Item": {
+            "Id": "Bench_Cooking",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.14128494262695312,
+            "Y": 1.9318618774414062,
+            "Z": 0.1596660614013672
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "NiuSF/FNOU6CIaPfvTqKCw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Lobby_Wall_Poster_Small01"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4018898010253906,
+            "Y": 2.6952056884765625,
+            "Z": 0.039226531982421875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5752925872802734,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "vFQlE47DMRS3YxDYLaSwgw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.7999999523162842
+        },
+        "Item": {
+          "Item": {
+            "Id": "Lobby_Wall_Poster_Small01",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Ingredient_Flour"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.23328781127929688,
+            "Y": 2.117462158203125,
+            "Z": 0.07259559631347656
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.1852315664291382,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "vqXzbsCCMlqDWbF1NUa4Bg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.4000000059604645
+        },
+        "Item": {
+          "Item": {
+            "Id": "Ingredient_Flour",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5947799682617188,
+            "Y": 1.9224014282226562,
+            "Z": 0.1622772216796875
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "mDla136rPjWDUAbiDBNXPQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3154258728027344,
+            "Y": 1.9315109252929688,
+            "Z": 0.16103553771972656
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "4CarYMjfM/2ILuHj3+BpUA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5882911682128906,
+            "Y": 1.919891357421875,
+            "Z": -0.5831985473632812
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "xxo3C/YbMyadjRyIRZtvtQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.1159820556640625,
+            "Y": 1.9059066772460938,
+            "Z": -1.3155288696289062
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "7qmKkjHjP9WfDfjD1rvNrg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Cobble"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.26153564453125,
+            "Y": 1.4112625122070312,
+            "Z": -0.02684783935546875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5610684156417847,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "0dMQISxsOOi2+5Z88lhQiw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.7999999523162842
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Cobble",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.92919921875,
+            "Y": 1.8984603881835938,
+            "Z": -1.7707157135009766
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "95T7ZaVzMYG0c2LncunBdg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Cobble"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.2664947509765625,
+            "Y": 1.4128341674804688,
+            "Z": -0.7023162841796875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5610684156417847,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Q4/Vnma/MN2DQohFTO3xCg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.7999999523162842
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Cobble",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5902328491210938,
+            "Y": 1.9280014038085938,
+            "Z": -0.1200408935546875
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "DMXZohF4P3q/wMeV2M5DyA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.7117919921875,
+            "Y": 1.9111251831054688,
+            "Z": -1.2995738983154297
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "e/mk8VsNN6Kjwd/ypfkhfQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Ingredient_Salt"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.13034439086914062,
+            "Y": 3.2682418823242188,
+            "Z": -0.18858718872070312
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.0162630081176758,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "zYxrRGSeNwqGNpVvn8tUBA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.4400000274181366
+        },
+        "Item": {
+          "Item": {
+            "Id": "Ingredient_Salt",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.12993621826171875,
+            "Y": 1.9325485229492188,
+            "Z": -0.07925605773925781
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "U6eQdZ7ENw2R5JIIXrut+Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3320274353027344,
+            "Y": 1.9186630249023438,
+            "Z": -0.8371562957763672
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "J1OhnXguNEGfxVJhkqaUsg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Lumberjack_Shelf"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.2517890930175781,
+            "Y": 2.8413543701171875,
+            "Z": -0.2873821258544922
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5585393905639648,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "L6MokWlxOOKlEzQgpnpU8g==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5999999046325684
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Lumberjack_Shelf",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.6555290222167969,
+            "Y": 1.8995819091796875,
+            "Z": -1.7662925720214844
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "E0xb6EOJNb6t7mkr9ZApZg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Lumberjack_Shelf"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.24810791015625,
+            "Y": 2.84124755859375,
+            "Z": -0.7654476165771484
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5585393905639648,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Gj9aqbTkOJmlJh6Ye5hFZg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5999999046325684
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Lumberjack_Shelf",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.1760101318359375,
+            "Y": 1.9204864501953125,
+            "Z": -1.1419086456298828
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "EZ/la6pdOXmpTcAiXSb4Tw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Cobble"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.259765625,
+            "Y": 1.4081268310546875,
+            "Z": -1.4510536193847656
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5610684156417847,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "bPtvKlaUO8afIIeaNIglHQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.7999999523162842
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Cobble",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.31517791748046875,
+            "Y": 1.9300460815429688,
+            "Z": -0.13430404663085938
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "RsIrZcPqPua8gvAWNwvYZw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Cobble"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.9103431701660156,
+            "Y": 1.4072723388671875,
+            "Z": -1.4530620574951172
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5610684156417847,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Xgc1QvhkNJma1NdAaLDx/Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.7999999523162842
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Cobble",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rubble_Sandstone"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3786964416503906,
+            "Y": 1.9570388793945312,
+            "Z": -0.8336658477783203
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -2.0747060775756836,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "a2Gf9gq2NzKaqyNaDdZJaw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rubble_Sandstone",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.7445716857910156,
+            "Y": 1.903106689453125,
+            "Z": -1.5822067260742188
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "M7QfsuUcPI+ib18BbKXqrg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4440879821777344,
+            "Y": 1.90374755859375,
+            "Z": -1.5238533020019531
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "ttEawZxVMJC/a163alt39g==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5826911926269531,
+            "Y": 1.9077224731445312,
+            "Z": -0.9960060119628906
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "llJtqmopN9SdUVoT09pm2Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4126930236816406,
+            "Y": 1.9242782592773438,
+            "Z": -0.5834827423095703
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "UozEU1PgO4mQV77pdGd6Vg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.15684890747070312,
+            "Y": 1.9103240966796875,
+            "Z": -0.27235984802246094
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "3+LYvXjsOxS5luB3lscsaQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3292579650878906,
+            "Y": 1.92962646484375,
+            "Z": -0.28284645080566406
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "hHhzswgYPzKmKWYLf+pVcw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.8746757507324219,
+            "Y": 1.89434814453125,
+            "Z": -1.1159515380859375
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "IiZcQrAINF+pYTm7WZbavA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3537025451660156,
+            "Y": 1.9124984741210938,
+            "Z": -1.1186199188232422
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "lsJAZhk8PKig/cG5AtqIKg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.1180572509765625,
+            "Y": 1.8980865478515625,
+            "Z": -1.7615280151367188
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "QDCF7XbVPBeLZtMwTkcUMQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Ingredient_Spices"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.13524627685546875,
+            "Y": 3.3410873413085938,
+            "Z": -0.43366050720214844
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.1611018031835556,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "WfEo5Mz6NmKeFX9wtF4VuQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Ingredient_Spices",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.15684890747070312,
+            "Y": 1.9303054809570312,
+            "Z": -0.27235984802246094
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Pap39oPfPf6sApwu9ByXSg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5890731811523438,
+            "Y": 1.927490234375,
+            "Z": -0.28032684326171875
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "nBEUaTbBM021umfyquVsIQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Stool"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.7206459045410156,
+            "Y": 1.4399871826171875,
+            "Z": -2.420644760131836
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.5845906734466553,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "4y7shCLeNMqCgj77MZXNkA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Stool",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4127349853515625,
+            "Y": 1.9054794311523438,
+            "Z": -1.2817020416259766
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "tIuA5uZXOr+8bpROgUk6TQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.09616851806640625,
+            "Y": 1.91851806640625,
+            "Z": -0.8433570861816406
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "kZThWHKRPMem4Eu8/yjLVw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5860671997070312,
+            "Y": 1.9131698608398438,
+            "Z": -0.8378219604492188
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "O8bWmtGTN8+la+Bjxa5MKw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.3924713134765625,
+            "Y": 1.9016189575195312,
+            "Z": -1.7636489868164062
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "DMgwSVVqObq6C83kKY5ijg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.12192535400390625,
+            "Y": 1.9225616455078125,
+            "Z": -0.5772228240966797
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "X8rcE50zNLuKlD9lVc9VeA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.144439697265625,
+            "Y": 1.9061813354492188,
+            "Z": -1.5659351348876953
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "94HpYoAROXSgqxohNDRkFw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Lumberjack_Shelf"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.24224472045898438,
+            "Y": 2.8404769897460938,
+            "Z": -1.2455005645751953
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5585393905639648,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "apfSveWYPLis4xBF4n7gWw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5999999046325684
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Lumberjack_Shelf",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Kebab_Meat"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.346027374267578,
+            "Y": 2.1153717041015625,
+            "Z": -1.5471954345703125
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.8020541667938232,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "zD5DS0u7OnmxOOqAHE6e+Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3400000035762787
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Kebab_Meat",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Cobble"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.2732696533203125,
+            "Y": 1.4115142822265625,
+            "Z": -1.458984375
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5610684156417847,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "ub7yHT7uNTeQDdsREyfUig==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.7999999523162842
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Cobble",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.0806312561035156,
+            "Y": 1.8969879150390625,
+            "Z": -1.0917835235595703
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "wIYIvt0hOGe8Ugf1aW97JQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Cobble"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.68133544921875,
+            "Y": 1.410614013671875,
+            "Z": -1.4645328521728516
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5610684156417847,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "SAX1wFayNA2fyPpnYln1DA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.7999999523162842
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Cobble",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.2730026245117188,
+            "Y": 1.8935165405273438,
+            "Z": -1.7827949523925781
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "6BDkLLcbMUCdHqKeYlGMCA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.5914154052734375,
+            "Y": 1.9001312255859375,
+            "Z": -1.1892890930175781
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "f0OS4v6pMxqTWLt1sA3NSA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.5726318359375,
+            "Y": 1.8953323364257812,
+            "Z": -1.7799224853515625
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "7kGkxwsnNlSzZtF1Ps2lvQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Stool"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.004627227783203,
+            "Y": 1.422698974609375,
+            "Z": -2.459257125854492
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.080842971801758,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "L78bXFtYMp261G2t68fUwA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Stool",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Kebab_Meat"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.3751983642578125,
+            "Y": 2.1045913696289062,
+            "Z": -1.6600151062011719
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.27527132630348206,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "aR3+CKXCPKmDfbHfRMd9wQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3400000035762787
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Kebab_Meat",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.0415229797363281,
+            "Y": 1.89434814453125,
+            "Z": -1.56597900390625
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "g4MDI6TOOIesjGQKs3xNUg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.4389762878417969,
+            "Y": 1.9026412963867188,
+            "Z": -1.7786674499511719
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "CzSB3DuXM7eUiHgMtSk1Fw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.5853042602539062,
+            "Y": 1.9048385620117188,
+            "Z": -1.5183658599853516
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "k3PrCRSCM+2G6zg1HWXbOA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.7768440246582031,
+            "Y": 1.8976974487304688,
+            "Z": -1.1095409393310547
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "y5255y2aOJmL4cHrqeTrWA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.6803131103515625,
+            "Y": 1.8956146240234375,
+            "Z": -1.7756805419921875
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "WFp2/fPGNXWfKiiYhu0TvQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.9767723083496094,
+            "Y": 1.8990859985351562,
+            "Z": -1.777587890625
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "RefTWECtMw6gJ88ZmWXJVw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Vegetable_Cooked"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.02813720703125,
+            "Y": 2.1595535278320312,
+            "Z": -1.707916259765625
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -2.6552414894104004,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "1ou97E2GMCq22W7hS3XAtw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.4000000059604645
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Vegetable_Cooked",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Plate"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.234344482421875,
+            "Y": 2.243927001953125,
+            "Z": -1.5884742736816406
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.8507461547851562,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "ALk3XfdTPxOlnrDnxleMYA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Plate",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Salad_Berry"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.62237548828125,
+            "Y": 2.1195449829101562,
+            "Z": -1.5583534240722656
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.8091762065887451,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "KwZSakdnPACOm7jG+i6GQA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3400000035762787
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Salad_Berry",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.2295989990234375,
+            "Y": 1.900970458984375,
+            "Z": -1.7750835418701172
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "snPJAJzrPuSuNdH+QQnADg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.1709060668945312,
+            "Y": 1.8905563354492188,
+            "Z": -1.116708755493164
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "hy9t/2oDMiK2qMq6FjakHQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.3680038452148438,
+            "Y": 1.894866943359375,
+            "Z": -1.0873298645019531
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "15szlwK4PqeeqDaQ8l64Sw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Crop_Potato_Item"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.1470603942871094,
+            "Y": 2.06951904296875,
+            "Z": -1.3761959075927734
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.4779937267303467,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "WCJU+ephMJaPYraCQc9BqQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2935384213924408
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Crop_Potato_Item",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Kebab_Meat"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.2702674865722656,
+            "Y": 2.0778427124023438,
+            "Z": -1.5010128021240234
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.27527132630348206,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "CtKfbxKqP+utYk9Go5t7+Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3400000035762787
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Kebab_Meat",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.4714736938476562,
+            "Y": 1.8959426879882812,
+            "Z": -1.116250991821289
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "HDtZ2ijPOEm//QrK7eiH5g==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Crude_Candle"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.2744636535644531,
+            "Y": 2.8292694091796875,
+            "Z": 0.9559688568115234
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -2.845555067062378,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "HjdcKHBFO3G+vHNAzZJSIQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.4550573527812958
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Crude_Candle",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Fire"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.7983512878417969,
+            "Y": 1.70233154296875,
+            "Z": 3.012990951538086
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.2306958436965942,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "7d6kk6CoNiif87J1MfipUg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Fire",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Regen_Mana"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.1249847412109375,
+            "Y": 3.3276214599609375,
+            "Z": -1.3474197387695312
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.6145085096359253,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "RgpA1PBGNlqa8tZ1zoYjvA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Regen_Mana",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Mana_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.17075729370117188,
+            "Y": 3.2751922607421875,
+            "Z": -1.0561485290527344
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.08553081750869751,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "+aoZqKSJOW6j4piNd5o5VA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Mana_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Regen_Stamina_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.32324981689453125,
+            "Y": 3.1982421875,
+            "Z": -0.8797130584716797
+          },
+          "Rotation": {
+            "Pitch": 0.1382512003183365,
+            "Yaw": -3.141024351119995,
+            "Roll": 1.5749192237854004
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "cmjKX7YdMrC2BMUlAmUMWA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Regen_Stamina_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Health_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.09306716918945312,
+            "Y": 3.2362899780273438,
+            "Z": -1.1417007446289062
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.3905539512634277,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "UwByLMZCM3yx9vR/hwzS3g==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.19999992847442627
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Health_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 0.41136932373046875,
+            "Y": 2.716949462890625,
+            "Z": -0.8078517913818359
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.7630362510681152,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "OQfzZcUlOQy7rsLByZvooQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.20000000298023224
+        },
+        "Item": {
+          "Item": {
+            "Id": "Ingredient_Tree_Sap",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.7630362510681152,
+            "Roll": 0.0
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 0.11183547973632812,
+            "Y": 3.1264877319335938,
+            "Z": -0.6916580200195312
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -2.3474361896514893,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "mzsRti5JM3yFbuL6tIsiUA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Ingredient_Powder_Boom",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -2.347435474395752,
+            "Roll": 0.0
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 0.3779411315917969,
+            "Y": 2.562774658203125,
+            "Z": -0.8833961486816406
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.7630362510681152,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "MvJ5CgIeNiKYR7+KJrS8GA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Ingredient_Tree_Sap",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.7630362510681152,
+            "Roll": 0.0
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 0.3834571838378906,
+            "Y": 3.1243667602539062,
+            "Z": -0.8420238494873047
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.7630362510681152,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "7dSz/IBgMHK9CAoASA0hFg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Ingredient_Tree_Sap",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.7630362510681152,
+            "Roll": 0.0
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.5982398986816406,
+            "Y": 1.9005966186523438,
+            "Z": -1.097024917602539
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "X4j4GNc0MEeZ2zyKh+acLQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.338470458984375,
+            "Y": 1.91253662109375,
+            "Z": -1.603292465209961
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "J5DPQ3rANFqyHbvDI4rGuQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.9687767028808594,
+            "Y": 1.8871078491210938,
+            "Z": -1.4046192169189453
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "xF5GrZn/Ngqhsrk6LD9CBA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.000213623046875,
+            "Y": 1.8964004516601562,
+            "Z": -1.636434555053711
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "nvUtOCAGPkqadzVVUvz+Vg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.6085357666015625,
+            "Y": 1.8959197998046875,
+            "Z": -1.5943164825439453
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "M3oAxf8LMuGAecZo5qEULw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.1688499450683594,
+            "Y": 1.9041824340820312,
+            "Z": -1.415761947631836
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "fwQ92w0eN8CvtEinafuwTQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.7926483154296875,
+            "Y": 1.8867263793945312,
+            "Z": -1.6007556915283203
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "/aJkcIcbP7KyF/x8g9knrg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.7960739135742188,
+            "Y": 1.892547607421875,
+            "Z": -1.414205551147461
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "opIHA9uCO2mja5bKOZZGpg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.0020332336425781,
+            "Y": 1.9039382934570312,
+            "Z": -1.3410224914550781
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "1utnS9WVPO2bnh8iTB3mng==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.3014984130859375,
+            "Y": 1.9095993041992188,
+            "Z": -1.326070785522461
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "epwiBQFAPiuakMQhTgYEMw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.315582275390625,
+            "Y": 1.8984298706054688,
+            "Z": -1.6384696960449219
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "V4RRV2cvMd2AJnBqWOBvNg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.6002998352050781,
+            "Y": 1.9062957763671875,
+            "Z": -1.3328056335449219
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "gE1t191QOaaUIoSaALUeeg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Stone_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 2.3517990112304688,
+            "Y": 1.8955230712890625,
+            "Z": -1.4184913635253906
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": -3.1280364990234375,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "YxztNgCSP4iFZNZ/wjeZzw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Stone_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "stone_kitchen",
+  "displayName": "Stone Kitchen",
+  "prefabPath": "EterniaMod/Props/Pack_Stone_Kitchen.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

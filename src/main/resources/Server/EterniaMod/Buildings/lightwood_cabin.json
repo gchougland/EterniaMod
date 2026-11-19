@@ -1,0 +1,17 @@
+{
+  "id": "lightwood_cabin",
+  "displayName": "Lightwood Cabin",
+  "prefabPath": "EterniaMod/Houses/House_Lightwood_Cabin.prefab.json",
+  "plotAnchorOffset": [
+    6,
+    0,
+    8
+  ],
+  "spawnLocalPos": [
+    0,
+    3,
+    0
+  ],
+  "rotationYaw": "None",
+  "housingKind": "personal"
+}

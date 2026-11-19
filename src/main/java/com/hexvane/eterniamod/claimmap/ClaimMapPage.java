@@ -118,8 +118,12 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
         bindHome(e);
         showWallet(c, ref, store);
         for (ClaimMapScreen.Binding b : ClaimMapScreen.ACTIONS) e.addEventBinding(CustomUIEventBindingType.Activating, b.selector(), new EventData().append("Action", b.action()), false);
-        for (ClaimMapScreen.Binding b : ClaimMapScreen.cellBindings())
+        for (ClaimMapScreen.Binding b : ClaimMapScreen.cellBindings()) {
             e.addEventBinding(CustomUIEventBindingType.Activating, b.selector(), new EventData().append("Action", b.action()).append("Slot", b.slot()), false);
+            // A brick has no tips, so a whole hexagon outline follows the mouse instead of a button highlight.
+            e.addEventBinding(CustomUIEventBindingType.MouseEntered, b.selector(), new EventData().append("Action", "Hover").append("Slot", b.slot()), false);
+            e.addEventBinding(CustomUIEventBindingType.MouseExited, b.selector(), new EventData().append("Action", "Unhover").append("Slot", b.slot()), false);
+        }
         HexLandView view = HexLand.view(plugin, world).orElse(null);
         if (view != null) {
             var situation = situation(view);
@@ -155,6 +159,7 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
 
     private void act(Ref<EntityStore> ref, Store<EntityStore> store, Data data) {
         switch (data.action) {
+            case "Hover", "Unhover" -> { hover(data.action.equals("Hover"), parse(data.slot)); return; }
             case "Close" -> { close(); return; }
             case "Cell" -> {
                 if (working || shown == null) return;
@@ -427,6 +432,20 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
     }
 
     // ---------------------------------------------------------------------------------------------------------------
+
+    /** The slot the mouse is over, or -1. */
+    private int hovered = -1;
+
+    /** Moves the whole hexagon outline under the mouse, or hides it when the mouse leaves that hexagon. */
+    private void hover(boolean entered, int slot) {
+        if (shown == null || isDismissed()) return;
+        if (!entered && slot != hovered) return;
+        hovered = entered ? slot : -1;
+        HexCoord cell = entered ? shown.cellOfSlot(slot) : null;
+        var c = new UICommandBuilder();
+        ClaimMapScreen.hover(c, cell == null ? null : new ClaimMapScreen.Mark(shown.centre(cell).x(), shown.centre(cell).y()));
+        sendUpdate(c, null, false);
+    }
 
     private void refreshPanel() {
         HexLandView view = view();

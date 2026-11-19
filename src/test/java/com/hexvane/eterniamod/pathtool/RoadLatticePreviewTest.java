@@ -10,7 +10,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class RoadLatticePreviewTest {
-    private static final HexLattice L = HexLattice.DEFAULT;
+    private static final HexLattice L = com.hexvane.eterniamod.hexplots.TestLattices.CLASSIC;
 
     private static List<int[]> straightRoad(double z, int fromX, int toX, int width) {
         List<int[]> out = new ArrayList<>();

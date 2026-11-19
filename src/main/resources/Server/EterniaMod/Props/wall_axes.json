@@ -1,0 +1,11 @@
+{
+  "id": "wall_axes",
+  "displayName": "Wall Axes",
+  "prefabPath": "EterniaMod/Props/Pack_Wall_Axes.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

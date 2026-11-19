@@ -28,7 +28,7 @@ import java.util.Set;
 import org.joml.Vector3f;
 
 /**
- * {@code /e admin setup lattice show|here|origin|hex|rect}: preview and change a world's hexagon grid and plot shape.
+ * {@code /e admin setup lattice show|here|origin|size|hex|rect}: preview and change a world's hexagon grid and plot shape.
  * Changes go through the normal setup review and confirm; {@link InfrastructureRules} refuses them while the world has
  * any plot or unfinished claim. Admin only, world thread.
  */
@@ -63,6 +63,16 @@ public final class LatticeSetup {
                 InfrastructureSetup.review(plugin, ref, store, player, snapshot, plan, after, "Put the hexagon grid back at origin X 0, Z 0. Allowed only while the world has no plots.", null, pos[1]);
                 draw(plugin, world, player, next, pos);
             }
+            case "size" -> {
+                // Worlds keep the hexagon size they were planned with; this moves one to today's size, same origin.
+                HexLattice live = HexPlotSettings.current().defaultLattice();
+                HexLattice next = new HexLattice(live.cellWidth(), live.bodyDepth(), current.originX(), current.originZ());
+                if (next.equals(current)) throw input("This world's hexagons are already " + current.cellWidth() + " blocks wide.");
+                var after = plan.withPlots(plan.plotShape() == null && plan.supportsHousing() ? PlotShape.HEX : plan.plotShape(), next);
+                InfrastructureSetup.review(plugin, ref, store, player, snapshot, plan, after,
+                    "Make this world's hexagons " + next.cellWidth() + " blocks wide instead of " + current.cellWidth() + ", so one holds a starter cabin. Allowed only while the world has no plots.", null, pos[1]);
+                draw(plugin, world, player, next, pos);
+            }
             case "hex" -> {
                 if (!plan.supportsHousing()) throw input("Turn on housing for this world first.");
                 InfrastructureSetup.review(plugin, ref, store, player, snapshot, plan, plan.withPlots(PlotShape.HEX, current),
@@ -71,7 +81,7 @@ public final class LatticeSetup {
             }
             case "rect" -> InfrastructureSetup.review(plugin, ref, store, player, snapshot, plan, plan.withPlots(PlotShape.RECT, plan.lattice()),
                 "Plots in this world go back to rectangles. The grid is kept for later. Allowed only while the world has no plots.", null, pos[1]);
-            default -> throw input("Use lattice show, here, origin, hex or rect.");
+            default -> throw input("Use lattice show, here, origin, size, hex or rect.");
         }
     }
 

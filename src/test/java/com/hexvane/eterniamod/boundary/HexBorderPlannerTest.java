@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 /** A mixed street: road row r = 0, plots of all four relations to the viewer either side. */
 class HexBorderPlannerTest {
-    static final HexLattice L = HexLattice.DEFAULT;
+    static final HexLattice L = com.hexvane.eterniamod.hexplots.TestLattices.CLASSIC;
     static final UUID ME = UUID.randomUUID(), NEIGHBOR = UUID.randomUUID(), FRIEND = UUID.randomUUID(), STRANGER = UUID.randomUUID();
     static final UUID MY_GUILD = UUID.randomUUID(), RIVAL_GUILD = UUID.randomUUID();
     static final UUID P_MINE = UUID.randomUUID(), P_NEIGHBOR = UUID.randomUUID(), P_ESTATE = UUID.randomUUID(),

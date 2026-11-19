@@ -1,0 +1,1333 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": -1,
+  "blocks": [
+    {
+      "x": -1,
+      "y": 0,
+      "z": -2,
+      "name": "*Rock_Stone_Cobble_Stairs_State_Definitions_Inverted_Corner_Right",
+      "rotation": 10
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone_Cobble_Stairs",
+      "rotation": 11
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": -1,
+      "name": "Furniture_Lumberjack_Shelf",
+      "rotation": 1
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Cobble_Stairs",
+      "rotation": 11
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": 0,
+      "name": "Lobby_Wall_Poster_Small01",
+      "rotation": 1
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -1,
+      "name": "Rock_Stone_Cobble"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Rock_Stone_Cobble"
+    }
+  ],
+  "fluids": [
+    {
+      "x": -1,
+      "y": 0,
+      "z": -2,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": -1,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": -1,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": -1,
+      "y": 2,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 1,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 1,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": -1,
+      "y": 0,
+      "z": 2,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": -1,
+      "y": 1,
+      "z": 2,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": -1,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Mug"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.4674148559570312,
+            "Y": 1.2585372924804688,
+            "Z": -0.10353493690490723
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.4502228796482086,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "ewZocFAHQLOxkWXmbddKNg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5689552426338196
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Mug",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Wood_Tropicalwood_Fence"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.7650184631347656,
+            "Y": 1.5324783325195312,
+            "Z": -1.4504389762878418
+          },
+          "Rotation": {
+            "Pitch": -1.565229058265686,
+            "Yaw": -1.5822694301605225,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "lHdHuouERjSiIhLL+4M1mA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.49999991059303284
+        },
+        "Item": {
+          "Item": {
+            "Id": "Wood_Tropicalwood_Fence",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Crop_Carrot_Item"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.4711112976074219,
+            "Y": 1.1309280395507812,
+            "Z": 0.4084041118621826
+          },
+          "Rotation": {
+            "Pitch": -0.14932666718959808,
+            "Yaw": 1.0956625938415527,
+            "Roll": -0.2815123200416565
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "0qIJ+mCWRoaolau4Gtp2Jg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3332694470882416
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Crop_Carrot_Item",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Tool_Feedbag"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.8546943664550781,
+            "Y": 1.1843032836914062,
+            "Z": 0.7807502746582031
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.0492664575576782,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "FhDaclcyTBiMT0GC85v9/w==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3400000035762787
+        },
+        "Item": {
+          "Item": {
+            "Id": "Tool_Feedbag",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Human_Ruins_Pot_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.7595443725585938,
+            "Y": 1.1911163330078125,
+            "Z": -0.7505950927734375
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "J5yAoUWkRoqueqLdRZxIfg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.4000000059604645
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Human_Ruins_Pot_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Flower_Orchid_Red"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.6374435424804688,
+            "Y": 1.1894989013671875,
+            "Z": -0.7299542427062988
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.9900611042976379,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "3HR90ppaQhCZRlU0oKUfYA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.17000000178813934
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Flower_Orchid_Red",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Flower_Common_Grey"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.7727012634277344,
+            "Y": 1.2360458374023438,
+            "Z": -0.860994815826416
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "FMqh/3RyQGysf3i6R0gWIQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Flower_Common_Grey",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Wildmeat_Cooked"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.6486244201660156,
+            "Y": 1.200469970703125,
+            "Z": 0.607959508895874
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -2.4474706649780273,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "sjlxQnKvQQKc6Own+6gOZQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Wildmeat_Cooked",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Food_Bread"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.3093719482421875,
+            "Y": 1.1759262084960938,
+            "Z": 0.571507453918457
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 0.27627110481262207,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "CXRY033zRRmKyZJnhES0aA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.39999595284461975
+        },
+        "Item": {
+          "Item": {
+            "Id": "Food_Bread",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Ingredient_Spices"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.7337684631347656,
+            "Y": 1.2743148803710938,
+            "Z": -1.1206812858581543
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 0.23350156843662262,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "N++90SGNQvG/oll6ynNuyQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.49999991059303284
+        },
+        "Item": {
+          "Item": {
+            "Id": "Ingredient_Spices",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rock_Chalk_Half"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.4608573913574219,
+            "Y": 1.342041015625,
+            "Z": -0.10984182357788086
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.5104629397392273,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "WVoYoHe4RhKa7pJiIFWS/w==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.20000000298023224
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rock_Chalk_Half",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rubble_Chalk_Medium"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.4688262939453125,
+            "Y": 1.40313720703125,
+            "Z": -0.12431669235229492
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.7142149209976196,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "4Y1Rb6alRbeXUxh4Whj96g==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.19999992847442627
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rubble_Chalk_Medium",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Plate"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.5195579528808594,
+            "Y": 1.356414794921875,
+            "Z": 0.5684480667114258
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.8507461547851562,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "IRCGHqtzR3yIl9MwOap44A==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Plate",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Stamina_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.7118263244628906,
+            "Y": 1.5483474731445312,
+            "Z": -1.6219940185546875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.550925850868225,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Q1VfdryDRkWSJgH/MigZbw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.49999991059303284
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Stamina_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Flower_Bushy_Orange"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.8439292907714844,
+            "Y": 1.2993087768554688,
+            "Z": -0.6687347888946533
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.43155497312545776,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "dGNOHOn/SpCU2MfsoVxl6Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.10000000149011612
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Flower_Bushy_Orange",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Stamina_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.5930862426757812,
+            "Y": 2.1476669311523438,
+            "Z": -0.48071742057800293
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.92295503616333,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "enDEr8cFQEaIiJv6CT46GQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Stamina_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Signature_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.9207725524902344,
+            "Y": 1.547454833984375,
+            "Z": -1.2417387962341309
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 3.079939365386963,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "QoW70rR2TMGQ/MNzbEOHxQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Signature_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Mana_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.7485084533691406,
+            "Y": 2.148529052734375,
+            "Z": -0.6785829067230225
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.7946499586105347,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "DIJ9eVBtTDKRjh+DxDiGNw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.30000001192092896
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Mana_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Crude_Candle"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.854156494140625,
+            "Y": 1.2200164794921875,
+            "Z": 0.2570972442626953
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.3506720066070557,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "lWb13M+cTHajiY57ECdjlg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5315414667129517
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Crude_Candle",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Mana_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.6262779235839844,
+            "Y": 2.1560287475585938,
+            "Z": -0.18763184547424316
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.806110680103302,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "+IeyrohURby7AK+VfCqVGQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.30000001192092896
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Mana_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Health_Lesser"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.7146987915039062,
+            "Y": 1.563934326171875,
+            "Z": -1.4399795532226562
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5056885480880737,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "G5AeLsf5QWCZVNTnj9Vcnw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Health_Lesser",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Regen_Mana_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.5916404724121094,
+            "Y": 2.1975021362304688,
+            "Z": -0.8007304668426514
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.0945019721984863,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "9CPAXz2AQNubH2x0eKdu5Q==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Regen_Mana_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Signature_Small"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.572723388671875,
+            "Y": 2.1975021362304688,
+            "Z": -0.621737003326416
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 3.079939365386963,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "TQA4C7nsRB6Rzha6L3qEBA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Signature_Small",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Health_Lesser"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.6876716613769531,
+            "Y": 2.1616973876953125,
+            "Z": -0.29620814323425293
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.3892055749893188,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "tb/oUGMoQtybo5zWcUFytA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Health_Lesser",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Potion_Purify"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.8390884399414062,
+            "Y": 2.1982421875,
+            "Z": -0.4268991947174072
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "LzNpSnCkTuGK9kVDebvgQA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Potion_Purify",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Bench_Cooking"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.5,
+            "Y": 1.0,
+            "Z": 2.0
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.5707963267948966,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "0T3GBcehRWODlKrVBCnhVg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Bench_Cooking",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

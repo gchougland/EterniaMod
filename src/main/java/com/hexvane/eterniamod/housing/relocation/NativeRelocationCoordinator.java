@@ -145,6 +145,34 @@ public final class NativeRelocationCoordinator {
             return restored;
         } catch(IOException e){throw new UncheckedIOException(e);}
     }
+    /**
+     * Test world wipe: puts the whole plot's ground back the way it was saved when it was claimed (after levelling) (anything built on
+     * it is removed) and forgets the saved ground. Columns a road protects now are left alone. Returns false when the
+     * plot has no saved ground. World thread; the plot's chunks must be loaded.
+     */
+    public static boolean restoreGround(EterniaModPlugin plugin,World world,HubPlotRecord plot) {
+        try {
+            var store=NativePlacementTransactions.snapshots(plugin);Path pointer=store.files().resolve("baseline-"+plot.getPlotId()+".pointer");
+            if(!Files.exists(pointer))return false;
+            var old=loadPointer(store,pointer);var ob=old.bounds();
+            BsonDocument back=old.document().clone();back.remove("entities");
+            for(String type:List.of("blocks","fluids")){
+                var kept=new BsonArray();
+                for(var value:old.document().getArray(type,new BsonArray())){
+                    var d=value.asDocument();int x=ob.minX()+d.getInt32("x").getValue(),z=ob.minZ()+d.getInt32("z").getValue();
+                    if(!plugin.getInfrastructure().protectedColumn(world.getName(),x,z))kept.add(d);
+                }
+                back.put(type,kept);
+            }
+            if(!back.getArray("blocks").isEmpty()){
+                var ground=store.save(plot.getPlotId()+"-wiped-"+UUID.randomUUID()+".json",ob,old.cells(),back);
+                store.apply(world,ground,ob.origin());
+                NativePlacementTransactions.flush(world,ob);
+            }
+            Files.deleteIfExists(pointer);
+            return true;
+        } catch(IOException e){throw new UncheckedIOException(e);}
+    }
     public UUID pack(World world,Owner owner,UUID operation,boolean forced) {
         long started=System.nanoTime();
         try{return packTimed(world,owner,operation,forced);}

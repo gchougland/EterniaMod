@@ -1,0 +1,34 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    Group { Anchor: (Width: 700); LayoutMode: Top; Padding: (Top: 22);
+      Label { Anchor: (Height: 36); Text: "Starter and shop items"; Style: (...$T.@CodexTitleStyle, FontSize: 30); }
+      Label { Anchor: (Height: 22); Text: "Admin"; Style: $T.@CodexKickerStyle; }
+    }
+    Group { FlexWeight: 1; }
+    $T.@CodexClose #Close {}
+  }
+  $T.@CodexBody {
+    $T.@CodexPanel { Anchor: (Width: 380, Right: 24);
+      Label { Anchor: (Height: 22, Bottom: 6); Text: "HOW IT WORKS"; Style: $T.@CodexKickerStyle; }
+      Label { Anchor: (Height: 96, Bottom: 10); Text: "Free at start gives the item to every player. Players who already joined get it the next time they come back."; Style: (...$T.@MutedStyle, FontSize: 14, Wrap: true); }
+      Label { Anchor: (Height: 96, Bottom: 10); Text: "Type a Crown price and press Sell to put the item in the Crown store, or to change its price. Stop selling takes it out of the store. Players keep what they bought."; Style: (...$T.@MutedStyle, FontSize: 14, Wrap: true); }
+      Group { FlexWeight: 1; }
+      Label #CatalogStatus { Anchor: (Height: 96); Text: ""; Style: (FontSize: 16, TextColor: $T.@Primary, RenderBold: true, Wrap: true); }
+    }
+    $T.@CodexPanel { FlexWeight: 1;
+      Group { Anchor: (Height: 44, Bottom: 14); LayoutMode: Left;
+        $T.@SecondaryTextButton #CatHouses { Anchor: (Width: 150, Height: 44, Right: 6); Text: "Houses"; }
+        $T.@SecondaryTextButton #CatDecorations { Anchor: (Width: 170, Height: 44, Right: 6); Text: "Decorations"; }
+        $T.@SecondaryTextButton #CatStations { Anchor: (Width: 150, Height: 44, Right: 6); Text: "Stations"; }
+        Group { FlexWeight: 1; }
+        Label #CatalogCount { Anchor: (Width: 260); Text: ""; Style: (...$T.@MutedStyle, FontSize: 14, HorizontalAlignment: End, VerticalAlignment: Center); }
+      }
+      Label #CatalogTitle { Anchor: (Height: 30, Bottom: 8); Text: ""; Style: (...$T.@SubtitleStyle, FontSize: 20); }
+      Group #CatalogRows { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+    }
+  }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
+}

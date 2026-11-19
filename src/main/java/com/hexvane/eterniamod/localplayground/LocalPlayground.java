@@ -165,7 +165,7 @@ public final class LocalPlayground {
         int n=0;for(var identity:HubNpcIdentity.values()){int x=-15+(n%4)*10,z=n<4?-10:10;ManagedHubServices.ensureNpc(plugin,w,actor,identity,x,1,z,n<4?0:(float)Math.PI);n++;}
         ManagedHubServices.ensurePortal(plugin,w,actor,16,1,0,0);
         plugin.getRuntime().welcome(SELLER,"Iris Wren");// Hex villages: the shop takes the hexagon east of the plaza, the guild estate a flower beside the example road.
-        var shop=house(plugin,w,SELLER,Owner.player(SELLER),new PlotRect(8,22,24,24),List.of(SHOP_CELL),"hub_house",HousingRules.Scope.PUBLIC);
+        var shop=house(plugin,w,SELLER,Owner.player(SELLER),new PlotRect(8,22,24,24),List.of(SHOP_CELL),"log_cabin",HousingRules.Scope.PUBLIC);
         placeShelf(plugin,w,shop,SELLER);
         for(String item:List.of("Ingredient_Bar_Iron","Food_Bread")){String receipt="local-playground:shop-v1:"+item;var stock=issue(plugin,SELLER,item,20,receipt);plugin.getServices().market().list(SELLER,stock.id(),item.equals("Food_Bread")?5:15,receipt+":listing");}
         plugin.getRuntime().welcome(GUILD_LEADER,"Rowan Ashford");var services=plugin.getServices();var guild=services.guilds().membership(GUILD_LEADER).map(m->services.guilds().find(m.guildId()).orElseThrow()).orElseGet(()->services.guilds().create(GUILD_LEADER,"The Lantern Company","local-playground:showcase-guild"));

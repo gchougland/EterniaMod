@@ -125,9 +125,9 @@ public final class ClaimMapRenderer {
                 Tile t = found[z][x];
                 if (t != null) stamp(raster, t, x * resolution, z * resolution, resolution);
             }
-        double scale = ClaimMapGeometry.SCALE * TILE_BLOCKS / resolution;
+        double scale = g.scale() * TILE_BLOCKS / resolution;
         var at = new AffineTransform();
-        at.translate((cx0 * (double) TILE_BLOCKS - g.worldX0()) * ClaimMapGeometry.SCALE, (cz0 * (double) TILE_BLOCKS - g.worldZ0()) * ClaimMapGeometry.SCALE);
+        at.translate((cx0 * (double) TILE_BLOCKS - g.worldX0()) * g.scale(), (cz0 * (double) TILE_BLOCKS - g.worldZ0()) * g.scale());
         at.scale(scale, scale);
         gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         gfx.drawImage(raster, at, null);
@@ -152,7 +152,7 @@ public final class ClaimMapRenderer {
         for (PlotRect r : roads) {
             if (r.endX() <= x0 || r.x() >= x1 || r.endZ() <= z0 || r.z() >= z1) continue;
             var a = g.pixel(r.x(), r.z());
-            all.append(new java.awt.geom.Rectangle2D.Double(a.x(), a.y(), r.width() * ClaimMapGeometry.SCALE, r.depth() * ClaimMapGeometry.SCALE), false);
+            all.append(new java.awt.geom.Rectangle2D.Double(a.x(), a.y(), r.width() * g.scale(), r.depth() * g.scale()), false);
         }
         // One fill for the whole network so overlapping pieces do not stack into darker patches.
         gfx.fill(all);

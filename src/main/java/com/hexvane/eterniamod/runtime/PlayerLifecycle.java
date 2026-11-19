@@ -35,6 +35,9 @@ public final class PlayerLifecycle implements AutoCloseable {
     public PlayerLifecycle(EterniaModPlugin plugin) {
         this.plugin=plugin;
         plugin.getEntityStoreRegistry().registerSystem(new TeleportEntityRange());
+        // Caps new entities per player per tick, tighter while settling: the range limit below alone did not stop the
+        // client crash (four crashes on 2026-11-17, each about 5 s after entering, as the range widened).
+        plugin.getEntityStoreRegistry().registerSystem(new EntityArrivalBudget());
         plugin.getEventRegistry().registerGlobal(PlayerConnectEvent.class,event->{
             var player=event.getPlayerRef();
             if(plugin.getRuntime().closedForReset()){player.getPacketHandler().disconnect(com.hypixel.hytale.server.core.Message.raw("Eternia is being reset for the next test. Please come back soon."));return;}
@@ -55,6 +58,7 @@ public final class PlayerLifecycle implements AutoCloseable {
             // The 0.7.5 client skips resizing its occlusion results for about two seconds after a spawn, and its
             // transparent entity pass then reads past their end once enough entities arrive at once (the town square's
             // three thousand decorations). Entities stay close until the client has settled; chunks load as normal.
+            var joining=event.getHolder().getComponent(PlayerRef.getComponentType());if(joining!=null)EntityArrivalBudget.SETTLING.add(joining.getUuid());
             var viewer=event.getHolder().getComponent(EntityTrackerSystems.EntityViewer.getComponentType());
             if(viewer!=null)viewer.viewRadiusBlocks=Math.min(viewer.viewRadiusBlocks,ENTRY_ENTITY_RANGE_BLOCKS);
         });
@@ -81,7 +85,7 @@ public final class PlayerLifecycle implements AutoCloseable {
                 catch(RuntimeException failure){plugin.getLogger().atWarning().withCause(failure).log("Player ready recovery failed");}
             });
         });
-        plugin.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class,event->{var player=event.getPlayerRef();plugin.getItemEscrow().forgetSession(player);com.hexvane.eterniamod.inventory.ui.NativeShopTravel.forget(player.getUuid());UUID id=player.getUuid();recoverOnReady.remove(id);resumeSaved.remove(id);latestSettle.remove(id);if(online.remove(id))plugin.getServices().accounts().recordDisconnect(id);});
+        plugin.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class,event->{var player=event.getPlayerRef();plugin.getItemEscrow().forgetSession(player);com.hexvane.eterniamod.inventory.ui.NativeShopTravel.forget(player.getUuid());UUID id=player.getUuid();recoverOnReady.remove(id);resumeSaved.remove(id);latestSettle.remove(id);EntityArrivalBudget.SETTLING.remove(id);if(online.remove(id))plugin.getServices().accounts().recordDisconnect(id);});
         plugin.getEventRegistry().registerGlobal(StartWorldEvent.class,event->{
             var world=event.getWorld();
             // A new world's time settings stay blank until its first tick. A player who finishes joining before that (a
@@ -97,7 +101,7 @@ public final class PlayerLifecycle implements AutoCloseable {
     }
     /** Lifts the entry limits after the settle delay. Only the newest call for a player counts, so a second teleport keeps its full delay. */
     private void settle(Ref<EntityStore> ref,Store<EntityStore> store,UUID id) {
-        long turn=settleTurn.incrementAndGet();latestSettle.put(id,turn);var world=store.getExternalData().getWorld();
+        long turn=settleTurn.incrementAndGet();latestSettle.put(id,turn);EntityArrivalBudget.SETTLING.add(id);var world=store.getExternalData().getWorld();
         timer.schedule(()->world.execute(()->{
             if(!Objects.equals(latestSettle.get(id),turn)||!ref.isValid())return;
             store.tryRemoveComponent(ref,IgnoreTriggerVolumes.getComponentType());
@@ -113,11 +117,11 @@ public final class PlayerLifecycle implements AutoCloseable {
         var world=store.getExternalData().getWorld();
         if(!Objects.equals(latestSettle.get(id),turn)||!ref.isValid())return;
         var viewer=store.getComponent(ref,EntityTrackerSystems.EntityViewer.getComponentType());var playerComponent=store.getComponent(ref,Player.getComponentType());
-        if(viewer==null||playerComponent==null){latestSettle.remove(id,turn);return;}
+        if(viewer==null||playerComponent==null){if(latestSettle.remove(id,turn))EntityArrivalBudget.SETTLING.remove(id);return;}
         int full=playerComponent.getViewRadius()*ChunkUtil.SIZE;
         int next=Math.min(full,viewer.viewRadiusBlocks+WIDEN_STEP_BLOCKS);
         viewer.viewRadiusBlocks=next;
-        if(next>=full){latestSettle.remove(id,turn);return;}
+        if(next>=full){if(latestSettle.remove(id,turn))EntityArrivalBudget.SETTLING.remove(id);return;}
         timer.schedule(()->world.execute(()->widen(ref,store,id,turn)),WIDEN_STEP_MILLIS,TimeUnit.MILLISECONDS);
     }
     /** A teleport restarts the client's occlusion warm-up too, even inside one world, where no world entry event fires. */

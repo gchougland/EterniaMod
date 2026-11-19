@@ -1,0 +1,331 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "name": "Deco_Book_Pile_Small",
+      "rotation": 3
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Village_Counter",
+      "filler": 31
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Village_Counter"
+    }
+  ],
+  "fluids": [
+    {
+      "x": -1,
+      "y": 0,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Lantern"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.677011489868164,
+            "Y": 1.1923675537109375,
+            "Z": 0.44122934341430664
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.4839354753494263,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "6qdTjaGBTHaXwKz2JIk54w==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.4659212529659271
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Lantern",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Map"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.493621826171875,
+            "Y": 1.420196533203125,
+            "Z": 0.3777499198913574
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 0.4753516912460327,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "4cOamBEXRgWfU5tcpamV+g==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.7999999523162842
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Map",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Chair"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.7189693450927734,
+            "Y": 0.48199462890625,
+            "Z": 1.1020750999450684
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.8489047288894653,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "1GuBrOD7S2C/dU/1kH7CGg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Chair",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Inkwell"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.1454792022705078,
+            "Y": 1.488250732421875,
+            "Z": 0.2671370506286621
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 2.4382667541503906,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "czrDxgDVQPuN1gEQAMoUzA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.7999999523162842
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Inkwell",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Rubble_Magma_Cooled"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.9821834564208984,
+            "Y": 0.9035186767578125,
+            "Z": 0.36948442459106445
+          },
+          "Rotation": {
+            "Pitch": 0.004038626328110695,
+            "Yaw": -2.683722972869873,
+            "Roll": 3.133397340774536
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "fW+vz39mSXWR2rg9ZHeSrQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.20000000298023224
+        },
+        "Item": {
+          "Item": {
+            "Id": "Rubble_Magma_Cooled",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Deco_Inkwell"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.1454811096191406,
+            "Y": 1.4882431030273438,
+            "Z": 0.2671370506286621
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 2.4382667541503906,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "PSk6amnkSvSR4Oajq+V3Sw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.7999999523162842
+        },
+        "Item": {
+          "Item": {
+            "Id": "Deco_Inkwell",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

@@ -112,8 +112,8 @@ final class NativeHexSmoke {
 
         // House on the manor's north west hexagon, a potion shelf (three decorative entities) on its south hexagon.
         var house = HexFixtures.centre(lattice, MANOR.getFirst(), 1);
-        var placed = NativePlacementTransactions.place(plugin, world, plot, MIRA, "hub_house", house, Rotation.None, PrefabResolveUtil.resolvePrefabBuffer("House.prefab.json"), true);
-        plot.setBuilding(new HubPlotBuilding("hub_house", house.x, house.y, house.z, Rotation.None, List.of()));
+        var placed = NativePlacementTransactions.place(plugin, world, plot, MIRA, "log_cabin", house, Rotation.None, PrefabResolveUtil.resolvePrefabBuffer("EterniaMod/Houses/House_Log_Cabin.prefab.json"), true);
+        plot.setBuilding(new HubPlotBuilding("log_cabin", house.x, house.y, house.z, Rotation.None, List.of()));
         manager.updatePlot(plot);
         manager.saveIfDirty();
         services.housing().updateBuildingPresent(mira, manor, true);

@@ -109,4 +109,13 @@ class TerraformLevelTest {
         for (int y : near) assertEquals(70, y, "only the road nearest the hexagon counts");
         assertEquals(0, TerraformLevel.nearestRoad(List.of(), lattice, List.of(A), 4).length);
     }
+
+    @Test void buildingsOnAPlazaAreNotRoad() {
+        // A castle wall at y 136 beside a road at y 66, on land around y 64.
+        var columns = java.util.List.of(new int[] {0, 0, 66}, new int[] {1, 0, 66}, new int[] {2, 0, 136}, new int[] {3, 0, 135});
+        var kept = TerraformLevel.roadNearGround(columns, new int[] {63, 64, 64, 65}, 8);
+        assertEquals(2, kept.size());
+        assertTrue(kept.stream().allMatch(c -> c[2] == 66));
+        assertEquals(4, TerraformLevel.roadNearGround(columns, NONE, 8).size(), "with no known ground every column is kept");
+    }
 }

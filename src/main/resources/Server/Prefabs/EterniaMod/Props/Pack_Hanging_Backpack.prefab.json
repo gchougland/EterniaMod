@@ -1,0 +1,108 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 0.5072154998779297,
+            "Y": 1.6203765869140625,
+            "Z": 0.38646888732910156
+          },
+          "Rotation": {
+            "Pitch": 0.6328749656677246,
+            "Yaw": 3.0146820545196533,
+            "Roll": -0.5762282013893127
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "LvVb8XQkNmmi44wXusuGaA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Utility_Leather_Medium_Backpack",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0.6328784823417664,
+            "Yaw": 3.0146846771240234,
+            "Roll": -0.5762248039245605
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 0.3468971252441406,
+            "Y": 1.8021087646484375,
+            "Z": 0.35872459411621094
+          },
+          "Rotation": {
+            "Pitch": 0.213483989238739,
+            "Yaw": 0.0010358403669670224,
+            "Roll": -1.5659065246582031
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "xTGJHV7CMvGkt6T9iK0Cjw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6000000238418579
+        },
+        "Item": {
+          "Item": {
+            "Id": "Weapon_Arrow_Clearshot",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0.213483989238739,
+            "Yaw": 0.0010355811100453138,
+            "Roll": -1.5659061670303345
+          }
+        }
+      }
+    }
+  ]
+}

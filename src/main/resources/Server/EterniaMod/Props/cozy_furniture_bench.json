@@ -1,0 +1,11 @@
+{
+  "id": "cozy_furniture_bench",
+  "displayName": "Cozy Workbench",
+  "prefabPath": "EterniaMod/Props/Pack_Cozy_Furniture_Bench.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

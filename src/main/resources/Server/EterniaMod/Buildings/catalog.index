@@ -1,5 +1,4 @@
 # Bundled building definitions, relative to this directory.
-hub_house.json
 founders_hall.json
 
 # Player and guild houses (2026-10-28)
@@ -10,3 +9,8 @@ hearthstone_manor.json
 tower_house.json
 guild_lodge.json
 guild_keep.json
+
+# Starter cabins, free to every player (2026-11-18)
+darkwood_cabin.json
+lightwood_cabin.json
+log_cabin.json

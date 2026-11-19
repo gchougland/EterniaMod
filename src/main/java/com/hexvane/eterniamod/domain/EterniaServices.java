@@ -24,6 +24,8 @@ public final class EterniaServices {
     private final PremiumService premium;
     private final CurrencyGrantService currencyGrants;
     private final PlaytestService playtest;
+    private final RankService ranks;
+    private final StarterContentService starters;
     private final CollectionService collection;
     private final CommerceIngressService commerceIngress;
     private final ActivitySourceService activitySources;
@@ -48,6 +50,8 @@ public final class EterniaServices {
         provenance=new ProvenanceService(store,clock,ids);premium=new PremiumService(store,clock,ids,ownership);commerce=new CommerceService(store,clock,ids,ownership,premium);
         currencyGrants=new CurrencyGrantService(store,clock,ids,premium,economy);
         playtest=new PlaytestService(store,clock,ids,premium,economy);
+        ranks=new RankService(store,clock,ids,ownership);
+        starters=new StarterContentService(store,clock,ids);
         collection=new CollectionService(store,clock,ids,ownership);
         commerceIngress=new CommerceIngressService(store,clock,ids,commerce);
         activitySources=new ActivitySourceService(store,clock,ids,seasons,economy);
@@ -93,6 +97,9 @@ public final class EterniaServices {
     public PremiumService premium(){return premium;}
     public CurrencyGrantService currencyGrants(){return currencyGrants;}
     public PlaytestService playtest(){return playtest;}
+    public RankService ranks(){return ranks;}
+    /** The houses and decorations every player gets free. */
+    public StarterContentService starters(){return starters;}
     public CollectionService collection(){return collection;}
     public CommerceIngressService commerceIngress(){return commerceIngress;}
     public ActivitySourceService activitySources(){return activitySources;}

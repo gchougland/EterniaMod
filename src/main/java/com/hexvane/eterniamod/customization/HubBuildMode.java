@@ -13,9 +13,17 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
-/** Session-only terrain editing. This never grants rights over owned or journalled structures. */
+/**
+ * Session-only terrain editing on the public ground of the Hub and housing worlds, for builders (the Builder rank) and
+ * world editors. This never grants rights over owned or journalled structures.
+ */
 public final class HubBuildMode {
-    static final Sessions SESSIONS = new Sessions(SetupAccess::allowed);
+    static final Sessions SESSIONS = new Sessions(HubBuildMode::mayBuild);
+
+    /** World editors and the Builder rank may turn building on. */
+    public static boolean mayBuild(UUID player) {
+        return SetupAccess.allowed(player) || com.hexvane.eterniamod.ranks.RankPermissions.has(player, com.hexvane.eterniamod.ranks.RankPermissions.BUILD);
+    }
     private HubBuildMode() {}
 
     static final class Sessions {
@@ -23,7 +31,7 @@ public final class HubBuildMode {
         private final Predicate<UUID> authorized;
         Sessions(Predicate<UUID> authorized) { this.authorized = authorized; }
         void enable(UUID player, UUID world) {
-            if (!authorized.test(player)) throw new IllegalStateException("WorldEditor permission is required to build in the Hub.");
+            if (!authorized.test(player)) throw new IllegalStateException("Only builders can turn on building.");
             worlds.put(player, world);
         }
         boolean allows(UUID player, UUID world) {
@@ -51,18 +59,19 @@ public final class HubBuildMode {
     }
 
     public static void set(EterniaModPlugin plugin, PlayerRef player, World world, boolean enabled) {
-        SetupAccess.require(player.getUuid());
+        if (!mayBuild(player.getUuid())) throw new IllegalStateException("Only builders can turn on building.");
         if (enabled) {
-            if (!isHub(plugin, world)) throw new IllegalArgumentException(plugin.getInfrastructure().world(world.getName()).map(plan -> "This world is set up as a "+plan.role()+" world. Make it the Hub in /e admin setup, World role, then try again.").orElse("Make this world the Hub in /e admin setup, World role, then try again."));
+            if (!isHub(plugin, world)) throw new IllegalArgumentException("Building can only be turned on in the Hub and housing worlds.");
             SESSIONS.enable(player.getUuid(), world.getWorldConfig().getUuid());
         } else SESSIONS.forget(player.getUuid());
         try { HousingWorldPolicy.refresh(world); }
         catch (RuntimeException failure) { SESSIONS.forget(player.getUuid()); throw failure; }
-        plugin.getLogger().atInfo().log("Administrator %s set Hub building %s in %s", player.getUuid(), enabled, world.getName());
+        plugin.getLogger().atInfo().log("Builder %s set building %s in %s", player.getUuid(), enabled, world.getName());
     }
 
+    /** The Hub and housing worlds; adventure worlds are never built in this way. */
     private static boolean isHub(EterniaModPlugin plugin, World world) {
-        return plugin.getInfrastructure().world(world.getName()).map(plan -> plan.role().equals("hub")).orElse(false);
+        return plugin.getInfrastructure().world(world.getName()).map(plan -> plan.role().equals("hub") || plan.role().equals("housing")).orElse(false);
     }
     public static boolean enabled(EterniaModPlugin plugin, UUID player, World world) {
         return isHub(plugin, world) && SESSIONS.allows(player, world.getWorldConfig().getUuid());

@@ -1,0 +1,17 @@
+{
+  "id": "darkwood_cabin",
+  "displayName": "Darkwood Cabin",
+  "prefabPath": "EterniaMod/Houses/House_Darkwood_Cabin.prefab.json",
+  "plotAnchorOffset": [
+    8,
+    0,
+    8
+  ],
+  "spawnLocalPos": [
+    0,
+    3,
+    1
+  ],
+  "rotationYaw": "None",
+  "housingKind": "personal"
+}

@@ -82,7 +82,7 @@ class PlotCellsTest {
 
     @Test void settingsComeFromDataWithSafeFallbacks() throws Exception {
         HexPlotSettings shipped = HexPlotSettings.load(getClass().getClassLoader());
-        assertEquals(new HexPlotSettings(32, 20, HexPlotSettings.DEFAULTS.startShapes(), 10, 19, 0, 0, 0, 24, 2, 5, 3, 500), shipped, "the shipped JSON matches the accepted plan");
+        assertEquals(new HexPlotSettings(44, 28, HexPlotSettings.DEFAULTS.startShapes(), 10, 19, 0, 0, 0, 24, 2, 5, 3, 500), shipped, "the shipped JSON matches the accepted plan");
         assertEquals(HexShape.TRIANGLE, shipped.startShape(HexClaimRules.Kind.PUBLIC, true));
         assertEquals(HexShape.FLOWER, shipped.startShape(HexClaimRules.Kind.GUILD_ESTATE, false));
         assertEquals(10, shipped.maxCells(HexClaimRules.Kind.PUBLIC), "a house hexagon, three extensions and six production hexagons");
@@ -100,7 +100,7 @@ class PlotCellsTest {
         assertEquals(HexShape.FLOWER, odd.startShape(HexClaimRules.Kind.GUILD_ESTATE, false), "unknown shape falls back");
         assertEquals(3, odd.maxCells(HexClaimRules.Kind.PUBLIC), "a cap never drops below the start shape");
         assertEquals(50, odd.expansionPrice(10), "negative per cell price clamps to zero");
-        assertEquals(32, odd.latticeWidth(), "invalid lattice falls back");
+        assertEquals(44, odd.latticeWidth(), "invalid lattice falls back");
         assertEquals(24, odd.propsPerCell());
         assertEquals(Map.copyOf(HexPlotSettings.DEFAULTS.startShapes()).size(), odd.startShapes().size());
     }

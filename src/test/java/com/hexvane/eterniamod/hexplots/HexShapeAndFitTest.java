@@ -41,33 +41,35 @@ class HexShapeAndFitTest {
     }
 
     @Test void todaysHouseSizesFitTheCatalogWithTodaysSetback() {
-        assertEquals(14, HexFit.largestSquareInEveryVariant(L, HexShape.SINGLE, K));
-        assertEquals(22, HexFit.largestSquareInEveryVariant(L, HexShape.TRIANGLE, K));
-        assertEquals(54, HexFit.largestSquareInEveryVariant(L, HexShape.FLOWER, K));
-        for (HexShape s : HexShape.values()) assertTrue(HexFit.largestSquare(L, s.cells(), K) >= s.houseSide(), s.name());
-        // The diamond only holds the 38 keep in some turns; that is why the keep uses the flower.
-        assertEquals(38, HexFit.largestSquare(L, HexShape.DIAMOND.cells(), K));
-        assertTrue(HexFit.largestSquareInEveryVariant(L, HexShape.DIAMOND, K) < 38);
+        assertEquals(24, HexFit.largestSquareInEveryVariant(L, HexShape.SINGLE, K));
+        assertEquals(34, HexFit.largestSquareInEveryVariant(L, HexShape.TRIANGLE, K));
+        assertEquals(78, HexFit.largestSquareInEveryVariant(L, HexShape.FLOWER, K));
+        for (HexShape s : HexShape.values()) assertTrue(HexFit.largestSquareInEveryVariant(L, s, K) >= s.houseSide(), s.name());
+        // On the old 32 x 20 lattice the diamond only held the 38 keep in some turns; that is why the keep uses the flower.
+        HexLattice classic = TestLattices.CLASSIC;
+        assertEquals(14, HexFit.largestSquareInEveryVariant(classic, HexShape.SINGLE, K));
+        assertEquals(38, HexFit.largestSquare(classic, HexShape.DIAMOND.cells(), K));
+        assertTrue(HexFit.largestSquareInEveryVariant(classic, HexShape.DIAMOND, K) < 38);
     }
 
     @Test void shapeForHouseSide() {
         assertEquals(HexShape.SINGLE, HexShape.forHouseSide(9));
-        assertEquals(HexShape.SINGLE, HexShape.forHouseSide(14));
-        assertEquals(HexShape.TRIANGLE, HexShape.forHouseSide(15));
-        assertEquals(HexShape.TRIANGLE, HexShape.forHouseSide(22));
+        assertEquals(HexShape.SINGLE, HexShape.forHouseSide(24));
+        assertEquals(HexShape.TRIANGLE, HexShape.forHouseSide(25));
+        assertEquals(HexShape.TRIANGLE, HexShape.forHouseSide(34));
         assertEquals(HexShape.FLOWER, HexShape.forHouseSide(38));
         assertThrows(IllegalArgumentException.class, () -> HexShape.forHouseSide(39));
     }
 
     @Test void fitHonoursTheOuterBorderSetbackOnly() {
         Set<HexCoord> one = Set.of(HexCoord.ORIGIN);
-        PlotRect house = HexFit.nearestFit(L, one, 14, 14, K).orElseThrow();
+        PlotRect house = HexFit.nearestFit(L, one, 24, 24, K).orElseThrow();
         assertTrue(HexFit.fits(L, one, house, K));
-        assertFalse(HexFit.fits(L, one, new PlotRect(house.x(), house.z(), 15, 15), K));
-        assertTrue(HexFit.nearestFit(L, one, 15, 15, K).isEmpty());
-        // The shared side inside a plot needs no setback: a 22 house straddles all three triangle cells.
+        assertFalse(HexFit.fits(L, one, new PlotRect(house.x(), house.z(), 25, 25), K));
+        assertTrue(HexFit.nearestFit(L, one, 25, 25, K).isEmpty());
+        // The shared side inside a plot needs no setback: a 34 house straddles all three triangle cells.
         Set<HexCoord> tri = HexShape.TRIANGLE.cells();
-        PlotRect manor = HexFit.nearestFit(L, tri, 22, 22, K).orElseThrow();
+        PlotRect manor = HexFit.nearestFit(L, tri, 34, 34, K).orElseThrow();
         assertEquals(tri, HexFit.cellsUnder(L, manor));
         assertFalse(HexFit.fits(L, Set.of(HexCoord.ORIGIN, new HexCoord(1, 0)), manor, K));
         assertEquals(0, HexFit.largestSquare(L, Set.of(), K));

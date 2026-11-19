@@ -1,0 +1,110 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 1,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 1.0913734436035156,
+            "Y": 0.7355270385742188,
+            "Z": 1.0388603210449219
+          },
+          "Rotation": {
+            "Pitch": 0.32291218638420105,
+            "Yaw": 1.7196844816207886,
+            "Roll": 0.06365096569061279
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "OxWREI5pTsOeKFrmjEtfgw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Weapon_Battleaxe_Stone_Trork",
+            "Quantity": 1,
+            "Durability": 60.0,
+            "MaxDurability": 60.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0.3229159414768219,
+            "Yaw": 1.719687819480896,
+            "Roll": 0.06365981698036194
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Frozen": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 1.6281700134277344,
+            "Y": 0.8043746948242188,
+            "Z": 0.982513427734375
+          },
+          "Rotation": {
+            "Pitch": 0.40594521164894104,
+            "Yaw": -1.4859827756881714,
+            "Roll": -0.005925970617681742
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "vM8XIHjgR0O3nDRBLSpqjQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Weapon_Battleaxe_Stone_Trork",
+            "Quantity": 1,
+            "Durability": 60.0,
+            "MaxDurability": 60.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0.4059498906135559,
+            "Yaw": -1.4859932661056519,
+            "Roll": -0.005927637685090303
+          }
+        }
+      }
+    }
+  ]
+}

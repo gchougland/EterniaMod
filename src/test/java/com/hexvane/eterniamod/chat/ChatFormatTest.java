@@ -40,8 +40,8 @@ class ChatFormatTest {
 
     @Test void titleColoursShipForEveryTitleAndPreferThePrefix() throws IOException {
         var colours = com.hexvane.eterniamod.collections.TitleColors.get();
-        assertEquals("#ffcf4a", colours.of("eternia:title/alpha_tester"));
-        assertEquals("#ffcf4a", colours.forWorn("eternia:title/alpha_tester", "eternia:title/dragonslayer"), "the prefix wins");
+        assertEquals("#e9d8a6", colours.of("eternia:title/alpha_tester"));
+        assertEquals("#e9d8a6", colours.forWorn("eternia:title/alpha_tester", "eternia:title/dragonslayer"), "the prefix wins");
         assertEquals("#ff7a45", colours.forWorn(null, "eternia:title/dragonslayer"));
         assertNull(colours.forWorn(null, null));
         try (InputStream index = getClass().getClassLoader().getResourceAsStream("Server/EterniaMod/Collections/catalog.index")) {

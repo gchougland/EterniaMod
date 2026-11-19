@@ -25,24 +25,33 @@ import org.bson.*;
 import org.joml.Vector3d;
 import org.joml.Vector3i;
 
-/** Reviewed static item-prop adapter. NPCs, inventories, timers and unknown gameplay state are not accepted. */
+/**
+ * Reviewed static item-prop adapter: block displays (with BlockEntity) and plain dropped-item displays (with
+ * HeadRotation), either of which may carry the native Frozen tag that keeps it still. NPCs, inventories, timers and
+ * unknown gameplay state are not accepted.
+ */
 public final class NativeDecorativeEntities {
     private NativeDecorativeEntities() {}
-    private static final Set<String> REQUIRED=Set.of("PreventItemMerging","Prop","BlockEntity","Transform","UUID","PreventPickup","EntityScale","Item","PrefabCopyable");
+    private static final Set<String> REQUIRED=Set.of("PreventItemMerging","Prop","Transform","UUID","PreventPickup","EntityScale","Item","PrefabCopyable");
+    /** BlockEntity shows a block model; HeadRotation is how an item display faces; Frozen keeps either from moving. */
+    private static final Set<String> OPTIONAL=Set.of("BlockEntity","HeadRotation","Frozen");
     private static final Set<String> PERSISTENT;
-    static {var keys=new HashSet<>(REQUIRED);keys.add("EterniaPlacedInstance");PERSISTENT=Set.copyOf(keys);}
+    static {var keys=new HashSet<>(REQUIRED);keys.addAll(OPTIONAL);keys.add("EterniaPlacedInstance");PERSISTENT=Set.copyOf(keys);}
 
     /** Validate the persisted shape independently of a live ECS registry; no unsupported field is silently discarded. */
     static void validateDocument(BsonDocument document,boolean linked) {
         var components=document.getDocument("Components");
         if(!components.keySet().containsAll(REQUIRED)||!PERSISTENT.containsAll(components.keySet())||linked!=components.containsKey("EterniaPlacedInstance"))throw new IllegalStateException("Only reviewed decorative item entity components are supported");
         var item=components.getDocument("Item");var stack=item.getDocument("Item");
-        if(stack.getNumber("Quantity").intValue()!=1||item.getBoolean("RemovedByPlayerPickup",BsonBoolean.FALSE).getValue()||!stack.getString("Id").getValue().equals(components.getDocument("BlockEntity").getString("BlockTypeKey").getValue()))throw new IllegalStateException("Decorative entity must contain one matching non-pickup item");
+        boolean block=components.containsKey("BlockEntity");
+        if(stack.getNumber("Quantity").intValue()!=1||item.getBoolean("RemovedByPlayerPickup",BsonBoolean.FALSE).getValue()||(block&&!stack.getString("Id").getValue().equals(components.getDocument("BlockEntity").getString("BlockTypeKey").getValue())))throw new IllegalStateException("Decorative entity must contain one matching non-pickup item");
         double scale=components.getDocument("EntityScale").getNumber("Scale").doubleValue();
         if(!Double.isFinite(scale)||scale<=0||scale>4)throw new IllegalStateException("Decorative entity scale must be within (0,4]");
         var transform=components.getDocument("Transform");
         for(var key:List.of("X","Y","Z"))if(!Double.isFinite(transform.getDocument("Position").getNumber(key).doubleValue()))throw new IllegalStateException("Invalid decorative entity position");
         for(var key:List.of("Pitch","Yaw","Roll"))if(!Double.isFinite(transform.getDocument("Rotation").getNumber(key).doubleValue()))throw new IllegalStateException("Invalid decorative entity rotation");
+        if(components.containsKey("HeadRotation"))for(var key:List.of("Pitch","Yaw","Roll"))if(!Double.isFinite(components.getDocument("HeadRotation").getDocument("Rotation").getNumber(key).doubleValue()))throw new IllegalStateException("Invalid decorative entity rotation");
+        if(components.containsKey("Frozen")&&!components.getDocument("Frozen").isEmpty())throw new IllegalStateException("Frozen is a tag with no data");
     }
 
     /** Prepare fresh UUIDs and ownership links before writing the immutable placement after-image. */
@@ -58,7 +67,7 @@ public final class NativeDecorativeEntities {
                 if(Item.getAssetMap().getAsset(itemId)==null)throw new IllegalStateException("Unknown decorative item asset");
                 // Exactly the native v0->v1 BlockEntitySystems.PositionMigrationSystem transform, performed before hashing.
                 var block=holder.getComponent(BlockEntity.getComponentType());var transform=holder.getComponent(TransformComponent.getComponentType());
-                if(block.consumeOutdatedAnchor()){
+                if(block!=null&&block.consumeOutdatedAnchor()){
                     var scale=holder.getComponent(EntityScaleComponent.getComponentType());float oldScale=scale.getScale();scale.setScale(oldScale/2f);
                     transform.getPosition().add(transform.getRotation().transform(new Vector3d(0,(oldScale/4f)-0.5,0))).add(0,0.5,0);
                 }

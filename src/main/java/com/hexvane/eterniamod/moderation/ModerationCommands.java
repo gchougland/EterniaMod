@@ -40,12 +40,81 @@ public final class ModerationCommands {
 
     private ModerationCommands() {}
 
-    /** The single shared edit: one call from {@code EterniaAdminCommand}. */
-    public static void addTo(AbstractCommand admin) {
-        admin.addSubCommand(new Ban());
-        admin.addSubCommand(new Unban());
-        admin.addSubCommand(new Info());
-        admin.addSubCommand(new ListBans());
+    /** Ban, unban, ban records, kick, mute and unmute, added under {@code /e admin} and {@code /e mod}. */
+    public static void addTo(AbstractCommand collection) {
+        collection.addSubCommand(new Ban());
+        collection.addSubCommand(new Unban());
+        collection.addSubCommand(new Info());
+        collection.addSubCommand(new ListBans());
+        collection.addSubCommand(new Kick());
+        collection.addSubCommand(new Mute());
+        collection.addSubCommand(new Unmute());
+    }
+
+    /** {@code kick <player> [reason...]}: sends an online player off the server with the reason. */
+    static final class Kick extends AbstractAsyncCommand {
+        private final RequiredArg<String> player = withRequiredArg("player", "Player name", PLAYER);
+        Kick() { super("kick", "Send an online player off the server. Anything after the name is the reason"); setAllowsExtraArguments(true); }
+        @Override protected CompletableFuture<Void> executeAsync(CommandContext context) {
+            String reason = trailing(context, "kick", 1);
+            String input = player.get(context).trim();
+            return run(context, moderation -> {
+                PlayerRef online = Universe.get().getPlayers().stream().filter(p -> p.getUsername().equalsIgnoreCase(input)).findFirst().orElse(null);
+                if (online == null) return List.of(line("kick.notOnline", SAGE).param("name", name(input)));
+                if (context.sender() instanceof PlayerRef self && self.getUuid().equals(online.getUuid())) return List.of(line("kick.self", CORAL));
+                Message notice = reason.isBlank() ? Message.translation(KEY + "kick.notice")
+                    : Message.translation(KEY + "kick.noticeReason").param("reason", reason);
+                com.hypixel.hytale.server.core.io.ConnectionRegistry.get().disconnect(online.getUuid(), notice);
+                EterniaModPlugin plugin = EterniaModPlugin.get();
+                if (plugin != null) plugin.getLogger().atInfo().log("Kick: %s (%s) by %s. Reason: %s", online.getUsername(), online.getUuid(), actor(context.sender()).name(), reason);
+                return List.of(line("kick.done", TEAL).param("name", name(online.getUsername())));
+            });
+        }
+    }
+
+    /** {@code mute <player> [time] [reason...]}: stops a player chatting in every channel. With no time, the mute is permanent. */
+    static final class Mute extends AbstractAsyncCommand {
+        private final RequiredArg<String> player = withRequiredArg("player", "Player name or ID", PLAYER);
+        Mute() { super("mute", "Stop a player chatting. Add a time like 30m or 1d, then a reason; with no time it lasts until unmuted"); setAllowsExtraArguments(true); }
+        @Override protected CompletableFuture<Void> executeAsync(CommandContext context) {
+            String rest = trailing(context, "mute", 1);
+            String[] words = rest.isBlank() ? new String[0] : rest.split("\s+", 2);
+            Optional<BanDuration> parsed = words.length == 0 ? Optional.empty() : BanDuration.parse(words[0]);
+            if (parsed.isEmpty() && words.length > 0 && BanDuration.looksLikeTime(words[0])) {
+                context.sendMessage(line("ban.badTime", CORAL).param("input", words[0]));
+                return CompletableFuture.completedFuture(null);
+            }
+            BanDuration length = parsed.orElse(BanDuration.PERMANENT);
+            String reason = parsed.isPresent() ? (words.length > 1 ? words[1] : "") : rest;
+            String input = player.get(context);
+            return run(context, moderation -> {
+                Target target = resolve(moderation, input);
+                if (context.sender() instanceof PlayerRef self && self.getUuid().equals(target.id())) return List.of(line("mute.self", CORAL));
+                var mute = moderation.service().mute(target.id(), target.name(), actor(context.sender()), length, reason);
+                var out = new ArrayList<Message>();
+                out.add(mute.permanent() ? line("mute.donePermanent", TEAL).param("name", name(target.name()))
+                    : line("mute.done", TEAL).param("name", name(target.name())).param("time", length.words()));
+                out.add(line("ban.reason", IVORY).param("reason", reasonText(mute.reason())));
+                EterniaModPlugin plugin = EterniaModPlugin.get();
+                if (plugin != null) plugin.getLogger().atInfo().log("Mute: %s (%s) by %s for %s. Reason: %s", target.name(), target.id(), mute.by().name(), length.compact(), mute.reason());
+                return out;
+            });
+        }
+    }
+
+    /** {@code unmute <player>}: lets a muted player chat again. */
+    static final class Unmute extends AbstractAsyncCommand {
+        private final RequiredArg<String> player = withRequiredArg("player", "Player name or ID", PLAYER);
+        Unmute() { super("unmute", "Let a muted player chat again"); }
+        @Override protected CompletableFuture<Void> executeAsync(CommandContext context) {
+            String input = player.get(context);
+            return run(context, moderation -> {
+                Target target = resolve(moderation, input);
+                return moderation.service().unmute(target.id()).isPresent()
+                    ? List.of(line("unmute.done", TEAL).param("name", name(target.name())))
+                    : List.of(line("unmute.notMuted", SAGE).param("name", name(target.name())));
+            });
+        }
     }
 
     // ---- arguments ------------------------------------------------------------------------------------------------
@@ -204,7 +273,8 @@ public final class ModerationCommands {
 
     /** Checks staff access, runs the work on the moderation thread and sends what it returns, or a friendly failure. */
     private static CompletableFuture<Void> run(CommandContext context, java.util.function.Function<ModerationBootstrap, List<Message>> work) {
-        if (context.sender() instanceof PlayerRef player && !SetupAccess.allowed(player.getUuid())) {
+        if (context.sender() instanceof PlayerRef player && !SetupAccess.allowed(player.getUuid())
+            && !com.hexvane.eterniamod.ranks.RankPermissions.has(player.getUuid(), com.hexvane.eterniamod.ranks.RankPermissions.MODERATION)) {
             context.sendMessage(line("staffOnly", CORAL));
             return CompletableFuture.completedFuture(null);
         }

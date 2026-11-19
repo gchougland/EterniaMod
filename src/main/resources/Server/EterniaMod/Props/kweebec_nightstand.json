@@ -1,0 +1,11 @@
+{
+  "id": "kweebec_nightstand",
+  "displayName": "Kweebec Nightstand",
+  "prefabPath": "EterniaMod/Props/Pack_Kweebec_Nightstand.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

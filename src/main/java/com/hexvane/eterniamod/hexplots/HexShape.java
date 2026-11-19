@@ -8,13 +8,13 @@ import java.util.Set;
 /**
  * House footprints measured in cells. A house occupies one of these shapes (in any of its turned
  * variants); the rest of the plot is yard. The largest square house each shape holds is computed by
- * {@link HexFit#largestSquareInEveryVariant}; with {@link HexLattice#DEFAULT} it is 14, 22, 38 and 54.
+ * {@link HexFit#largestSquareInEveryVariant}; with {@link HexLattice#DEFAULT} it is 24, 34, 56 (in some turns) and 78.
  */
 public enum HexShape {
-    /** Today's free house: up to 14 x 14. */
-    SINGLE("Cottage", List.of(HexCoord.ORIGIN), 14),
-    /** Today's upgraded house: up to 22 x 22. Three cells meeting at one corner. */
-    TRIANGLE("Manor", List.of(HexCoord.ORIGIN, new HexCoord(1, 0), new HexCoord(0, 1)), 22),
+    /** The free house: up to 24 x 24, which fits every starter cabin with room to decorate. */
+    SINGLE("Cottage", List.of(HexCoord.ORIGIN), 24),
+    /** The upgraded house: up to 34 x 34. Three cells meeting at one corner. */
+    TRIANGLE("Manor", List.of(HexCoord.ORIGIN, new HexCoord(1, 0), new HexCoord(0, 1)), 34),
     /** Tightest shape for a 38 x 38 keep, with no room to nudge it. Kept as an option. */
     DIAMOND("Hall", List.of(HexCoord.ORIGIN, new HexCoord(1, 0), new HexCoord(-1, 1), new HexCoord(0, 1)), 38),
     /** Guild keep and estate start shape: a centre cell and its six neighbours, up to 38 x 38 with room to spare. */

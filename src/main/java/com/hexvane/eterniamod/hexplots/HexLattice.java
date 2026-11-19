@@ -23,8 +23,12 @@ import java.util.Set;
  * ({@code HousingInfrastructure.WorldPlan#lattice()}).
  */
 public record HexLattice(int cellWidth, int bodyDepth, int originX, int originZ) {
-    /** Live size (accepted plan): one cell holds today's 14 x 14 free house with today's five block setback. */
-    public static final HexLattice DEFAULT = new HexLattice(32, 20, 0, 0);
+    /**
+     * Live size: one cell holds a 24 x 24 house in every turn with the five block setback, so a starter cabin keeps
+     * room around it for decorations (2026-11-18; was 32 x 20 for a 14 x 14 house). Worlds keep the lattice they
+     * were planned with.
+     */
+    public static final HexLattice DEFAULT = new HexLattice(44, 28, 0, 0);
     /** Today's border setback for houses, kept unchanged and measured from the plot's outer border only. */
     public static final int HOUSE_SETBACK = 5;
 
@@ -35,7 +39,7 @@ public record HexLattice(int cellWidth, int bodyDepth, int originX, int originZ)
     }
 
     /**
-     * Stable text id of this lattice, saved next to every plot's cells ({@code hex:32:20:0:0}). Two lattices with
+     * Stable text id of this lattice, saved next to every plot's cells ({@code hex:44:28:0:0}). Two lattices with
      * the same id are the same lattice, so cells saved under one id always mean the same block columns.
      */
     public String id() { return "hex:" + cellWidth + ":" + bodyDepth + ":" + originX + ":" + originZ; }

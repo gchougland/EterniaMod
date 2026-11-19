@@ -2,7 +2,7 @@ $T = "Theme/Citadel.ui";
 
 // The claim map: a picture of the land around the player with the hexagon grid on it (drawn at run time by
 // ClaimMapRenderer and sent as a per player asset), clickable cells over it, and a side panel that explains the
-// selected hexagon. Sizes follow ClaimMapGeometry: the map is 880 x 770 (11 x 11 cells at 2.5 pixels per block).
+// selected hexagon. Sizes follow ClaimMapGeometry: the map is 880 wide (11 cells of 80 pixels) and 770 or 780 tall depending on the world's cell shape; Java sets the height.
 
 @MapWidth = 880;
 @MapHeight = 770;
@@ -45,6 +45,7 @@ $T.@CodexScreen {
           @Mark #Bad0 { Background: "ClaimMap/HexPickBad.png"; } @Mark #Bad1 { Background: "ClaimMap/HexPickBad.png"; } @Mark #Bad2 { Background: "ClaimMap/HexPickBad.png"; }
           @Mark #Bad3 { Background: "ClaimMap/HexPickBad.png"; } @Mark #Bad4 { Background: "ClaimMap/HexPickBad.png"; } @Mark #Bad5 { Background: "ClaimMap/HexPickBad.png"; }
           @Mark #Bad6 { Background: "ClaimMap/HexPickBad.png"; }
+          @Mark #Hover { Background: "ClaimMap/HexHoverFull.png"; }
           @Mark #Selected { Background: "ClaimMap/HexSelected.png"; }
         }
         }

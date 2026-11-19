@@ -1,0 +1,11 @@
+{
+  "id": "cleaning_supplies",
+  "displayName": "Cleaning Supplies",
+  "prefabPath": "EterniaMod/Props/Pack_Cleaning_Supplies.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

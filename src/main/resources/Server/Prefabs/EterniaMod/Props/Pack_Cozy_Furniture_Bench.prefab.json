@@ -1,0 +1,420 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [],
+  "fluids": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "z": 1,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "z": 1,
+      "name": "Empty",
+      "level": 0
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "name": "Empty",
+      "level": 0
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Flower_Bushy_Blue"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.4477272033691406,
+            "Y": 0.7120819091796875,
+            "Z": 1.3459606170654297
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.1971167027950287,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "pDcy1ZAgMviX3ByqzbeeXg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.49999991059303284
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Flower_Bushy_Blue",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Tavern_Planter"
+        },
+        "Transform": {
+          "Position": {
+            "X": -0.4068756103515625,
+            "Y": 0.23712158203125,
+            "Z": 1.2653026580810547
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.5299054384231567,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "MAtyC3Z9PiGhF/wPOJLyQw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5999999046325684
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Tavern_Planter",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Chair"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.2659645080566406,
+            "Y": 0.46860504150390625,
+            "Z": 0.6144161224365234
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 2.3690497875213623,
+            "Roll": -0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "CZpKtnbaORWgOnC5vYZXHA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.8999999761581421
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Chair",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 0.9825019836425781,
+            "Y": 0.941192626953125,
+            "Z": 1.5257911682128906
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.22273124754428864,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "FidvacnFPhOQularKHxXgw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Ingredient_Bolt_Silk",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -0.2227320522069931,
+            "Roll": 0.0
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 1.6339263916015625,
+            "Y": 0.9833831787109375,
+            "Z": 1.129791259765625
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.08972841501235962,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "RsbgTkDiPnqTbki32OqrkQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.49999991059303284
+        },
+        "Item": {
+          "Item": {
+            "Id": "Ingredient_Fabric_Scrap_Silk",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.08972841501235962,
+            "Roll": 0.0
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 0.5076942443847656,
+            "Y": 0.9535980224609375,
+            "Z": 1.299245834350586
+          },
+          "Rotation": {
+            "Pitch": -0.12341438233852386,
+            "Yaw": 0.0044474233873188496,
+            "Roll": -1.562915563583374
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "LAHrMiIXMrqOMYOAzB4pOQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Tool_Shears_Basic",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": -0.1234135851264,
+            "Yaw": 0.0044475132599473,
+            "Roll": -1.562913179397583
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 1.5237197875976562,
+            "Y": 0.9109344482421875,
+            "Z": 1.69989013671875
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.08820056915283203,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "yiWbg3CKOkCDUKgYKylDlw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Ingredient_Sinue_Cindersinue",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.08820056915283203,
+            "Roll": 0.0
+          }
+        }
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Bench_Furniture"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.5
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "pKjqDIj5RHmABx4H7MoSfg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Bench_Furniture",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

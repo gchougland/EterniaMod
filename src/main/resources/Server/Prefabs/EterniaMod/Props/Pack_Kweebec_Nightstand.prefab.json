@@ -1,0 +1,164 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Furniture_Tavern_Barrel"
+    }
+  ],
+  "fluids": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "name": "Empty",
+      "level": 0
+    }
+  ],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Grass_Lush_Short"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5993690490722656,
+            "Y": 1.6748046875,
+            "Z": 0.4612770080566406
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.00360906124115,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "YdC0TBkSQaisSXUs5QuZYg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Grass_Lush_Short",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Plant_Grass_Lush_Short"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.5991706848144531,
+            "Y": 1.6748046875,
+            "Z": 0.4617934226989746
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "PjUqDcTfTsuybwtTpqQGEg==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.2999999225139618
+        },
+        "Item": {
+          "Item": {
+            "Id": "Plant_Grass_Lush_Short",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Kweebec_Candle"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.6124725341796875,
+            "Y": 1.496490478515625,
+            "Z": 0.4804363250732422
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": -1.993285059928894,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "7ue15Kh5TySqJKd7DQ1/qw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 1.0
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Kweebec_Candle",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

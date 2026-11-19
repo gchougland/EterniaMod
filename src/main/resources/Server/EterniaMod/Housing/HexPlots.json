@@ -1,5 +1,5 @@
 {
-  "Lattice": { "CellWidth": 32, "BodyDepth": 20 },
+  "Lattice": { "CellWidth": 44, "BodyDepth": 28 },
   "StartShapes": {
     "Public": "Single",
     "PublicUpgraded": "Triangle",

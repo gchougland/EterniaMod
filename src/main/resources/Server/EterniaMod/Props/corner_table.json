@@ -1,0 +1,11 @@
+{
+  "id": "corner_table",
+  "displayName": "Corner Table",
+  "prefabPath": "EterniaMod/Props/Pack_Corner_Table.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

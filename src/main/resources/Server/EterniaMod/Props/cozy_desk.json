@@ -1,0 +1,11 @@
+{
+  "id": "cozy_desk",
+  "displayName": "Cozy Desk",
+  "prefabPath": "EterniaMod/Props/Pack_Cozy_Desk.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

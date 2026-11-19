@@ -60,13 +60,15 @@ public final class EterniaRuntime implements AutoCloseable {
         Owner owner=Owner.player(player);
         grant(owner,"eternia:plot/free",OwnershipService.Kind.CAPABILITY);
         grant(owner,HousingService.MOVE_CREDIT,OwnershipService.Kind.QUANTITY);
-        grant(owner,"eternia:house/hub_house",OwnershipService.Kind.UNLOCK);
         grant(owner,"eternia:mount/horse",OwnershipService.Kind.UNLOCK);
         grant(owner,"eternia:service/mailbox",OwnershipService.Kind.UNLOCK);
-        grant(owner,"eternia:prop/aqua_lamp",OwnershipService.Kind.QUANTITY);
-        grant(owner,"eternia:prop/station_miner",OwnershipService.Kind.QUANTITY);
+        // Free starter houses and decorations, chosen in the admin starter and shop menu. A newly added one reaches
+        // existing players the next time they join.
+        for(String content:services.starters().free())grant(owner,content,content.startsWith("eternia:house/")?OwnershipService.Kind.UNLOCK:OwnershipService.Kind.QUANTITY);
         grant(owner,"eternia:palette/cut_stone",OwnershipService.Kind.UNLOCK);
         grant(owner,"eternia:path/cobblestone",OwnershipService.Kind.UNLOCK);
+        // Staff rank titles follow the player's permission groups, so a new or removed Admin, Mod or Builder sees it here.
+        if(com.hypixel.hytale.server.core.permissions.PermissionsModule.get()!=null)com.hexvane.eterniamod.ranks.RankPermissions.syncTitles(services,player);
         var settings=playtest;
         if(settings.alpha())services.playtest().recordAlphaTester(player,name);
         if(services.playtest().isAlphaTester(player))services.ownership().grant(new OwnershipService.GrantRequest("alpha-tester:"+player,owner,PlaytestService.ALPHA_TITLE,OwnershipService.Kind.UNLOCK,1,null));

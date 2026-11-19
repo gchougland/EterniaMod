@@ -1,0 +1,11 @@
+{
+  "id": "crates",
+  "displayName": "Crates",
+  "prefabPath": "EterniaMod/Props/Pack_Crates.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

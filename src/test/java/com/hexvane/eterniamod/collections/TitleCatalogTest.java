@@ -125,6 +125,8 @@ class TitleCatalogTest {
         // Wayfarer and of the Hearth predate this set and are already placed in the Foundations pass. Alpha Tester is
         // given to everyone who played the alpha, not earned by a goal.
         titleIds.removeAll(seen);
+        // Rank titles come with ranks, not goals.
+        titleIds.removeIf(id -> id.startsWith("eternia:title/rank_"));
         assertEquals(Set.of("eternia:title/wayfarer", "eternia:title/of_the_hearth", "eternia:title/alpha_tester"), titleIds);
     }
 

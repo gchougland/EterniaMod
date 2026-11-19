@@ -1,0 +1,11 @@
+{
+  "id": "hanging_backpack",
+  "displayName": "Hanging Backpack",
+  "prefabPath": "EterniaMod/Props/Pack_Hanging_Backpack.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

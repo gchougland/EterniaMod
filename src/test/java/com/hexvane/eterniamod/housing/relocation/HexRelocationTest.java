@@ -19,7 +19,7 @@ import org.bson.BsonString;
 import org.junit.jupiter.api.Test;
 
 class HexRelocationTest {
-    private static final HexLattice L = HexLattice.DEFAULT;
+    private static final HexLattice L = com.hexvane.eterniamod.hexplots.TestLattices.CLASSIC;
     /** Row 0 (cells q 0..3) is a public road. */
     private static final Set<HexCoord> STREET = HexClaimRules.streetCells(L, List.of(new PlotRect(0, 15, 128, 5)), List.of());
     private static final List<HexCoord> TRIANGLE = List.of(new HexCoord(0, 1), new HexCoord(1, 1), new HexCoord(0, 2));

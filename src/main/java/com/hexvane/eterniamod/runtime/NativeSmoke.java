@@ -94,21 +94,21 @@ public final class NativeSmoke {
         plugin.getLogger().atInfo().log("ETERNIA_NATIVE_SMOKE_STAGE: claim committed");
         var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin); var plot=manager.getPlot(property);
         NativeHouseRecoverySmoke.exercise(plugin,world,plot,actor);
-        var prefab=PrefabResolveUtil.resolvePrefabBuffer("House.prefab.json");
-        var definition=plugin.getBuildingCatalog().get("hub_house");
-        var preview=new com.hexvane.eterniamod.placement.BuildingPlacementSession(world,property,new Vector3i(9,3,9),0,"hub_house");
+        var prefab=PrefabResolveUtil.resolvePrefabBuffer("EterniaMod/Houses/House_Log_Cabin.prefab.json");
+        var definition=plugin.getBuildingCatalog().get("log_cabin");
+        var preview=new com.hexvane.eterniamod.placement.BuildingPlacementSession(world,property,new Vector3i(9,3,9),0,"log_cabin");
         if(!com.hexvane.eterniamod.placement.BuildingPlacementValidator.findValidPosition(world,plot,actor,preview,definition,plugin)||com.hexvane.eterniamod.placement.BuildingPlacementValidator.validate(world,manager,plot,actor,preview.getAnchor(),preview.getPrefabYaw(),definition,plugin)!=null)throw new IllegalStateException("A free plot must offer a valid house preview with the catalog anchor offset");
         plugin.getLogger().atInfo().log("ETERNIA_NATIVE_HOUSE_PREVIEW_PASS: native player-facing validator accepts the automatically selected position");
         if(prefab==null)throw new IllegalStateException("House prefab did not resolve");
-        var placed=NativePlacementTransactions.place(plugin,world,plot,actor,"hub_house",new Vector3i(20,1,20),Rotation.None,prefab,true);
-        plot.setBuilding(new HubPlotBuilding("hub_house",20,1,20,Rotation.None,List.of()));manager.updatePlot(plot);manager.saveIfDirty();
+        var placed=NativePlacementTransactions.place(plugin,world,plot,actor,"log_cabin",new Vector3i(20,1,20),Rotation.None,prefab,true);
+        plot.setBuilding(new HubPlotBuilding("log_cabin",20,1,20,Rotation.None,List.of()));manager.updatePlot(plot);manager.saveIfDirty();
         plugin.getServices().housing().updateBuildingPresent(owner,property,true);NativePlacementTransactions.complete(plugin,placed.operation());
         plugin.getLogger().atInfo().log("ETERNIA_NATIVE_SMOKE_STAGE: house committed");
         var customization=com.hexvane.eterniamod.customization.CustomizationBootstrap.service();
         var palette=customization.palette(world,property,actor,customization.catalog().palettes().getFirst());
         customization.confirm(world,palette);
         var customized=plugin.getServices().provenance().find(placed.instanceId()).orElseThrow();
-        if(!"cut_stone".equals(customized.nativeData().get("palette"))||!customized.owner().equals(owner)||!customized.sourceReference().equals("unlock:eternia:house/hub_house"))throw new IllegalStateException("Palette did not retain original house custody and source");
+        if(!"cut_stone".equals(customized.nativeData().get("palette"))||!customized.owner().equals(owner)||!customized.sourceReference().equals("unlock:eternia:house/log_cabin"))throw new IllegalStateException("Palette did not retain original house custody and source");
         var path=customization.path(world,property,actor,customization.catalog().paths().getFirst(),10,1,20);
         customization.confirm(world,path);
         boolean duplicateRejected=false;try{customization.confirm(world,path);}catch(IllegalStateException expected){duplicateRejected=true;}

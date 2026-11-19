@@ -1,0 +1,105 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Container_Bucket"
+        },
+        "Transform": {
+          "Position": {
+            "X": 1.3238697052001953,
+            "Y": 0.22536468505859375,
+            "Z": 0.4055595397949219
+          },
+          "Rotation": {
+            "Pitch": 0.0,
+            "Yaw": 1.3384023904800415,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "DnkBR6QEPRiiBViAH63L/A==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5749999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Container_Bucket",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "Transform": {
+          "Position": {
+            "X": 0.7939357757568359,
+            "Y": 0.231475830078125,
+            "Z": 0.46970176696777344
+          },
+          "Rotation": {
+            "Pitch": 0.2641543745994568,
+            "Yaw": -2.855370283126831,
+            "Roll": 0.07668979465961456
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "VZISnaQDPYGtCkq2rHOdzQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.6999999284744263
+        },
+        "Item": {
+          "Item": {
+            "Id": "Halloween_Broomstick",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {},
+        "HeadRotation": {
+          "Rotation": {
+            "Pitch": 0.2641543745994568,
+            "Yaw": -2.8553707599639893,
+            "Roll": 0.07668960839509964
+          }
+        }
+      }
+    }
+  ]
+}

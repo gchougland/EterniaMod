@@ -1,0 +1,194 @@
+{
+  "version": 8,
+  "blockIdVersion": 11,
+  "anchorX": 0,
+  "anchorY": 0,
+  "anchorZ": 0,
+  "blocks": [],
+  "entities": [
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Pot"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.025928497314453125,
+            "Y": 0.165435791015625,
+            "Z": 0.9844436645507812
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 0.6070184111595154,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "Vitp8KzOS768xg4AQLizKA==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Pot",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Crate"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.4590301513671875,
+            "Y": 0.308258056640625,
+            "Z": 1.6415863037109375
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 1.8461403846740723,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "6iJJn6k9RyePDvmMmaajhw==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.5999999046325684
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Crate",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Crate"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.24994468688964844,
+            "Y": 0.235321044921875,
+            "Z": 0.37558746337890625
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 1.8461403846740723,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "aSGQsOnNRHSxcNTMrRE1uQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.3999999165534973
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Crate",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    },
+    {
+      "Components": {
+        "PreventItemMerging": {},
+        "Prop": {},
+        "BlockEntity": {
+          "Version": 1,
+          "BlockTypeKey": "Furniture_Village_Crate"
+        },
+        "Transform": {
+          "Position": {
+            "X": 0.9644546508789062,
+            "Y": 0.40914154052734375,
+            "Z": 0.8361835479736328
+          },
+          "Rotation": {
+            "Pitch": -0.0,
+            "Yaw": 1.8461403846740723,
+            "Roll": 0.0
+          }
+        },
+        "UUID": {
+          "UUID": {
+            "$binary": "NssYP3b6Sf6jumw1bL0qfQ==",
+            "$type": "04"
+          }
+        },
+        "PreventPickup": {},
+        "EntityScale": {
+          "Scale": 0.7999999523162842
+        },
+        "Item": {
+          "Item": {
+            "Id": "Furniture_Village_Crate",
+            "Quantity": 1,
+            "Durability": 0.0,
+            "MaxDurability": 0.0,
+            "OverrideDroppedItemAnimation": true
+          },
+          "StackDelay": 1.5,
+          "PickupDelay": 0.5,
+          "PickupThrottle": 0.0,
+          "RemovedByPlayerPickup": false
+        },
+        "PrefabCopyable": {}
+      }
+    }
+  ]
+}

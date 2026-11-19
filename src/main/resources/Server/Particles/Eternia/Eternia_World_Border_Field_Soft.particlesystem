@@ -1,0 +1,11 @@
+{
+  "Spawners": [
+    {
+      "SpawnerId": "Eternia_World_Border_Field_Soft_Panel"
+    }
+  ],
+  "LifeSpan": 1.4,
+  "CullDistance": 40,
+  "BoundingRadius": 3,
+  "IsImportant": false
+}

@@ -1,0 +1,11 @@
+{
+  "id": "cozy_table",
+  "displayName": "Cozy Table",
+  "prefabPath": "EterniaMod/Props/Pack_Cozy_Table.prefab.json",
+  "plotAnchorOffset": [
+    0,
+    0,
+    0
+  ],
+  "rotationYaw": "None"
+}

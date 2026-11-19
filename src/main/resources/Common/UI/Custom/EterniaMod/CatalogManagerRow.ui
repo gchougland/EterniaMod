@@ -1,0 +1,10 @@
+$T = "Theme/Citadel.ui";
+Group #Row { Anchor: (Height: 76, Bottom: 8); Background: $T.@CodexCardSurface; Padding: (Horizontal: 14); LayoutMode: Left;
+Group #RowImage { Visible: false; Anchor: (Width: 64, Height: 64, Top: 6, Right: 14); }
+ItemIcon #RowItem { Visible: false; Anchor: (Width: 64, Height: 64, Top: 6, Right: 14); }
+Label #RowText { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, VerticalAlignment: Center); }
+$T.@SecondaryTextButton #RowFree { Anchor: (Width: 176, Height: 44, Left: 8, Top: 16); }
+$T.@TextField #RowPrice { Anchor: (Width: 120, Height: 44, Left: 12, Top: 16); PlaceholderText: "Crowns"; MaxLength: 7; }
+$T.@SecondaryTextButton #RowSell { Anchor: (Width: 150, Height: 44, Left: 8, Top: 16); }
+$T.@SecondaryTextButton #RowStop { Anchor: (Width: 150, Height: 44, Left: 8, Top: 16); Text: "Stop selling"; }
+}

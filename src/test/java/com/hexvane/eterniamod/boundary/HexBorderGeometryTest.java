@@ -13,7 +13,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 class HexBorderGeometryTest {
-    private static final HexLattice L = HexLattice.DEFAULT;
+    private static final HexLattice L = com.hexvane.eterniamod.hexplots.TestLattices.CLASSIC;
 
     private static PlotCells cells(HexShape shape) { return PlotCells.of(L, shape.cells()); }
 

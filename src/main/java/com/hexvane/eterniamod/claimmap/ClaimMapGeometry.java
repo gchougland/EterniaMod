@@ -8,7 +8,8 @@ import java.util.Objects;
 
 /**
  * Where everything sits on the claim map: a fixed window of {@link #COLUMNS} by {@link #ROWS} cells, always snapped to
- * the world's lattice, drawn north up at {@link #SCALE} pixels per block. Pure and immutable.
+ * the world's lattice, drawn north up with every cell {@link #CELL_PIXELS} pixels wide whatever its size in blocks
+ * ({@link #scale()} pixels per block). Pure and immutable.
  *
  * <p>Because the window always starts on an even lattice row and a whole cell column, every cell lands on the same
  * pixel spot whatever part of the world is shown. So the clickable cell buttons are laid out once when the page opens,
@@ -19,8 +20,11 @@ import java.util.Objects;
  * hexagon; only the small tip triangles fall in a neighbour's brick. {@link #cellAtPixel} is the exact answer.
  */
 public record ClaimMapGeometry(HexLattice lattice, int column0, int row0) {
-    /** Picture pixels per block. A 32 block cell is 80 by 90 pixels. */
-    public static final double SCALE = 2.5;
+    /**
+     * Picture pixels across one cell. Worlds keep the cell size they were planned with (32 or 44 blocks), so the
+     * pixels per block follow the cell: a 32 block cell draws at 2.5 pixels a block, a 44 block cell at about 1.8.
+     */
+    public static final double CELL_PIXELS = 80;
     /** Whole cells across the window (even rows). */
     public static final int COLUMNS = 11;
     /** Rows of cells down the window. */
@@ -62,17 +66,20 @@ public record ClaimMapGeometry(HexLattice lattice, int column0, int row0) {
         return new ClaimMapGeometry(lattice, column0 + columns, row0 + rows);
     }
 
-    public static int width() { return (int) Math.round(COLUMNS * DEFAULT_CELL_WIDTH * SCALE); }
+    public static int width() { return (int) Math.round(COLUMNS * CELL_PIXELS); }
 
-    public static int height() { return (int) Math.round(ROWS * DEFAULT_ROW_PITCH * SCALE); }
+    public static int height() { return (int) Math.round(ROWS * DEFAULT_ROW_PITCH * CELL_PIXELS / DEFAULT_CELL_WIDTH); }
+
+    /** Picture pixels per block for this world's cells. */
+    public double scale() { return CELL_PIXELS / lattice.cellWidth(); }
 
     private static final int DEFAULT_CELL_WIDTH = HexLattice.DEFAULT.cellWidth();
     private static final int DEFAULT_ROW_PITCH = HexLattice.DEFAULT.rowPitch();
 
     /** Picture size in pixels for this lattice. */
-    public int pixelWidth() { return (int) Math.round(COLUMNS * lattice.cellWidth() * SCALE); }
+    public int pixelWidth() { return (int) Math.round(COLUMNS * lattice.cellWidth() * scale()); }
 
-    public int pixelHeight() { return (int) Math.round(ROWS * lattice.rowPitch() * SCALE); }
+    public int pixelHeight() { return (int) Math.round(ROWS * lattice.rowPitch() * scale()); }
 
     /** World block X at the picture's left edge. */
     public double worldX0() { return lattice.originX() + (double) column0 * lattice.cellWidth(); }
@@ -85,14 +92,14 @@ public record ClaimMapGeometry(HexLattice lattice, int column0, int row0) {
     public double worldHeight() { return (double) ROWS * lattice.rowPitch(); }
 
     /** Picture pixel of a world point given in block edge coordinates. */
-    public Point pixel(double worldX, double worldZ) { return new Point((worldX - worldX0()) * SCALE, (worldZ - worldZ0()) * SCALE); }
+    public Point pixel(double worldX, double worldZ) { return new Point((worldX - worldX0()) * scale(), (worldZ - worldZ0()) * scale()); }
 
     /** Picture pixel of a cell's centre. */
     public Point centre(HexCoord cell) { return pixel(lattice.centerX(cell), lattice.centerZ(cell)); }
 
     /** The cell drawn at a picture pixel (exact hexagon, not the brick). */
     public HexCoord cellAtPixel(double px, double py) {
-        return lattice.cellAt((int) Math.floor(worldX0() + px / SCALE), (int) Math.floor(worldZ0() + py / SCALE));
+        return lattice.cellAt((int) Math.floor(worldX0() + px / scale()), (int) Math.floor(worldZ0() + py / scale()));
     }
 
     /** True when the picture pixel is on the map. */
@@ -101,7 +108,7 @@ public record ClaimMapGeometry(HexLattice lattice, int column0, int row0) {
     /** Every clickable brick, row by row from the top, west to east. The list is the same for every window. */
     public List<Slot> slots() {
         List<Slot> out = new ArrayList<>(COLUMNS * ROWS + ROWS);
-        double cw = lattice.cellWidth() * SCALE, pitch = lattice.rowPitch() * SCALE;
+        double cw = lattice.cellWidth() * scale(), pitch = lattice.rowPitch() * scale();
         int pictureWidth = pixelWidth();
         for (int i = 0; i < ROWS; i++) {
             int row = row0 + i;
