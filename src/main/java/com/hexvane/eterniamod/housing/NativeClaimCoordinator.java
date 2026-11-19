@@ -64,7 +64,7 @@ public final class NativeClaimCoordinator {
         manager.addPlot(projection);manager.saveIfDirty();
         services.batch(()->{var journal=services.journal().find(operation).orElseThrow();
             services.journal().advance(operation,journal.revision(),JournalService.State.WORLD_APPLIED);
-            services.housing().activate(owner,operation);return null;});
+            services.housing().activate(property,operation);return null;});
         if(scope==HousingRules.Scope.GUILD_ROOT)plugin.getRuntime().welcomeGuild(guild);
         return property;
     }
@@ -83,7 +83,7 @@ public final class NativeClaimCoordinator {
             if(!HousingAccess.owner(plot).equals(slot.owner())||!Objects.equals(plot.getAttachedGuildUuid(),slot.attachedGuild()))throw new IllegalStateException("Claim projection ownership does not match reservation");
             var op=services.journal().find(slot.operationId()).orElseThrow();
             if(op.state()==JournalService.State.PREPARED)op=services.journal().advance(op.id(),op.revision(),JournalService.State.WORLD_APPLIED);
-            if(op.state()==JournalService.State.WORLD_APPLIED)services.housing().activate(slot.owner(),op.id());
+            if(op.state()==JournalService.State.WORLD_APPLIED)services.housing().activate(slot.propertyId(),op.id());
         }
         recoverExpansions(world);
     }
@@ -106,9 +106,25 @@ public final class NativeClaimCoordinator {
         // A claim that does not go through puts the land back as it was before the shaping.
         var request=new com.hexvane.eterniamod.hexplots.terraform.PlotTerraformer.Request(world.getName(),cells.lattice(),cells.asSet(),()->claimGroup(actor,kind),null);
         return onWorld(world,()->loadGround(world,cells.bounds())).thenCompose(f->f)
-            .thenCompose(v->terraformer.shapeThen(world,request,()->HexClaimCheck.validate(plugin,world,actor,cells.cells(),scope(kind),paidFor(kind,cells.size())).valid(),outcome->{
+            .thenCompose(v->terraformer.shapeThen(world,request,()->HexClaimCheck.validate(plugin,world,actor,cells.cells(),scope(kind),paidFor(kind,cells.size())).valid(),
+            // World thread: read the shaped ground of the new plot (quick).
+            outcome->{
+                try{return new PreparedClaim(outcome,prepareGround(world,player,actor,cells,kind),groundY(world,player,cells));}
+                catch(com.hexvane.eterniamod.housing.relocation.NativeSnapshotStore.StorageBusy busy){throw new com.hexvane.eterniamod.hexplots.terraform.PlotTerraformer.RetryLater(busy);}
+                catch(RuntimeException unreadable){plugin.getLogger().atWarning().withCause(unreadable).log("Claim ground could not be read early; it is read with the claim");return new PreparedClaim(outcome,null,groundY(world,player,cells));}
+            },
+            // This job's own thread: save it (the slow part), so the world never waits for it.
+            prepared->{
+                if(prepared.ground()!=null){
+                    try{com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator.saveBaseline(plugin,prepared.ground());}
+                    catch(RuntimeException failed){plugin.getLogger().atWarning().withCause(failed).log("Claim ground could not be saved early; it is saved with the claim");}
+                }
+                return prepared;
+            },
+            prepared->{
+                var outcome=prepared.outcome();
                 HexCommitResult done;
-                try{done=claimCellsNow(world,actor,cells,kind,groundY(world,player,cells),operation);if(done.ok())recordLevel(world,done.plotId(),outcome,true);}
+                try{done=claimCellsNow(world,actor,cells,kind,prepared.groundY(),operation,prepared.ground()==null?null:prepared.ground().plotId());if(done.ok())recordLevel(world,done.plotId(),outcome,true);}
                 // The ground copy found chunks the shaping just wrote still being saved; nothing was reserved, so try again shortly.
                 catch(com.hexvane.eterniamod.housing.relocation.NativeSnapshotStore.StorageBusy busy){throw new com.hexvane.eterniamod.hexplots.terraform.PlotTerraformer.RetryLater(busy);}
                 catch(RuntimeException failure){
@@ -156,8 +172,30 @@ public final class NativeClaimCoordinator {
      */
     static boolean keepsShapedLand(HexCommitResult result) { return result.ok() || result.plotId() != null; }
 
+    /** The shaped land, the new plot's ground read ahead of the claim (null when not read) and the plot's ground height. */
+    private record PreparedClaim(com.hexvane.eterniamod.hexplots.terraform.PlotTerraformer.Outcome outcome,
+                                 com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator.CapturedGround ground,int groundY) {}
+
+    /**
+     * World thread: reads the ground a new plot will save, under a fresh plot id the claim then uses. Null when the claim
+     * would not make a new plot (it is refused, or a packed plot is set down instead).
+     */
+    private com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator.CapturedGround prepareGround(World world,PlayerRef player,UUID actor,PlotCells cells,HexClaimRules.Kind kind) {
+        var verdict=HexClaimCheck.validate(plugin,world,actor,cells.cells(),scope(kind),paidFor(kind,cells.size()));
+        if(!verdict.valid())return null;
+        var eligibility=ClaimEligibility.load(plugin.getServices(),actor,scope(kind),paidFor(kind,cells.size()));
+        if(eligibility.slot()!=null)return null;
+        var probe=new HubPlotRecord(UUID.randomUUID(),world.getName(),HubPlotFootprint.forCells(cells,groundY(world,player,cells)),null);
+        return com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator.readBaseline(plugin,world,probe);
+    }
+
     /** World thread. The synchronous claim: validate, baseline, reserve, native tail. Chunks under the cells must be loaded. */
     public synchronized HexCommitResult claimCellsNow(World world,UUID actor,PlotCells cells,HexClaimRules.Kind kind,int groundY,UUID operation) {
+        return claimCellsNow(world,actor,cells,kind,groundY,operation,null);
+    }
+
+    /** As above; {@code preferred} is the plot id whose ground was already saved ahead of the claim. */
+    public synchronized HexCommitResult claimCellsNow(World world,UUID actor,PlotCells cells,HexClaimRules.Kind kind,int groundY,UUID operation,UUID preferred) {
         var plan=plugin.getInfrastructure().world(world.getName()).orElse(null);
         if(plan==null||!plan.supportsHousing())return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.WORLD));
         if(!plan.hexPlots()||plan.hexLattice().isEmpty())return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.NO_LATTICE));
@@ -166,7 +204,7 @@ public final class NativeClaimCoordinator {
         var services=plugin.getServices();var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);
         // Replay: the same operation already reserved (a retry after a lost reply) only needs its native tail.
         var replay=services.housing().properties().stream().filter(p->p.slot().operationId().equals(operation)&&p.location()!=null&&p.location().isHex()).findFirst();
-        UUID property=replay.map(p->p.slot().propertyId()).orElseGet(UUID::randomUUID);
+        UUID property=replay.map(p->p.slot().propertyId()).orElseGet(()->preferred!=null?preferred:UUID.randomUUID());
         if(replay.isEmpty()) {
             var verdict=HexClaimCheck.validate(plugin,world,actor,cells.cells(),scope,paid);
             if(!verdict.valid())return HexCommitResult.refused(verdict);
@@ -191,11 +229,11 @@ public final class NativeClaimCoordinator {
             manager.addPlot(plot);
         }
         manager.saveIfDirty();
-        finishClaimJournal(slot.owner(),slot.operationId());
+        finishClaimJournal(slot.propertyId(),slot.operationId());
         if(estateGuild!=null)plugin.getRuntime().welcomeGuild(estateGuild);
         String shape=shapeName(out.cells());
         var line=out.charged()>0
-            ?HexPlotText.plots("claim.paid","Your {shape} is ready! {coins} coins paid. Open your housing menu to place a house.","shape",shape,"coins",HexPlotSettings.current().priceText(out.charged()))
+            ?HexPlotText.plots("claim.paid","Your {shape} is ready! {coins} paid. Open your housing menu to place a house.","shape",shape,"coins",HexPlotSettings.current().priceText(out.charged()))
             :HexPlotText.plots("claim.done","Your {shape} is ready! Open your housing menu to place a house.","shape",shape);
         return HexCommitResult.success(line,property.toString(),out.result());
     }
@@ -213,42 +251,62 @@ public final class NativeClaimCoordinator {
         var services=plugin.getServices();var owner=HousingAccess.owner(plot);
         if(owner==null)return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.NO_PLOT));
         HexClaimRules.Kind kind;
-        if(owner.kind()==Owner.Kind.GUILD) {
-            if(!services.guilds().can(actor,owner.id(),"housing.resize"))
+        boolean guildPlot=owner.kind()==Owner.Kind.GUILD;
+        if(guildPlot) {
+            // Who may grow it depends on whether the hexagon is free or bought with guild Crowns: checked below.
+            if(services.guilds().membership(actor).filter(m->m.guildId().equals(owner.id())&&m.active()).isEmpty())
                 return HexCommitResult.failed(HexPlotText.plots("expand.guildRole","Only your guild leader can grow the guild estate."),plotId.toString());
             kind=HexClaimRules.Kind.GUILD_ESTATE;
         } else {
             if(!actor.equals(plot.getOwnerUuid()))return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.OUTSIDE));
             kind=plot.getAttachedGuildUuid()!=null?HexClaimRules.Kind.GUILD_MEMBER:HexClaimRules.Kind.PUBLIC;
         }
-        var slot=services.housing().find(owner).orElse(null);
+        var slot=services.housing().slot(plotId).orElse(null);
         if(slot==null||!slot.propertyId().equals(plotId))return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.NO_PLOT));
         // A paid hexagon the world has not shown yet is finished first, so the player never pays twice.
         for(var pending:services.housing().pendingExpansions(world.getName()))if(pending.propertyId().equals(plotId))applyExpansion(world,pending);
-        slot=services.housing().find(owner).orElse(slot);
+        slot=services.housing().slot(plotId).orElse(slot);
         if(slot.state()!=HousingService.State.ACTIVE)return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.RECOVERY));
         var context=HexLand.context(plugin,world).orElse(null);
         if(context==null)return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.NO_LATTICE));
         if(!com.hexvane.eterniamod.pathtool.SplineRoadTool.pendingRects(world.getName()).isEmpty())return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.ROAD_WORK));
         String role=com.hexvane.eterniamod.production.HexRoles.addRefusal(plugin,plot,cell);
         if(role!=null)return HexCommitResult.failed(HexPlotText.plots("expand."+role,switch(role){
-            case "roleProductionFull"->"Your plot already has all six production hexagons.";
+            case "roleProductionFull"->"Your plot already has all its production hexagons.";
             case "roleHouseFull"->"Your plot already has all its house hexagons.";
             case "roleHouseTouch"->"A house hexagon has to touch one of your house hexagons.";
             default->"Add your free production hexagon first.";}),plotId.toString());
-        // Every plot's first production hexagon is free, whatever size the plot started at.
+        // The plot's first hexagons of each kind are free (PlotRules); past those, a housing or production hexagon has its
+        // own price. The season bonus gives a player plot one more free production hexagon.
         var before=com.hexvane.eterniamod.production.HexRoles.of(plugin,plot);
-        boolean firstProduction=before!=null&&before.count(com.hexvane.eterniamod.production.PlotRoles.Role.PRODUCTION)==0;
-        var out=services.housing().expandPlot(owner,plotId,cell,slot.revision(),operation,kind,context,Owner.player(actor),firstProduction);
+        var adding=com.hexvane.eterniamod.production.HexRoles.chosen(plotId,cell);
+        boolean production=adding!=com.hexvane.eterniamod.production.PlotRoles.Role.HOUSE;
+        int have=before==null?0:before.count(production?com.hexvane.eterniamod.production.PlotRoles.Role.PRODUCTION:com.hexvane.eterniamod.production.PlotRoles.Role.HOUSE);
+        var rules=com.hexvane.eterniamod.hexplots.PlotRules.current();
+        boolean bonus=!guildPlot&&services.ownership().owns(owner,rules.productionBonus());
+        long price=rules.hexagonPrice(guildPlot,production,have,bonus);
+        if(guildPlot) {
+            String needed=price>0?com.hexvane.eterniamod.domain.GuildCrownService.SPEND:"housing.resize";
+            if(!services.guilds().can(actor,owner.id(),needed)){
+                com.hexvane.eterniamod.production.HexRoles.forget(plotId,cell);
+                return HexCommitResult.failed(price>0
+                    ?HexPlotText.plots("expand.guildSpend","Your guild role cannot spend the guild's Crowns.")
+                    :HexPlotText.plots("expand.guildRole","Only your guild leader can grow the guild estate."),plotId.toString());
+            }
+        }
+        Owner payer=guildPlot?owner:Owner.player(actor);
+        var out=services.housing().expandPlot(owner,plotId,cell,slot.revision(),operation,kind,context,payer,price,actor);
         if(!out.ok())com.hexvane.eterniamod.production.HexRoles.forget(plotId,cell);
         if(!out.ok())return HexCommitResult.refused(out.result());
         applyCells(manager,plot,out.cells());
         // The new hexagon's ground (already shaped) joins the plot's saved ground now, so packing puts it back exactly.
-        try{com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator.extendBaseline(plugin,world,plot);}
+        // Read now, saved in the background: the world no longer waits for the plot's whole saved ground to load and save.
+        try{com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator.extendBaselineLater(plugin,world,plot,cell)
+            .whenComplete((v,failure)->{if(failure!=null)plugin.getLogger().atWarning().withCause(failure).log("Saved ground of plot %s not extended; packing will refit it",plotId);});}
         catch(RuntimeException failure){plugin.getLogger().atWarning().withCause(failure).log("Saved ground of plot %s not extended; packing will refit it",plotId);}
-        services.housing().completeExpansion(owner,operation);
+        services.housing().completeExpansion(plotId,operation);
         var line=out.charged()>0
-            ?HexPlotText.plots("expand.paid","Your plot grew to {cells} hexagons. {coins} coins paid.","cells",out.cells().size(),"coins",HexPlotSettings.current().priceText(out.charged()))
+            ?HexPlotText.plots("expand.paid","Your plot grew to {cells} hexagons. {coins} paid.","cells",out.cells().size(),"coins",HexPlotSettings.current().priceText(out.charged()))
             :HexPlotText.plots("expand.done","Your plot grew to {cells} hexagons.","cells",out.cells().size());
         return HexCommitResult.success(line,plotId.toString(),out.result());
     }
@@ -301,10 +359,10 @@ public final class NativeClaimCoordinator {
             if(!actor.equals(plot.getOwnerUuid()))return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.OUTSIDE));
             kind=plot.getAttachedGuildUuid()!=null?HexClaimRules.Kind.GUILD_MEMBER:HexClaimRules.Kind.PUBLIC;
         }
-        var slot=services.housing().find(owner).orElse(null);
+        var slot=services.housing().slot(plotId).orElse(null);
         if(slot==null||!slot.propertyId().equals(plotId))return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.NO_PLOT));
         for(var pending:services.housing().pendingExpansions(world.getName()))if(pending.propertyId().equals(plotId))applyExpansion(world,pending);
-        slot=services.housing().find(owner).orElse(slot);
+        slot=services.housing().slot(plotId).orElse(slot);
         if(slot.state()!=HousingService.State.ACTIVE)return HexCommitResult.refused(HexClaimRules.Result.of(HexClaimRules.Reason.RECOVERY));
         var settings=HexPlotSettings.current();var lattice=plot.getCells().lattice();
         // What stands where: the house and a garden path block the sale; decorations on the hexagon are packed first.
@@ -385,7 +443,7 @@ public final class NativeClaimCoordinator {
         if(plot==null||pending.location()==null||!pending.location().isHex())return false;
         var cells=pending.location().cells();boolean changed=!cells.equals(plot.getCells());
         if(changed){plot.setFootprint(plot.getFootprint().withCells(cells));updated.accept(plot);}
-        housing.completeExpansion(pending.owner(),pending.operationId());
+        housing.completeExpansion(pending.propertyId(),pending.operationId());
         return changed;
     }
 
@@ -394,12 +452,12 @@ public final class NativeClaimCoordinator {
         manager.saveIfDirty();
     }
 
-    private void finishClaimJournal(Owner owner,UUID operation) {
+    private void finishClaimJournal(UUID property,UUID operation) {
         var services=plugin.getServices();
         services.batch(()->{
             var op=services.journal().find(operation).orElseThrow();
             if(op.state()==JournalService.State.PREPARED)op=services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);
-            if(op.state()==JournalService.State.WORLD_APPLIED)services.housing().activate(owner,operation);
+            if(op.state()==JournalService.State.WORLD_APPLIED)services.housing().activate(property,operation);
             return null;
         });
     }

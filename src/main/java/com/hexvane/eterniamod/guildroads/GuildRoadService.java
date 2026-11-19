@@ -63,7 +63,7 @@ final class GuildRoadService {
     List<CustomizationCatalog.PathStyle> styles(UUID guild){return plugin.getServices().batch(()->catalog.paths().stream().filter(s->s.id().equals("cobblestone")||plugin.getServices().ownership().owns(Owner.guild(guild),"eternia:path/"+s.id())).toList());}
     UUID guild(UUID actor){UUID guild=plugin.getServices().guilds().membership(actor).orElseThrow(()->new IllegalStateException("Join a guild to manage its roads")).guildId();if(!plugin.getServices().guilds().can(actor,guild,CAPABILITY))throw new IllegalStateException("Guild road permission is required");return guild;}
     private HubPlotRecord root(World world,UUID guild,boolean active){
-        var slot=plugin.getServices().housing().find(Owner.guild(guild)).orElseThrow(()->new IllegalStateException("Place the guild estate first"));
+        var slot=plugin.getServices().housing().home(Owner.guild(guild)).orElseThrow(()->new IllegalStateException("Place the guild estate first"));
         var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).getPlot(slot.propertyId());
         if(plot==null||!guild.equals(plot.getGuildOwnerUuid())||!world.getName().equals(plot.getWorldName())||slot.state()!=HousingService.State.ACTIVE)throw new IllegalStateException("The guild estate must be active in this world");
         if(active)NativePlacementTransactions.requireActive(plugin,plot);return plot;
@@ -108,7 +108,7 @@ final class GuildRoadService {
     }
     private void remove(World world,Road current)throws Exception{
         publicClear(world,current.rectangle());boolean recovering=current.state()!=State.ACTIVE;
-        for(var plot:EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots())if(com.hexvane.eterniamod.housing.PlotAreas.overlaps(plot,current.rectangle())){var owner=HousingAccess.owner(plot);var slot=owner==null?null:plugin.getServices().housing().find(owner).orElse(null);if(slot==null||slot.state()!=HousingService.State.ACTIVE||!slot.propertyId().equals(plot.getPlotId()))throw new IllegalStateException("An intersecting property is moving or requires recovery; retain the road until that operation is resolved");}
+        for(var plot:EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots())if(com.hexvane.eterniamod.housing.PlotAreas.overlaps(plot,current.rectangle())){var owner=HousingAccess.owner(plot);var slot=owner==null?null:plugin.getServices().housing().slot(plot.getPlotId()).orElse(null);if(slot==null||slot.state()!=HousingService.State.ACTIVE||!slot.propertyId().equals(plot.getPlotId()))throw new IllegalStateException("An intersecting property is moving or requires recovery; retain the road until that operation is resolved");}
         var before=files().load(current.before());var after=files().load(current.after());
         var journal=plugin.getServices().journal();var road=current.state(State.REMOVING,recovering?current.operation():UUID.randomUUID());
         var op=recovering?journal.find(current.operation()).orElseThrow():prepare(road,"GUILD_ROAD_REMOVE");
@@ -140,7 +140,7 @@ final class GuildRoadService {
         var services=plugin.getServices();
         var data=services.batch(()->{var result=new HashMap<UUID,PlotData>();
             // The plot metadata belongs to this world thread and is captured before file/terrain work.
-            for(var plot:plots){var owner=HousingAccess.owner(plot);var slot=owner==null?null:services.housing().find(owner).orElse(null);
+            for(var plot:plots){var owner=HousingAccess.owner(plot);var slot=owner==null?null:services.housing().slot(plot.getPlotId()).orElse(null);
                 boolean member=guild.equals(plot.getGuildOwnerUuid())||guild.equals(plot.getAttachedGuildUuid())&&plot.getOwnerUuid()!=null&&services.guilds().membership(plot.getOwnerUuid()).map(m->guild.equals(m.guildId())).orElse(false);
                 result.put(plot.getPlotId(),new PlotData(slot,member,HousingAccess.locked(plugin,plot),services.provenance().instances(plot.getPlotId())));}
             return Map.copyOf(result);

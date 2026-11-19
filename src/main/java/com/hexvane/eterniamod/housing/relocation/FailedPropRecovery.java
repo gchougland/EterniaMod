@@ -37,8 +37,8 @@ public final class FailedPropRecovery {
         Owner owner=HousingAccess.owner(plot);
         boolean permitted=plot.isOwnedBy(actor)||plot.getGuildOwnerUuid()!=null&&plugin.getServices().guilds().can(actor,plot.getGuildOwnerUuid(),HousingCustody.PACK);
         if(!permitted)throw new IllegalStateException("You do not have permission to package items on this plot.");
-        var slot=plugin.getServices().housing().find(owner).orElseThrow();
-        var location=plugin.getServices().housing().location(owner).orElseThrow();
+        var property=plugin.getServices().housing().property(plot.getPlotId()).orElseThrow();var slot=property.slot();
+        var location=java.util.Objects.requireNonNull(property.location());
         if(slot.state()!=HousingService.State.ACTIVE||!slot.propertyId().equals(plot.getPlotId())||!location.worldId().equals(world.getName()))return 0;
         var pending=plugin.getServices().journal().unfinished().stream().filter(o->o.owner().equals(owner)).toList();
         // A second operation might own the same cells. Never recover through another lock.

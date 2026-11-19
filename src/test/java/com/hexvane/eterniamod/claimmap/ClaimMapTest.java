@@ -155,12 +155,12 @@ class ClaimMapTest {
         UUID me = UUID.randomUUID();
         assertNull(ClaimMapLogic.accountReason(Account.newcomer(me), HousingRules.Scope.PUBLIC));
         var owner = new Account(me, null, false, 0, false, false, HousingService.State.ACTIVE, null, null, null);
-        assertEquals(HexClaimRules.Reason.HAS_PLOT, ClaimMapLogic.accountReason(owner, HousingRules.Scope.PUBLIC).reason());
+        assertEquals(HexClaimRules.Reason.PLOT_LIMIT, ClaimMapLogic.accountReason(owner, HousingRules.Scope.PUBLIC).reason());
         var packed = new Account(me, null, false, 0, false, false, HousingService.State.PACKED, null, null, null);
         assertEquals(HexClaimRules.Reason.PACKED, ClaimMapLogic.accountReason(packed, HousingRules.Scope.PUBLIC).reason());
         var member = new Account(me, UUID.randomUUID(), false, 3, false, false, null, null, null, null);
         assertEquals(HexClaimRules.Reason.PERMISSION, ClaimMapLogic.accountReason(member, HousingRules.Scope.GUILD_ROOT).reason());
-        assertNull(ClaimMapLogic.accountReason(member, HousingRules.Scope.GUILD_MEMBER));
+        assertEquals(HexClaimRules.Reason.ANCHOR, ClaimMapLogic.accountReason(member, HousingRules.Scope.GUILD_MEMBER).reason(), "plots beside a guild are no longer made");
         assertEquals(HexClaimRules.Reason.ANCHOR, ClaimMapLogic.accountReason(Account.newcomer(me), HousingRules.Scope.GUILD_MEMBER).reason());
         assertEquals(HexShape.TRIANGLE, ClaimMapLogic.startShape(new Account(me, null, false, 0, true, false, null, null, null, null), HousingRules.Scope.PUBLIC, S));
         assertEquals(HexShape.FLOWER, ClaimMapLogic.startShape(member, HousingRules.Scope.GUILD_ROOT, S));

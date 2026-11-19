@@ -71,7 +71,7 @@ class HexCommitTest {
         assertTrue(claimed.ok());
         var op = services.journal().find(claimed.slot().operationId()).orElseThrow();
         services.journal().advance(op.id(), op.revision(), JournalService.State.WORLD_APPLIED);
-        var slot = services.housing().activate(owner, op.id());
+        var slot = services.housing().activate(services.housing().slots(owner).getFirst().propertyId(), op.id());
 
         // The world's plot record, as the native claim tail made it.
         var plot = new HubPlotRecord(slot.propertyId(), "housing", HubPlotFootprint.forCells(claimed.cells(), 70), mira);
@@ -111,7 +111,7 @@ class HexCommitTest {
             HexClaimRules.Candidate.of(HexClaimRules.Kind.PUBLIC, false), CONTEXT, owner);
         var op = services.journal().find(claimed.slot().operationId()).orElseThrow();
         services.journal().advance(op.id(), op.revision(), JournalService.State.WORLD_APPLIED);
-        var slot = services.housing().activate(owner, op.id());
+        var slot = services.housing().activate(services.housing().slots(owner).getFirst().propertyId(), op.id());
         services.housing().expandPlot(owner, slot.propertyId(), new HexCoord(0, 2), slot.revision(), UUID.randomUUID(), HexClaimRules.Kind.PUBLIC, CONTEXT, owner);
         var pending = services.housing().pendingExpansions("housing").getFirst();
         assertFalse(NativeClaimCoordinator.applyExpansion(services.housing(), pending, id -> null, p -> fail("nothing to save")));

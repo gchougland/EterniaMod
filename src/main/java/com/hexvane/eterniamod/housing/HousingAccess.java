@@ -14,8 +14,10 @@ public final class HousingAccess {
     }
     private static boolean locked(EterniaServices services,Owner owner,UUID property){
         if(owner==null)return true;
-        var slot=services.housing().find(owner).orElse(null);
-        if(slot!=null&&(slot.state()!=HousingService.State.ACTIVE||!slot.propertyId().equals(property)))return true;
+        // A plot with no record (local test fixtures, plots older than records) is not locked by it; one with a record is
+        // locked while it is not active.
+        var slot=services.housing().slot(property).orElse(null);
+        if(slot!=null&&(slot.state()!=HousingService.State.ACTIVE||!slot.owner().equals(owner)))return true;
         return services.journal().unfinished().stream().anyMatch(op->op.owner().equals(owner));
     }
     private static final java.util.Set<String> USE_DURING_LOCK=java.util.Set.of("housing.door.use","housing.bed.use","housing.bench.use");

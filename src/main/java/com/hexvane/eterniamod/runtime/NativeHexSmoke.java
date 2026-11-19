@@ -116,7 +116,7 @@ final class NativeHexSmoke {
         plot.setBuilding(new HubPlotBuilding("log_cabin", house.x, house.y, house.z, Rotation.None, List.of()));
         manager.updatePlot(plot);
         manager.saveIfDirty();
-        services.housing().updateBuildingPresent(mira, manor, true);
+        services.housing().updateBuildingPresent(manor,true);
         NativePlacementTransactions.complete(plugin, placed.operation());
         var shelfAt = HexFixtures.centre(lattice, MANOR.get(2), 1);
         var shelf = NativePlacementTransactions.place(plugin, world, plot, MIRA, "potion_shelf", shelfAt, Rotation.None, PrefabResolveUtil.resolvePrefabBuffer(plugin.getPropCatalog().get("potion_shelf").getPrefabPath()), false);
@@ -139,8 +139,8 @@ final class NativeHexSmoke {
 
         // Pack: the manor's cells return to their baseline; the cottage corner inside the manor's box is untouched.
         UUID move = UUID.randomUUID();
-        plugin.getRelocation().pack(world, mira, move, false);
-        if (services.housing().find(mira).orElseThrow().state() != HousingService.State.PACKED || manager.getPlot(manor) != null) throw new IllegalStateException("Hex pack did not take custody");
+        plugin.getRelocation().pack(world, services.housing().home(mira).orElseThrow().propertyId(), move, false);
+        if (services.housing().home(mira).orElseThrow().state() != HousingService.State.PACKED || manager.getPlot(manor) != null) throw new IllegalStateException("Hex pack did not take custody");
         if (ChunkSectionBlockUtil.blockId(world, markX, 1, markZ) != markerId || manager.getPlot(cottage) == null) throw new IllegalStateException("Packing the manor changed the neighbour's hexagon");
         if (houseBlocks(world, house) != 0) throw new IllegalStateException("Packing left the house standing");
         if (!NativeSnapshotStore.entities(world, NativeRelocationCoordinator.bounds(manager.getPlot(cottage))).isEmpty()) throw new IllegalStateException("Decorations leaked into the neighbour");
@@ -168,7 +168,7 @@ final class NativeHexSmoke {
         if (!HexLand.view(plugin, world).orElseThrow().plotAt(destination.cells().getFirst()).plotId().equals(manor)) throw new IllegalStateException("Claim map does not see the restored plot");
 
         // Grow by one hexagon: the domain commit, the extended baseline, then the projection.
-        var slot = services.housing().find(mira).orElseThrow();
+        var slot = services.housing().home(mira).orElseThrow();
         var grow = UUID.randomUUID();
         var added = destination.cells().get(1).neighbor(0);   // east of the north east hexagon
         var out = services.housing().expandPlot(mira, manor, added, slot.revision(), grow, HexClaimRules.Kind.PUBLIC, HexLand.context(plugin, world).orElseThrow(), mira);
@@ -178,18 +178,18 @@ final class NativeHexSmoke {
         NativeRelocationCoordinator.extendBaseline(plugin, world, restored);   // idempotent
         manager.updatePlot(restored);
         manager.saveIfDirty();
-        services.housing().completeExpansion(mira, grow);
+        services.housing().completeExpansion(services.housing().home(mira).orElseThrow().propertyId(), grow);
 
         // Second move: four hexagons back west, onto land the first pack freed.
         UUID second = UUID.randomUUID();
-        plugin.getRelocation().pack(world, mira, second, false);
+        plugin.getRelocation().pack(world, services.housing().home(mira).orElseThrow().propertyId(), second, false);
         var back = out.cells().translate(new HexCoord(-3, 0));
         plugin.getRelocation().restoreCells(world, MIRA, mira, second, back, 0, HousingRules.Scope.PUBLIC);
         var home = manager.getPlot(manor);
         if (home == null || !back.equals(home.getCells()) || home.getBuilding().getAnchorX() != house.x || !entityIds(world, home).equals(decorations))
             throw new IllegalStateException("Second move of the grown plot did not return everything");
         if (ChunkSectionBlockUtil.blockId(world, markX, 1, markZ) != markerId) throw new IllegalStateException("Second move changed the neighbour's hexagon");
-        if (services.housing().find(mira).orElseThrow().state() != HousingService.State.ACTIVE || !services.journal().unfinished().isEmpty())
+        if (services.housing().home(mira).orElseThrow().state() != HousingService.State.ACTIVE || !services.journal().unfinished().isEmpty())
             throw new IllegalStateException("Hex moves left unfinished work");
     }
 

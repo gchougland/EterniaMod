@@ -60,9 +60,13 @@ public final class HexClaimCheck {
         HexClaimRules.Result denied = eligibility.checkCells(plotCells);
         if (denied != null) return denied;
         var manager = EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin);
-        // Legacy owned plots also occupy a player's slot until migrated; no duplicate free claims.
-        if (eligibility.scope() != HousingRules.Scope.GUILD_ROOT && !manager.listPlotsForOwner(eligibility.actor()).isEmpty())
-            return HexClaimRules.Result.of(HexClaimRules.Reason.LEGACY);
+        // A plot in the world with no saved record (made before records existed) must be moved first.
+        if (eligibility.scope() != HousingRules.Scope.GUILD_ROOT) {
+            var known = new java.util.HashSet<UUID>();
+            for (var slot : plugin.getServices().housing().slots(eligibility.owner())) known.add(slot.propertyId());
+            if (manager.listPlotsForOwner(eligibility.actor()).stream().anyMatch(p -> !known.contains(p.getPlotId())))
+                return HexClaimRules.Result.of(HexClaimRules.Reason.LEGACY);
+        }
         UUID guild = eligibility.guild();
         Set<HexCoord> anchors = eligibility.scope() == HousingRules.Scope.GUILD_MEMBER ? view.guildLand(guild) : Set.of();
         // A packed plot is set down again: its own shape in the same turn, not a new start shape (relocation seam).
@@ -71,7 +75,8 @@ public final class HexClaimCheck {
             if (packed == null) return HexClaimRules.Result.of(HexClaimRules.Reason.PACKED);
             return com.hexvane.eterniamod.housing.relocation.HexRelocation.check(view.land(), eligibility.hexKind(), packed, cells, anchors);
         }
-        boolean guildHasEstate = guild != null && manager.listPlots().stream().anyMatch(p -> guild.equals(p.getGuildOwnerUuid()));
+        // A guild may hold several plots now; how many is checked against PlotRules when the claim is saved.
+        boolean guildHasEstate = false;
         var candidate = new HexClaimRules.Candidate(eligibility.hexKind(), eligibility.paid(), eligibility.members(), guildHasEstate, plugin.getRuntimeConfig().local());
         return HexClaimRules.claim(view.land(), candidate, cells, anchors, HexPlotSettings.current());
     }
@@ -99,9 +104,10 @@ public final class HexClaimCheck {
         UUID attachment = scope == HousingRules.Scope.GUILD_MEMBER ? guild : null;
         var location = HousingService.ClaimLocation.ofCells(world.getName(), plotCells, guild == null ? HousingService.ClaimScope.PUBLIC : HousingService.ClaimScope.GUILD, guild, false);
         var manager = EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin);
-        boolean guildHasEstate = guild != null && manager.listPlots().stream().anyMatch(p -> guild.equals(p.getGuildOwnerUuid()));
+        // A guild may hold several plots now; how many is checked against PlotRules when the claim is saved.
+        boolean guildHasEstate = false;
         var candidate = new HexClaimRules.Candidate(kind(scope), paid, eligibility.members(), guildHasEstate, plugin.getRuntimeConfig().local());
         Owner payer = scope == HousingRules.Scope.GUILD_ROOT ? eligibility.owner() : Owner.player(actor);
-        return plugin.getServices().housing().claimCells(eligibility.owner(), propertyId, operationId, attachment, location, candidate, context, payer);
+        return plugin.getServices().housing().claimCells(eligibility.owner(), propertyId, operationId, attachment, location, candidate, context, payer, actor);
     }
 }

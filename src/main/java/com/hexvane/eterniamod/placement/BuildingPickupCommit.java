@@ -102,7 +102,7 @@ public final class BuildingPickupCommit {
         plot.setBuilding(null);
         plotManager.updatePlot(plot);
         plotManager.saveIfDirty();
-        plugin.getServices().housing().updateBuildingPresent(NativePlacementTransactions.owner(plot),plot.getPlotId(),false);
+        plugin.getServices().housing().updateBuildingPresent(plot.getPlotId(),false);
         NativePlacementTransactions.complete(plugin,operation);
         if (playerRef != null) {
             HubPlotVisibilityOverlay.refreshIfEnabled(playerRef, world, plugin);

@@ -81,11 +81,18 @@ public final class NativeTravelService {
             });return result;
         }).exceptionally(error->{plugin.getLogger().atWarning().withCause(error).log("Could not return to the last position");return false;});
     }
+    /** Travels to the owner's home plot. */
     public void visitPlot(PlayerRef player,Owner owner) {
+        plugin.getServices().housing().home(owner).ifPresent(slot->visitPlot(player,slot.propertyId()));
+    }
+    /** Travels to the edge of one plot the player owns or whose guild they may visit. */
+    public void visitPlot(PlayerRef player,UUID propertyId) {
         var ref=player.getReference();if(ref==null||!ref.isValid())return;
+        var property=plugin.getServices().housing().property(propertyId).orElse(null);if(property==null)return;
+        Owner owner=property.slot().owner();
         if(owner.kind()==Owner.Kind.PLAYER&&!owner.id().equals(player.getUuid())||owner.kind()==Owner.Kind.GUILD&&!plugin.getServices().guilds().can(player.getUuid(),owner.id(),"housing.visit"))return;
         if(!canUseTravel(ref,ref.getStore(),player.getUuid())){player.sendMessage(Message.raw("Use Locate plot from the Hub or a public portal. The plot coordinates are shown in My plots."));return;}
-        var property=plugin.getServices().housing().property(owner).orElseThrow();var slot=property.slot();var location=java.util.Objects.requireNonNull(property.location());
+        var slot=property.slot();var location=property.location();if(location==null)return;
         var world=Universe.get().getWorld(location.worldId());if(world==null||slot.state()!=HousingService.State.ACTIVE)return;
         world.execute(()->{var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).getPlot(slot.propertyId());if(plot==null)return;
             var fp=plot.getFootprint();var edge=com.hexvane.eterniamod.housing.PlotAreas.arrival(plot);arrive(player,world,new Vector3d(edge.x(),fp.resolveVisualCenterY(),edge.z()),edge.area()).thenAccept(ok->player.sendMessage(Message.raw(ok?"Your plot. Open /e housing to choose a house or decoration.":"The plot arrival is obstructed. Use the coordinates in My plots to reach it.")));
@@ -104,7 +111,7 @@ public final class NativeTravelService {
      */
     public CompletableFuture<Landing> joinLanding(UUID player) {
         boolean introduced=plugin.getServices().accounts().find(player).map(AccountService.Account::introduced).orElse(false);
-        var property=plugin.getServices().housing().property(Owner.player(player)).orElse(null);
+        var property=plugin.getServices().housing().homeProperty(Owner.player(player)).orElse(null);
         boolean active=property!=null&&property.slot()!=null&&property.slot().state()==HousingService.State.ACTIVE&&property.location()!=null;
         return switch(joinTarget(introduced,active)){
             case HOME->homeLanding(player);
@@ -118,7 +125,7 @@ public final class NativeTravelService {
     /** Steps a player to the nearest safe spot by {@code point} in {@code world} (no world change). */
     public CompletableFuture<Boolean> stepTo(PlayerRef player,World world,Vector3d point){return arrive(player,world,point,null);}
     private CompletableFuture<Landing> homeLanding(UUID player) {
-        var property=plugin.getServices().housing().property(Owner.player(player)).orElse(null);
+        var property=plugin.getServices().housing().homeProperty(Owner.player(player)).orElse(null);
         var slot=property==null?null:property.slot();var location=property==null?null:property.location();
         World world=location==null?null:Universe.get().getWorld(location.worldId());
         if(slot==null||slot.state()!=HousingService.State.ACTIVE||world==null)return withoutHomeLanding(player);

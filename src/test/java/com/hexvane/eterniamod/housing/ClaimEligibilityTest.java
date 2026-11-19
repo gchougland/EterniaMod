@@ -41,7 +41,7 @@ class ClaimEligibilityTest {
     }
     @Test void packedPlotsStillRejectShrinkingAndIncompatibleShapes(){
         var actor=UUID.randomUUID();var owner=Owner.player(actor);var slot=new HousingService.Slot(owner,UUID.randomUUID(),HousingService.State.PACKED,UUID.randomUUID(),1,"snapshot",null);var location=new HousingService.ClaimLocation("Hub",0,0,32,32,HousingService.ClaimScope.PUBLIC,null,true);
-        var snapshot=new ClaimEligibility(actor,HousingRules.Scope.PUBLIC,true,null,owner,slot,location,true,true,0);
+        var snapshot=new ClaimEligibility(actor,HousingRules.Scope.PUBLIC,true,null,owner,slot,location,true,true,0,1,false);
         assertEquals("restoreSize",snapshot.check(new PlotRect(0,0,24,24)).code());assertEquals("restoreSize",snapshot.check(new PlotRect(0,0,33,32)).code());assertNull(snapshot.check(new PlotRect(0,0,32,32)));
     }
     private static final class CountingStore implements TransactionalStore {

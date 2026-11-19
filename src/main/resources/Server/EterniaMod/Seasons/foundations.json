@@ -52,6 +52,14 @@
     },
     {
       "track": "FREE",
+      "level": 10,
+      "index": 0,
+      "contentId": "eternia:plot/production_bonus",
+      "kind": "CAPABILITY",
+      "quantity": 1
+    },
+    {
+      "track": "FREE",
       "level": 15,
       "index": 0,
       "contentId": "eternia:prop/potion_shelf",

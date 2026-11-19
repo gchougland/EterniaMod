@@ -27,7 +27,7 @@ public final class NativePlacementTransactions {
     public static NativeSnapshotStore snapshots(EterniaModPlugin plugin){return new NativeSnapshotStore(plugin.getDataDirectory().resolve("housing-snapshots"));}
     public static void requireActive(EterniaModPlugin plugin,HubPlotRecord plot) {plugin.getServices().batch(()->{requireActiveInBatch(plugin,plot);return null;});}
     private static void requireActiveInBatch(EterniaModPlugin plugin,HubPlotRecord plot) {
-        var slot=plugin.getServices().housing().find(owner(plot)).orElseThrow(()->new IllegalStateException("Legacy property needs provenance migration"));
+        var slot=plugin.getServices().housing().slot(plot.getPlotId()).orElseThrow(()->new IllegalStateException("Legacy property needs provenance migration"));
         if(slot.state()!=HousingService.State.ACTIVE||!slot.propertyId().equals(plot.getPlotId()))throw new IllegalStateException("Property is locked by another operation");
         if(plugin.getServices().journal().unfinished().stream().anyMatch(o->o.owner().equals(owner(plot))&&!o.state().equals(JournalService.State.PACKED)))throw new IllegalStateException("Unfinished native operation requires recovery");
     }

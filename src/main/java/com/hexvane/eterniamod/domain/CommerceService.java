@@ -50,6 +50,12 @@ public final class CommerceService extends DomainSupport {
                 Instant validUntil=benefit.expiresWithSubscription?request.paidUntil:null;
                 if(benefit.expiresWithSubscription&&endedPeriod&&providerEndedAt.isBefore(validUntil))validUntil=providerEndedAt;
                 if(benefit.contentId.equals(PremiumService.CROWNS))premium.creditIn(tx,request.recipient.id(),benefit.quantity,receipt);
+                else if(benefit.contentId.equals(GuildCrownService.CONTENT)){
+                    // Crowns for the buyer's guild; a buyer in no guild keeps them.
+                    var guild=GuildCrownService.guildFor(tx,request.recipient);
+                    if(guild.isPresent())GuildCrownService.purchasedIn(tx,guild.get(),request.recipient.kind()==Owner.Kind.PLAYER?request.recipient.id():null,benefit.quantity,receipt);
+                    else premium.creditIn(tx,request.recipient.id(),benefit.quantity,receipt);
+                }
                 else ownership.grantIn(tx,new OwnershipService.GrantRequest(receipt,request.recipient,benefit.contentId,benefit.kind,benefit.quantity,validUntil));
                 grants.add(receipt);
             }
@@ -103,6 +109,7 @@ public final class CommerceService extends DomainSupport {
         if(purchase.value("state").equals("REVERSED"))return purchase;
         if(!purchase.value("grants").isEmpty())for(String receipt:purchase.value("grants").split("\n")){
             if(tx.find("premium_credit_state",key(receipt)).isPresent())premium.reverseCreditIn(tx,receipt);
+            else if(GuildCrownService.reversePurchaseIn(tx,receipt))continue;
             else ownership.revokeIn(tx,receipt);
         }
         return save(tx,purchase,"state","REVERSED","reason",reason);

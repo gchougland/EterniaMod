@@ -36,7 +36,7 @@ public final class NativeRelocationCoordinator {
     }
     /** Explicit admin recovery of an interrupted source pack. Restores verified source custody before releasing its move credit. */
     public void recoverPackToSource(World world,Owner owner,UUID operation) {
-        var services=plugin.getServices();var slot=services.housing().find(owner).orElseThrow();var op=services.journal().find(operation).orElseThrow();
+        var services=plugin.getServices();var slot=services.housing().byOperation(owner,operation).orElseThrow();var op=services.journal().find(operation).orElseThrow();
         if(slot.state()!=HousingService.State.MOVING||!slot.operationId().equals(operation)||!Set.of("MOVE","FORCED_RETURN").contains(op.kind()))throw new IllegalStateException("Only an interrupted source pack can use this recovery");
         try {
             var store=snapshots();var manifest=BsonDocument.parse(new String(store.files().read(new SnapshotFiles.Saved(op.snapshotRef(),op.snapshotHash())),StandardCharsets.UTF_8));
@@ -55,7 +55,7 @@ public final class NativeRelocationCoordinator {
             for(var item:instances)if(originallyPlaced.contains(item.id())&&item.state().equals("PACKED"))services.provenance().acknowledgeRestored(item.id(),item.revision(),slot.propertyId());
             op=services.journal().find(operation).orElseThrow();
             if(op.state()!=JournalService.State.SNAPSHOT_READY){if(op.state()!=JournalService.State.RECOVERY_REQUIRED)op=services.journal().advance(operation,op.revision(),JournalService.State.RECOVERY_REQUIRED);services.journal().advance(operation,op.revision(),JournalService.State.SNAPSHOT_READY);}
-            services.housing().cancelRelocationBeforeMutation(owner,operation);
+            services.housing().cancelRelocationBeforeMutation(slot.propertyId(),operation);
         }catch(Throwable failure){NativePlacementTransactions.lock(plugin,operation);throw new IllegalStateException("Recovery retained its lock: "+failure.getMessage(),failure);}
     }
     /** Blocks below the plot's ground level that its saved snapshots cover. */
@@ -73,13 +73,30 @@ public final class NativeRelocationCoordinator {
     }
     /** Before claim activation, while construction is still locked. Existing unproven plots are never auto-baselined. */
     public static void captureBaseline(EterniaModPlugin plugin,World world,HubPlotRecord plot) {
+        var ground=readBaseline(plugin,world,plot);
+        if(ground!=null)saveBaseline(plugin,ground);
+    }
+    /** A plot's ground as read from the world, not saved yet. */
+    public record CapturedGround(UUID plotId,NativeSnapshotStore.Bounds bounds,com.hexvane.eterniamod.hexplots.PlotCells cells,BsonDocument document){}
+    /**
+     * World thread, quick: reads a new plot's ground, or null when it was saved already. Saving it is the slow part and
+     * belongs off the world thread ({@link #saveBaseline}); claiming used to freeze the world for seconds doing both.
+     */
+    public static CapturedGround readBaseline(EterniaModPlugin plugin,World world,HubPlotRecord plot) {
+        var store=NativePlacementTransactions.snapshots(plugin);var b=bounds(plot);
+        Path pointer;
+        try{pointer=store.files().resolve("baseline-"+plot.getPlotId()+".pointer");}catch(IOException e){throw new UncheckedIOException(e);}
+        if(Files.exists(pointer))return null;
+        if(plot.hasBuilding()||!plot.getProps().isEmpty())throw new IllegalStateException("Cannot invent original terrain for an existing house");
+        var cells=plot.getCells();
+        return new CapturedGround(plot.getPlotId(),b,cells,store.capture(world,b,ColumnMask.of(cells),Set.of(),true,false));
+    }
+    /** Any thread: saves ground read by {@link #readBaseline} as the plot's saved ground. */
+    public static void saveBaseline(EterniaModPlugin plugin,CapturedGround ground) {
         try {
-            var store=NativePlacementTransactions.snapshots(plugin);var b=bounds(plot);
-            Path pointer=store.files().resolve("baseline-"+plot.getPlotId()+".pointer");
-            if(Files.exists(pointer)){loadPointer(store,pointer);return;}
-            if(plot.hasBuilding()||!plot.getProps().isEmpty())throw new IllegalStateException("Cannot invent original terrain for an existing house");
-            var cells=plot.getCells();
-            var baseline=store.save(plot.getPlotId()+"-baseline.json",b,cells,store.capture(world,b,ColumnMask.of(cells),Set.of(),true,false));
+            var store=NativePlacementTransactions.snapshots(plugin);
+            Path pointer=store.files().resolve("baseline-"+ground.plotId()+".pointer");
+            var baseline=store.save(ground.plotId()+"-baseline.json",ground.bounds(),ground.cells(),ground.document());
             writePointer(pointer,baseline.file());
         } catch(IOException e){throw new UncheckedIOException(e);}
     }
@@ -90,7 +107,55 @@ public final class NativeRelocationCoordinator {
      * Idempotent: a baseline that already has these cells is left alone. Old baseline files are kept, never deleted;
      * the pointer is replaced atomically, so an interruption leaves either the old or the grown baseline.
      */
+    /** One queue for saved ground changes, so two changes to one plot's saved ground never race. */
+    private static final java.util.concurrent.ExecutorService GROUND_SAVES=java.util.concurrent.Executors.newSingleThreadExecutor(r->{var t=new Thread(r,"eternia-ground-saves");t.setDaemon(true);return t;});
+
+    /**
+     * World thread, quick: reads the new hexagon {@code cell}'s ground now (before anyone can build on it), then loads,
+     * merges and saves the plot's saved ground off the world thread. Older plots saved with a different height band
+     * have the hexagon read again in that band. The plot's saved ground is only replaced once the new one is written.
+     */
+    public static java.util.concurrent.CompletableFuture<Void> extendBaselineLater(EterniaModPlugin plugin,World world,HubPlotRecord plot,com.hexvane.eterniamod.hexplots.HexCoord cell) {
+        var cells=plot.getCells();if(cells==null||!cells.contains(cell))throw new IllegalStateException("Only hexagon plots grow");
+        var store=NativePlacementTransactions.snapshots(plugin);
+        var added=com.hexvane.eterniamod.hexplots.PlotCells.of(cells.lattice(),java.util.List.of(cell));
+        var box=added.bounds();var band=bounds(plot);
+        var readNow=new NativeSnapshotStore.Bounds(box.x(),band.minY(),box.z(),box.endX(),band.maxY(),box.endZ());
+        var captured=store.capture(world,readNow,ColumnMask.of(added),Set.of(),true,false);
+        var plotNow=plot;
+        return java.util.concurrent.CompletableFuture.runAsync(()->{
+            try {
+                Path pointer=store.files().resolve("baseline-"+plotNow.getPlotId()+".pointer");
+                if(!Files.exists(pointer))return;
+                var old=loadPointer(store,pointer);
+                if(old.cells()!=null&&old.cells().contains(cell))return;
+                if(old.cells()==null||!old.cells().lattice().equals(cells.lattice()))throw new IllegalStateException("Plot baseline is not on the plot's hexagon grid");
+                var addedBounds=new NativeSnapshotStore.Bounds(box.x(),old.bounds().minY(),box.z(),box.endX(),old.bounds().maxY(),box.endZ());
+                BsonDocument capture=captured;
+                if(old.bounds().minY()!=readNow.minY()||old.bounds().maxY()!=readNow.maxY()){
+                    // An older plot saved a different height band. Never wait on the world from here (the world may be
+                    // waiting on this queue): leave the saved ground as it is; packing refits it.
+                    plugin.getLogger().atInfo().log("Plot %s keeps its older saved ground; packing will refit the new hexagon",plotNow.getPlotId());
+                    return;
+                }
+                var grownCells=old.cells().with(cell);var all=grownCells.bounds();
+                var grown=new NativeSnapshotStore.Bounds(all.x(),old.bounds().minY(),all.z(),all.endX(),old.bounds().maxY(),all.endZ());
+                var merged=HexRelocation.mergeBaseline(old.document(),old.bounds(),capture,addedBounds,grown);
+                var baseline=store.save(plotNow.getPlotId()+"-baseline-"+grownCells.size()+"-"+UUID.randomUUID()+".json",grown,grownCells,merged);
+                writePointer(pointer,baseline.file());
+            } catch(IOException e){throw new UncheckedIOException(e);}
+        },GROUND_SAVES);
+    }
+
+    /** Waits for saved ground changes still queued, so nothing reads or replaces a plot's saved ground mid change. */
+    public static void awaitGroundSaves(){
+        try{GROUND_SAVES.submit(()->{}).get(30,java.util.concurrent.TimeUnit.SECONDS);}
+        catch(InterruptedException stop){Thread.currentThread().interrupt();}
+        catch(java.util.concurrent.ExecutionException|java.util.concurrent.TimeoutException ignored){/* A failed save is logged where it ran. */}
+    }
+
     public static void extendBaseline(EterniaModPlugin plugin,World world,HubPlotRecord plot) {
+        awaitGroundSaves();
         var cells=plot.getCells();if(cells==null)throw new IllegalStateException("Only hexagon plots grow");
         try {
             var store=NativePlacementTransactions.snapshots(plugin);Path pointer=store.files().resolve("baseline-"+plot.getPlotId()+".pointer");
@@ -115,6 +180,7 @@ public final class NativeRelocationCoordinator {
      * World thread; the hexagon's chunks must be loaded.
      */
     public static boolean releaseCell(EterniaModPlugin plugin,World world,HubPlotRecord plot,HexCoord cell) {
+        awaitGroundSaves();
         var cells=plot.getCells();if(cells==null||!cells.contains(cell))throw new IllegalStateException("This hexagon is not part of the plot");
         try {
             var store=NativePlacementTransactions.snapshots(plugin);Path pointer=store.files().resolve("baseline-"+plot.getPlotId()+".pointer");
@@ -151,6 +217,7 @@ public final class NativeRelocationCoordinator {
      * plot has no saved ground. World thread; the plot's chunks must be loaded.
      */
     public static boolean restoreGround(EterniaModPlugin plugin,World world,HubPlotRecord plot) {
+        awaitGroundSaves();
         try {
             var store=NativePlacementTransactions.snapshots(plugin);Path pointer=store.files().resolve("baseline-"+plot.getPlotId()+".pointer");
             if(!Files.exists(pointer))return false;
@@ -173,13 +240,15 @@ public final class NativeRelocationCoordinator {
             return true;
         } catch(IOException e){throw new UncheckedIOException(e);}
     }
-    public UUID pack(World world,Owner owner,UUID operation,boolean forced) {
+    /** Packs the plot {@code propertyId} away (its owner's move credit pays unless {@code forced}). */
+    public UUID pack(World world,UUID propertyId,UUID operation,boolean forced) {
         long started=System.nanoTime();
-        try{return packTimed(world,owner,operation,forced);}
+        try{return packTimed(world,propertyId,operation,forced);}
         finally{com.hexvane.eterniamod.EterniaModPlugin.get().getLogger().atInfo().log("Housing %s took %d ms","pack",(System.nanoTime()-started)/1_000_000);}
     }
-    private UUID packTimed(World world,Owner owner,UUID operation,boolean forced) {
-        var services=plugin.getServices();var slot=services.housing().find(owner).orElseThrow();
+    private UUID packTimed(World world,UUID propertyId,UUID operation,boolean forced) {
+        awaitGroundSaves();
+        var services=plugin.getServices();var slot=services.housing().slot(propertyId).orElseThrow();Owner owner=slot.owner();
         if(slot.state()==HousingService.State.PACKED&&slot.operationId().equals(operation))return operation;
         var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);var plot=manager.getPlot(slot.propertyId());
         if(plot==null||!plot.getWorldName().equals(world.getName())||!NativePlacementTransactions.owner(plot).equals(owner))throw new IllegalStateException("Native property projection not found");
@@ -226,7 +295,7 @@ public final class NativeRelocationCoordinator {
                 .append("instances",new BsonArray(instances.stream().filter(i->i.owner().equals(owner)).map(i->(BsonValue)new BsonString(i.id().toString())).toList()))
                 .append("guildReturns",returned);
             var file=store.files().write(operation+"-pack.json",manifest.toJson().getBytes(StandardCharsets.UTF_8));
-            services.housing().beginRelocation(owner,operation,forced);began=true;
+            services.housing().beginRelocation(slot.propertyId(),operation,forced);began=true;
             var op=services.journal().find(operation).orElseThrow();services.journal().attachVerifiedSnapshot(operation,op.revision(),file.reference(),file.sha256());
             mutated=true;removeEntities(world,b,mask,known);store.apply(world,baseline,b.origin());store.verify(world,baseline,b.origin(),Set.of(),true);NativePlacementTransactions.flush(world,b);
             for(var item:instances) {
@@ -235,10 +304,10 @@ public final class NativeRelocationCoordinator {
                 services.provenance().acknowledgePacked(item.id(),item.revision(),custody);
             }
             manager.removePlot(plot.getPlotId());manager.saveIfDirty();
-            op=services.journal().find(operation).orElseThrow();services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);services.housing().acknowledgePacked(owner,operation);
+            op=services.journal().find(operation).orElseThrow();services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);services.housing().acknowledgePacked(slot.propertyId(),operation);
             return operation;
         }catch(Throwable failure){
-            if(began){if(mutated)NativePlacementTransactions.lock(plugin,operation);else services.housing().cancelRelocationBeforeMutation(owner,operation);}
+            if(began){if(mutated)NativePlacementTransactions.lock(plugin,operation);else services.housing().cancelRelocationBeforeMutation(slot.propertyId(),operation);}
             throw new IllegalStateException(mutated?"Move locked for recovery; original and packed snapshots retained":"Plot was not changed: "+failure.getMessage(),failure);
         }
     }
@@ -281,7 +350,7 @@ public final class NativeRelocationCoordinator {
     }
     /** Restore centers retained or larger dimensions and translates the complete change set to the selected ground elevation. */
     public void restore(World world,UUID actor,Owner owner,UUID operation,PlotRect destination,int groundY,HousingRules.Scope scope,boolean paid) {
-        var services=plugin.getServices();var slot=services.housing().find(owner).orElseThrow();
+        var services=plugin.getServices();var slot=services.housing().byOperation(owner,operation).orElseThrow();
         if(slot.state()!=HousingService.State.PACKED||!slot.operationId().equals(operation))throw new IllegalStateException("No matching packed plot");
         if(!com.hexvane.eterniamod.pathtool.SplineRoadTool.pendingRects(world.getName()).isEmpty())throw new IllegalStateException("Recover the interrupted public road before restoring a plot in this world");
         if(com.hexvane.eterniamod.guildroads.GuildRoads.roadRects(world.getName()).stream().anyMatch(r->r.overlaps(destination)))throw new IllegalStateException("Remove the intersecting guild road segment before restoring a plot here; rebuild it after the claim");
@@ -316,8 +385,8 @@ public final class NativeRelocationCoordinator {
             var newBaseline=store.save(operation+"-destination-baseline.json",movedBounds,store.capture(world,movedBounds,Set.of(),true,true));
             var merged=newBaseline.document().clone();overlay(merged,movedPersonal);
             var after=store.save(operation+"-destination.json",movedBounds,merged);
-            services.housing().beginRestore(owner,operation);started=true;
-            services.housing().updateRestoreLocation(owner,operation,new HousingService.ClaimLocation(world.getName(),destination.x(),destination.z(),destination.width(),destination.depth(),guild==null?HousingService.ClaimScope.PUBLIC:HousingService.ClaimScope.GUILD,guild,oldPlot.hasBuilding()));
+            services.housing().beginRestore(slot.propertyId(),operation);started=true;
+            services.housing().updateRestoreLocation(slot.propertyId(),operation,new HousingService.ClaimLocation(world.getName(),destination.x(),destination.z(),destination.width(),destination.depth(),guild==null?HousingService.ClaimScope.PUBLIC:HousingService.ClaimScope.GUILD,guild,oldPlot.hasBuilding()));
             Set<UUID> ids=new HashSet<>();for(var value:manifest.getArray("instances"))ids.add(UUID.fromString(value.asString().getValue()));
             store.apply(world,after,target);store.verify(world,after,target,ids,true);NativePlacementTransactions.flush(world,movedBounds);
             int dx=horizontalX,dz=horizontalZ;
@@ -338,12 +407,12 @@ public final class NativeRelocationCoordinator {
                 var data=new HashMap<>(item.nativeData());data.put("before",before.file().reference());data.put("beforeHash",before.file().sha256());data.put("after",afterInstance.file().reference());data.put("afterHash",afterInstance.file().sha256());
                 services.provenance().acknowledgeRestored(item.id(),item.revision(),slot.propertyId(),data);
             }
-            op=services.journal().find(operation).orElseThrow();services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);services.housing().activate(owner,operation);
+            op=services.journal().find(operation).orElseThrow();services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);services.housing().activate(slot.propertyId(),operation);
         }catch(Throwable failure){if(started)NativePlacementTransactions.lock(plugin,operation);throw new IllegalStateException(started?"Restore locked for recovery; destination snapshot retained":"Packed plot remains safe: "+failure.getMessage(),failure);}
     }
     /** The cells of the owner's packed hex plot, or empty when nothing hex is packed. Domain read, any thread. */
     public Optional<PlotCells> packedCells(Owner owner){
-        var property=plugin.getServices().housing().property(owner).orElse(null);
+        var packed=plugin.getServices().housing().packed(owner).orElse(null);var property=packed==null?null:plugin.getServices().housing().property(packed.propertyId()).orElse(null);
         if(property==null||property.slot().state()!=HousingService.State.PACKED||property.location()==null)return Optional.empty();
         return Optional.ofNullable(property.location().cells());
     }
@@ -380,7 +449,7 @@ public final class NativeRelocationCoordinator {
      * keeps every snapshot. World thread.
      */
     public void restoreCells(World world,UUID actor,Owner owner,UUID operation,PlotCells destination,int groundY,HousingRules.Scope scope) {
-        var services=plugin.getServices();var slot=services.housing().find(owner).orElseThrow();
+        var services=plugin.getServices();var slot=services.housing().byOperation(owner,operation).orElseThrow();
         if(slot.state()!=HousingService.State.PACKED||!slot.operationId().equals(operation))throw new IllegalStateException("No matching packed plot");
         if(!com.hexvane.eterniamod.pathtool.SplineRoadTool.pendingRects(world.getName()).isEmpty())throw new IllegalStateException("Recover the interrupted public road before restoring a plot in this world");
         var lattice=destination.lattice();
@@ -439,8 +508,8 @@ public final class NativeRelocationCoordinator {
                 var data=new HashMap<>(item.nativeData());data.put("before",before.file().reference());data.put("beforeHash",before.file().sha256());data.put("after",afterInstance.file().reference());data.put("afterHash",afterInstance.file().sha256());
                 rebased.add(Map.entry(item,data));
             }
-            services.housing().beginRestore(owner,operation);started=true;
-            services.housing().updateRestoreLocation(owner,operation,HousingService.ClaimLocation.ofCells(world.getName(),destination,guild==null?HousingService.ClaimScope.PUBLIC:HousingService.ClaimScope.GUILD,guild,oldPlot.hasBuilding()));
+            services.housing().beginRestore(slot.propertyId(),operation);started=true;
+            services.housing().updateRestoreLocation(slot.propertyId(),operation,HousingService.ClaimLocation.ofCells(world.getName(),destination,guild==null?HousingService.ClaimScope.PUBLIC:HousingService.ClaimScope.GUILD,guild,oldPlot.hasBuilding()));
             store.apply(world,after,target);store.verify(world,after,target,ids,true);NativePlacementTransactions.flush(world,movedBounds);
             var projection=new HubPlotRecord(oldPlot.getPlotId(),world.getName(),HubPlotFootprint.forCells(destination,groundY),owner.kind()==Owner.Kind.PLAYER?owner.id():null);
             projection.setGuildOwnerUuid(owner.kind()==Owner.Kind.GUILD?owner.id():null);projection.setAttachedGuildUuid(owner.kind()==Owner.Kind.PLAYER?guild:null);
@@ -449,7 +518,7 @@ public final class NativeRelocationCoordinator {
             var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);
             manager.addPlot(projection);manager.saveIfDirty();writePointer(store.files().resolve("baseline-"+projection.getPlotId()+".pointer"),newBaseline.file());
             for(var entry:rebased)services.provenance().acknowledgeRestored(entry.getKey().id(),entry.getKey().revision(),slot.propertyId(),entry.getValue());
-            op=services.journal().find(operation).orElseThrow();services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);services.housing().activate(owner,operation);
+            op=services.journal().find(operation).orElseThrow();services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);services.housing().activate(slot.propertyId(),operation);
         }catch(Throwable failure){if(started)NativePlacementTransactions.lock(plugin,operation);throw new IllegalStateException(started?"Restore locked for recovery; destination snapshot retained":"Packed plot remains safe: "+failure.getMessage(),failure);}
     }
     private static boolean overlaps(NativeSnapshotStore.Bounds a,NativeSnapshotStore.Bounds b){return a.minX()<b.maxX()&&b.minX()<a.maxX()&&a.minY()<b.maxY()&&b.minY()<a.maxY()&&a.minZ()<b.maxZ()&&b.minZ()<a.maxZ();}

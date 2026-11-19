@@ -26,18 +26,26 @@ public final class StationPlacement {
     }
 
     /**
-     * Null when the station may stand there, else a placement code. One station of each profession per plot, and only
-     * on a production hexagon ({@link PlotRoles}).
+     * Null when the station may stand there, else a placement code. A plot holds a set number of stations of each
+     * profession (1 on a player plot, 2 on a guild plot, from PlotRules), and only on a production hexagon
+     * ({@link PlotRoles}).
      */
     public static String check(EterniaModPlugin plugin, World world, HubPlotRecord plot, PropDefinition def, HubPlotFootprint footprint) {
         String profession = ProductionRuntime.professionOf(def.getId());
         if (profession == null) return "prefabMissing";
-        for (HubPlotProp prop : plot.getProps()) if (profession.equals(ProductionRuntime.professionOf(prop.getPropId()))) return "stationAlready";
+        int same = 0;
+        for (HubPlotProp prop : plot.getProps()) if (profession.equals(ProductionRuntime.professionOf(prop.getPropId()))) same++;
+        if (same >= sameAllowed(plot)) return "stationAlready";
         PlotRoles roles = HexRoles.of(plugin, plot);
         if (roles != null) {
             var cell = com.hexvane.eterniamod.placement.HexPlacement.standingCell(plot.getCells().lattice(), com.hexvane.eterniamod.placement.HexPlacement.rect(footprint));
             if (!roles.cells().contains(cell) || roles.of(cell) != PlotRoles.Role.PRODUCTION) return "stationNeedsProduction";
         }
         return null;
+    }
+
+    /** How many stations of one profession a plot may hold. */
+    public static int sameAllowed(HubPlotRecord plot) {
+        return com.hexvane.eterniamod.hexplots.PlotRules.current().tier(plot.getGuildOwnerUuid() != null).samePerPlot();
     }
 }

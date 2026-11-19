@@ -24,11 +24,12 @@ public final class NativeMenuActions implements SocialUiActions {
                 if(com.hexvane.eterniamod.claimmap.ClaimMapRoutes.inHexWorld(store)){com.hexvane.eterniamod.customization.CustomizationTools.reissue(ref,store,player,true);com.hexvane.eterniamod.claimmap.ClaimMapRoutes.claim(plugin,ref,store,player);return Result.openedPage();}
                 var notice=com.hexvane.eterniamod.customization.CustomizationTools.reissue(ref,store,player,true)+" Walk to where you want your home, then use the Housing Deed to mark your plot there.";player.sendMessage(Message.raw(notice));return Result.notice(notice);}
             case HOUSING_MANAGE -> {player.sendMessage(Message.raw(com.hexvane.eterniamod.customization.CustomizationTools.reissue(ref,store,player,true)));HousingInventory.open(plugin,ref,store,player);}
-            case GUILD_HOUSING -> ChoicePage.open(ref,store,player,"Guild estate",plugin.getRuntimeConfig().local()?"Local testing: a solo guild can claim an estate. Normal placement rules still apply.":"Guild leaders claim estates with at least three members. Authorized builders furnish them.",List.of(
+            case GUILD_HOUSING -> ChoicePage.open(ref,store,player,"Guild estate",plugin.getRuntimeConfig().local()?"Local testing: a solo guild can claim an estate. Normal placement rules still apply.":"Guild leaders claim the first guild plot once the guild has three members. More guild plots and hexagons are bought with guild Crowns.",List.of(
                 new ChoicePage.Choice("Claim an estate","Choose plot",(r,s)->com.hexvane.eterniamod.claimmap.ClaimMapRoutes.claimNew(plugin,r,s,player,true)),
                 new ChoicePage.Choice("Furnish the estate","Inventory",(r,s)->HousingInventory.open(plugin,r,s,player)),
                 new ChoicePage.Choice("Stand on the estate, then choose Guild decorations to place your unlocked Waygate portal","Place Waygate",(r,s)->HousingInventory.open(plugin,r,s,player),"eternia:prop/guild_waygate"),
                 new ChoicePage.Choice("Plan or remove a community road","Roads",(r,s)->com.hexvane.eterniamod.guildroads.GuildRoads.open(r,s,player)),
+                new ChoicePage.Choice("See and give the guild's own Crowns, spent on more guild plots and hexagons","Guild Crowns",(r,s)->GuildCrownsMenu.open(plugin,r,s,player)),
                 new ChoicePage.Choice("Redeem a purchased guild upgrade","Review vouchers",(r,s)->GuildBenefitsMenu.open(plugin,r,s,player))));
             case WORLD_SELECT -> {
                 WorldDestinationsMenu.open(plugin,ref,store,player);

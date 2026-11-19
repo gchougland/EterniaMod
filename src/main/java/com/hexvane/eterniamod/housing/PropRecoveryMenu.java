@@ -16,9 +16,14 @@ import java.util.List;
 /** Keeps results on screen, loads saved cells before checking them, and logs the actual failure. */
 public final class PropRecoveryMenu {
     private PropRecoveryMenu() {}
+    /** Recovery for the owner's home plot. */
     public static void open(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,Owner owner) {
+        var home=plugin.getServices().housing().home(owner).orElse(null);
+        if(home!=null)open(plugin,ref,store,player,home.propertyId());
+    }
+    public static void open(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,java.util.UUID propertyId) {
         try {
-            var property=plugin.getServices().housing().property(owner).orElseThrow();
+            var property=plugin.getServices().housing().property(propertyId).orElseThrow();Owner owner=property.slot().owner();
             var slot=property.slot();var location=java.util.Objects.requireNonNull(property.location());
             var world=store.getExternalData().getWorld();
             if(!location.worldId().equals(world.getName()))throw new IllegalStateException("Visit "+location.worldId()+" first, then retry recovery. Plot: X "+location.minX()+", Z "+location.minZ()+".");
@@ -35,21 +40,21 @@ public final class PropRecoveryMenu {
                     boolean stillLocked=plugin.getServices().journal().unfinished().stream().anyMatch(op->op.owner().equals(owner));
                     if(packed>0&&!stillLocked){message="Your plot is unlocked. Nothing was lost: anything that was being packed is back in your Decorations.";success=true;
                         player.sendMessage(Message.raw(message));
-                        if(ref.isValid()&&ref.equals(player.getReference())&&store.getComponent(ref,Player.getComponentType()).getPageManager().getCustomPage()==progress)result(plugin,ref,store,player,owner,message,true);
+                        if(ref.isValid()&&ref.equals(player.getReference())&&store.getComponent(ref,Player.getComponentType()).getPageManager().getCustomPage()==progress)result(plugin,ref,store,player,propertyId,message,true);
                         return;}
                     int count=house?(FailedHouseRecovery.recover(plugin,world,plot,player.getUuid())?1:0):FailedPropRecovery.recover(plugin,world,plot,player.getUuid());
                     success=count>0;
                     message=success?(house?"Your house placement is complete. Your plot is unlocked, and you can use or pack your house.":"The interrupted decoration is back in your housing build inventory. Your plot is unlocked."):"This could not be fixed automatically yet. Nothing was lost: your house and belongings are saved. The server log has the details.";
                 }catch(Exception error){plugin.getLogger().atWarning().withCause(error).log("Placement recovery did not complete for property %s",plot.getPlotId());message="This could not be fixed automatically yet. Nothing was lost: your house and belongings are saved. The server log has the details.";}
                 player.sendMessage(Message.raw(message));
-                if(ref.isValid()&&ref.equals(player.getReference())&&store.getComponent(ref,Player.getComponentType()).getPageManager().getCustomPage()==progress)result(plugin,ref,store,player,owner,message,success);
+                if(ref.isValid()&&ref.equals(player.getReference())&&store.getComponent(ref,Player.getComponentType()).getPageManager().getCustomPage()==progress)result(plugin,ref,store,player,propertyId,message,success);
             }));
-        }catch(Exception error){plugin.getLogger().atWarning().withCause(error).log("Could not start prop recovery");result(plugin,ref,store,player,owner,error.getMessage()==null?"Could not start recovery.":error.getMessage(),false);}
+        }catch(Exception error){plugin.getLogger().atWarning().withCause(error).log("Could not start prop recovery");result(plugin,ref,store,player,propertyId,error.getMessage()==null?"Could not start recovery.":error.getMessage(),false);}
     }
-    private static void result(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,Owner owner,String message,boolean success) {
+    private static void result(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,java.util.UUID propertyId,String message,boolean success) {
         var actions=new java.util.ArrayList<ChoicePage.Choice>();
         if(success)actions.add(new ChoicePage.Choice("Browse your houses and returned decorations","Housing inventory",(r,s)->HousingInventory.open(plugin,r,s,player)));
-        else actions.add(new ChoicePage.Choice("Load the plot cells and check again","Retry recovery",(r,s)->open(plugin,r,s,player,owner)));
+        else actions.add(new ChoicePage.Choice("Load the plot cells and check again","Retry recovery",(r,s)->open(plugin,r,s,player,propertyId)));
         actions.add(new ChoicePage.Choice("See this property's current state","My plots",(r,s)->MyPlotsPage.open(plugin,r,s,player)));
         ChoicePage.open(ref,store,player,success?"Recovery complete":"Recovery needs attention",message,actions);
     }

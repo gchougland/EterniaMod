@@ -11,7 +11,7 @@ import java.util.*;
 
 /** Account-level property directory; finding or packing a plot never requires standing inside it. */
 public final class MyPlotsPage {
-    private record Property(Owner owner,HousingService.Slot slot,HousingService.ClaimLocation location) {}
+    private record Property(Owner owner,HousingService.Slot slot,HousingService.ClaimLocation location,int number) {}
     private MyPlotsPage() {}
     private static String hexagons(int count){return count==1?"1 hexagon":count+" hexagons";}
     public static void open(EterniaModPlugin plugin,Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
@@ -19,33 +19,48 @@ public final class MyPlotsPage {
         var services=plugin.getServices();
         var directory=services.batch(()->{
             var owners=new ArrayList<Owner>();owners.add(Owner.player(player.getUuid()));services.guilds().membership(player.getUuid()).ifPresent(m->owners.add(Owner.guild(m.guildId())));
-            return owners.stream().map(owner->new Property(owner,services.housing().find(owner).orElse(null),services.housing().location(owner).orElse(null))).toList();
+            // Every plot each owner holds, oldest first, then a row to claim another while the owner may.
+            var out=new ArrayList<Property>();var rules=com.hexvane.eterniamod.hexplots.PlotRules.current();
+            for(var owner:owners){
+                var held=services.housing().properties(owner);int n=0;
+                for(var p:held)out.add(new Property(owner,p.slot(),p.location(),++n));
+                if(held.size()<rules.tier(owner.kind()==Owner.Kind.GUILD).maxPlots()&&held.stream().noneMatch(p->p.slot().state()==HousingService.State.PACKED))out.add(new Property(owner,null,null,held.size()));
+            }
+            return out;
         });
+        var rules=com.hexvane.eterniamod.hexplots.PlotRules.current();
         for(var entry:directory) {
             var owner=entry.owner();var slot=entry.slot();var location=entry.location();
-            String name=owner.kind()==Owner.Kind.PLAYER?"Your plot":"Guild estate";
-            if(slot==null){choices.add(new ChoicePage.Choice(name+" · No plot claimed",com.hexvane.eterniamod.claimmap.ClaimMapRoutes.inHexWorld(store)?"Choose a plot":"Preview claim",(r,s)->com.hexvane.eterniamod.claimmap.ClaimMapRoutes.claimNew(plugin,r,s,player,owner.kind()==Owner.Kind.GUILD)));continue;}
+            boolean guild=owner.kind()==Owner.Kind.GUILD;
+            String name=(guild?"Guild plot ":"Plot ")+entry.number();
+            if(slot==null){
+                long price=rules.plotPrice(guild,entry.number());
+                String label=entry.number()==0?(guild?"Guild plot · Not claimed yet":"Your plot · Not claimed yet")
+                    :(guild?"Another guild plot · ":"Another plot · ")+String.format(java.util.Locale.ROOT,"%,d",price)+" Crowns"+(guild?" from the guild":"");
+                choices.add(new ChoicePage.Choice(label,com.hexvane.eterniamod.claimmap.ClaimMapRoutes.inHexWorld(store)?"Choose a plot":"Preview claim",(r,s)->com.hexvane.eterniamod.claimmap.ClaimMapRoutes.claimNew(plugin,r,s,player,guild)));
+                continue;
+            }
             String where=location==null?"Location unavailable":location.cells()!=null?com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId())+" · "+hexagons(location.cells().size()):com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId())+" · X "+location.minX()+" to "+(location.minX()+location.width()-1)+", Z "+location.minZ()+" to "+(location.minZ()+location.depth()-1);
             choices.add(new ChoicePage.Choice(name+" · "+slot.state()+"\n"+where,"Manage",(r,s)->{
                 var actions=new ArrayList<ChoicePage.Choice>();
                 var pending=plugin.getServices().journal().unfinished().stream().filter(op->op.owner().equals(owner)).toList();
                 if(!pending.isEmpty())actions.add(new ChoicePage.Choice("Something on your plot did not finish. Fix it now to unlock your plot. Nothing will be lost.","Fix my plot",(rr,ss)->{
-                    PropRecoveryMenu.open(plugin,rr,ss,player,owner);
+                    PropRecoveryMenu.open(plugin,rr,ss,player,slot.propertyId());
                 }));
                 if(slot.state()==HousingService.State.ACTIVE){
-                    actions.add(new ChoicePage.Choice("Travel to the edge of this plot from a public travel point","Locate plot",(rr,ss)->plugin.getTravel().visitPlot(player,owner)));
-                    if(location!=null&&location.cells()!=null)actions.add(new ChoicePage.Choice("Grow your plot by one hexagon beside it. Each hexagon costs Coins.","Add a hexagon",(rr,ss)->{
+                    actions.add(new ChoicePage.Choice("Travel to the edge of this plot from a public travel point","Locate plot",(rr,ss)->plugin.getTravel().visitPlot(player,slot.propertyId())));
+                    if(location!=null&&location.cells()!=null)actions.add(new ChoicePage.Choice("Grow your plot by one hexagon beside it. Your first hexagons of each kind are free; more cost Crowns.","Add a hexagon",(rr,ss)->{
                         if(!ss.getExternalData().getWorld().getName().equals(location.worldId())||!com.hexvane.eterniamod.claimmap.ClaimMapRoutes.expand(plugin,rr,ss,player,slot.propertyId()))
                             player.sendMessage(Message.raw("Go to "+com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId())+" to add a hexagon to this plot."));
                     }));
-                    if(location!=null&&location.cells()!=null&&location.cells().size()>1)actions.add(new ChoicePage.Choice("Give one hexagon back and get its Coins back. Anything built on it is removed.","Sell a hexagon",(rr,ss)->{
+                    if(location!=null&&location.cells()!=null&&location.cells().size()>1)actions.add(new ChoicePage.Choice("Give one hexagon back and get back what you paid for it. Anything built on it is removed.","Sell a hexagon",(rr,ss)->{
                         if(!ss.getExternalData().getWorld().getName().equals(location.worldId())||!com.hexvane.eterniamod.claimmap.ClaimMapRoutes.sell(plugin,rr,ss,player,slot.propertyId()))
                             player.sendMessage(Message.raw("Go to "+com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId())+" to sell a hexagon of this plot."));
                     }));
                     actions.add(new ChoicePage.Choice("Save the plot, house and belongings, then choose a new site","Move plot",(rr,ss)->ChoicePage.open(rr,ss,player,"Move "+name.toLowerCase()+"?","This uses one move credit. You have "+plugin.getServices().ownership().available(owner,HousingService.MOVE_CREDIT)+". After packing, use your Plot Deed or /e claim to restore it. No separate move tool is needed.",List.of(new ChoicePage.Choice("Pack the entire plot and reserve one move credit","Confirm move",(rrr,sss)->{
-                        var current=plugin.getServices().housing().location(owner).orElseThrow();var world=Universe.get().getWorld(current.worldId());
+                        var current=java.util.Objects.requireNonNull(location);var world=Universe.get().getWorld(current.worldId());
                         if(world==null){player.sendMessage(Message.raw("This plot’s world is not loaded."));return;}
-                        world.execute(()->plugin.getPlotMover().request(world,owner,player));
+                        world.execute(()->plugin.getPlotMover().request(world,slot.propertyId(),player,false));
                     })))));
                 }else if(slot.state()==HousingService.State.PACKED)actions.add(new ChoicePage.Choice("Restore your saved plot in a new location","Place packed plot",(rr,ss)->com.hexvane.eterniamod.claimmap.ClaimMapRoutes.claimNew(plugin,rr,ss,player,owner.kind()==Owner.Kind.GUILD)));
                 actions.add(new ChoicePage.Choice("Update the saved state of this property","Refresh",(rr,ss)->open(plugin,rr,ss,player)));

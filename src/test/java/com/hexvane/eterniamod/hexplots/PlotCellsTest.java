@@ -82,14 +82,16 @@ class PlotCellsTest {
 
     @Test void settingsComeFromDataWithSafeFallbacks() throws Exception {
         HexPlotSettings shipped = HexPlotSettings.load(getClass().getClassLoader());
-        assertEquals(new HexPlotSettings(44, 28, HexPlotSettings.DEFAULTS.startShapes(), 10, 19, 0, 0, 0, 24, 2, 5, 3, 500), shipped, "the shipped JSON matches the accepted plan");
-        assertEquals(HexShape.TRIANGLE, shipped.startShape(HexClaimRules.Kind.PUBLIC, true));
-        assertEquals(HexShape.FLOWER, shipped.startShape(HexClaimRules.Kind.GUILD_ESTATE, false));
+        var shapes = new java.util.EnumMap<HexPlotSettings.StartKey, HexShape>(HexPlotSettings.StartKey.class);
+        for (var key : HexPlotSettings.StartKey.values()) shapes.put(key, key.name().startsWith("GUILD_ESTATE") ? HexShape.DIAMOND : HexShape.SINGLE);
+        assertEquals(new HexPlotSettings(44, 28, shapes, 10, 22, 0, 0, 0, 24, 2, 5, 3, 500), shipped, "the shipped JSON matches Prowl's plan (2026-11-19)");
+        assertEquals(HexShape.SINGLE, shipped.startShape(HexClaimRules.Kind.PUBLIC, true), "every plot starts with one housing hexagon");
+        assertEquals(HexShape.DIAMOND, shipped.startShape(HexClaimRules.Kind.GUILD_ESTATE, false), "a guild plot starts with four housing hexagons");
         assertEquals(10, shipped.maxCells(HexClaimRules.Kind.PUBLIC), "a house hexagon, three extensions and six production hexagons");
         assertEquals(0, shipped.expansionPrice(1, true), "the first production hexagon is free");
         assertEquals(0, shipped.expansionPrice(3, true), "also on a plot that started with three hexagons");
         assertEquals(500, shipped.expansionPrice(1, false), "a house hexagon is paid for");
-        assertEquals(19, shipped.maxCells(HexClaimRules.Kind.GUILD_ESTATE));
+        assertEquals(22, shipped.maxCells(HexClaimRules.Kind.GUILD_ESTATE), "ten housing and twelve production hexagons");
         assertEquals(500, shipped.expansionPrice(3), "added hexagons cost 500 Crowns each");
         assertTrue(shipped.crownPriced());
         assertEquals("500 Crowns", shipped.priceText(500));

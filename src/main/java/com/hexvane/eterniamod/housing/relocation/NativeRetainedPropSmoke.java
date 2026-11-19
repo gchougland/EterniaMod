@@ -31,7 +31,7 @@ public final class NativeRetainedPropSmoke {
             if(!NativeSnapshotStore.comparisonDocument(actual).equals(NativeSnapshotStore.comparisonDocument(after.document())))throw new IllegalStateException("Retained cactus cells differ from their placement");
             var owner=Owner.player(UUID.randomUUID());var property=UUID.randomUUID();var claim=UUID.randomUUID();var services=plugin.getServices();
             services.housing().beginClaim(owner,property,claim,null,new HousingService.ClaimLocation(world.getName(),b.minX()-2,b.minZ()-2,24,24,HousingService.ClaimScope.PUBLIC,null,false));
-            var claimOp=services.journal().find(claim).orElseThrow();services.journal().advance(claim,claimOp.revision(),JournalService.State.WORLD_APPLIED);services.housing().activate(owner,claim);
+            var claimOp=services.journal().find(claim).orElseThrow();services.journal().advance(claim,claimOp.revision(),JournalService.State.WORLD_APPLIED);services.housing().byOperation(owner,claim).ifPresent(s->services.housing().activate(s.propertyId(),claim));
             var plot=new HubPlotRecord(property,world.getName(),HubPlotFootprint.forCreate(b.minX()-2,b.minX()+21,b.minZ()-2,b.minZ()+21,b.minY()),owner.id());
             var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);manager.addPlot(plot);manager.saveIfDirty();
             services.ownership().grant(new OwnershipService.GrantRequest("retained-cactus",owner,"eternia:prop/cacti",OwnershipService.Kind.QUANTITY,1,null));

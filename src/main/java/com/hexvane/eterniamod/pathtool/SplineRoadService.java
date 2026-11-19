@@ -210,7 +210,7 @@ final class SplineRoadService {
         result.addAll(com.hexvane.eterniamod.guildroads.GuildRoads.roadRects(world.getName()));result.addAll(com.hexvane.eterniamod.setup.paving.RoadPaving.protectedRects(world.getName()));result.addAll(pendingRects(world.getName()));
         // Hex plots are checked cell by cell in cellProblem: their boxes overlap their neighbours' free hexagons.
         EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).listPlots().forEach(p->{if(!p.isHex())result.add(NativeHousingChecks.rect(p.getFootprint()));});
-        if(authoritative)plugin.getServices().batch(()->{for(var slot:plugin.getServices().housing().allSlots())if(slot.state()!=HousingService.State.PACKED)plugin.getServices().housing().location(slot.owner()).filter(l->l.worldId().equals(world.getName())&&!l.isHex()).ifPresent(l->result.add(new PlotRect(l.minX(),l.minZ(),l.width(),l.depth())));return null;});return result;
+        if(authoritative)plugin.getServices().batch(()->{for(var slot:plugin.getServices().housing().allSlots())if(slot.state()!=HousingService.State.PACKED)plugin.getServices().housing().property(slot.propertyId()).map(HousingService.Property::location).filter(l->l.worldId().equals(world.getName())&&!l.isHex()).ifPresent(l->result.add(new PlotRect(l.minX(),l.minZ(),l.width(),l.depth())));return null;});return result;
     }
     /** Every registered road and plaza except the edited road's own, indexed by place. */
     private com.hexvane.eterniamod.housing.AreaIndex connectionRoads(World world,UUID editing){var edited=editing==null?null:find(editing);Set<String> own=edited==null||edited.current()==null?Set.of():edited.current().areas().keySet();

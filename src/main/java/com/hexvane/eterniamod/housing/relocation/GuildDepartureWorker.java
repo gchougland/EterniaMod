@@ -17,6 +17,9 @@ public final class GuildDepartureWorker implements AutoCloseable {
     private final AtomicBoolean running=new AtomicBoolean();
     private final Consumer<Throwable> errors;
     public GuildDepartureWorker(EterniaModPlugin plugin,Consumer<Throwable> errors){this.plugin=plugin;this.errors=errors;}
+    private UUID attachedPlot(Owner owner,UUID guild){
+        return plugin.getServices().housing().slots(owner).stream().filter(s->guild.equals(s.attachedGuild())&&s.state()==HousingService.State.ACTIVE).map(HousingService.Slot::propertyId).findFirst().orElse(null);
+    }
     public void start(){scheduler.scheduleWithFixedDelay(this::poll,0,60,TimeUnit.SECONDS);}
     public void poll(){
         if(!running.compareAndSet(false,true))return;
@@ -24,7 +27,10 @@ public final class GuildDepartureWorker implements AutoCloseable {
             var jobs=plugin.getServices().guilds().leaseDueDepartures(worker,1);
             if(jobs.isEmpty()){running.set(false);return;}
             var job=jobs.getFirst();Owner owner=Owner.player(job.playerId());
-            var location=plugin.getServices().housing().location(owner).orElseThrow();
+            // The plot joined to the guild the player left (plots beside a guild are no longer made; old ones still go).
+            var attached=attachedPlot(owner,job.guildId());
+            var location=attached==null?null:plugin.getServices().housing().property(attached).map(HousingService.Property::location).orElse(null);
+            if(location==null){plugin.getServices().guilds().acknowledgeDeparture(job.id(),worker,UUID.nameUUIDFromBytes(("guild-departure:"+job.id()).getBytes(StandardCharsets.UTF_8)));running.set(false);return;}
             var world=Universe.get().getWorld(location.worldId());
             if(world==null){running.set(false);return;} // Lease expires; do not fabricate completion for an offline world.
             world.execute(()->runJob(job,world,0));
@@ -32,7 +38,8 @@ public final class GuildDepartureWorker implements AutoCloseable {
     }
     private void runJob(GuildService.DepartureJob job,com.hypixel.hytale.server.core.universe.world.World world,int attempt){
         try{
-            Owner owner=Owner.player(job.playerId());var slot=plugin.getServices().housing().find(owner).orElseThrow();
+            Owner owner=Owner.player(job.playerId());var property=attachedPlot(owner,job.guildId());if(property==null){running.set(false);return;}
+            var slot=plugin.getServices().housing().slot(property).orElseThrow();
             var plot=com.hexvane.eterniamod.hub.EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).getPlot(slot.propertyId());
             boolean evacuating=false;
             if(plot!=null)for(var ref:NativeSnapshotStore.entities(world,NativeRelocationCoordinator.bounds(plot))){
@@ -44,7 +51,7 @@ public final class GuildDepartureWorker implements AutoCloseable {
                 scheduler.schedule(()->world.execute(()->runJob(job,world,attempt+1)),1,TimeUnit.SECONDS);return;
             }
             UUID operation=UUID.nameUUIDFromBytes(("guild-departure:"+job.id()).getBytes(StandardCharsets.UTF_8));
-            new NativeRelocationCoordinator(plugin).pack(world,owner,operation,true);
+            new NativeRelocationCoordinator(plugin).pack(world,slot.propertyId(),operation,true);
             plugin.getServices().guilds().acknowledgeDeparture(job.id(),worker,operation);running.set(false);
         }catch(Throwable failure){running.set(false);errors.accept(failure);}
     }

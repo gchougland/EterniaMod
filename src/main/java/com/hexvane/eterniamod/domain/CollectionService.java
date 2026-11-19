@@ -47,7 +47,7 @@ public final class CollectionService extends DomainSupport {
     public Pet assignProperty(UUID actor,UUID petId,UUID propertyId){
         return store.transaction(tx->{var r=row(tx,"pet",petId.toString());Owner owner=Owner.parse(r.value("owner"));authorizeOwner(tx,actor,owner);requireActiveGrant(row(tx,"grant",r.value("source")));
             var plot=tx.scan("housing_slot").stream().filter(p->p.value("property").equals(propertyId.toString())&&p.value("state").equals("ACTIVE")).findFirst().orElseThrow(()->new DomainException(NOT_FOUND,"Active property not found"));
-            Owner propertyOwner=Owner.parse(plot.key());authorizeOwner(tx,actor,propertyOwner);
+            Owner propertyOwner=HousingService.ownerOf(plot);authorizeOwner(tx,actor,propertyOwner);
             long residents=tx.scan("pet").stream().filter(p->p.value("assignment").equals("PROPERTY")&&p.value("property").equals(propertyId.toString())&&!p.key().equals(petId.toString())).count();require(residents<12,CAPACITY,"Property pet limit reached");
             return pet(save(tx,r,"assignment","PROPERTY","property",propertyId));});
     }
@@ -59,7 +59,7 @@ public final class CollectionService extends DomainSupport {
     private boolean validPet(TransactionalStore.Transaction tx,TransactionalStore.Row r,TransactionalStore.Row grant){
         boolean invalidProperty=false;
             if(r.value("assignment").equals("PROPERTY")){var property=tx.scan("housing_slot").stream().filter(p->p.value("property").equals(r.value("property"))).findFirst();
-                if(property.isEmpty())invalidProperty=true;else{Owner petOwner=Owner.parse(r.value("owner")),propertyOwner=Owner.parse(property.get().key());
+                if(property.isEmpty())invalidProperty=true;else{Owner petOwner=Owner.parse(r.value("owner")),propertyOwner=HousingService.ownerOf(property.get());
                     if(!petOwner.equals(propertyOwner)){
                         Owner player=petOwner.kind()==Owner.Kind.PLAYER?petOwner:propertyOwner, guild=petOwner.kind()==Owner.Kind.GUILD?petOwner:propertyOwner;
                         invalidProperty=player.kind()!=Owner.Kind.PLAYER||guild.kind()!=Owner.Kind.GUILD||tx.find("guild_member",player.id().toString()).filter(m->m.value("active").equals("true")&&m.value("guild").equals(guild.id().toString())).isEmpty();

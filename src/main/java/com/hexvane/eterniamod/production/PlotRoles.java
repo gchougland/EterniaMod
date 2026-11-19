@@ -27,11 +27,16 @@ public final class PlotRoles {
 
     private final PlotCells cells;
     private final Set<HexCoord> production;
+    private final int maxProduction;
 
-    private PlotRoles(PlotCells cells, Set<HexCoord> production) {
+    private PlotRoles(PlotCells cells, Set<HexCoord> production, int maxProduction) {
         this.cells = cells;
         this.production = production;
+        this.maxProduction = maxProduction;
     }
+
+    /** Most production hexagons this plot may have (6 for a player plot, 12 for a guild plot). */
+    public int maxProduction() { return maxProduction; }
 
     public PlotCells cells() { return cells; }
 
@@ -62,6 +67,11 @@ public final class PlotRoles {
      * chose for is production while there is room for one.
      */
     public static PlotRoles resolve(PlotCells cells, String saved, Set<HexCoord> houseCells, Map<HexCoord, Role> wanted) {
+        return resolve(cells, saved, houseCells, wanted, MAX_PRODUCTION);
+    }
+
+    /** As above for a plot that may have up to {@code maxProduction} production hexagons. */
+    public static PlotRoles resolve(PlotCells cells, String saved, Set<HexCoord> houseCells, Map<HexCoord, Role> wanted, int maxProduction) {
         var production = new TreeSet<HexCoord>(HexCoord.READING_ORDER);
         Saved old = Saved.parse(saved);
         if (old != null) {
@@ -82,13 +92,13 @@ public final class PlotRoles {
             }
             for (HexCoord cell : added) {
                 Role chosen = wanted == null ? null : wanted.get(cell);
-                if (chosen == Role.PRODUCTION || chosen == null && production.size() < MAX_PRODUCTION) production.add(cell);
+                if (chosen == Role.PRODUCTION || chosen == null && production.size() < maxProduction) production.add(cell);
             }
         }
         for (HexCoord cell : houseCells) production.remove(cell);
         // A plot always keeps a house hexagon.
         if (production.size() >= cells.size()) production.remove(cells.cells().getFirst());
-        return new PlotRoles(cells, production);
+        return new PlotRoles(cells, production, maxProduction);
     }
 
     private static HexCoord first(List<HexCoord> cells) {
@@ -110,7 +120,7 @@ public final class PlotRoles {
      * no production hexagon yet adds that one first (it is the free one).
      */
     public String canAddAs(HexCoord cell, Role role, int maxHouse) {
-        if (role == Role.PRODUCTION) return count(Role.PRODUCTION) < MAX_PRODUCTION ? null : "roleProductionFull";
+        if (role == Role.PRODUCTION) return count(Role.PRODUCTION) < maxProduction ? null : "roleProductionFull";
         if (count(Role.HOUSE) >= maxHouse) return "roleHouseFull";
         boolean touches = false;
         for (HexCoord own : cells.cells()) if (of(own) == Role.HOUSE && touching(own, cell)) touches = true;

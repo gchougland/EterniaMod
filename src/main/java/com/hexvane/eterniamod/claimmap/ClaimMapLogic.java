@@ -38,9 +38,28 @@ public final class ClaimMapLogic {
      * states of the player's own plot and their guild's estate (null when none); {@code packedPersonal} and
      * {@code packedEstate} are the saved cells of a packed plot.
      */
+    /**
+     * What the player's own and their guild's plots allow. {@code personal} and {@code estate} sum up the owner's plots:
+     * PACKED when one waits to be set down, ACTIVE when they hold the most plots allowed, another state while one is
+     * moving, null while another plot can be claimed. {@code personalPlots} and {@code estatePlots} count them.
+     */
     public record Account(UUID player, UUID guild, boolean mayClaimEstate, int members, boolean upgradedPersonal, boolean upgradedEstate,
-                          HousingService.State personal, HousingService.State estate, PlotCells packedPersonal, PlotCells packedEstate) {
+                          HousingService.State personal, HousingService.State estate, PlotCells packedPersonal, PlotCells packedEstate,
+                          int personalPlots, int estatePlots) {
+        public Account(UUID player, UUID guild, boolean mayClaimEstate, int members, boolean upgradedPersonal, boolean upgradedEstate,
+                       HousingService.State personal, HousingService.State estate, PlotCells packedPersonal, PlotCells packedEstate) {
+            this(player, guild, mayClaimEstate, members, upgradedPersonal, upgradedEstate, personal, estate, packedPersonal, packedEstate,
+                personal == HousingService.State.ACTIVE ? com.hexvane.eterniamod.hexplots.PlotRules.current().player().maxPlots() : 0,
+                estate == HousingService.State.ACTIVE ? com.hexvane.eterniamod.hexplots.PlotRules.current().guild().maxPlots() : 0);
+        }
         public static Account newcomer(UUID player) { return new Account(player, null, false, 0, false, false, null, null, null, null); }
+
+        /** Sums up an owner's plots as {@link #personal} and {@link #estate} do. */
+        public static HousingService.State summary(java.util.List<HousingService.Slot> slots, int maxPlots) {
+            for (var s : slots) if (s.state() != HousingService.State.ACTIVE && s.state() != HousingService.State.PACKED) return s.state();
+            for (var s : slots) if (s.state() == HousingService.State.PACKED) return HousingService.State.PACKED;
+            return slots.size() >= maxPlots ? HousingService.State.ACTIVE : null;
+        }
     }
 
     /** Everything the page is showing right now. {@code result} is the last commit's message. */
@@ -48,10 +67,19 @@ public final class ClaimMapLogic {
                             Function<UUID, String> names, ClaimMapGeometry shown, HexCoord selected, int option,
                             boolean confirming, boolean working, Message result, boolean resultOk,
                             String picture, boolean loading, HexPlotSettings settings, boolean localTesting,
-                            Function<Set<HexCoord>, HexClaimRules.Result> packedRule, Set<HexCoord> packedSpots) {
+                            Function<Set<HexCoord>, HexClaimRules.Result> packedRule, Set<HexCoord> packedSpots, long knownPrice) {
         /** Packed mode: the move engine's check when wired, else the map's own same shape, same turn check. */
         public Situation {
             packedSpots = packedSpots == null ? Set.of() : Set.copyOf(packedSpots);
+        }
+        /** Without a price worked out by the page (tests): the plain settings price. */
+        public Situation(Mode mode, HousingRules.Scope scope, UUID plotId, Account account, HexLandView view,
+                         Function<UUID, String> names, ClaimMapGeometry shown, HexCoord selected, int option,
+                         boolean confirming, boolean working, Message result, boolean resultOk,
+                         String picture, boolean loading, HexPlotSettings settings, boolean localTesting,
+                         Function<Set<HexCoord>, HexClaimRules.Result> packedRule, Set<HexCoord> packedSpots) {
+            this(mode, scope, plotId, account, view, names, shown, selected, option, confirming, working, result, resultOk,
+                picture, loading, settings, localTesting, packedRule, packedSpots, -1);
         }
     }
 
@@ -82,7 +110,11 @@ public final class ClaimMapLogic {
         boolean estate = scope == HousingRules.Scope.GUILD_ROOT;
         if ((estate || scope == HousingRules.Scope.GUILD_MEMBER) && a.guild() == null) return HexClaimRules.Result.of(Reason.ANCHOR);
         HousingService.State slot = estate ? a.estate() : a.personal();
-        if (slot == HousingService.State.ACTIVE) return HexClaimRules.Result.of(estate ? Reason.GUILD_SLOT : Reason.HAS_PLOT);
+        if (scope == HousingRules.Scope.GUILD_MEMBER) return HexClaimRules.Result.of(Reason.ANCHOR);
+        if (slot == HousingService.State.ACTIVE) {
+            var rules = com.hexvane.eterniamod.hexplots.PlotRules.current();
+            return HexClaimRules.Result.of(estate ? Reason.GUILD_PLOT_LIMIT : Reason.PLOT_LIMIT, rules.tier(estate).maxPlots());
+        }
         if (slot == HousingService.State.PACKED) return HexClaimRules.Result.of(Reason.PACKED);
         if (slot != null) return HexClaimRules.Result.of(Reason.RECOVERY);
         if (estate && !a.mayClaimEstate()) return HexClaimRules.Result.of(Reason.PERMISSION);
@@ -265,6 +297,8 @@ public final class ClaimMapLogic {
 
     /** Coins the commit will take (in sell mode, the coins it gives back). */
     public static long price(Situation s) {
+        // The page knows the hexagon's role, what a sold one was bought for and how many plots the owner holds.
+        if (s.knownPrice() >= 0) return s.knownPrice();
         if (s.mode() == Mode.SELL) {
             HexLandView.PlotInfo plot = s.plotId() == null ? null : s.view().plots().get(s.plotId());
             return plot == null ? 0 : s.settings().sellRefund(plot.cells().size());
@@ -292,7 +326,8 @@ public final class ClaimMapLogic {
                 case GUILD_ROOT -> "kicker.estate";
             };
         });
-        boolean tabs = s.mode() == Mode.CLAIM && s.scope() != HousingRules.Scope.GUILD_ROOT && s.account() != null && s.account().guild() != null;
+        // Plots beside a guild are gone (2026-11-19): every player plot stands on its own, so there is no scope to pick.
+        boolean tabs = false;
         boolean estate = s.scope() == HousingRules.Scope.GUILD_ROOT;
 
         long price = price(s);
@@ -454,7 +489,7 @@ public final class ClaimMapLogic {
             case EXPAND -> text("status.confirmExpand").param("coins", s.settings().priceText(price));
             case SELL -> text("status.confirmSell").param("coins", s.settings().priceText(price));
             case PACKED -> text("status.confirmPacked").param("count", count);
-            case CLAIM -> price > 0 ? text("status.confirmCoins").param("count", count).param("coins", s.settings().priceText(price))
+            case CLAIM -> price > 0 ? (count == 1 ? text("status.confirmOneCoins").param("coins", s.settings().priceText(price)) : text("status.confirmCoins").param("count", count).param("coins", s.settings().priceText(price)))
                 : count == 1 ? text("status.confirmOne") : text("status.confirmFree").param("count", count);
         };
     }

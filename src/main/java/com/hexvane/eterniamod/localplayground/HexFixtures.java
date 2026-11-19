@@ -62,7 +62,7 @@ public final class HexFixtures {
         services.batch(() -> {
             var op = services.journal().find(out.slot().operationId()).orElseThrow();
             if (op.state() != JournalService.State.WORLD_APPLIED) services.journal().advance(op.id(), op.revision(), JournalService.State.WORLD_APPLIED);
-            services.housing().activate(owner, out.slot().operationId());
+            services.housing().activate(out.slot().propertyId(), out.slot().operationId());
             return null;
         });
         // Same starter grants as a real estate claim (claimCellsNow): the guild's house, path and mailbox unlocks.

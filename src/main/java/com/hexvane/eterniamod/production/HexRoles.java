@@ -43,7 +43,7 @@ public final class HexRoles {
         PlotRoles roles;
         boolean changed;
         synchronized (state) {
-            roles = PlotRoles.resolve(plot.getCells(), state.plot().roles, house, wanted);
+            roles = PlotRoles.resolve(plot.getCells(), state.plot().roles, house, wanted, maxProduction(plot));
             changed = !roles.text().equals(state.plot().roles);
             if (changed) state.plot().roles = roles.text();
         }
@@ -53,10 +53,20 @@ public final class HexRoles {
         return roles;
     }
 
-    /** The most house hexagons this plot may have: what is left of its size after the six production hexagons. */
+    /** The most housing hexagons this plot may have (4 on a player plot, 10 on a guild plot). */
     public static int maxHouse(HubPlotRecord plot) {
-        var kind = plot.getGuildOwnerUuid() != null ? com.hexvane.eterniamod.hexplots.HexClaimRules.Kind.GUILD_ESTATE : com.hexvane.eterniamod.hexplots.HexClaimRules.Kind.PUBLIC;
-        return Math.max(1, com.hexvane.eterniamod.hexplots.HexPlotSettings.current().maxCells(kind) - PlotRoles.MAX_PRODUCTION);
+        return com.hexvane.eterniamod.hexplots.PlotRules.current().tier(plot.getGuildOwnerUuid() != null).houseMax();
+    }
+
+    /** The most production hexagons this plot may have (6 on a player plot, 12 on a guild plot). */
+    public static int maxProduction(HubPlotRecord plot) {
+        return com.hexvane.eterniamod.hexplots.PlotRules.current().tier(plot.getGuildOwnerUuid() != null).productionMax();
+    }
+
+    /** What the player chose (or was suggested) for a hexagon being added, once {@link #addRefusal} has passed it. */
+    public static Role chosen(java.util.UUID plotId, HexCoord cell) {
+        var wanted = WANTED.get(plotId);
+        return wanted == null ? null : wanted.get(cell);
     }
 
     /** Null when {@code cell} may join the plot as what the player chose (or as what is suggested), else why not. */

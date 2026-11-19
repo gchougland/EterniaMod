@@ -48,7 +48,7 @@ class HexHousingServiceTest {
     private HousingService.Slot activate(Owner owner, UUID operation) {
         var journal = services.journal().find(operation).orElseThrow();
         services.journal().advance(operation, journal.revision(), JournalService.State.WORLD_APPLIED);
-        return services.housing().activate(owner, operation);
+        return services.housing().activate(services.housing().slots(owner).getFirst().propertyId(), operation);
     }
 
     private HousingService.Slot home(UUID player, Collection<HexCoord> cells) {
@@ -62,12 +62,12 @@ class HexHousingServiceTest {
         var outcome = claim(mira, Set.of(SOUTH));
         assertTrue(outcome.ok());
         assertEquals(HousingService.State.CLAIMING, outcome.slot().state());
-        var row = services.store().transaction(tx -> tx.find("housing_slot", Owner.player(mira).key())).orElseThrow();
+        var row = services.store().transaction(tx -> tx.find("housing_slot", outcome.slot().propertyId().toString())).orElseThrow();
         assertEquals("0:1", row.value("cells"));
         assertEquals("hex:44:28:0:0", row.value("lattice"));
         assertEquals(String.valueOf(L.minX(SOUTH)), row.value("minX"));
         assertEquals("50", row.value("depth"));
-        var location = services.housing().location(Owner.player(mira)).orElseThrow();
+        var location = services.housing().homeLocation(Owner.player(mira)).orElseThrow();
         assertEquals(PlotCells.of(L, Set.of(SOUTH)), location.cells());
 
         assertEquals(Set.of(SOUTH), services.housing().reservedCells("housing"));
@@ -88,7 +88,7 @@ class HexHousingServiceTest {
         assertEquals(HexClaimRules.Reason.TAKEN, claim(bo, Set.of(SOUTH)).result().reason());
         assertEquals(HexClaimRules.Reason.ROAD, claim(bo, Set.of(new HexCoord(0, 5))).result().reason());
         assertEquals(HexClaimRules.Reason.SHAPE, claim(bo, Set.of(new HexCoord(1, 1), new HexCoord(2, 1), new HexCoord(3, 1))).result().reason());
-        assertTrue(services.housing().find(Owner.player(bo)).isEmpty());
+        assertTrue(services.housing().home(Owner.player(bo)).isEmpty());
         assertTrue(claim(bo, Set.of(new HexCoord(1, 1), new HexCoord(2, 1), new HexCoord(1, 2))).ok(), "a triangle beside the road");
     }
 
@@ -151,7 +151,7 @@ class HexHousingServiceTest {
         assertEquals(500, services.economy().balance(owner).available());
         assertEquals(Set.of(next), services.housing().reservedCells("housing"), "paid but not yet applied to the world");
         assertEquals(1, services.housing().pendingExpansions("housing").size());
-        assertThrows(DomainException.class, () -> services.housing().beginRelocation(owner, UUID.randomUUID(), true), "no moving while a hexagon is being added");
+        assertThrows(DomainException.class, () -> services.housing().beginRelocation(services.housing().slots(owner).getFirst().propertyId(), UUID.randomUUID(), true), "no moving while a hexagon is being added");
 
         var replay = services.housing().expandPlot(owner, slot.propertyId(), next, slot.revision(), op, HexClaimRules.Kind.PUBLIC, CONTEXT, owner);
         assertTrue(replay.ok());
@@ -159,8 +159,8 @@ class HexHousingServiceTest {
         var busy = services.housing().expandPlot(owner, slot.propertyId(), new HexCoord(-1, 2), grown.slot().revision(), UUID.randomUUID(), HexClaimRules.Kind.PUBLIC, CONTEXT, owner);
         assertEquals(HexClaimRules.Reason.CHANGED, busy.result().reason(), "one expansion at a time");
 
-        var done = services.housing().completeExpansion(owner, op);
-        assertEquals(done, services.housing().completeExpansion(owner, op), "idempotent");
+        var done = services.housing().completeExpansion(services.housing().slots(owner).getFirst().propertyId(), op);
+        assertEquals(done, services.housing().completeExpansion(services.housing().slots(owner).getFirst().propertyId(), op), "idempotent");
         assertEquals(JournalService.State.COMPLETED, services.journal().find(op).orElseThrow().state());
         assertEquals(Set.of(), services.housing().reservedCells("housing"));
         assertTrue(services.housing().pendingExpansions("housing").isEmpty());
@@ -169,7 +169,7 @@ class HexHousingServiceTest {
         assertEquals(HexClaimRules.Reason.COINS, poor.result().reason());
         assertEquals(2000, poor.result().count());
         assertEquals(500, services.economy().balance(owner).available(), "nothing charged on a refusal");
-        assertEquals(2, services.housing().location(owner).orElseThrow().cells().size());
+        assertEquals(2, services.housing().homeLocation(owner).orElseThrow().cells().size());
     }
 
     @Test void sellingRefundsTheNewestHexagonOnce() {
@@ -180,7 +180,7 @@ class HexHousingServiceTest {
         HexCoord next = new HexCoord(0, 2);
         UUID grow = UUID.randomUUID();
         var grown = services.housing().expandPlot(owner, slot.propertyId(), next, slot.revision(), grow, HexClaimRules.Kind.PUBLIC, CONTEXT, owner);
-        var done = services.housing().completeExpansion(owner, grow);
+        var done = services.housing().completeExpansion(services.housing().slots(owner).getFirst().propertyId(), grow);
         assertEquals(0, services.economy().balance(owner).available());
 
         var stale = services.housing().sellCell(owner, slot.propertyId(), next, done.revision() - 1, UUID.randomUUID(), HexClaimRules.Kind.PUBLIC, HexPlotSettings.DEFAULTS, Set.of(), Set.of(), owner);
@@ -192,7 +192,7 @@ class HexHousingServiceTest {
         assertEquals(grown.charged(), sold.charged(), "adding then selling breaks even");
         assertEquals(1000, services.economy().balance(owner).available());
         assertEquals(PlotCells.of(L, Set.of(SOUTH)), sold.cells());
-        assertEquals(1, services.housing().location(owner).orElseThrow().cells().size());
+        assertEquals(1, services.housing().homeLocation(owner).orElseThrow().cells().size());
         assertEquals(JournalService.State.COMPLETED, services.journal().find(op).orElseThrow().state());
 
         var replay = services.housing().sellCell(owner, slot.propertyId(), next, sold.slot().revision(), op, HexClaimRules.Kind.PUBLIC, HexPlotSettings.DEFAULTS, Set.of(), Set.of(), owner);

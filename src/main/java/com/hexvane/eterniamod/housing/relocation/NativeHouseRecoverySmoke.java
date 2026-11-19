@@ -23,7 +23,7 @@ public final class NativeHouseRecoverySmoke {
         var placed=NativePlacementTransactions.place(plugin,world,plot,actor,"hearthstone_manor",origin,yaw,buffer,true);
         plot.setBuilding(new HubPlotBuilding("hearthstone_manor",20,122,20,yaw,List.of()));
         var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);
-        manager.updatePlot(plot);manager.saveIfDirty();plugin.getServices().housing().updateBuildingPresent(owner,plot.getPlotId(),true);
+        manager.updatePlot(plot);manager.saveIfDirty();plugin.getServices().housing().updateBuildingPresent(plot.getPlotId(),true);
         NativePlacementTransactions.complete(plugin,placed.operation());
         pack(plugin,world,plot,actor);
 
@@ -75,6 +75,6 @@ public final class NativeHouseRecoverySmoke {
     private static void pack(EterniaModPlugin plugin,World world,HubPlotRecord plot,UUID actor) throws Exception {
         var operation=NativePlacementTransactions.pickup(plugin,world,plot,actor,plot.getPlotId());
         plot.setBuilding(null);var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);manager.updatePlot(plot);manager.saveIfDirty();
-        plugin.getServices().housing().updateBuildingPresent(NativePlacementTransactions.owner(plot),plot.getPlotId(),false);NativePlacementTransactions.complete(plugin,operation);
+        plugin.getServices().housing().updateBuildingPresent(plot.getPlotId(),false);NativePlacementTransactions.complete(plugin,operation);
     }
 }

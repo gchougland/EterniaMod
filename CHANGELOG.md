@@ -5,7 +5,11 @@
 ### Added
 
 - Production stations. Every player gets a Mine Shaft to place on their plot from Decorations. It digs ore while you are online anywhere in Eternia. Collect from its crate to watch the ore fly out, then spend it at its signboard on levels, tools and talents. New tiers change how the mine looks. There are rare finds to discover, golden moments to catch, and daily orders that pay Seals for your Estate. Open Production in Home in your Journal to see all your stations, orders and Seals at a glance.
-- House and production hexagons. Your plot starts with a house hexagon and one free production hexagon that you place beside it. You can add up to six production hexagons and a few more house hexagons, each with its own limit. Stations go on production hexagons and your house goes on house hexagons. The Claim Map marks them with a house or a pickaxe and asks which kind you want when you add one.
+- House and production hexagons. Your plot starts with a house hexagon and one free production hexagon that you place beside it. You can have up to 4 house hexagons and 6 production hexagons. Each production hexagon holds 2 stations, and a plot can have one station of each kind. Stations go on production hexagons and your house goes on house hexagons. The Claim Map marks them with a house or a pickaxe and asks which kind you want when you add one.
+- You can own up to 5 plots. Your first plot is free and each extra plot costs 1,500 Crowns. Every plot has its own hexagons and stations, and My Plots lists them all.
+- The Foundations free pass gives every plot one more free production hexagon at level 10.
+- Guilds get their own Crowns. Any member can give Crowns to the guild, and they stay with the guild. Members whose role may spend guild Crowns use them on more guild plots and hexagons. Find it under Guild estate, Guild Crowns.
+- A guild plot starts with 4 house hexagons and 2 free production hexagons, and can grow to 10 house hexagons and 12 production hexagons for 1,000 guild Crowns each. A guild can have 2 plots; the second costs 2,500 guild Crowns. Guild plots can hold 2 stations of each kind.
 - Each adventure world now keeps its own inventory and memories. Whatever you carry and remember in the Hub and the housing worlds stays there, and you pick up your adventure gear and memories again when you return to that world.
 - Type /hub to go back to the Hub from anywhere.
 - Titles now come with a colour. Your title and name show in that colour in chat and above your head.
@@ -43,7 +47,8 @@
 
 ### Changed
 
-- Extra hexagons cost 500 Crowns each instead of coins, and a plot can now grow to 10 hexagons.
+- Extra hexagons cost 500 Crowns each instead of coins. Selling a hexagon gives back what you paid for it, and free hexagons give nothing back.
+- Plots can no longer be claimed beside a guild. Every player plot stands on its own.
 - Hexagons are bigger, so one hexagon holds a starter cabin with room to decorate around it. Plots that already exist keep their size.
 - The old placeholder house is gone.
 - Roads built with the Road Designer use half blocks where they step up one block, so walking up them is smooth.

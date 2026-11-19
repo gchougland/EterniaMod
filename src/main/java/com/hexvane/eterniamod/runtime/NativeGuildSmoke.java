@@ -53,7 +53,7 @@ final class NativeGuildSmoke {
             "Guild claim must persist its guild owner");
         exerciseWaygate(plugin,world,guildPlot,leader,guildOwner);
         var hall = placeHouse(plugin, world, guildPlot, leader, "founders_hall", new Vector3i(72, 1, 32));
-        check(services.housing().find(guildOwner).orElseThrow().state() == HousingService.State.ACTIVE,
+        check(services.housing().home(guildOwner).orElseThrow().state() == HousingService.State.ACTIVE,
             "Guild root must be active before it anchors a member claim");
         stage = stage(plugin, "48x48 guild root and native Founders' Hall committed", stage);
 
@@ -92,10 +92,10 @@ final class NativeGuildSmoke {
         stage = stage(plugin, "native guild roads and current owner easement verified", stage);
         long moveCredits = services.ownership().available(memberOwner, HousingService.MOVE_CREDIT);
         UUID operation = UUID.randomUUID();
-        plugin.getRelocation().pack(world, memberOwner, operation, true);
+        plugin.getRelocation().pack(world, services.housing().home(memberOwner).orElseThrow().propertyId(), operation, true);
         com.hexvane.eterniamod.guildroads.NativeGuildRoadSmoke
             .assertMemberPackRestoredTerrain(plugin, world, roadProof);
-        var packedSlot = services.housing().find(memberOwner).orElseThrow();
+        var packedSlot = services.housing().home(memberOwner).orElseThrow();
         check(packedSlot.state() == HousingService.State.PACKED && manager.getPlot(memberProperty) == null,
             "Forced pack must release the live projection while retaining the player's packed slot");
         check(entityIds(world, memberPlot).isEmpty(), "Forced pack must remove all three original guild entities");
@@ -153,13 +153,13 @@ final class NativeGuildSmoke {
                 && services.ownership().available(memberOwner, content) == 0
                 && services.ownership().available(guildOwner, content) == 0,
             "Forced pack and restore must neither transfer nor duplicate the guild's reserved quantity");
-        var restoredSlot = services.housing().find(memberOwner).orElseThrow();
+        var restoredSlot = services.housing().home(memberOwner).orElseThrow();
         check(restoredSlot.state() == HousingService.State.ACTIVE && restoredSlot.attachedGuild() == null
                 && services.ownership().available(memberOwner, HousingService.MOVE_CREDIT) == moveCredits,
             "Forced relocation must clear the attachment and preserve the member's free move credit");
         snapshots.verifyExact(world, hall.after(), hall.after().bounds().origin(), Set.of(hall.instanceId()), true);
         check(services.provenance().find(hall.instanceId()).orElseThrow().owner().equals(guildOwner)
-                && services.housing().find(guildOwner).orElseThrow().state() == HousingService.State.ACTIVE,
+                && services.housing().home(guildOwner).orElseThrow().state() == HousingService.State.ACTIVE,
             "Moving a member must leave the guild hall and its ownership intact");
         check(services.journal().unfinished().isEmpty(), "Guild smoke must leave no unfinished world mutations");
         stage(plugin, "public restore preserved own house and guild hall; guild shelf remains packed", stage);
@@ -181,7 +181,7 @@ final class NativeGuildSmoke {
         var manager = EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin);
         manager.updatePlot(plot);
         manager.saveIfDirty();
-        plugin.getServices().housing().updateBuildingPresent(NativePlacementTransactions.owner(plot), plot.getPlotId(), true);
+        plugin.getServices().housing().updateBuildingPresent(plot.getPlotId(),true);
         NativePlacementTransactions.complete(plugin, placed.operation());
         return placed;
     }

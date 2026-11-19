@@ -65,7 +65,7 @@ public final class CollectionRuntime implements AutoCloseable {
             var snapshot=services.readView(new RenderKey(actors),java.time.Duration.ofSeconds(10),()->{
                 var data=services.collection().renderState(actors);var properties=new HashMap<UUID,Property>();
                 for(var slot:services.housing().allSlots())if(slot.state()==HousingService.State.ACTIVE)
-                    services.housing().location(slot.owner()).ifPresent(location->properties.put(slot.propertyId(),new Property(slot.propertyId(),location)));
+                    services.housing().property(slot.propertyId()).map(HousingService.Property::location).ifPresent(location->properties.put(slot.propertyId(),new Property(slot.propertyId(),location)));
                 return new RenderSnapshot(data,Map.copyOf(properties));
             });
             var data=snapshot.data();

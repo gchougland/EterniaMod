@@ -100,6 +100,23 @@ public final class PlotTerraformer {
 
     public <T> CompletableFuture<T> shapeThen(World world, Request request, TerraformSettings settings, Supplier<Boolean> stillWanted,
             java.util.function.Function<Outcome, T> commit, java.util.function.Predicate<T> kept) {
+        return shapeThen(world, request, settings, stillWanted, outcome -> outcome, prepared -> prepared, commit, kept);
+    }
+
+    /**
+     * Three steps after shaping: {@code prepare} on the world thread (reading the ground), {@code background} on this
+     * job's own thread (saving it, never on the world thread), then {@code commit} on the world thread. Shaping, the
+     * three steps and putting the land back when {@code kept} says no all run as one job.
+     */
+    public <P, Q, T> CompletableFuture<T> shapeThen(World world, Request request, Supplier<Boolean> stillWanted,
+            java.util.function.Function<Outcome, P> prepare, java.util.function.Function<P, Q> background,
+            java.util.function.Function<Q, T> commit, java.util.function.Predicate<T> kept) {
+        return shapeThen(world, request, TerraformSettings.current(), stillWanted, prepare, background, commit, kept);
+    }
+
+    public <P, Q, T> CompletableFuture<T> shapeThen(World world, Request request, TerraformSettings settings, Supplier<Boolean> stillWanted,
+            java.util.function.Function<Outcome, P> prepare, java.util.function.Function<P, Q> background,
+            java.util.function.Function<Q, T> commit, java.util.function.Predicate<T> kept) {
         return CompletableFuture.supplyAsync(() -> {
             Outcome outcome;
             // A copy of the land is only taken when the commit may not go through ({@code kept} given).
@@ -113,13 +130,18 @@ public final class PlotTerraformer {
             NativeSnapshotStore.Snapshot copy = undo == null ? null : undo[0];
             try {
                 T result;
-                try { result = commitWhenReady(world, () -> commit.apply(done)); }
+                try {
+                    P prepared = commitWhenReady(world, () -> prepare.apply(done));
+                    Q ready = background.apply(prepared);
+                    result = commitWhenReady(world, () -> commit.apply(ready));
+                }
                 catch (RuntimeException failure) { putBack(world, request, copy); throw failure; }
                 if (kept != null && !kept.test(result)) putBack(world, request, copy);
                 return result;
             } finally { forget(copy); }
         }, JOBS);
     }
+
 
     /** Runs the commit on the world thread; a commit that asks to wait ({@link RetryLater}) is tried again, for up to a minute. */
     private static <T> T commitWhenReady(World world, Supplier<T> commit) {

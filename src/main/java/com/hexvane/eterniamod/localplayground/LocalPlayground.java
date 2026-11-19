@@ -103,7 +103,7 @@ public final class LocalPlayground {
             World village=Universe.get().getWorld(VILLAGE);load(village,-2,4,-2,5);on(village,()->{
                 var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(village,plugin);if(manager.listPlots().size()!=2||manager.listPlots().stream().anyMatch(p->!p.hasBuilding()))throw new IllegalStateException("Playground house and guild hall were not placed");
                 if(!HexFixtures.isHex(village)||manager.listPlots().stream().map(HubPlotRecord::getCells).anyMatch(c->c==null||c.size()!=1&&c.size()!=7)||manager.plotAtCell(SHOP_CELL)==null||manager.plotAtCell(ESTATE_CENTRE)==null)throw new IllegalStateException("Playground plots are not the sample hexagons");
-                var plot=manager.getPlot(plugin.getServices().housing().find(Owner.player(SELLER)).orElseThrow().propertyId());int x=plot.getBuilding().getAnchorX(),z=plot.getBuilding().getAnchorZ();boolean safe=false;
+                var plot=manager.getPlot(plugin.getServices().housing().home(Owner.player(SELLER)).orElseThrow().propertyId());int x=plot.getBuilding().getAnchorX(),z=plot.getBuilding().getAnchorZ();boolean safe=false;
                 for(int dx=-2;dx<=2;dx++)for(int dz=-2;dz<=2;dz++)if(ChunkSectionBlockUtil.blockId(village,x+dx,1,z+dz)!=0&&ChunkSectionBlockUtil.blockId(village,x+dx,2,z+dz)==0&&ChunkSectionBlockUtil.blockId(village,x+dx,3,z+dz)==0)safe=true;
                 if(!safe)throw new IllegalStateException("The example shop has no clear arrival near its configured entrance");
             }).join();
@@ -176,7 +176,7 @@ public final class LocalPlayground {
     static final com.hexvane.eterniamod.hexplots.HexCoord SHOP_CELL=new com.hexvane.eterniamod.hexplots.HexCoord(1,0),ESTATE_CENTRE=new com.hexvane.eterniamod.hexplots.HexCoord(1,2);
     /** Rectangle villages (made before hex plots) keep {@code rect}; hex villages claim {@code cells} and build on the middle one. */
     private static HubPlotRecord house(EterniaModPlugin plugin,World w,UUID actor,Owner owner,PlotRect rect,List<com.hexvane.eterniamod.hexplots.HexCoord> cells,String building,HousingRules.Scope scope)throws java.io.IOException{
-        var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(w,plugin);var slot=plugin.getServices().housing().find(owner).orElse(null);boolean hex=HexFixtures.isHex(w);
+        var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(w,plugin);var slot=plugin.getServices().housing().home(owner).orElse(null);boolean hex=HexFixtures.isHex(w);
         UUID property=slot!=null?slot.propertyId():hex?HexFixtures.claim(plugin,w,actor,cells,scope,0):plugin.getClaims().claim(w,actor,rect,0,scope,false,UUID.randomUUID());var plot=Objects.requireNonNull(manager.getPlot(property),"Example plot is unavailable; restore its saved world before retrying");
         if(!plot.hasBuilding()){
             var definition=plugin.getBuildingCatalog().get(building);var yaw=definition.getDefaultRotationYaw();var prefab=PrefabResolveUtil.resolvePrefabBuffer(definition.getPrefabPath());
@@ -184,7 +184,7 @@ public final class LocalPlayground {
             var middle=hex?HexFixtures.centre(plot.getCells().lattice(),cells.getFirst(),1):null;
             int x=hex?middle.x:rect.x()+rect.width()/2,z=hex?middle.z:rect.z()+rect.depth()/2;
             var placement=NativePlacementTransactions.place(plugin,w,plot,actor,building,new Vector3i(x,1,z),yaw,prefab,true);
-            plot.setBuilding(new HubPlotBuilding(building,x,1,z,yaw,List.of()));manager.updatePlot(plot);manager.saveIfDirty();plugin.getServices().housing().updateBuildingPresent(owner,property,true);NativePlacementTransactions.complete(plugin,placement.operation());
+            plot.setBuilding(new HubPlotBuilding(building,x,1,z,yaw,List.of()));manager.updatePlot(plot);manager.saveIfDirty();plugin.getServices().housing().updateBuildingPresent(property,true);NativePlacementTransactions.complete(plugin,placement.operation());
         }return plot;
     }
     private static void placeShelf(EterniaModPlugin plugin,World w,HubPlotRecord plot,UUID actor)throws java.io.IOException{if(plugin.getServices().provenance().instances(plot.getPlotId()).stream().anyMatch(i->i.contentId().equals("eternia:prop/potion_shelf")&&i.state().equals("PLACED")))return;

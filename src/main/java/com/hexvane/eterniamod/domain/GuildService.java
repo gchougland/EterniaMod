@@ -71,8 +71,9 @@ public final class GuildService extends DomainSupport {
     }
     private void depart(TransactionalStore.Transaction tx,TransactionalStore.Row member) {
         require(!member.value("role").equals("leader"),FORBIDDEN,"Transfer leadership before leaving");
-        var changed=save(tx,member,"active",false);var slot=tx.find("housing_slot",Owner.player(UUID.fromString(member.key())).key());
-        if(slot.isPresent()&&slot.get().value("attachedGuild").equals(member.value("guild"))) {
+        var changed=save(tx,member,"active",false);        // A plot joined to the guild (no longer made, but old ones still leave with their owner).
+        var slot=HousingService.ownerRowsIn(tx,Owner.player(UUID.fromString(member.key()))).stream().filter(r->r.value("attachedGuild").equals(member.value("guild"))).findFirst();
+        if(slot.isPresent()) {
             String id=key(member.key(),member.value("guild"),Long.toString(changed.revision()));
             tx.save("guild_departure",id,0,fields("player",member.key(),"guild",member.value("guild"),"memberRevision",changed.revision(),"due",clock.instant().plus(Duration.ofHours(48)),"state","PENDING","worker","","leaseUntil",""));
         }
@@ -116,8 +117,21 @@ public final class GuildService extends DomainSupport {
     }
     private static Role role(TransactionalStore.Transaction tx,UUID guild,String id) {var r=row(tx,"guild_role",roleKey(guild,id));return new Role(id,r.value("name"),Integer.parseInt(r.value("rank")),new HashSet<>(Arrays.asList(r.value("caps").split("\n"))));}
     private TransactionalStore.Row putMember(TransactionalStore.Transaction tx,UUID player,UUID guild,String role) {var old=tx.find("guild_member",player.toString());return tx.save("guild_member",player.toString(),old.map(TransactionalStore.Row::revision).orElse(0L),fields("guild",guild,"role",role,"active",true,"joinedAt",clock.instant()));}
+    /**
+     * Guilds made before guild Crowns existed: gives the leader and officer roles the permission to spend them, once.
+     * Returns how many roles changed.
+     */
+    public int grantCrownSpending() {
+        return store.transaction(tx->{int changed=0;
+            for(var r:tx.scan("guild_role")){
+                if(!Set.of("leader","officer").contains(r.value("id")))continue;
+                var caps=new TreeSet<>(Arrays.asList(r.value("caps").split("\n")));
+                if(caps.add(GuildCrownService.SPEND)){save(tx,r,"caps",String.join("\n",caps));changed++;}
+            }
+            return changed;});
+    }
     private void seedRoles(TransactionalStore.Transaction tx,UUID guild) {
-        var officer=new HashSet<>(BASE);officer.addAll(Set.of("board.moderate","member.invite","member.remove","member.role.assign","audit.view"));
+        var officer=new HashSet<>(BASE);officer.addAll(Set.of("board.moderate","member.invite","member.remove","member.role.assign","audit.view",GuildCrownService.SPEND));
         var architect=new HashSet<>(BASE);architect.addAll(Set.of("housing.structure","housing.palette","housing.addition","housing.prop.place","housing.prop.move","housing.prop.pack","housing.block.build","housing.block.break","housing.road.manage","inventory.reserve_for_build"));
         var quarter=new HashSet<>(BASE);quarter.addAll(Set.of("inventory.withdraw","shop.manage","mail.attachments.claim","treasury.withdraw","housing.container.open","audit.view"));
         var leader=new HashSet<>(officer);leader.addAll(architect);leader.addAll(quarter);leader.addAll(LEADER_ONLY);

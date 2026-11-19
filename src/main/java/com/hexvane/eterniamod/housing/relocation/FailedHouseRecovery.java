@@ -27,7 +27,7 @@ public final class FailedHouseRecovery {
         var services=plugin.getServices();var owner=HousingAccess.owner(plot);
         if(!plot.isOwnedBy(actor)&&(plot.getGuildOwnerUuid()==null||!services.guilds().can(actor,plot.getGuildOwnerUuid(),"housing.structure")))
             throw new IllegalStateException("You do not have permission to manage this house.");
-        var property=services.housing().property(owner).orElseThrow();
+        var property=services.housing().property(plot.getPlotId()).orElseThrow();
         if(property.slot().state()!=HousingService.State.ACTIVE||!property.slot().propertyId().equals(plot.getPlotId())
             ||property.location()==null||!property.location().worldId().equals(world.getName()))return false;
         var pending=services.journal().unfinished().stream().filter(o->o.owner().equals(owner)).toList();
@@ -70,7 +70,7 @@ public final class FailedHouseRecovery {
         else if(existing.state().equals("PACKED"))services.provenance().acknowledgeRestored(instance,existing.revision(),plot.getPlotId(),data);
         plot.setBuilding(new HubPlotBuilding(catalog,pose.origin.x,pose.origin.y,pose.origin.z,pose.yaw,List.of()));
         var manager=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin);manager.updatePlot(plot);manager.saveIfDirty();
-        services.housing().updateBuildingPresent(owner,plot.getPlotId(),true);
+        services.housing().updateBuildingPresent(plot.getPlotId(),true);
         if(op.state()!=JournalService.State.WORLD_APPLIED)services.journal().advance(op.id(),op.revision(),JournalService.State.WORLD_APPLIED);
         NativePlacementTransactions.complete(plugin,op.id());
         plugin.getLogger().atInfo().log("Recovered house placement %s on property %s without changing its blocks or entities",op.id(),plot.getPlotId());

@@ -50,7 +50,7 @@ public final class NativeShopTravel {
         var originTransform=source.getComponent(sourceRef,TransformComponent.getComponentType());if(originTransform==null)return CompletableFuture.completedFuture(false);
         String originWorld=source.getExternalData().getWorld().getName();Vector3d origin=new Vector3d(originTransform.getPosition());
         if(!plugin.getTravel().canUseTravel(sourceRef,source,buyer.getUuid()))throw new IllegalStateException("Visit player shops from the hub, a public portal, or an unlocked home teleporter.");
-        var listing=listing(plugin,listingId);var location=plugin.getServices().housing().location(Owner.player(listing.seller())).orElseThrow();World target=Universe.get().getWorld(location.worldId());
+        var listing=listing(plugin,listingId);var location=plugin.getServices().housing().homeLocation(Owner.player(listing.seller())).orElseThrow();World target=Universe.get().getWorld(location.worldId());
         if(target==null)return CompletableFuture.completedFuture(false);
         var result=new CompletableFuture<Boolean>();if(visits.putIfAbsent(buyer.getUuid(),result)!=null)throw new IllegalStateException("A shop visit is already in progress.");
         result.orTimeout(12,TimeUnit.SECONDS).whenComplete((value,error)->visits.remove(buyer.getUuid(),result));target.execute(()->{
@@ -92,7 +92,7 @@ public final class NativeShopTravel {
     }
     private static MarketService.Listing listing(EterniaModPlugin plugin,String id){return plugin.getServices().market().findActive(id).orElseThrow(()->new IllegalStateException("This listing is no longer available."));}
     private static Destination destination(EterniaModPlugin plugin,MarketService.Listing listing,World world){
-        Owner seller=Owner.player(listing.seller());var slot=plugin.getServices().housing().find(seller).orElseThrow();var location=plugin.getServices().housing().location(seller).orElseThrow();
+        Owner seller=Owner.player(listing.seller());var slot=plugin.getServices().housing().home(seller).orElseThrow();var location=plugin.getServices().housing().homeLocation(seller).orElseThrow();
         if(slot.state()!=HousingService.State.ACTIVE||!slot.propertyId().equals(listing.propertyId())||!location.worldId().equals(world.getName())||!location.buildingPresent())throw new IllegalStateException("The seller's house is currently unavailable.");
         var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).getPlot(slot.propertyId());if(plot==null||!plot.isOwnedBy(listing.seller())||!plot.hasBuilding())throw new IllegalStateException("The seller's house is not ready for visitors.");
         var house=plot.getBuilding();var definition=plugin.getBuildingCatalog().get(house.getBuildingId());int[] local=definition==null?null:definition.getSpawnLocalPos();if(local==null)throw new IllegalStateException("This house has no configured shop entrance.");

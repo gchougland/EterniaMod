@@ -2,16 +2,31 @@
   "Lattice": { "CellWidth": 44, "BodyDepth": 28 },
   "StartShapes": {
     "Public": "Single",
-    "PublicUpgraded": "Triangle",
-    "GuildEstate": "Flower",
-    "GuildEstateUpgraded": "Flower",
+    "PublicUpgraded": "Single",
+    "GuildEstate": "Diamond",
+    "GuildEstateUpgraded": "Diamond",
     "GuildMember": "Single",
-    "GuildMemberUpgraded": "Triangle"
+    "GuildMemberUpgraded": "Single"
   },
-  "MaxCells": { "Personal": 10, "GuildEstate": 19 },
+  "MaxCells": { "Personal": 10, "GuildEstate": 22 },
   "ClaimPrice": { "Coins": 0 },
   "ExpansionPrice": { "Crowns": 500, "Coins": 0, "CoinsPerOwnedCell": 0 },
   "PerCell": { "Props": 24, "Generators": 2 },
   "HouseSetback": 5,
-  "GuildEstateMembers": 3
+  "GuildEstateMembers": 3,
+  "Plots": {
+    "ProductionBonus": "eternia:plot/production_bonus",
+    "Player": {
+      "MaxPlots": 5,
+      "ExtraPlotCrowns": 1500,
+      "Housing": { "Free": 1, "Max": 4, "Crowns": 500 },
+      "Production": { "Free": 1, "Max": 6, "Crowns": 500, "UnitsPerHexagon": 2, "SameUnitPerPlot": 1 }
+    },
+    "Guild": {
+      "MaxPlots": 2,
+      "ExtraPlotCrowns": 2500,
+      "Housing": { "Free": 4, "Max": 10, "Crowns": 1000 },
+      "Production": { "Free": 2, "Max": 12, "Crowns": 1000, "UnitsPerHexagon": 2, "SameUnitPerPlot": 2 }
+    }
+  }
 }

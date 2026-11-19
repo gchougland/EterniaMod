@@ -260,8 +260,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
 
     private View plotView(com.hexvane.eterniamod.EterniaModPlugin plugin, Owner owner, String side, boolean guild) {
         String name = guild ? "Guild estate" : "Your plot";
-        var slot = services.housing().find(owner).orElse(null);
-        var location = services.housing().location(owner).orElse(null);
+        var slot = services.housing().home(owner).orElse(null);
+        var location = services.housing().homeLocation(owner).orElse(null);
         List<Row> rows = new ArrayList<>();
         if (slot == null || slot.state() == HousingService.State.PACKED) {
             boolean packed = slot != null;
@@ -305,7 +305,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
 
     /** House style cards. {@code all} also lists the style standing on the plot (with Pack). */
     private List<Row> houseCards(com.hexvane.eterniamod.EterniaModPlugin plugin, Owner owner, String side, boolean all) {
-        var slot = services.housing().find(owner).orElse(null);
+        var slot = services.housing().home(owner).orElse(null);
         String standing = slot == null ? null : services.provenance().instances(slot.propertyId()).stream()
             .filter(i -> i.state().equals("PLACED") && "HOUSE".equals(i.nativeData().get("kind"))).map(ProvenanceService.Instance::contentId).findFirst().orElse(null);
         List<Row> rows = new ArrayList<>();
@@ -348,7 +348,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             rows.add(Row.card(palette.name(), "Changes your house's stone and wood", "Preview", "home_palette:" + palette.id(), "eternia:palette/" + palette.id()));
         for (var path : service.catalog().paths()) if (services.ownership().owns(owner, "eternia:path/" + path.id()))
             rows.add(Row.card(path.name(), "A garden path from where you stand", "Lay path", "home_path:" + path.id(), "eternia:path/" + path.id()));
-        var slot = services.housing().find(owner).orElse(null);
+        var slot = services.housing().home(owner).orElse(null);
         if (slot != null && services.provenance().instances(slot.propertyId()).stream().anyMatch(i -> i.state().equals("PLACED") && "PATH".equals(i.nativeData().get("kind"))))
             rows.add(Row.card("Remove path", "Puts the ground back", "Remove", "home_path_remove", "eternia:path/remove"));
         return rows;
@@ -361,8 +361,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         String action = parts[0];
         var membership = services.guilds().membership(actor).orElse(null);
         Owner owner = parts.length > 1 && parts[1].equals("g") && membership != null ? Owner.guild(membership.guildId()) : Owner.player(actor);
-        var slot = services.housing().find(owner).orElse(null);
-        var location = services.housing().location(owner).orElse(null);
+        var slot = services.housing().home(owner).orElse(null);
+        var location = services.housing().homeLocation(owner).orElse(null);
         var pages = store.getComponent(ref, com.hypixel.hytale.server.core.entity.entities.Player.getComponentType()).getPageManager();
         String inWorld = location == null ? "" : "Go to " + com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId()) + " first.";
         boolean here = location != null && store.getExternalData().getWorld().getName().equals(location.worldId());
@@ -626,7 +626,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             case "mail_archive" -> { services.mail().archive(actor, input.focus); return "Message archived. Return to Mailbox to continue."; }
             case "season_activate" -> { services.seasons().select(actor, input.focus); return "Active season changed. Every season keeps its existing progress."; }
             case "pet_follow" -> { services.collection().follow(actor, UUID.fromString(input.focus)); return "Your pet will join you shortly."; }
-            case "pet_home" -> { var property = services.housing().find(Owner.player(actor)).orElseThrow(() -> new IllegalArgumentException("Claim an active home first.")); services.collection().assignProperty(actor, UUID.fromString(input.focus), property.propertyId()); return "Your pet is settling in at home."; }
+            case "pet_home" -> { var property = services.housing().home(Owner.player(actor)).orElseThrow(() -> new IllegalArgumentException("Claim an active home first.")); services.collection().assignProperty(actor, UUID.fromString(input.focus), property.propertyId()); return "Your pet is settling in at home."; }
             case "pet_unassign" -> { services.collection().unassign(actor, UUID.fromString(input.focus)); return "Pet assignment cleared."; }
             default -> {
                 if (route.startsWith("collection_equip:")) {
@@ -685,10 +685,10 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 noFields(), buttons("Starter toolkit", "intro_toolkit", "", "", "", ""), null);
             case HOUSING -> {
                 if (request.desk == Desk.JOURNAL) yield homeView(input);
-                var housing = services.housing().find(Owner.player(actor)).orElse(null);
+                var housing = services.housing().home(Owner.player(actor)).orElse(null);
                 List<Row> rows = new ArrayList<>();
                 rows.add(Row.info(housing == null ? "Your free 24 × 24 plot is waiting for you." : "Your home · " + UiPresentation.friendlyId(housing.state().name())));
-                services.housing().location(Owner.player(actor)).ifPresent(location -> rows.add(Row.info(location.width() + " × " + location.depth() + " plot in " + com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId()) + (location.guildId()==null?"":" · Guild neighbourhood"))));
+                services.housing().homeLocation(Owner.player(actor)).ifPresent(location -> rows.add(Row.info(location.width() + " × " + location.depth() + " plot in " + com.hexvane.eterniamod.runtime.WorldDisplayNames.name(location.worldId()) + (location.guildId()==null?"":" · Guild neighbourhood"))));
                 rows.add(Row.info("Move credits available: " + services.ownership().available(Owner.player(actor), HousingService.MOVE_CREDIT)));
                 rows.add(Row.info("Keep structures and additions five blocks inside the plot and five blocks away from roads."));
                 if (request.desk == Desk.JOURNAL && housing == null) rows.add(Row.info("Visit Bramble Hearthleaf in the Hub to claim your free plot."));
@@ -738,7 +738,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 new Tile("Getting started", "How plots, guilds and seasons work.", "charter", "nav:GREETER", true),
                 new Tile("Starter toolkit", "Your housing deed and packing wand.", "toolkit", "intro_toolkit", false)));
             case STEWARD -> {
-                boolean home = services.housing().find(Owner.player(actor)).isPresent();
+                boolean home = services.housing().home(Owner.player(actor)).isPresent();
                 yield View.desk(home ? "Welcome back! Want to change something about your home, or find a new view?"
                         : "Welcome! Every adventurer gets a free plot, a starter house and one free move. Shall we find you a spot?", List.of(
                     home ? new Tile("Furnish my home", "Place your house, decorations and additions.", "housing", "external:HOUSING_MANAGE", true)
@@ -814,7 +814,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             if (input.mode.equals("pet")) {
                 var pet = pets.stream().filter(p -> p.id().toString().equals(input.focus)).findFirst().orElseThrow(() -> new IllegalArgumentException("Pet no longer belongs to your collection."));
                 var definition = catalog.get(pet.contentId());
-                boolean home = services.housing().find(owner).filter(slot -> slot.state() == HousingService.State.ACTIVE).isPresent();
+                boolean home = services.housing().home(owner).filter(slot -> slot.state() == HousingService.State.ACTIVE).isPresent();
                 return new View(definition == null ? "Your pet" : definition.name(), "Choose one pet to follow you, or let it roam around your home.",
                     List.of(Row.info("Current home: " + UiPresentation.friendlyId(pet.assignment())), Row.info("Only one personal pet can follow you at a time.")), noFields(),
                     buttons("Assign follower", "pet_follow", "Assign to home", home ? "pet_home" : "", "Clear assignment", "pet_unassign"), null);

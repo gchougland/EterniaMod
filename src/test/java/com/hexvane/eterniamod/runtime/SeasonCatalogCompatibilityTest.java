@@ -47,7 +47,14 @@ class SeasonCatalogCompatibilityTest {
         try(var store=new LocalFileStore(file)) {
             var services=new EterniaServices(store,clock,UUID::randomUUID);
             GameplayContent.load(services,data);GameplayContent.load(services,data);
-            assertEquals(definition,season(store),"Startup must preserve the released season row and revision");
+            // Startup may only add the planned Foundations rewards (the extra production hexagon, 2026-11-19); every
+            // released field (thresholds, quests and the rewards already claimable) stays as it was.
+            var after=season(store);
+            var before=new java.util.TreeMap<>(definition.fields());var now=new java.util.TreeMap<>(after.fields());
+            before.keySet().removeIf(k->k.matches("r[0-9]+\\..*")||k.equals("rewardCount"));now.keySet().removeIf(k->k.matches("r[0-9]+\\..*")||k.equals("rewardCount"));
+            assertEquals(before,now,"Startup must preserve the released season's quests and thresholds");
+            assertTrue(after.fields().containsValue("eternia:plot/production_bonus"),"the extra production hexagon joins the free track");
+            for(var e:definition.fields().entrySet())if(e.getKey().endsWith(".content"))assertTrue(after.fields().containsValue(e.getValue()),"released reward kept: "+e.getValue());
             assertEquals(progress,services.seasons().progress(actor));assertEquals(quests,services.seasons().quests(actor,SEASON));
             assertEquals(balance,services.economy().balance(Owner.player(actor)).available());
             services.seasons().claimReward(actor,SEASON,reward.track(),reward.level(),reward.index());

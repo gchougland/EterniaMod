@@ -20,7 +20,7 @@ class DomainInvariantTest {
     void coins(UUID player,long amount){services.economy().credit(Owner.player(player),amount,"mint:"+player);}
     OwnershipService.Grant quantity(UUID player,String content,long amount,String receipt){return services.ownership().grant(new OwnershipService.GrantRequest(receipt,Owner.player(player),content,OwnershipService.Kind.QUANTITY,amount,null));}
     String item(UUID player,long count,boolean transferable){var r=services.escrow().prepareDeposit(Owner.player(player),new EscrowService.Item("Ore_Iron",count,Base64.getEncoder().encodeToString(new byte[]{1,2,3,4}),transferable),"deposit:"+UUID.randomUUID());services.escrow().acknowledgeNativeRemoval(r.id(),"native:"+r.id());return r.id();}
-    HousingService.Slot home(UUID player,int x){UUID property=UUID.randomUUID(),op=UUID.randomUUID();var slot=services.housing().beginClaim(Owner.player(player),property,op,null,new HousingService.ClaimLocation("housing",x,0,24,24,HousingService.ClaimScope.PUBLIC,null,true));var journal=services.journal().find(op).orElseThrow();services.journal().advance(op,journal.revision(),JournalService.State.WORLD_APPLIED);return services.housing().activate(Owner.player(player),op);}
+    HousingService.Slot home(UUID player,int x){UUID property=UUID.randomUUID(),op=UUID.randomUUID();var slot=services.housing().beginClaim(Owner.player(player),property,op,null,new HousingService.ClaimLocation("housing",x,0,24,24,HousingService.ClaimScope.PUBLIC,null,true));var journal=services.journal().find(op).orElseThrow();services.journal().advance(op,journal.revision(),JournalService.State.WORLD_APPLIED);return services.housing().activate(services.housing().slots(Owner.player(player)).getFirst().propertyId(),op);}
 
     @Test void duplicateGrantAndRevocationPreserveOtherSources(){
         UUID player=account("Mira");var original=quantity(player,"eternia:chair",3,"drop:one");assertEquals(original,quantity(player,"eternia:chair",3,"drop:one"));
@@ -83,14 +83,14 @@ class DomainInvariantTest {
         UUID player=account("Mira"),property=UUID.randomUUID(),operation=UUID.randomUUID();Owner owner=Owner.player(player);
         var location=new HousingService.ClaimLocation("housing",0,0,24,24,HousingService.ClaimScope.PUBLIC,null,false);services.housing().beginClaim(owner,property,operation,null,location);
         assertThrows(DomainException.class,()->services.housing().beginClaim(owner,property,operation,null,new HousingService.ClaimLocation("housing",1,0,24,24,HousingService.ClaimScope.PUBLIC,null,false)));
-        UUID other=account("Other");assertThrows(DomainException.class,()->services.housing().beginClaim(Owner.player(other),UUID.randomUUID(),UUID.randomUUID(),null,location));assertTrue(services.housing().find(Owner.player(other)).isEmpty());
+        UUID other=account("Other");assertThrows(DomainException.class,()->services.housing().beginClaim(Owner.player(other),UUID.randomUUID(),UUID.randomUUID(),null,location));assertTrue(services.housing().home(Owner.player(other)).isEmpty());
     }
     @Test void packedSlotCannotMintAnotherHomeOrMoveCredit(){
-        UUID player=account("Mira");Owner owner=Owner.player(player);home(player,0);quantity(player,HousingService.MOVE_CREDIT,1,"starter-move");UUID operation=UUID.randomUUID();services.housing().beginRelocation(owner,operation,false);
-        var op=services.journal().find(operation).orElseThrow();op=services.journal().attachVerifiedSnapshot(operation,op.revision(),"snapshots/one","a".repeat(64));services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);services.housing().acknowledgePacked(owner,operation);
+        UUID player=account("Mira");Owner owner=Owner.player(player);home(player,0);quantity(player,HousingService.MOVE_CREDIT,1,"starter-move");UUID operation=UUID.randomUUID();services.housing().beginRelocation(services.housing().slots(owner).getFirst().propertyId(),operation,false);
+        var op=services.journal().find(operation).orElseThrow();op=services.journal().attachVerifiedSnapshot(operation,op.revision(),"snapshots/one","a".repeat(64));services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);services.housing().acknowledgePacked(services.housing().slots(owner).getFirst().propertyId(),operation);
         assertThrows(DomainException.class,()->services.housing().beginClaim(owner,UUID.randomUUID(),UUID.randomUUID(),null));assertEquals(0,services.ownership().available(owner,HousingService.MOVE_CREDIT));
-        services.housing().beginRestore(owner,operation);services.housing().updateRestoreLocation(owner,operation,new HousingService.ClaimLocation("housing",100,0,24,24,HousingService.ClaimScope.PUBLIC,null,true));
-        op=services.journal().find(operation).orElseThrow();services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);services.housing().activate(owner,operation);assertEquals(0,services.ownership().available(owner,HousingService.MOVE_CREDIT));
+        services.housing().beginRestore(services.housing().slots(owner).getFirst().propertyId(),operation);services.housing().updateRestoreLocation(services.housing().slots(owner).getFirst().propertyId(),operation,new HousingService.ClaimLocation("housing",100,0,24,24,HousingService.ClaimScope.PUBLIC,null,true));
+        op=services.journal().find(operation).orElseThrow();services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);services.housing().activate(services.housing().slots(owner).getFirst().propertyId(),operation);assertEquals(0,services.ownership().available(owner,HousingService.MOVE_CREDIT));
     }
     @Test void loginAfterCrashDoesNotAccrueOfflineHours(){
         UUID player=account("Mira");clock.advance(Duration.ofHours(12));services.accounts().recordAuthenticatedLogin(player,"Mira");
@@ -98,7 +98,7 @@ class DomainInvariantTest {
     }
     @Test void exactDepartureDeadlineCannotBeCancelledByLateRejoin(){
         UUID leader=account("Leader"),member=account("Member");UUID guild=services.guilds().create(leader,"Guild","create").id();services.guilds().acceptInvite(member,services.guilds().invite(leader,member));
-        UUID op=UUID.randomUUID();services.housing().beginClaim(Owner.player(member),UUID.randomUUID(),op,guild);var j=services.journal().find(op).orElseThrow();services.journal().advance(op,j.revision(),JournalService.State.WORLD_APPLIED);services.housing().activate(Owner.player(member),op);
+        UUID op=UUID.randomUUID();services.housing().beginClaim(Owner.player(member),UUID.randomUUID(),op,guild);var j=services.journal().find(op).orElseThrow();services.journal().advance(op,j.revision(),JournalService.State.WORLD_APPLIED);services.housing().activate(services.housing().slots(Owner.player(member)).getFirst().propertyId(),op);
         services.guilds().leave(member);assertFalse(services.guilds().can(member,guild,"guild.view"));clock.advance(Duration.ofHours(48));services.guilds().acceptInvite(member,services.guilds().invite(leader,member));
         assertEquals(1,services.guilds().leaseDueDepartures("worker",10).size());
     }
@@ -137,7 +137,7 @@ class DomainInvariantTest {
     }
     @Test void departingMemberPetCannotRemainAssignedToGuildProperty(){
         UUID player=account("Mira"),nextLeader=account("Other");var guild=services.guilds().create(player,"Citadel","guild");services.guilds().acceptInvite(nextLeader,services.guilds().invite(player,nextLeader));
-        Owner guildOwner=Owner.guild(guild.id());UUID property=UUID.randomUUID(),operation=UUID.randomUUID();services.housing().beginClaim(guildOwner,property,operation,null,new HousingService.ClaimLocation("housing",0,0,48,48,HousingService.ClaimScope.GUILD,guild.id(),true));var op=services.journal().find(operation).orElseThrow();services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);services.housing().activate(guildOwner,operation);
+        Owner guildOwner=Owner.guild(guild.id());UUID property=UUID.randomUUID(),operation=UUID.randomUUID();services.housing().beginClaim(guildOwner,property,operation,null,new HousingService.ClaimLocation("housing",0,0,48,48,HousingService.ClaimScope.GUILD,guild.id(),true));var op=services.journal().find(operation).orElseThrow();services.journal().advance(operation,op.revision(),JournalService.State.WORLD_APPLIED);services.housing().activate(services.housing().slots(guildOwner).getFirst().propertyId(),operation);
         services.collection().register(new CollectionService.Definition("eternia:pet","Prowl",CollectionService.Kind.PET,"","Prowl"));var grant=quantity(player,"eternia:pet",1,"pets");var pet=services.collection().materializePet(Owner.player(player),grant.id(),0);services.collection().assignProperty(player,pet.id(),property);
         services.guilds().transferLeadership(player,nextLeader);services.guilds().leave(player);assertEquals(1,services.collection().reconcileEntitlements());assertEquals("UNASSIGNED",services.collection().pets(Owner.player(player)).getFirst().assignment());
     }
@@ -148,7 +148,7 @@ class DomainInvariantTest {
     }
     @Test void packingHouseStopsCheckoutWithoutTakingBuyerCoinsOrStock(){
         UUID seller=account("Seller"),buyer=account("Buyer");var property=home(seller,0);coins(buyer,100);String escrow=item(seller,3,true);var listing=services.market().list(seller,escrow,10,"listing");
-        services.housing().updateBuildingPresent(Owner.player(seller),property.propertyId(),false);assertThrows(DomainException.class,()->services.market().buy(buyer,listing.id(),1,listing.revision(),"purchase"));
+        services.housing().updateBuildingPresent(property.propertyId(),false);assertThrows(DomainException.class,()->services.market().buy(buyer,listing.id(),1,listing.revision(),"purchase"));
         assertEquals(100,services.economy().balance(Owner.player(buyer)).available());assertEquals(3,services.escrow().find(escrow).orElseThrow().remaining());assertTrue(services.escrow().deliveries(Owner.player(buyer)).isEmpty());
     }
 }

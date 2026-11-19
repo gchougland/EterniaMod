@@ -85,7 +85,7 @@ public final class BuildingPlacementCommit {
         // Management interactions resolve the authoritative plot; no unjournalled helper blocks are inserted.
         plotManager.updatePlot(plot);
         plotManager.saveIfDirty();
-        plugin.getServices().housing().updateBuildingPresent(placed.contentOwner(),plot.getPlotId(),true);
+        plugin.getServices().housing().updateBuildingPresent(plot.getPlotId(),true);
         NativePlacementTransactions.complete(plugin,placed.operation());
         PlayerRef playerRef = store.getComponent(ref, PlayerRef.getComponentType());
         if (playerRef != null) {

@@ -108,6 +108,18 @@ public final class EterniaModPlugin extends JavaPlugin {
         getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.worldborder.WorldBorderSystem(worldBorders));
         com.hexvane.eterniamod.seasonsales.SeasonSaleSync.sync(getServices(), dataDirectory, warning -> getLogger().atWarning().log("%s", warning));
         com.hexvane.eterniamod.hexplots.HexPlotSettings.install(EterniaModPlugin.class.getClassLoader());
+        com.hexvane.eterniamod.hexplots.PlotRules.install(EterniaModPlugin.class.getClassLoader());
+        // Once: plots saved one per owner are stored per plot, and existing guilds' leaders and officers may spend guild Crowns.
+        try {
+            int moved = getServices().housing().migrateToPlotKeys();
+            int roles = getServices().guilds().grantCrownSpending();
+            // Larger plot sizes are gone: every plot grows hexagon by hexagon, so these two upgrades would do nothing.
+            for (String retired : java.util.List.of("eternia:store/personal_32", "eternia:store/guild_plot"))
+                if (getServices().premium().items().stream().anyMatch(i -> i.id().equals(retired))) getServices().premium().setListed(retired, false);
+            if (moved > 0 || roles > 0) getLogger().atInfo().log("Plots stored per plot: %d moved; guild roles given Crown spending: %d", moved, roles);
+        } catch (RuntimeException failure) {
+            getLogger().atSevere().withCause(failure).log("Plot and guild role update did not finish; it runs again at the next start");
+        }
         com.hexvane.eterniamod.hexplots.terraform.TerraformSettings.install(EterniaModPlugin.class.getClassLoader(), dataDirectory);
         infrastructure = new com.hexvane.eterniamod.housing.HousingInfrastructure(dataDirectory.resolve("housing-infrastructure.json"));
         try { infrastructure.load(); } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }

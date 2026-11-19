@@ -76,20 +76,86 @@ public final class HousingService extends DomainSupport {
     public int wipeWorld(String world) {
         return store.transaction(tx->{int count=0;for(var r:tx.scan("housing_slot"))if(r.value("world").equals(world)){tx.delete("housing_slot",r.key(),r.revision());count++;}return count;});
     }
-    public Optional<Slot> find(Owner owner) { return store.transaction(tx->tx.find("housing_slot",owner.key()).map(HousingService::slot)); }
+    // ---------------------------------------------------------------------------------------------------------------
+    // An owner may hold several plots (PlotRules). One housing_slot row per plot, keyed by the plot's id, with the owner
+    // in the "owner" field and the time it was first claimed in "since". The oldest plot is the owner's home plot.
+    // ---------------------------------------------------------------------------------------------------------------
+
+    /** Every plot an owner holds, packed ones included, oldest first. */
+    public List<Slot> slots(Owner owner){return store.transaction(tx->ownerRowsIn(tx,owner).stream().map(HousingService::slot).toList());}
+    /** The owner's home plot: the oldest one standing in a world. Join at home, the Home Portal and the like use it. */
+    public Optional<Slot> home(Owner owner){return store.transaction(tx->homeRowIn(tx,owner).map(HousingService::slot));}
+    /** One plot by its id. */
+    public Optional<Slot> slot(UUID propertyId){return store.transaction(tx->tx.find("housing_slot",propertyId.toString()).map(HousingService::slot));}
     public List<Slot> allSlots() { return store.transaction(tx->tx.scan("housing_slot").stream().map(HousingService::slot).toList()); }
     public record Property(Slot slot,ClaimLocation location) {}
-    public Optional<Property> property(Owner owner){return store.transaction(tx->tx.find("housing_slot",owner.key()).map(r->new Property(slot(r),r.value("world").isEmpty()?null:location(r))));}
-    public List<Property> properties(){return store.transaction(tx->tx.scan("housing_slot").stream().map(r->new Property(slot(r),r.value("world").isEmpty()?null:location(r))).toList());}
-    public Optional<ClaimLocation> location(Owner owner) { return store.transaction(tx->tx.find("housing_slot",owner.key()).filter(r->!r.value("world").isEmpty()).map(HousingService::location)); }
+    /** The owner's home plot with where it stands (null location while packed). */
+    public Optional<Property> homeProperty(Owner owner){return store.transaction(tx->homeRowIn(tx,owner).map(HousingService::property));}
+    /** One plot with where it stands. */
+    public Optional<Property> property(UUID propertyId){return store.transaction(tx->tx.find("housing_slot",propertyId.toString()).map(HousingService::property));}
+    /** Every plot an owner holds with where each stands, oldest first. */
+    public List<Property> properties(Owner owner){return store.transaction(tx->ownerRowsIn(tx,owner).stream().map(HousingService::property).toList());}
+    public List<Property> properties(){return store.transaction(tx->tx.scan("housing_slot").stream().map(HousingService::property).toList());}
+    /** Where the owner's home plot stands, when it stands anywhere. */
+    public Optional<ClaimLocation> homeLocation(Owner owner) { return store.transaction(tx->ownerRowsIn(tx,owner).stream().filter(r->!r.value("world").isEmpty()).findFirst().map(HousingService::location)); }
+    /** The owner's plot that operation {@code operationId} works on (a move, pack or restore). */
+    public Optional<Slot> byOperation(Owner owner,UUID operationId){return slots(owner).stream().filter(s->s.operationId().equals(operationId)).findFirst();}
+    /** The owner's oldest packed plot, the one the next claim sets down again. */
+    public Optional<Slot> packed(Owner owner){return slots(owner).stream().filter(s->s.state()==State.PACKED).findFirst();}
+    /** What one hexagon of a plot was bought for (0 for a free one): what selling it gives back. */
+    public long paidPrice(UUID propertyId,HexCoord cell){return store.transaction(tx->tx.find("housing_slot",propertyId.toString()).map(r->paidFor(r.value("paid"),cell)).orElse(0L));}
+    /** How many plots the owner holds, packed ones included. */
+    public int plotCount(Owner owner){return store.transaction(tx->ownerRowsIn(tx,owner).size());}
+
+    /** The owner's rows, oldest first. Other domain services read homes through this. */
+    static List<TransactionalStore.Row> ownerRowsIn(TransactionalStore.Transaction tx,Owner owner){
+        var out=new ArrayList<TransactionalStore.Row>();
+        for(var r:tx.scan("housing_slot"))if(ownerKey(r).equals(owner.key()))out.add(r);
+        out.sort(Comparator.comparing((TransactionalStore.Row r)->r.value("since").isEmpty()?0L:Long.parseLong(r.value("since"))).thenComparing(r->r.value("property")));
+        return out;
+    }
+    /** The home plot: the oldest one standing in a world, else the oldest at all. */
+    /** When a new plot of this owner counts as claimed: now, and always after their newest plot, so "oldest" is clear. */
+    private long nextSince(TransactionalStore.Transaction tx,Owner owner){
+        long newest=0;for(var r:ownerRowsIn(tx,owner))if(!r.value("since").isEmpty())newest=Math.max(newest,Long.parseLong(r.value("since")));
+        return Math.max(clock.millis(),newest+1);
+    }
+    static Optional<TransactionalStore.Row> homeRowIn(TransactionalStore.Transaction tx,Owner owner){
+        var rows=ownerRowsIn(tx,owner);
+        for(var r:rows)if(r.value("state").equals("ACTIVE")&&!r.value("world").isEmpty())return Optional.of(r);
+        return rows.isEmpty()?Optional.empty():Optional.of(rows.getFirst());
+    }
+    private static Property property(TransactionalStore.Row r){return new Property(slot(r),r.value("world").isEmpty()?null:location(r));}
+    /** Who owns a plot row; other domain services use this instead of reading the row's key. */
+    static Owner ownerOf(TransactionalStore.Row r){return Owner.parse(ownerKey(r));}
+    /** The owner of a row: its field, or (rows saved before plots were keyed by id) its key. */
+    private static String ownerKey(TransactionalStore.Row r){return r.value("owner").isEmpty()?r.key():r.value("owner");}
+
+    /**
+     * Rows saved when each owner had one plot were keyed by the owner. Rewrites them keyed by plot, keeping every field,
+     * once at start. Returns how many moved.
+     */
+    public int migrateToPlotKeys(){
+        return store.transaction(tx->{int moved=0;
+            for(var r:tx.scan("housing_slot")){
+                if(!r.value("owner").isEmpty()||r.key().equals(r.value("property")))continue;
+                var data=new TreeMap<>(r.fields());data.put("owner",r.key());data.putIfAbsent("since","0");
+                if(tx.find("housing_slot",r.value("property")).isEmpty())tx.save("housing_slot",r.value("property"),0,data);
+                tx.delete("housing_slot",r.key(),r.revision());moved++;
+            }
+            return moved;});
+    }
     /** Called only after native geometry/anchor checks; durable uniqueness is enforced here. */
     public Slot beginClaim(Owner owner,UUID propertyId,UUID operationId,UUID attachedGuild) {
         return beginClaim(owner,propertyId,operationId,attachedGuild,null);
     }
     public Slot beginClaim(Owner owner,UUID propertyId,UUID operationId,UUID attachedGuild,ClaimLocation location) {
         return store.transaction(tx->{
-            var existing=tx.find("housing_slot",owner.key());
-            if(existing.isPresent()) { var r=existing.get();require(r.value("property").equals(propertyId.toString())&&r.value("operation").equals(operationId.toString())&&r.value("state").equals("CLAIMING")&&Objects.equals(slot(r).attachedGuild(),attachedGuild)&&Objects.equals(r.value("world").isEmpty()?null:location(r),location),CONFLICT,"Owner already has a housing slot or claim arguments changed");return slot(r); }
+            var existing=tx.find("housing_slot",propertyId.toString());
+            if(existing.isPresent()) { var r=existing.get();require(ownerKey(r).equals(owner.key())&&r.value("operation").equals(operationId.toString())&&r.value("state").equals("CLAIMING")&&Objects.equals(slot(r).attachedGuild(),attachedGuild)&&Objects.equals(r.value("world").isEmpty()?null:location(r),location),CONFLICT,"Owner already has a housing slot or claim arguments changed");return slot(r); }
+            var tier=PlotRules.current().tier(owner.kind()==Owner.Kind.GUILD);var held=ownerRowsIn(tx,owner);
+            require(held.stream().noneMatch(h->h.value("state").equals("PACKED")),CONFLICT,"Owner has a packed plot to set down first");
+            require(held.size()<tier.maxPlots(),CONFLICT,"Owner already holds the most plots allowed");
             if(attachedGuild!=null) { require(owner.kind()==Owner.Kind.PLAYER,INVALID_INPUT,"Only player homes attach to guilds");GuildService.requireMember(tx,owner.id(),attachedGuild); }
             if(location!=null) {
                 require(Objects.equals(attachedGuild,location.guildId())||owner.kind()==Owner.Kind.GUILD&&owner.id().equals(location.guildId()),INVALID_INPUT,"Claim guild differs from housing owner/attachment");
@@ -98,13 +164,13 @@ public final class HousingService extends DomainSupport {
                 }
             }
             journal.prepareIn(tx,operationId,"CLAIM",owner,propertyId.toString());
-            var data=fields("property",propertyId,"state",State.CLAIMING,"operation",operationId,"snapshotRef","","moveReservation","","attachedGuild",attachedGuild);
+            var data=fields("property",propertyId,"owner",owner.key(),"since",nextSince(tx,owner),"state",State.CLAIMING,"operation",operationId,"snapshotRef","","moveReservation","","attachedGuild",attachedGuild);
             if(location!=null)data.putAll(locationFields(location));
-            return slot(tx.save("housing_slot",owner.key(),0,data));
+            return slot(tx.save("housing_slot",propertyId.toString(),0,data));
         });
     }
-    public Slot beginRelocation(Owner owner,UUID operationId,boolean forced) {
-        return store.transaction(tx->{var r=row(tx,"housing_slot",owner.key());
+    public Slot beginRelocation(UUID propertyId,UUID operationId,boolean forced) {
+        return store.transaction(tx->{var r=row(tx,"housing_slot",propertyId.toString());Owner owner=Owner.parse(ownerKey(r));
             if(r.value("operation").equals(operationId.toString())&&Set.of("MOVING","PACKED","RESTORING").contains(r.value("state")))return slot(r);
             require(r.value("state").equals("ACTIVE"),INVALID_STATE,"Property is already in an operation");
             require(r.value("expansion").isEmpty(),INVALID_STATE,"A new hexagon is still being added to this plot");
@@ -114,35 +180,35 @@ public final class HousingService extends DomainSupport {
         });
     }
     /** After the adapter captured a verified snapshot and removed/restored source terrain. */
-    public Slot acknowledgePacked(Owner owner,UUID operationId) {
-        return store.transaction(tx->{var r=matching(tx,owner,operationId);if(r.value("state").equals("PACKED"))return slot(r);
+    public Slot acknowledgePacked(UUID propertyId,UUID operationId) {
+        return store.transaction(tx->{var r=matching(tx,propertyId,operationId);if(r.value("state").equals("PACKED"))return slot(r);
             require(r.value("state").equals("MOVING"),INVALID_STATE,"Property is not moving");var op=row(tx,"operation",operationId.toString());
             require(op.value("state").equals("WORLD_APPLIED")&&!op.value("snapshotHash").isEmpty(),INVALID_STATE,"Durable snapshot and world acknowledgement required");
             journal.advanceIn(tx,operationId,op.revision(),JournalService.State.PACKED);
             return slot(save(tx,r,"state",State.PACKED,"snapshotRef",op.value("snapshotRef")));
         });
     }
-    public Slot beginRestore(Owner owner,UUID operationId) { return store.transaction(tx->{var r=matching(tx,owner,operationId);
+    public Slot beginRestore(UUID propertyId,UUID operationId) { return store.transaction(tx->{var r=matching(tx,propertyId,operationId);
         require(r.value("state").equals("PACKED"),INVALID_STATE,"Property is not packed");return slot(save(tx,r,"state",State.RESTORING));}); }
-    public Slot updateRestoreLocation(Owner owner,UUID operationId,ClaimLocation destination) {
-        Objects.requireNonNull(destination);return store.transaction(tx->{var r=matching(tx,owner,operationId);require(r.value("state").equals("RESTORING"),INVALID_STATE,"Restore must be started before destination reservation");
+    public Slot updateRestoreLocation(UUID propertyId,UUID operationId,ClaimLocation destination) {
+        Objects.requireNonNull(destination);return store.transaction(tx->{var r=matching(tx,propertyId,operationId);Owner owner=Owner.parse(ownerKey(r));require(r.value("state").equals("RESTORING"),INVALID_STATE,"Restore must be started before destination reservation");
             if(destination.guildId()!=null&&owner.kind()==Owner.Kind.PLAYER)GuildService.requireMember(tx,owner.id(),destination.guildId());
-            for(var other:tx.scan("housing_slot"))if(!other.key().equals(owner.key())&&!other.value("state").equals("PACKED")&&other.value("world").equals(destination.worldId())) {
+            for(var other:tx.scan("housing_slot"))if(!other.key().equals(r.key())&&!other.value("state").equals("PACKED")&&other.value("world").equals(destination.worldId())) {
                 require(!destination.overlaps(location(other)),CONFLICT,"Destination overlaps another property");
             }
-            var data=changed(r,"attachedGuild",owner.kind()==Owner.Kind.PLAYER?destination.guildId():null);data.putAll(locationFields(destination));
+            var data=changed(r,"attachedGuild",owner.kind()==Owner.Kind.PLAYER?destination.guildId():null,"paid",movedPaid(r,destination));data.putAll(locationFields(destination));
             return slot(tx.save(r.namespace(),r.key(),r.revision(),data));});
     }
-    public Slot updateBuildingPresent(Owner owner,UUID propertyId,boolean present) { return store.transaction(tx->{var r=row(tx,"housing_slot",owner.key());require(r.value("state").equals("ACTIVE")&&r.value("property").equals(propertyId.toString()),CONFLICT,"Active property changed");return slot(save(tx,r,"buildingPresent",present));}); }
+    public Slot updateBuildingPresent(UUID propertyId,boolean present) { return store.transaction(tx->{var r=row(tx,"housing_slot",propertyId.toString());require(r.value("state").equals("ACTIVE"),CONFLICT,"Active property changed");return slot(save(tx,r,"buildingPresent",present));}); }
     /** Adapter has verified no terrain/native mutation occurred. Recovery-required operations cannot cancel here. */
-    public Slot cancelRelocationBeforeMutation(Owner owner,UUID operationId) {return store.transaction(tx->{var r=matching(tx,owner,operationId);var op=row(tx,"operation",operationId.toString());
+    public Slot cancelRelocationBeforeMutation(UUID propertyId,UUID operationId) {return store.transaction(tx->{var r=matching(tx,propertyId,operationId);var op=row(tx,"operation",operationId.toString());
         if(r.value("state").equals("ACTIVE")&&op.value("state").equals("CANCELLED"))return slot(r);
         require(r.value("state").equals("MOVING")&&Set.of("PREPARED","SNAPSHOT_READY").contains(op.value("state")),INVALID_STATE,"Cannot cancel after mutation or uncertain recovery");
         if(!r.value("moveReservation").isEmpty())ownership.finishReservationIn(tx,r.value("moveReservation"),false);
         journal.advanceIn(tx,operationId,op.revision(),JournalService.State.CANCELLED);return slot(save(tx,r,"state",State.ACTIVE,"moveReservation",""));});}
     /** Acknowledges verified final world state; never performs or pretends to perform terrain writes. */
-    public Slot activate(Owner owner,UUID operationId) {
-        return store.transaction(tx->{var r=matching(tx,owner,operationId);if(r.value("state").equals("ACTIVE"))return slot(r);
+    public Slot activate(UUID propertyId,UUID operationId) {
+        return store.transaction(tx->{var r=matching(tx,propertyId,operationId);if(r.value("state").equals("ACTIVE"))return slot(r);
             require(Set.of("CLAIMING","MOVING","RESTORING").contains(r.value("state")),INVALID_STATE,"Property cannot activate");
             var op=row(tx,"operation",operationId.toString());require(op.value("state").equals("WORLD_APPLIED"),INVALID_STATE,"World adapter has not acknowledged completion");
             if(!r.value("state").equals("CLAIMING"))require(!op.value("snapshotHash").isEmpty(),INVALID_STATE,"Relocation requires verified recovery snapshot");
@@ -186,14 +252,23 @@ public final class HousingService extends DomainSupport {
      * Replaying the same operation id with the same arguments returns the saved slot without charging again.
      */
     public HexOutcome claimCells(Owner owner,UUID propertyId,UUID operationId,UUID attachedGuild,ClaimLocation location,HexClaimRules.Candidate candidate,HexContext context,Owner payer) {
+        return claimCells(owner,propertyId,operationId,attachedGuild,location,candidate,context,payer,payer==null||payer.kind()!=Owner.Kind.PLAYER?null:payer.id());
+    }
+
+    /**
+     * As above. An owner may hold up to {@link PlotRules.Tier#maxPlots()} plots; every plot after the first costs
+     * {@link PlotRules#plotPrice}, paid by {@code payer}: a player's own Crowns, or a guild's, which {@code actor} must
+     * hold the spend permission for.
+     */
+    public HexOutcome claimCells(Owner owner,UUID propertyId,UUID operationId,UUID attachedGuild,ClaimLocation location,HexClaimRules.Candidate candidate,HexContext context,Owner payer,UUID actor) {
         Objects.requireNonNull(location);Objects.requireNonNull(candidate);Objects.requireNonNull(context);
         require(location.cells()!=null,INVALID_INPUT,"Hex claim needs cells");
         if(!location.cells().lattice().equals(context.lattice()))return HexOutcome.rejected(HexClaimRules.Reason.CHANGED);
         var outcome=store.transaction(tx->{
-            var existing=tx.find("housing_slot",owner.key());
+            var existing=tx.find("housing_slot",propertyId.toString());
             if(existing.isPresent()) {
                 var r=existing.get();
-                require(r.value("property").equals(propertyId.toString())&&r.value("operation").equals(operationId.toString())&&!r.value("world").isEmpty()&&Objects.equals(location(r),location),CONFLICT,"Owner already has a housing slot or claim arguments changed");
+                require(ownerKey(r).equals(owner.key())&&r.value("operation").equals(operationId.toString())&&!r.value("world").isEmpty()&&Objects.equals(location(r),location),CONFLICT,"Owner already has a housing slot or claim arguments changed");
                 return new HexOutcome(HexClaimRules.Result.of(HexClaimRules.Reason.ALLOWED),slot(r),location.cells(),0,location.worldId());
             }
             if(attachedGuild!=null) { require(owner.kind()==Owner.Kind.PLAYER,INVALID_INPUT,"Only player homes attach to guilds");GuildService.requireMember(tx,owner.id(),attachedGuild); }
@@ -203,16 +278,26 @@ public final class HousingService extends DomainSupport {
             Set<HexCoord> anchors=candidate.kind()==HexClaimRules.Kind.GUILD_MEMBER&&attachedGuild!=null?guildLand(rows,attachedGuild):Set.of();
             var verdict=HexClaimRules.claim(land,candidate,location.cells().cells(),anchors,context.settings());
             if(!verdict.valid())return HexOutcome.rejected(verdict);
+            boolean guildPlot=owner.kind()==Owner.Kind.GUILD;var rules=PlotRules.current();var heldRows=ownerRowsIn(tx,owner);int held=heldRows.size();
+            if(heldRows.stream().anyMatch(h->h.value("state").equals("PACKED")))return HexOutcome.rejected(HexClaimRules.Reason.PACKED);
+            if(held>=rules.tier(guildPlot).maxPlots())return HexOutcome.rejected(HexClaimRules.Result.of(guildPlot?HexClaimRules.Reason.GUILD_PLOT_LIMIT:HexClaimRules.Reason.PLOT_LIMIT,rules.tier(guildPlot).maxPlots()));
             long price=context.settings().claimCoins();
             if(price>0) {
                 require(payer!=null,INVALID_INPUT,"A paid claim needs a payer");
                 if(economy.balanceIn(tx,payer).available()<price)return HexOutcome.rejected(HexClaimRules.Result.of(HexClaimRules.Reason.COINS,price));
                 economy.spendIn(tx,payer,price,"hexplot-claim:"+operationId);
             }
+            long crowns=rules.plotPrice(guildPlot,held);
+            if(crowns>0) {
+                Owner wallet=payer==null?owner:payer;
+                GuildCrownService.requireSpenderIn(tx,wallet,actor);
+                if(GuildCrownService.availableIn(tx,wallet)<crowns)return HexOutcome.rejected(HexClaimRules.Result.of(wallet.kind()==Owner.Kind.GUILD?HexClaimRules.Reason.GUILD_CROWNS:HexClaimRules.Reason.PLOT_CROWNS,crowns));
+                GuildCrownService.spendIn(tx,wallet,actor,crowns,"hexplot-claim:"+operationId);
+            }
             journal.prepareIn(tx,operationId,"CLAIM",owner,propertyId.toString());
-            var data=fields("property",propertyId,"state",State.CLAIMING,"operation",operationId,"snapshotRef","","moveReservation","","attachedGuild",attachedGuild);
+            var data=fields("property",propertyId,"owner",owner.key(),"since",nextSince(tx,owner),"state",State.CLAIMING,"operation",operationId,"snapshotRef","","moveReservation","","attachedGuild",attachedGuild);
             data.putAll(locationFields(location));
-            return new HexOutcome(verdict,slot(tx.save("housing_slot",owner.key(),0,data)),location.cells(),price,location.worldId());
+            return new HexOutcome(verdict,slot(tx.save("housing_slot",propertyId.toString(),0,data)),location.cells(),Math.max(price,crowns),location.worldId());
         });
         if(outcome.ok())HexLandEvents.fire(location.worldId(),location.cells().asSet(),HexLandEvents.Cause.RESERVATION);
         return outcome;
@@ -227,15 +312,27 @@ public final class HousingService extends DomainSupport {
      * Replaying the same operation id returns the saved result without charging again.
      */
     public HexOutcome expandPlot(Owner owner,UUID propertyId,HexCoord cell,long expectedRevision,UUID operationId,HexClaimRules.Kind kind,HexContext context,Owner payer) {
-        return expandPlot(owner,propertyId,cell,expectedRevision,operationId,kind,context,payer,false);
+        return expandPlot(owner,propertyId,cell,expectedRevision,operationId,kind,context,payer,-1);
     }
 
     /** As above; {@code firstProduction} marks the plot's first production hexagon, which every plot gets for nothing. */
     public HexOutcome expandPlot(Owner owner,UUID propertyId,HexCoord cell,long expectedRevision,UUID operationId,HexClaimRules.Kind kind,HexContext context,Owner payer,boolean firstProduction) {
+        return expandPlot(owner,propertyId,cell,expectedRevision,operationId,kind,context,payer,firstProduction?0:-1);
+    }
+
+    /**
+     * As above with the hexagon's price worked out by the caller from its role ({@link PlotRules#hexagonPrice}); a
+     * negative price means the plain flat price. A guild payer spends guild Crowns, which the actor must be allowed to.
+     */
+    public HexOutcome expandPlot(Owner owner,UUID propertyId,HexCoord cell,long expectedRevision,UUID operationId,HexClaimRules.Kind kind,HexContext context,Owner payer,long hexagonPrice) {
+        return expandPlot(owner,propertyId,cell,expectedRevision,operationId,kind,context,payer,hexagonPrice,payer==null||payer.kind()!=Owner.Kind.PLAYER?null:payer.id());
+    }
+
+    public HexOutcome expandPlot(Owner owner,UUID propertyId,HexCoord cell,long expectedRevision,UUID operationId,HexClaimRules.Kind kind,HexContext context,Owner payer,long hexagonPrice,UUID actor) {
         Objects.requireNonNull(cell);Objects.requireNonNull(kind);Objects.requireNonNull(context);
         var outcome=store.transaction(tx->{
-            var found=tx.find("housing_slot",owner.key());
-            if(found.isEmpty()||!found.get().value("property").equals(propertyId.toString()))return HexOutcome.rejected(HexClaimRules.Reason.NO_PLOT);
+            var found=tx.find("housing_slot",propertyId.toString());
+            if(found.isEmpty()||!ownerKey(found.get()).equals(owner.key()))return HexOutcome.rejected(HexClaimRules.Reason.NO_PLOT);
             var r=found.get();
             var previous=tx.find("operation",operationId.toString());
             if(previous.isPresent()) {
@@ -249,13 +346,13 @@ public final class HousingService extends DomainSupport {
             var land=land(context,worldRows(tx,location.worldId(),null));
             var verdict=HexClaimRules.expand(land,kind,location.cells().asSet(),cell,context.settings());
             if(!verdict.valid())return HexOutcome.rejected(verdict);
-            long price=context.settings().expansionPrice(location.cells().size(),firstProduction);
+            long price=hexagonPrice>=0?hexagonPrice:context.settings().expansionPrice(location.cells().size());
             if(price>0) {
                 require(payer!=null,INVALID_INPUT,"A paid expansion needs a payer");
                 if(context.settings().crownPriced()) {
-                    require(payer.kind()==Owner.Kind.PLAYER,INVALID_INPUT,"Crowns are paid by a player");
-                    if(PremiumService.balanceIn(tx,payer.id())<price)return HexOutcome.rejected(HexClaimRules.Result.of(HexClaimRules.Reason.CROWNS,price));
-                    PremiumService.housingIn(tx,payer.id(),-price,"hexplot-expand:"+operationId);
+                    GuildCrownService.requireSpenderIn(tx,payer,actor);
+                    if(GuildCrownService.availableIn(tx,payer)<price)return HexOutcome.rejected(HexClaimRules.Result.of(payer.kind()==Owner.Kind.GUILD?HexClaimRules.Reason.GUILD_CROWNS:HexClaimRules.Reason.CROWNS,price));
+                    GuildCrownService.spendIn(tx,payer,actor,price,"hexplot-expand:"+operationId);
                 } else {
                     if(economy.balanceIn(tx,payer).available()<price)return HexOutcome.rejected(HexClaimRules.Result.of(HexClaimRules.Reason.COINS,price));
                     economy.spendIn(tx,payer,price,"hexplot-expand:"+operationId);
@@ -263,7 +360,7 @@ public final class HousingService extends DomainSupport {
             }
             journal.prepareIn(tx,operationId,"EXPAND",owner,expansionDetail(propertyId,cell));
             var next=location.withCells(location.cells().with(cell));
-            var data=changed(r,"expansion",operationId,"expansionCell",cell);data.putAll(locationFields(next));
+            var data=changed(r,"expansion",operationId,"expansionCell",cell,"paid",paidWith(r.value("paid"),cell,price));data.putAll(locationFields(next));
             return new HexOutcome(verdict,slot(tx.save(r.namespace(),r.key(),r.revision(),data)),next.cells(),price,next.worldId());
         });
         if(outcome.ok())HexLandEvents.fire(outcome.world(),Set.of(cell),HexLandEvents.Cause.RESERVATION);
@@ -280,8 +377,8 @@ public final class HousingService extends DomainSupport {
     public HexOutcome sellCell(Owner owner,UUID propertyId,HexCoord cell,long expectedRevision,UUID operationId,HexClaimRules.Kind kind,HexPlotSettings settings,Set<HexCoord> houseCells,Set<HexCoord> pathCells,Owner payee) {
         Objects.requireNonNull(cell);Objects.requireNonNull(kind);Objects.requireNonNull(settings);
         var outcome=store.transaction(tx->{
-            var found=tx.find("housing_slot",owner.key());
-            if(found.isEmpty()||!found.get().value("property").equals(propertyId.toString()))return HexOutcome.rejected(HexClaimRules.Reason.NO_PLOT);
+            var found=tx.find("housing_slot",propertyId.toString());
+            if(found.isEmpty()||!ownerKey(found.get()).equals(owner.key()))return HexOutcome.rejected(HexClaimRules.Reason.NO_PLOT);
             var r=found.get();
             var previous=tx.find("operation",operationId.toString());
             if(previous.isPresent()) {
@@ -293,17 +390,18 @@ public final class HousingService extends DomainSupport {
             if(location.cells()==null)return HexOutcome.rejected(HexClaimRules.Reason.NO_LATTICE);
             var verdict=HexClaimRules.sell(location.cells().asSet(),cell,kind,settings,houseCells,pathCells);
             if(!verdict.valid())return HexOutcome.rejected(verdict);
-            long refund=settings.sellRefund(location.cells().size());
+            // What this hexagon was bought for; free hexagons (and ones from before prices were kept) give nothing back.
+            long refund=paidFor(r.value("paid"),cell);
             if(refund>0) {
                 require(payee!=null,INVALID_INPUT,"A paid sale needs a payee");
-                if(settings.crownPriced()&&payee.kind()==Owner.Kind.PLAYER)PremiumService.housingIn(tx,payee.id(),refund,"hexplot-sell:"+operationId);
+                if(settings.crownPriced())GuildCrownService.refundIn(tx,payee,refund,"hexplot-sell:"+operationId);
                 else economy.creditIn(tx,payee,refund,"hexplot-sell:"+operationId);
             }
             var op=journal.prepareIn(tx,operationId,"SHRINK",owner,expansionDetail(propertyId,cell));
             op=journal.advanceIn(tx,operationId,op.revision(),JournalService.State.WORLD_APPLIED);
             journal.advanceIn(tx,operationId,op.revision(),JournalService.State.COMPLETED);
             var next=location.withCells(location.cells().without(cell));
-            var data=changed(r);data.putAll(locationFields(next));
+            var data=changed(r,"paid",paidWith(r.value("paid"),cell,-1));data.putAll(locationFields(next));
             return new HexOutcome(verdict,slot(tx.save(r.namespace(),r.key(),r.revision(),data)),next.cells(),refund,next.worldId());
         });
         if(outcome.ok())HexLandEvents.fire(outcome.world(),Set.of(cell),HexLandEvents.Cause.UNCLAIM);
@@ -311,10 +409,10 @@ public final class HousingService extends DomainSupport {
     }
 
     /** The native adapter applied a paid expansion to the world projection. Idempotent. */
-    public Slot completeExpansion(Owner owner,UUID operationId) {
+    public Slot completeExpansion(UUID propertyId,UUID operationId) {
         return store.transaction(tx->{
-            var r=row(tx,"housing_slot",owner.key());var op=row(tx,"operation",operationId.toString());
-            require(op.value("kind").equals("EXPAND")&&op.value("owner").equals(owner.key()),CONFLICT,"Not an expansion of this property");
+            var r=row(tx,"housing_slot",propertyId.toString());var op=row(tx,"operation",operationId.toString());
+            require(op.value("kind").equals("EXPAND")&&op.value("owner").equals(ownerKey(r)),CONFLICT,"Not an expansion of this property");
             if(op.value("state").equals("COMPLETED"))return slot(r);
             require(r.value("expansion").equals(operationId.toString()),CONFLICT,"Housing operation changed");
             var applied=journal.advanceIn(tx,operationId,op.revision(),JournalService.State.WORLD_APPLIED);
@@ -326,10 +424,38 @@ public final class HousingService extends DomainSupport {
     /** Paid expansions not yet applied to the world, for recovery on world load. */
     public List<PendingExpansion> pendingExpansions(String world) {
         return store.transaction(tx->tx.scan("housing_slot").stream().filter(r->!r.value("expansion").isEmpty()&&r.value("world").equals(world))
-            .map(r->new PendingExpansion(Owner.parse(r.key()),UUID.fromString(r.value("property")),UUID.fromString(r.value("expansion")),HexCoord.parse(r.value("expansionCell")),location(r))).toList());
+            .map(r->new PendingExpansion(Owner.parse(ownerKey(r)),UUID.fromString(r.value("property")),UUID.fromString(r.value("expansion")),HexCoord.parse(r.value("expansionCell")),location(r))).toList());
     }
 
     private static String expansionDetail(UUID propertyId,HexCoord cell){return propertyId+" "+cell;}
+    /** Saved prices of bought hexagons, {@code q:r=crowns} joined by semicolons; a negative price removes the hexagon. */
+    static String paidWith(String saved,HexCoord cell,long price){
+        var map=new TreeMap<String,String>();
+        for(String part:saved==null?new String[0]:saved.split(";")){int eq=part.indexOf('=');if(eq>0)map.put(part.substring(0,eq),part.substring(eq+1));}
+        if(price>0)map.put(cell.toString(),Long.toString(price));else map.remove(cell.toString());
+        var out=new StringBuilder();for(var e:map.entrySet()){if(!out.isEmpty())out.append(';');out.append(e.getKey()).append('=').append(e.getValue());}
+        return out.toString();
+    }
+    /**
+     * A restored plot keeps its shape and turn, so every hexagon moves by the same step: the bought hexagons' prices move
+     * with them, so selling one after a move still gives back what it cost.
+     */
+    static String movedPaid(TransactionalStore.Row r,ClaimLocation destination){
+        String saved=r.value("paid");
+        if(saved.isEmpty()||r.value("cells").isEmpty()||destination.cells()==null)return saved;
+        var from=PlotCells.parse(r.value("lattice"),r.value("cells")).cells().stream().min(HexCoord.READING_ORDER).orElseThrow();
+        var to=destination.cells().cells().stream().min(HexCoord.READING_ORDER).orElseThrow();
+        var step=to.minus(from);
+        var out=new StringBuilder();
+        for(String part:saved.split(";")){int eq=part.indexOf('=');if(eq<=0)continue;
+            var cell=HexCoord.parse(part.substring(0,eq)).plus(step);
+            if(!out.isEmpty())out.append(';');out.append(cell).append('=').append(part.substring(eq+1));}
+        return out.toString();
+    }
+    static long paidFor(String saved,HexCoord cell){
+        for(String part:saved==null?new String[0]:saved.split(";")){int eq=part.indexOf('=');if(eq>0&&part.substring(0,eq).equals(cell.toString()))return Long.parseLong(part.substring(eq+1));}
+        return 0;
+    }
     /** Unpacked rows in a world, optionally without one owner. */
     private static List<TransactionalStore.Row> worldRows(TransactionalStore.Transaction tx,String world,Owner except) {
         return tx.scan("housing_slot").stream().filter(r->!r.value("state").equals("PACKED")&&r.value("world").equals(world)&&(except==null||!r.key().equals(except.key()))).toList();
@@ -350,14 +476,14 @@ public final class HousingService extends DomainSupport {
         Set<HexCoord> estate=new HashSet<>();var members=new ArrayList<Set<HexCoord>>();
         for(var r:rows) {
             var location=location(r);if(location.cells()==null||!r.value("state").equals("ACTIVE"))continue;
-            if(r.key().equals(Owner.guild(guild).key()))estate.addAll(location.cells().asSet());
+            if(ownerKey(r).equals(Owner.guild(guild).key()))estate.addAll(location.cells().asSet());
             else if(r.value("attachedGuild").equals(guild.toString()))members.add(location.cells().asSet());
         }
         return HexClaimRules.joinedGuildLand(estate,members);
     }
 
-    private static TransactionalStore.Row matching(TransactionalStore.Transaction tx,Owner owner,UUID operationId) { var r=row(tx,"housing_slot",owner.key());require(r.value("operation").equals(operationId.toString()),CONFLICT,"Housing operation changed");return r; }
-    private static Slot slot(TransactionalStore.Row r) { return new Slot(Owner.parse(r.key()),UUID.fromString(r.value("property")),State.valueOf(r.value("state")),UUID.fromString(r.value("operation")),r.revision(),r.value("snapshotRef"),r.value("attachedGuild").isEmpty()?null:UUID.fromString(r.value("attachedGuild"))); }
+    private static TransactionalStore.Row matching(TransactionalStore.Transaction tx,UUID propertyId,UUID operationId) { var r=row(tx,"housing_slot",propertyId.toString());require(r.value("operation").equals(operationId.toString()),CONFLICT,"Housing operation changed");return r; }
+    private static Slot slot(TransactionalStore.Row r) { return new Slot(Owner.parse(ownerKey(r)),UUID.fromString(r.value("property")),State.valueOf(r.value("state")),UUID.fromString(r.value("operation")),r.revision(),r.value("snapshotRef"),r.value("attachedGuild").isEmpty()?null:UUID.fromString(r.value("attachedGuild"))); }
     private static ClaimLocation location(TransactionalStore.Row r) { return new ClaimLocation(r.value("world"),Integer.parseInt(r.value("minX")),Integer.parseInt(r.value("minZ")),Integer.parseInt(r.value("width")),Integer.parseInt(r.value("depth")),ClaimScope.valueOf(r.value("scope")),r.value("guildId").isEmpty()?null:UUID.fromString(r.value("guildId")),Boolean.parseBoolean(r.value("buildingPresent")),r.value("cells").isEmpty()?null:PlotCells.parse(r.value("lattice"),r.value("cells"))); }
     private static Map<String,String> locationFields(ClaimLocation l) {
         return fields("world",l.worldId(),"minX",l.minX(),"minZ",l.minZ(),"width",l.width(),"depth",l.depth(),"scope",l.scope(),"guildId",l.guildId(),"buildingPresent",l.buildingPresent(),

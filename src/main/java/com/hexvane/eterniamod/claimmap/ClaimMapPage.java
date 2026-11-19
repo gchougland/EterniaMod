@@ -321,22 +321,28 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
         return services.batch(() -> {
             UUID guild = services.guilds().membership(player).map(GuildService.Membership::guildId).orElse(null);
             Owner me = Owner.player(player);
-            var personal = services.housing().find(me).orElse(null);
-            var estate = guild == null ? null : services.housing().find(Owner.guild(guild)).orElse(null);
-            boolean mayClaim = guild != null && services.guilds().can(player, guild, "housing.claim");
+            var rules = com.hexvane.eterniamod.hexplots.PlotRules.current();
+            var personal = services.housing().slots(me);
+            var estate = guild == null ? java.util.List.<HousingService.Slot>of() : services.housing().slots(Owner.guild(guild));
+            // The guild's first plot is claimed by whoever may claim for it; later ones are bought with guild Crowns.
+            boolean mayClaim = guild != null && (services.guilds().can(player, guild, "housing.claim")
+                || !estate.isEmpty() && services.guilds().can(player, guild, com.hexvane.eterniamod.domain.GuildCrownService.SPEND));
             int members = guild == null ? 0 : services.guilds().roster(player).size();
             boolean upPersonal = services.ownership().owns(me, "eternia:plot/personal_32");
             boolean upEstate = guild != null && services.ownership().owns(Owner.guild(guild), "eternia:plot/guild_64");
-            PlotCells packedPersonal = packed(services, me, personal);
-            PlotCells packedEstate = guild == null ? null : packed(services, Owner.guild(guild), estate);
+            PlotCells packedPersonal = packed(services, personal);
+            PlotCells packedEstate = packed(services, estate);
             return new Account(player, guild, mayClaim, members, upPersonal, upEstate,
-                personal == null ? null : personal.state(), estate == null ? null : estate.state(), packedPersonal, packedEstate);
+                Account.summary(personal, rules.player().maxPlots()), guild == null ? null : Account.summary(estate, rules.guild().maxPlots()),
+                packedPersonal, packedEstate, personal.size(), estate.size());
         });
     }
 
-    private static PlotCells packed(EterniaServices services, Owner owner, HousingService.Slot slot) {
-        if (slot == null || slot.state() != HousingService.State.PACKED) return null;
-        return services.housing().location(owner).map(HousingService.ClaimLocation::cells).orElse(null);
+    /** The cells of the owner's oldest packed plot, the one a claim sets down again, or null. */
+    private static PlotCells packed(EterniaServices services, java.util.List<HousingService.Slot> slots) {
+        var slot = slots.stream().filter(s -> s.state() == HousingService.State.PACKED).findFirst().orElse(null);
+        if (slot == null) return null;
+        return services.housing().property(slot.propertyId()).map(HousingService.Property::location).map(HousingService.ClaimLocation::cells).orElse(null);
     }
 
     /**
@@ -349,7 +355,7 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
         var reason = ClaimMapLogic.accountReason(account, scope);
         if (reason == null) { if (mode == Mode.PACKED) mode = Mode.CLAIM; return; }
         switch (reason.reason()) {
-            case HAS_PLOT, GUILD_SLOT -> {
+            case HAS_PLOT, GUILD_SLOT, PLOT_LIMIT, GUILD_PLOT_LIMIT -> {
                 HexLandView.PlotInfo own = ClaimMapLogic.ownPlot(view, account, scope);
                 if (own != null) {
                     mode = Mode.EXPAND;
@@ -469,7 +475,44 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
         boolean loading = shown == null || painting && wanted != shown && !wanted.equals(shown);
         return new ClaimMapLogic.Situation(mode, scope, plotId, account, view, HexLand.names(), shown, selected, option,
             confirming, working, result, resultOk, picture, loading, HexPlotSettings.current(), plugin.getRuntimeConfig().local(),
-            packedRule(), packedSpots);
+            packedRule(), packedSpots, knownPrice());
+    }
+
+    /**
+     * What the commit will cost (or, selling, give back), as the commit itself works it out: a new plot past the first
+     * costs the extra plot price; a hexagon is free while it is one of its kind's free ones; a sold hexagon gives back
+     * what it was bought for. -1 when the page cannot tell yet.
+     */
+    private long knownPrice() {
+        try {
+            var rules = com.hexvane.eterniamod.hexplots.PlotRules.current();
+            switch (mode) {
+                case PACKED -> { return 0; }
+                case CLAIM -> {
+                    if (account == null) return -1;
+                    boolean estate = scope == HousingRules.Scope.GUILD_ROOT;
+                    return rules.plotPrice(estate, estate ? account.estatePlots() : account.personalPlots());
+                }
+                case SELL -> {
+                    if (plotId == null || selected == null) return 0;
+                    return plugin.getServices().housing().paidPrice(plotId, selected);
+                }
+                case EXPAND -> {
+                    var record = plotId == null ? null : com.hexvane.eterniamod.hub.EterniaWorldRegistries.getOrCreateHubPlotManager(world, plugin).getPlot(plotId);
+                    var roles = record == null ? null : com.hexvane.eterniamod.production.HexRoles.of(plugin, record);
+                    if (roles == null || selected == null) return -1;
+                    var role = ClaimMapRoles.picked(roles, selected, addRole, maxHouse());
+                    boolean guildPlot = record.getGuildOwnerUuid() != null;
+                    boolean production = role == com.hexvane.eterniamod.production.PlotRoles.Role.PRODUCTION;
+                    var owner = com.hexvane.eterniamod.housing.HousingAccess.owner(record);
+                    boolean bonus = !guildPlot && owner != null && plugin.getServices().ownership().owns(owner, rules.productionBonus());
+                    return rules.hexagonPrice(guildPlot, production, roles.count(role), bonus);
+                }
+            }
+        } catch (RuntimeException unknown) {
+            return -1;
+        }
+        return -1;
     }
 
     private HexLandView view() { return HexLand.view(plugin, world).orElse(null); }

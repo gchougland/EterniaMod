@@ -73,9 +73,12 @@ public final class HousingInventory {
         try{
             var world=store.getExternalData().getWorld();var owner=Owner.player(player.getUuid());
             if(plugin.getServices().journal().unfinished().stream().noneMatch(op->op.owner().equals(owner)&&op.kind().equals("PICKUP")))return;
-            var slot=plugin.getServices().housing().find(owner).orElse(null);if(slot==null)return;
-            var plot=plot(plugin,store,slot.propertyId());if(plot==null)return;
-            if(com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions.healPickups(plugin,world,plot)>0)player.sendMessage(Message.raw("Something left unfinished on your plot has been sorted out. Nothing was lost."));
+            int healed=0;
+            for(var slot:plugin.getServices().housing().slots(owner)){
+                var plot=plot(plugin,store,slot.propertyId());if(plot==null)continue;
+                healed+=com.hexvane.eterniamod.housing.relocation.NativePlacementTransactions.healPickups(plugin,world,plot);
+            }
+            if(healed>0)player.sendMessage(Message.raw("Something left unfinished on your plot has been sorted out. Nothing was lost."));
         }catch(RuntimeException failure){plugin.getLogger().atWarning().withCause(failure).log("Could not check for unfinished pickups");}
     }
     private static HubPlotRecord plot(EterniaModPlugin p,Store<EntityStore>s,UUID id){return EterniaWorldRegistries.getOrCreateHubPlotManager(s.getExternalData().getWorld(),p).getPlot(id);}

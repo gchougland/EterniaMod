@@ -50,18 +50,18 @@ class HexRelocationJournalTest {
         var op = outcome.slot().operationId();
         var journal = services.journal().find(op).orElseThrow();
         services.journal().advance(op, journal.revision(), JournalService.State.WORLD_APPLIED);
-        services.housing().activate(Owner.player(player), op);
+        services.housing().activate(services.housing().slots(Owner.player(player)).getFirst().propertyId(), op);
         return outcome.slot().propertyId();
     }
 
     /** The domain half of NativeRelocationCoordinator.pack: begin, verified snapshot, world applied, packed. */
     private UUID pack(Owner owner) {
         UUID move = UUID.randomUUID();
-        services.housing().beginRelocation(owner, move, false);
+        services.housing().beginRelocation(services.housing().slots(owner).getFirst().propertyId(), move, false);
         var op = services.journal().find(move).orElseThrow();
         op = services.journal().attachVerifiedSnapshot(move, op.revision(), "snapshots/" + move + "-pack.json", "a".repeat(64));
         services.journal().advance(move, op.revision(), JournalService.State.WORLD_APPLIED);
-        services.housing().acknowledgePacked(owner, move);
+        services.housing().acknowledgePacked(services.housing().slots(owner).getFirst().propertyId(), move);
         return move;
     }
 
@@ -79,7 +79,7 @@ class HexRelocationJournalTest {
         assertTrue(services.housing().hasReservedGround("housing", (int) L.centerX(new HexCoord(1, 1)), (int) L.centerZ(new HexCoord(1, 1))));
         pack(owner);
         restart();
-        var property = services.housing().property(owner).orElseThrow();
+        var property = services.housing().homeProperty(owner).orElseThrow();
         assertEquals(HousingService.State.PACKED, property.slot().state());
         assertEquals(cells(TRIANGLE), property.location().cells(), "packed cells survive a restart");
         assertFalse(services.housing().hasReservedGround("housing", (int) L.centerX(new HexCoord(1, 1)), (int) L.centerZ(new HexCoord(1, 1))), "packed land is free again");
@@ -99,16 +99,16 @@ class HexRelocationJournalTest {
         var neighbour = cells(List.of(new HexCoord(2, 1)));
         assertTrue(destination.bounds().overlaps(cells(List.of(new HexCoord(2, 2))).bounds()), "boxes interleave");
         home(account("Ivo"), neighbour.cells());
-        services.housing().beginRestore(owner, move);
+        services.housing().beginRestore(services.housing().slots(owner).getFirst().propertyId(), move);
         restart();
-        services.housing().updateRestoreLocation(owner, move, at(destination));
+        services.housing().updateRestoreLocation(services.housing().slots(owner).getFirst().propertyId(), move, at(destination));
         assertEquals(destination.asSet(), services.housing().reservedCells("housing"), "restoring cells show as reserved");
         var op = services.journal().find(move).orElseThrow();
         services.journal().advance(move, op.revision(), JournalService.State.WORLD_APPLIED);
         restart();
-        var slot = services.housing().activate(owner, move);
+        var slot = services.housing().activate(services.housing().slots(owner).getFirst().propertyId(), move);
         assertEquals(HousingService.State.ACTIVE, slot.state());
-        assertEquals(destination, services.housing().location(owner).orElseThrow().cells());
+        assertEquals(destination, services.housing().homeLocation(owner).orElseThrow().cells());
         assertEquals(Set.of(), services.housing().reservedCells("housing"));
         assertEquals(0, services.ownership().available(owner, HousingService.MOVE_CREDIT), "the move used its credit once");
         assertTrue(services.journal().unfinished().isEmpty());
@@ -121,13 +121,13 @@ class HexRelocationJournalTest {
         home(mira, TRIANGLE);
         UUID move = pack(owner);
         home(noor, List.of(new HexCoord(4, 1)));
-        services.housing().beginRestore(owner, move);
+        services.housing().beginRestore(services.housing().slots(owner).getFirst().propertyId(), move);
         var clash = cells(TRIANGLE).translate(new HexCoord(3, 0));
-        var error = assertThrows(DomainException.class, () -> services.housing().updateRestoreLocation(owner, move, at(clash)));
+        var error = assertThrows(DomainException.class, () -> services.housing().updateRestoreLocation(services.housing().slots(owner).getFirst().propertyId(), move, at(clash)));
         assertEquals(DomainException.Code.CONFLICT, error.code());
         // Nothing was written: another free spot still works.
         var free = cells(TRIANGLE).translate(new HexCoord(6, 0));
-        assertEquals(HousingService.State.RESTORING, services.housing().updateRestoreLocation(owner, move, at(free)).state());
+        assertEquals(HousingService.State.RESTORING, services.housing().updateRestoreLocation(services.housing().slots(owner).getFirst().propertyId(), move, at(free)).state());
     }
 
     @Test void interruptedPackBeforeTheWorldChangesCancelsAndReturnsTheCredit() {
@@ -136,12 +136,12 @@ class HexRelocationJournalTest {
         credit(mira);
         home(mira, TRIANGLE);
         UUID move = UUID.randomUUID();
-        services.housing().beginRelocation(owner, move, false);
+        services.housing().beginRelocation(services.housing().slots(owner).getFirst().propertyId(), move, false);
         restart();
-        services.housing().cancelRelocationBeforeMutation(owner, move);
-        assertEquals(HousingService.State.ACTIVE, services.housing().find(owner).orElseThrow().state());
+        services.housing().cancelRelocationBeforeMutation(services.housing().slots(owner).getFirst().propertyId(), move);
+        assertEquals(HousingService.State.ACTIVE, services.housing().home(owner).orElseThrow().state());
         assertEquals(1, services.ownership().available(owner, HousingService.MOVE_CREDIT));
-        assertEquals(cells(TRIANGLE), services.housing().location(owner).orElseThrow().cells(), "the plot never left its cells");
+        assertEquals(cells(TRIANGLE), services.housing().homeLocation(owner).orElseThrow().cells(), "the plot never left its cells");
     }
 
     @Test void uncertainWorldWriteLocksTheMoveUntilAnAdministratorRecovers() {
@@ -150,22 +150,22 @@ class HexRelocationJournalTest {
         credit(mira);
         home(mira, TRIANGLE);
         UUID move = UUID.randomUUID();
-        services.housing().beginRelocation(owner, move, false);
+        services.housing().beginRelocation(services.housing().slots(owner).getFirst().propertyId(), move, false);
         var op = services.journal().find(move).orElseThrow();
         op = services.journal().attachVerifiedSnapshot(move, op.revision(), "snapshots/pack", "b".repeat(64));
         // NativePlacementTransactions.lock: the adapter crashed after its first world write.
         services.journal().advance(move, op.revision(), JournalService.State.RECOVERY_REQUIRED);
         restart();
-        assertThrows(DomainException.class, () -> services.housing().cancelRelocationBeforeMutation(owner, move), "never guess after a write");
-        assertThrows(DomainException.class, () -> services.housing().acknowledgePacked(owner, move));
-        assertThrows(DomainException.class, () -> services.housing().beginRelocation(owner, UUID.randomUUID(), false));
+        assertThrows(DomainException.class, () -> services.housing().cancelRelocationBeforeMutation(services.housing().slots(owner).getFirst().propertyId(), move), "never guess after a write");
+        assertThrows(DomainException.class, () -> services.housing().acknowledgePacked(services.housing().slots(owner).getFirst().propertyId(), move));
+        assertThrows(DomainException.class, () -> services.housing().beginRelocation(services.housing().slots(owner).getFirst().propertyId(), UUID.randomUUID(), false));
         assertTrue(services.housing().hasReservedGround("housing", (int) L.centerX(new HexCoord(0, 1)), (int) L.centerZ(new HexCoord(0, 1))), "locked land stays protected");
         assertEquals(cells(TRIANGLE).asSet(), services.housing().reservedCells("housing"), "and shows as reserved on the claim map");
         // recoverPackToSource: verified source restored, journal back to SNAPSHOT_READY, then cancelled.
         op = services.journal().find(move).orElseThrow();
         services.journal().advance(move, op.revision(), JournalService.State.SNAPSHOT_READY);
-        services.housing().cancelRelocationBeforeMutation(owner, move);
-        assertEquals(HousingService.State.ACTIVE, services.housing().find(owner).orElseThrow().state());
+        services.housing().cancelRelocationBeforeMutation(services.housing().slots(owner).getFirst().propertyId(), move);
+        assertEquals(HousingService.State.ACTIVE, services.housing().home(owner).orElseThrow().state());
         assertEquals(1, services.ownership().available(owner, HousingService.MOVE_CREDIT));
     }
 
@@ -175,15 +175,15 @@ class HexRelocationJournalTest {
         credit(mira);
         services.economy().credit(owner, 100_000, "mint:" + mira);
         UUID property = home(mira, List.of(new HexCoord(0, 1)));
-        var slot = services.housing().find(owner).orElseThrow();
+        var slot = services.housing().home(owner).orElseThrow();
         UUID grow = UUID.randomUUID();
         var out = services.housing().expandPlot(owner, property, new HexCoord(1, 1), slot.revision(), grow, HexClaimRules.Kind.PUBLIC, CONTEXT, owner);
         assertTrue(out.ok(), out.result().message());
         restart();
-        assertThrows(DomainException.class, () -> services.housing().beginRelocation(owner, UUID.randomUUID(), false), "the grown baseline is not captured yet");
-        services.housing().completeExpansion(owner, grow);
+        assertThrows(DomainException.class, () -> services.housing().beginRelocation(services.housing().slots(owner).getFirst().propertyId(), UUID.randomUUID(), false), "the grown baseline is not captured yet");
+        services.housing().completeExpansion(services.housing().slots(owner).getFirst().propertyId(), grow);
         UUID move = pack(owner);
-        assertEquals(2, services.housing().property(owner).orElseThrow().location().cells().size(), "both hexagons travel");
+        assertEquals(2, services.housing().homeProperty(owner).orElseThrow().location().cells().size(), "both hexagons travel");
         assertNotNull(move);
     }
 }

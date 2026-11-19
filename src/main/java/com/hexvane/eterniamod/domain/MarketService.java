@@ -40,7 +40,7 @@ public final class MarketService extends DomainSupport {
             require(r.value("state").equals("ACTIVE"),INVALID_STATE,"Listing is already completed");var stock=row(tx,"escrow",r.value("escrow"));
             escrow.deliverHeldIn(tx,r.value("escrow"),"listing:"+listingId,Owner.player(seller),stock.number("remaining"),"listing-return:"+listingId);save(tx,r,"state","CANCELLED","stock",0);return null;});
     }
-    private static TransactionalStore.Row activeHome(TransactionalStore.Transaction tx,UUID seller){var r=row(tx,"housing_slot",Owner.player(seller).key());require(r.value("state").equals("ACTIVE")&&r.value("buildingPresent").equals("true"),INVALID_STATE,"Seller needs an active furnished house");return r;}
+    private static TransactionalStore.Row activeHome(TransactionalStore.Transaction tx,UUID seller){var r=HousingService.homeRowIn(tx,Owner.player(seller)).orElseThrow(()->new DomainException(NOT_FOUND,"Seller needs an active furnished house"));require(r.value("state").equals("ACTIVE")&&r.value("buildingPresent").equals("true"),INVALID_STATE,"Seller needs an active furnished house");return r;}
     private static Listing listing(TransactionalStore.Row r){return new Listing(r.key(),UUID.fromString(r.value("seller")),UUID.fromString(r.value("property")),r.value("item"),r.number("unitPrice"),r.number("stock"),r.value("state"),r.revision());}
     private static Purchase purchase(TransactionalStore.Row r){return new Purchase(r.key(),r.value("listing"),UUID.fromString(r.value("buyer")),r.number("quantity"),r.number("total"),r.value("delivery"));}
 }

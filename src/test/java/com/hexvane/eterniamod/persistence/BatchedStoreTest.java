@@ -72,16 +72,16 @@ class BatchedStoreTest {
         assertEquals(reads,counted.transactions);
         var claimJournal=restarted.journal().find(claim).orElseThrow();
         restarted.journal().advance(claim,claimJournal.revision(),JournalService.State.WORLD_APPLIED);
-        restarted.housing().activate(owner,claim);
-        var move=UUID.randomUUID();restarted.housing().beginRelocation(owner,move,true);
+        restarted.housing().activate(restarted.housing().slots(owner).getFirst().propertyId(),claim);
+        var move=UUID.randomUUID();restarted.housing().beginRelocation(restarted.housing().slots(owner).getFirst().propertyId(),move,true);
         assertTrue(restarted.housing().hasReservedGround("Hub",10,20));
         var operation=restarted.journal().find(move).orElseThrow();
         operation=restarted.journal().attachVerifiedSnapshot(move,operation.revision(),"snapshot","a".repeat(64));
         restarted.journal().advance(move,operation.revision(),JournalService.State.WORLD_APPLIED);
-        restarted.housing().acknowledgePacked(owner,move);
+        restarted.housing().acknowledgePacked(restarted.housing().slots(owner).getFirst().propertyId(),move);
         assertFalse(restarted.housing().hasReservedGround("Hub",10,20));
-        restarted.housing().beginRestore(owner,move);
-        restarted.housing().updateRestoreLocation(owner,move,
+        restarted.housing().beginRestore(restarted.housing().slots(owner).getFirst().propertyId(),move);
+        restarted.housing().updateRestoreLocation(restarted.housing().slots(owner).getFirst().propertyId(),move,
             new HousingService.ClaimLocation("Hub",100,200,8,9,HousingService.ClaimScope.PUBLIC,null,false));
         assertFalse(restarted.housing().hasReservedGround("Hub",10,20));
         assertTrue(restarted.housing().hasReservedGround("Hub",100,200));

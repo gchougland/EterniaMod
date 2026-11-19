@@ -26,6 +26,7 @@ public final class EterniaServices {
     private final PlaytestService playtest;
     private final RankService ranks;
     private final StarterContentService starters;
+    private final GuildCrownService guildCrowns;
     private final CollectionService collection;
     private final CommerceIngressService commerceIngress;
     private final ActivitySourceService activitySources;
@@ -52,6 +53,7 @@ public final class EterniaServices {
         playtest=new PlaytestService(store,clock,ids,premium,economy);
         ranks=new RankService(store,clock,ids,ownership);
         starters=new StarterContentService(store,clock,ids);
+        guildCrowns=new GuildCrownService(store,clock,ids);
         collection=new CollectionService(store,clock,ids,ownership);
         commerceIngress=new CommerceIngressService(store,clock,ids,commerce);
         activitySources=new ActivitySourceService(store,clock,ids,seasons,economy);
@@ -100,6 +102,8 @@ public final class EterniaServices {
     public RankService ranks(){return ranks;}
     /** The houses and decorations every player gets free. */
     public StarterContentService starters(){return starters;}
+    /** Each guild's own Crowns. */
+    public GuildCrownService guildCrowns(){return guildCrowns;}
     public CollectionService collection(){return collection;}
     public CommerceIngressService commerceIngress(){return commerceIngress;}
     public ActivitySourceService activitySources(){return activitySources;}
@@ -117,6 +121,6 @@ public final class EterniaServices {
     /** Read projection for an already-authorized caller. Do not expose this without account authorization. */
     public Overview overview(UUID playerId) {
         return batch(()->new Overview(playerId,accounts.find(playerId).orElse(null),economy.balance(Owner.player(playerId)),
-            ownership.grants(Owner.player(playerId)),housing.find(Owner.player(playerId)).orElse(null),guilds.membership(playerId).orElse(null)));
+            ownership.grants(Owner.player(playerId)),housing.home(Owner.player(playerId)).orElse(null),guilds.membership(playerId).orElse(null)));
     }
 }

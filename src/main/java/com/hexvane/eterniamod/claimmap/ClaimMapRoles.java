@@ -54,7 +54,7 @@ final class ClaimMapRoles {
     private static View plain(Situation s, PlotRoles roles, Role chosen, int maxHouse) {
         int houses = roles.count(Role.HOUSE), production = roles.count(Role.PRODUCTION);
         Message own = text("role.own").param("house", houses).param("maxHouse", Math.max(maxHouse, houses))
-            .param("production", production).param("maxProduction", PlotRoles.MAX_PRODUCTION);
+            .param("production", production).param("maxProduction", roles.maxProduction());
         int stations = s.settings().generatorsPerCell();
         HexCoord cell = s.selected();
         if (cell == null || s.shown() == null) {
@@ -81,7 +81,7 @@ final class ClaimMapRoles {
             status = price <= 0 ? text("role.confirmFree." + kind) : text("role.confirm." + kind).param("coins", s.settings().priceText(price));
         }
         return new View(true, picked,
-            text("role.production").param("count", production).param("max", PlotRoles.MAX_PRODUCTION),
+            text("role.production").param("count", production).param("max", roles.maxProduction()),
             text("role.house").param("count", houses).param("max", Math.max(maxHouse, houses)),
             note, null, null, own, claim, status, refused != null);
     }

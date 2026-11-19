@@ -102,7 +102,7 @@ public final class NativeSmoke {
         if(prefab==null)throw new IllegalStateException("House prefab did not resolve");
         var placed=NativePlacementTransactions.place(plugin,world,plot,actor,"log_cabin",new Vector3i(20,1,20),Rotation.None,prefab,true);
         plot.setBuilding(new HubPlotBuilding("log_cabin",20,1,20,Rotation.None,List.of()));manager.updatePlot(plot);manager.saveIfDirty();
-        plugin.getServices().housing().updateBuildingPresent(owner,property,true);NativePlacementTransactions.complete(plugin,placed.operation());
+        plugin.getServices().housing().updateBuildingPresent(property,true);NativePlacementTransactions.complete(plugin,placed.operation());
         plugin.getLogger().atInfo().log("ETERNIA_NATIVE_SMOKE_STAGE: house committed");
         var customization=com.hexvane.eterniamod.customization.CustomizationBootstrap.service();
         var palette=customization.palette(world,property,actor,customization.catalog().palettes().getFirst());
@@ -136,9 +136,9 @@ public final class NativeSmoke {
         if(!entityIds(world,plot).equals(decorationIds))throw new IllegalStateException("Replaced shelf lost stable native entity identities");
         plugin.getLogger().atInfo().log("ETERNIA_NATIVE_SMOKE_STAGE: decorative entity pickup and replacement committed");
         NativePropRecoverySmoke.exercise(plugin,world,plot,actor);
-        UUID operation=UUID.randomUUID();plugin.getRelocation().pack(world,owner,operation,false);
+        UUID operation=UUID.randomUUID();plugin.getRelocation().pack(world,plugin.getServices().housing().home(owner).orElseThrow().propertyId(),operation,false);
         plugin.getLogger().atInfo().log("ETERNIA_NATIVE_SMOKE_STAGE: whole property packed");
-        if(plugin.getServices().housing().find(owner).orElseThrow().state()!=HousingService.State.PACKED || manager.getPlot(property)!=null)throw new IllegalStateException("Pack did not retain exclusive custody");
+        if(plugin.getServices().housing().home(owner).orElseThrow().state()!=HousingService.State.PACKED || manager.getPlot(property)!=null)throw new IllegalStateException("Pack did not retain exclusive custody");
         plugin.getServices().ownership().grant(new OwnershipService.GrantRequest("native-smoke-size",owner,"eternia:plot/personal_32",OwnershipService.Kind.CAPABILITY,1,null));
         plugin.getRelocation().restore(world,actor,owner,operation,new PlotRect(8,40,32,32),2,HousingRules.Scope.PUBLIC,true);
         var restored=manager.getPlot(property);
@@ -148,7 +148,7 @@ public final class NativeSmoke {
         var restoredPath=plugin.getServices().provenance().instances(property).stream().filter(i->i.state().equals("PLACED")&&"PATH".equals(i.nativeData().get("kind"))).findFirst().orElseThrow();
         var pathBounds=NativePlacementTransactions.snapshots(plugin).load(new SnapshotFiles.Saved(restoredPath.nativeData().get("after"),restoredPath.nativeData().get("afterHash"))).bounds();
         if(pathBounds.minY()!=2||pathBounds.minX()!=12||pathBounds.minZ()!=56)throw new IllegalStateException("Sparse path did not relocate with house elevation and size change");
-        if(plugin.getServices().housing().find(owner).orElseThrow().state()!=HousingService.State.ACTIVE || plugin.getServices().ownership().available(owner,HousingService.MOVE_CREDIT)!=0)throw new IllegalStateException("Restore did not commit its slot and single move credit");
+        if(plugin.getServices().housing().home(owner).orElseThrow().state()!=HousingService.State.ACTIVE || plugin.getServices().ownership().available(owner,HousingService.MOVE_CREDIT)!=0)throw new IllegalStateException("Restore did not commit its slot and single move credit");
         if(!plugin.getServices().journal().unfinished().isEmpty())throw new IllegalStateException("Native smoke left unfinished mutations");
     }
     private static Set<UUID> entityIds(World world,HubPlotRecord plot){

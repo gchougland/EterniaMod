@@ -142,16 +142,33 @@ public final class SeasonService extends DomainSupport {
         String escaped=value.replace("\r","\\r").replace("\n","\\n").replace("\t","\\t");
         return escaped.length()>240?escaped.substring(0,240)+"...":escaped;
     }
+    /**
+     * Rewards added to Foundations after it was released, each a new claim index so existing claims keep their receipts:
+     * Prowl's shirt on the paid track, and the extra production hexagon on the free track (2026-11-19).
+     */
+    private static final List<Reward> FOUNDATIONS_ADDITIONS=List.of(
+        new Reward(Track.PAID,1,1,"eternia:wearable/prowl_shirt",OwnershipService.Kind.UNLOCK,1),
+        new Reward(Track.FREE,10,0,"eternia:plot/production_bonus",OwnershipService.Kind.CAPABILITY,1));
     private static void addFoundationsShirt(Definition definition,Map<String,String> old,Map<String,String> next){
         if(!definition.id.equals("eternia:foundations"))return;
-        var shirt=new Reward(Track.PAID,1,1,"eternia:wearable/prowl_shirt",OwnershipService.Kind.UNLOCK,1);
-        if(definition.rewards.stream().filter(shirt::equals).count()!=1)return;
-        var priorRewards=definition.rewards.stream().filter(r->!r.equals(shirt)).toList();
-        var expected=encode(new Definition(definition.id,definition.name,definition.thresholds,priorRewards,definition.quests));
-        for(var e:expected.entrySet())if((e.getKey().startsWith("r")&&e.getKey().contains(".")||e.getKey().equals("rewardCount"))&&!Objects.equals(old.get(e.getKey()),e.getValue()))return;
-        // Add a new claim index. Existing Cacti claims and all other rewards retain their receipts.
-        old.keySet().removeIf(k->k.matches("r[0-9]+\\..*")||k.equals("rewardCount"));
-        next.forEach((k,v)->{if(k.matches("r[0-9]+\\..*")||k.equals("rewardCount"))old.put(k,v);});
+        if(FOUNDATIONS_ADDITIONS.stream().anyMatch(a->definition.rewards.stream().filter(a::equals).count()!=1))return;
+        var base=definition.rewards.stream().filter(r->!FOUNDATIONS_ADDITIONS.contains(r)).toList();
+        // The stored rewards may be from before any addition, or already carry some of them.
+        for(int mask=0;mask<1<<FOUNDATIONS_ADDITIONS.size();mask++){
+            var prior=new ArrayList<>(base);
+            for(int i=0;i<FOUNDATIONS_ADDITIONS.size();i++)if((mask&1<<i)!=0)prior.add(FOUNDATIONS_ADDITIONS.get(i));
+            if(!sameRewards(old,encode(new Definition(definition.id,definition.name,definition.thresholds,prior,definition.quests))))continue;
+            old.keySet().removeIf(k->k.matches("r[0-9]+\\..*")||k.equals("rewardCount"));
+            next.forEach((k,v)->{if(k.matches("r[0-9]+\\..*")||k.equals("rewardCount"))old.put(k,v);});
+            return;
+        }
+    }
+    /** True when two encoded definitions hold the same rewards, in any order. */
+    private static boolean sameRewards(Map<String,String> a,Map<String,String> b){return rewardSet(a).equals(rewardSet(b));}
+    private static Set<String> rewardSet(Map<String,String> encoded){
+        var out=new TreeSet<String>();int count=Integer.parseInt(encoded.getOrDefault("rewardCount","0"));
+        for(int n=0;n<count;n++){var sb=new StringBuilder();for(var e:new TreeMap<>(encoded).entrySet())if(e.getKey().startsWith("r"+n+"."))sb.append(e.getKey().substring(("r"+n+".").length())).append('=').append(e.getValue()).append(';');out.add(sb.toString());}
+        return out;
     }
     public List<Definition> definitions(){return store.transaction(tx->tx.scan("season_definition").stream().map(SeasonService::definition).toList());}
     public void select(UUID actor,String seasonId){
