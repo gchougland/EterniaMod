@@ -55,6 +55,7 @@ public final class FriendsPage extends EterniaInteractiveCustomUIPage<FriendsPag
 
     @Override public void build(@Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder ui, @Nonnull UIEventBuilder events, @Nonnull Store<EntityStore> store) {
         ui.append("EterniaMod/FriendsPage.ui"); bindHome(events); routes.clear(); chips.clear();
+        journalTabs(ui, events, EterniaServicesPage.Section.FRIENDS);
         long online = snapshot.friends.stream().filter(Person::online).count();
         ui.set("#FriendsTitle.TextSpans", Message.raw("Friends"));
         ui.set("#FriendsKicker.TextSpans", Message.raw(online + " of " + snapshot.friends.size() + " online"));
@@ -72,6 +73,17 @@ public final class FriendsPage extends EterniaInteractiveCustomUIPage<FriendsPag
             case BLOCKED -> drawBlocked(ui, events);
         }
         if (initial) { initial = false; refresh(""); }
+    }
+
+    /** The Journal's tabs across the top, with this screen's own tab lit; the others open the Journal there. */
+    private void journalTabs(UICommandBuilder ui, UIEventBuilder events, EterniaServicesPage.Section mine) {
+        var sections = EterniaServicesPage.journalSections();
+        for (int i = 0; i < sections.size(); i++) {
+            var section = sections.get(i);
+            String tab = com.hexvane.eterniamod.ui.JournalChrome.navTab(ui, i, EterniaServicesPage.journalTabLabel(section), EterniaServicesPage.journalTabIcon(section), section == mine, busy);
+            if (section != mine) bind(events, tab, "nav:" + section.name());
+        }
+        bind(events, "#Close", "close");
     }
 
     private void sideTab(UICommandBuilder ui, UIEventBuilder events, int i, String label, String icon, Tab target) {
@@ -261,6 +273,9 @@ public final class FriendsPage extends EterniaInteractiveCustomUIPage<FriendsPag
         UUID other = selected;
         switch (verb) {
             case "tab" -> { tab = Tab.valueOf(arg); status = ""; refresh(""); }
+            case "nav" -> { try { SocialUiBootstrap.openJournal(ref, store, playerRef, EterniaServicesPage.Section.valueOf(arg)); } catch (IllegalArgumentException unknown) { } }
+            case "close" -> close();
+
             case "filter" -> { onlineOnly = arg.equals("online"); page = 0; status = ""; redraw(); }
             case "pick" -> { selected = UUID.fromString(arg); status = ""; redraw(); }
             case "prev" -> { page = Math.max(0, page - 1); redraw(); }
@@ -342,6 +357,12 @@ public final class FriendsPage extends EterniaInteractiveCustomUIPage<FriendsPag
     private void redraw() { generation++; rebuild(); }
 
     private Snapshot load() {
+        // Live worlds first, then every database read in one transaction instead of a round trip per call.
+        var online = FriendNotices.onlineWorlds();
+        return services.batch(() -> loadRecords(online));
+    }
+
+    private Snapshot loadRecords(Map<UUID, String> online) {
         var friends = services.friends();
         var mine = friends.friends(actor);
         var incoming = friends.incoming(actor);
@@ -359,7 +380,7 @@ public final class FriendsPage extends EterniaInteractiveCustomUIPage<FriendsPag
             var account = accounts.get(f.id());
             Instant seen = account == null ? null : account.lastDisconnect() != null ? account.lastDisconnect() : account.lastSeen();
             boolean plot = services.housing().home(Owner.player(f.id())).isPresent();
-            people.add(new Person(f.id(), nameOf.apply(f.id()), FriendNotices.where(f.id()), seen, guildOf.apply(f.id()), f.since(), f.theyMay(), f.iMay(), plot));
+            people.add(new Person(f.id(), nameOf.apply(f.id()), online.get(f.id()), seen, guildOf.apply(f.id()), f.since(), f.theyMay(), f.iMay(), plot));
         }
         people.sort(Comparator.comparing((Person p) -> !p.online()).thenComparing(p -> p.name.toLowerCase(Locale.ROOT)));
         var in = incoming.stream().map(r -> new Person(r.from(), nameOf.apply(r.from()), null, null, guildOf.apply(r.from()), r.at(), Set.of(), Set.of(), false)).toList();

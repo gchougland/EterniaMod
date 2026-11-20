@@ -34,6 +34,14 @@ public final class FriendNotices {
         if (ref != null) ref.sendMessage(Message.raw(text));
     }
 
+    /** Every online player and the world they are in, read from the live server. */
+    public static java.util.Map<UUID, String> onlineWorlds() {
+        var out = new java.util.HashMap<UUID, String>();
+        var universe = Universe.get(); if (universe == null) return out;
+        for (PlayerRef p : java.util.List.copyOf(universe.getPlayers())) out.put(p.getUuid(), where(p.getUuid()));
+        return out;
+    }
+
     /** Where a player is, in words; null when offline. */
     public static String where(UUID player) {
         var universe = Universe.get(); if (universe == null) return null;

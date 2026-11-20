@@ -7,15 +7,23 @@ $C = "../Common.ui";
 @Field = TextField { Anchor: (Height: 46); Padding: (Horizontal: 12); Background: $T.@InsetSurface; Style: (FontSize: 17, TextColor: #f0e8d5, RenderBold: true); PlaceholderStyle: (FontSize: 17, TextColor: #7f8f88); };
 $T.@CodexScreen {
   $T.@CodexTopBar {
-    $T.@CodexEmblem { Group { Anchor: (Width: 44, Height: 44); Background: "Icons/guild.png"; } }
-    Group { FlexWeight: 1; LayoutMode: Middle;
-      Label #GuildTitle { Anchor: (Height: 34); Style: $T.@CodexTitleStyle; }
-      Label #GuildKicker { Anchor: (Height: 22); Style: $T.@CodexKickerStyle; }
+    Group { Anchor: (Width: 200, Height: 104); LayoutMode: Middle;
+      Group { Anchor: (Width: 180, Height: 40, Left: 0); Background: "Theme/Surfaces/EterniaWordmark.png"; }
     }
-    Group { Anchor: (Width: 250, Height: 104); Padding: (Top: 30, Right: 16); LayoutMode: Top; $T.@TextButton #TopAction { Anchor: (Width: 234, Height: 44); } }
-    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+    Group #Navigation { FlexWeight: 1; LayoutMode: Center; }
+    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30, Right: 10); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+    $T.@CodexClose #Close {}
   }
-  $T.@CodexBody {
+  $T.@CodexBody { LayoutMode: Top;
+    Group #GuildHead { LayoutMode: Left; Anchor: (Height: 56, Bottom: 14);
+      Group { Anchor: (Width: 48, Height: 48, Top: 4, Right: 14); Background: $T.@IconTilePrimarySurface; Padding: (Full: 6); Group { Background: "Icons/guild.png"; } }
+      Group { FlexWeight: 1; LayoutMode: Middle;
+        Label #GuildTitle { Anchor: (Height: 32); Style: $T.@CodexTitleStyle; }
+        Label #GuildKicker { Anchor: (Height: 20); Style: $T.@CodexKickerStyle; }
+      }
+      $T.@TextButton #TopAction { Anchor: (Width: 234, Height: 46, Top: 5); }
+    }
+    Group { FlexWeight: 1; LayoutMode: Left;
 
     Group #BrowseView { FlexWeight: 1; LayoutMode: Left;
       Group { FlexWeight: 1; LayoutMode: Top; Anchor: (Right: 24);
@@ -210,6 +218,7 @@ $T.@CodexScreen {
           }
         }
       }
+    }
     }
   }
   $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }

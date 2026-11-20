@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
  * their own screens). Domain work runs on the menu executor; drawing runs on the world thread.
  */
 public final class GuildPage extends EterniaInteractiveCustomUIPage<GuildPage.Data> {
-    private static final int ROWS = 6, MEMBERS = 10, ONLINE_SHOWN = 8;
+    private static final int ROWS = 6, MEMBERS = 8, ONLINE_SHOWN = 8;
     private enum View { BROWSE, DESIGN, GUILD }
     private enum Tab { OVERVIEW, MEMBERS }
     private enum Filter { ALL("All"), OPEN("Open to join"), ONLINE("Most online"), ESTATE("Has an estate"); final String label; Filter(String l){label=l;} }
@@ -66,6 +66,7 @@ public final class GuildPage extends EterniaInteractiveCustomUIPage<GuildPage.Da
 
     @Override public void build(@Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder ui, @Nonnull UIEventBuilder events, @Nonnull Store<EntityStore> store) {
         ui.append("EterniaMod/GuildPage.ui"); bindHome(events); routes.clear(); chipCounts.clear();
+        journalTabs(ui, events, EterniaServicesPage.Section.GUILD);
         ui.set("#BrowseView.Visible", view == View.BROWSE);
         ui.set("#DesignView.Visible", view == View.DESIGN);
         ui.set("#GuildView.Visible", view == View.GUILD);
@@ -76,6 +77,17 @@ public final class GuildPage extends EterniaInteractiveCustomUIPage<GuildPage.Da
             case GUILD -> drawGuild(ui, events);
         }
         if (initial) { initial = false; refresh(""); }
+    }
+
+    /** The Journal's tabs across the top, with this screen's own tab lit; the others open the Journal there. */
+    private void journalTabs(UICommandBuilder ui, UIEventBuilder events, EterniaServicesPage.Section mine) {
+        var sections = EterniaServicesPage.journalSections();
+        for (int i = 0; i < sections.size(); i++) {
+            var section = sections.get(i);
+            String tab = com.hexvane.eterniamod.ui.JournalChrome.navTab(ui, i, EterniaServicesPage.journalTabLabel(section), EterniaServicesPage.journalTabIcon(section), section == mine, busy);
+            if (section != mine) bind(events, tab, "nav:" + section.name());
+        }
+        bind(events, "#Close", "close");
     }
 
     private void top(UICommandBuilder ui, UIEventBuilder events, String title, String kicker, String action, String route) {
@@ -453,6 +465,9 @@ public final class GuildPage extends EterniaInteractiveCustomUIPage<GuildPage.Da
         String verb = colon < 0 ? route : route.substring(0, colon), arg = colon < 0 ? "" : route.substring(colon + 1);
         switch (verb) {
             case "search" -> { listPage = 0; status = ""; redraw(); }
+            case "nav" -> { try { SocialUiBootstrap.openJournal(ref, store, playerRef, EterniaServicesPage.Section.valueOf(arg)); } catch (IllegalArgumentException unknown) { } }
+            case "close" -> close();
+
             case "filter" -> { filter = Filter.valueOf(arg); listPage = 0; status = ""; redraw(); }
             case "pick" -> { selectedGuild = UUID.fromString(arg); status = ""; redraw(); }
             case "list_prev" -> { listPage = Math.max(0, listPage - 1); redraw(); }
@@ -578,10 +593,16 @@ public final class GuildPage extends EterniaInteractiveCustomUIPage<GuildPage.Da
 
     /** Everything the screen shows, read on the menu executor. Online players and their worlds come from the live server. */
     private Snapshot load() {
-        var guilds = services.guilds();
+        // Who is online and where comes from the live server, read before the database work.
         Map<UUID, String> worlds = new HashMap<>(), names = new HashMap<>();
         var universe = Universe.get();
         if (universe != null) for (PlayerRef p : List.copyOf(universe.getPlayers())) { worlds.put(p.getUuid(), worldName(universe, p)); names.put(p.getUuid(), p.getUsername()); }
+        // Every database read in one transaction: each table is read once, instead of a round trip per call.
+        return services.batch(() -> loadRecords(worlds, names));
+    }
+
+    private Snapshot loadRecords(Map<UUID, String> worlds, Map<UUID, String> names) {
+        var guilds = services.guilds();
         var onlineByGuild = new HashMap<UUID, List<Person>>();
         for (var id : worlds.keySet()) guilds.membership(id).ifPresent(m -> onlineByGuild.computeIfAbsent(m.guildId(), k -> new ArrayList<>())
             .add(new Person(id, names.get(id), m.role(), "", 100, worlds.get(id), null)));
@@ -624,13 +645,14 @@ public final class GuildPage extends EterniaInteractiveCustomUIPage<GuildPage.Da
         long crowns = services.guildCrowns().balance(guildId);
         boolean estate = services.housing().homeLocation(Owner.guild(guildId)).isPresent();
         var notices = new ArrayList<Notice>();
-        try {
+        var myRole = roleById.get(membership.get().role());
+        // Checked first, not caught: a failed call inside a batch would end the whole batch.
+        if (myRole != null && myRole.capabilities().contains("board.read")) {
             var posts = services.guildCommunications().board(actor);
             var authors = services.accounts().findAll(posts.stream().map(GuildCommunicationService.Post::author).toList());
             for (var post : posts) notices.add(new Notice(post.title(), Optional.ofNullable(authors.get(post.author())).map(AccountService.Account::displayName).orElse("a member"), post.pinned()));
-        } catch (DomainException noBoardAccess) { /* their role may not read the board */ }
+        }
         var mine = new Mine(profile, List.copyOf(members), roles, List.copyOf(asking), crowns, estate, List.copyOf(notices));
-        var myRole = roleById.get(membership.get().role());
         var toInvite = new LinkedHashMap<UUID, String>();
         if (myRole != null && myRole.capabilities().contains("member.invite")) {
             var friends = services.friends().friends(actor);

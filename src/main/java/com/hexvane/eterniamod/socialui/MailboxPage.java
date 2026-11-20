@@ -407,6 +407,12 @@ public final class MailboxPage extends EterniaInteractiveCustomUIPage<MailboxPag
     private void redraw() { generation++; rebuild(); }
 
     private Snapshot load() {
+        // Live presence first, then every database read in one transaction instead of a round trip per call.
+        var online = FriendNotices.onlineWorlds().keySet();
+        return services.batch(() -> loadRecords(online));
+    }
+
+    private Snapshot loadRecords(Set<UUID> online) {
         var inbox = services.mail().inbox(actor);
         services.accounts().findAll(inbox.stream().map(MailService.Message::sender).toList());
         var letters = new ArrayList<Letter>();
@@ -418,7 +424,7 @@ public final class MailboxPage extends EterniaInteractiveCustomUIPage<MailboxPag
         }
         var mine = services.friends().friends(actor);
         var names = services.accounts().findAll(mine.stream().map(FriendService.Friend::id).toList());
-        var friendNames = mine.stream().sorted(Comparator.comparing((FriendService.Friend f) -> FriendNotices.where(f.id()) == null))
+        var friendNames = mine.stream().sorted(Comparator.comparing((FriendService.Friend f) -> !online.contains(f.id())))
             .map(f -> names.containsKey(f.id()) ? names.get(f.id()).displayName() : null).filter(Objects::nonNull).limit(8).toList();
         return new Snapshot(List.copyOf(letters), services.escrow().available(Owner.player(actor)), friendNames);
     }

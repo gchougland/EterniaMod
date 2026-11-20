@@ -1,7 +1,7 @@
 $T = "Theme/Citadel.ui";
 Group #Journal { Anchor: (Full: 0); LayoutMode: Top; Background: "Theme/Surfaces/JournalVignette.png";
 Group #TopBar { Anchor: (Height: 104); Background: $T.@JournalTopBarSurface; Padding: (Horizontal: 40); LayoutMode: Left;
-Group #Brand { Anchor: (Width: 420); LayoutMode: Left;
+Group #Brand { Anchor: (Width: 260); LayoutMode: Left;
 Group #DeskEmblem { Visible: false; Anchor: (Width: 76, Height: 76, Top: 14, Right: 18); Background: "Theme/Surfaces/Emblem.png";
 Group #DeskIcon { Anchor: (Width: 42, Height: 42); }
 }
@@ -12,7 +12,7 @@ Label #ServicesSubtitle { Anchor: (Height: 22); Style: (FontSize: 14, TextColor:
 }
 }
 Group #Navigation { FlexWeight: 1; LayoutMode: Center; }
-Group { Anchor: (Width: 420); LayoutMode: Right;
+Group { Anchor: (Width: 340); LayoutMode: Right;
 Group #CurrencyWallet { Anchor: (Width: 220, Height: 64, Top: 20); LayoutMode: Left; }
 $T.@SecondaryTextButton #Return { Anchor: (Width: 96, Height: 44, Top: 30, Right: 10); Text: "Back"; Visible: false; }
 Group #JournalShortcut { Anchor: (Width: 54, Height: 104); Padding: (Top: 30, Right: 10); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }

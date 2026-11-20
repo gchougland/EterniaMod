@@ -4,15 +4,17 @@ $T = "Theme/Citadel.ui";
 @Field = TextField { Anchor: (Height: 46); Padding: (Horizontal: 12); Background: $T.@InsetSurface; Style: (FontSize: 17, TextColor: #f0e8d5, RenderBold: true); PlaceholderStyle: (FontSize: 17, TextColor: #7f8f88); };
 $T.@CodexScreen {
   $T.@CodexTopBar {
-    $T.@CodexEmblem { Group { Anchor: (Width: 44, Height: 44); Background: "Icons/members.png"; } }
-    Group { FlexWeight: 1; LayoutMode: Middle;
-      Label #FriendsTitle { Anchor: (Height: 34); Style: $T.@CodexTitleStyle; }
-      Label #FriendsKicker { Anchor: (Height: 22); Style: $T.@CodexKickerStyle; }
+    Group { Anchor: (Width: 200, Height: 104); LayoutMode: Middle;
+      Group { Anchor: (Width: 180, Height: 40, Left: 0); Background: "Theme/Surfaces/EterniaWordmark.png"; }
     }
-    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+    Group #Navigation { FlexWeight: 1; LayoutMode: Center; }
+    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30, Right: 10); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+    $T.@CodexClose #Close {}
   }
   $T.@CodexBody {
     $T.@CodexPanel { Anchor: (Width: 280, Right: 24); Padding: (Full: 18);
+      Label #FriendsTitle { Anchor: (Height: 34); Style: $T.@CodexTitleStyle; }
+      Label #FriendsKicker { Anchor: (Height: 22, Bottom: 14); Style: $T.@CodexKickerStyle; }
       Group #Tabs { LayoutMode: Top; }
       Group { FlexWeight: 1; }
       Group { LayoutMode: Top; Background: $T.@InsetSurface; Padding: (Full: 14);
