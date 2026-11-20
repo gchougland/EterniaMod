@@ -11,6 +11,7 @@ import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +39,7 @@ public final class WildFriendsMenu {
         Set<WildPerm> everyone = land.trust().getOrDefault(WildLandService.EVERYONE, Set.of());
         choices.add(new ChoicePage.Choice("Everyone: " + (everyone.isEmpty() ? "nothing" : describe(everyone)), "Change",
             (r, s) -> edit(plugin, r, s, player, claim, WildLandService.EVERYONE, "Everyone")));
-        choices.add(new ChoicePage.Choice("Add a friend who is online now. Use /e land friend NAME for anyone else.", "Add friend",
+        choices.add(new ChoicePage.Choice("Add someone from your friends list, or a player who is online now.", "Add friend",
             (r, s) -> pickOnline(plugin, r, s, player, claim)));
         choices.add(new ChoicePage.Choice("Give up all of this land. You get back part of what it cost.", "Give it up",
             (r, s) -> ChoicePage.open(r, s, player, "Give up all of this land?", "Anyone may claim it after. Your blocks stay where they are.",
@@ -72,13 +73,24 @@ public final class WildFriendsMenu {
         WildLandIndex.Land land = WildLandIndex.byId(claim);
         if (land == null) return;
         List<ChoicePage.Choice> choices = new ArrayList<>();
+        Set<UUID> listed = new HashSet<>();
+        var friends = plugin.getServices().friends().friends(player.getUuid());
+        var names = plugin.getServices().accounts().findAll(friends.stream().map(com.hexvane.eterniamod.domain.FriendService.Friend::id).toList());
+        for (var friend : friends) {
+            String key = friend.id().toString();
+            if (land.trust().containsKey(key)) continue;
+            String name = names.containsKey(friend.id()) ? names.get(friend.id()).displayName() : "A friend";
+            listed.add(friend.id());
+            choices.add(new ChoicePage.Choice(name + " (friend)", "Add", (r, s) -> save(plugin, r, s, player, claim, key, WildPerm.ALL,
+                () -> edit(plugin, r, s, player, claim, key, name))));
+        }
         for (PlayerRef other : Universe.get().getPlayers()) {
-            if (other.getUuid().equals(player.getUuid()) || land.trust().containsKey(other.getUuid().toString())) continue;
+            if (other.getUuid().equals(player.getUuid()) || listed.contains(other.getUuid()) || land.trust().containsKey(other.getUuid().toString())) continue;
             String name = other.getUsername();
             choices.add(new ChoicePage.Choice(name, "Add", (r, s) -> save(plugin, r, s, player, claim, other.getUuid().toString(), WildPerm.ALL,
                 () -> edit(plugin, r, s, player, claim, other.getUuid().toString(), name))));
         }
-        if (choices.isEmpty()) choices.add(new ChoicePage.Choice("Nobody else is online. Use /e land friend NAME to add anyone.", "Back", (r, s) -> open(plugin, r, s, player, claim)));
+        if (choices.isEmpty()) choices.add(new ChoicePage.Choice("No friends to add and nobody else is online. Use /e land friend NAME to add anyone.", "Back", (r, s) -> open(plugin, r, s, player, claim)));
         ChoicePage.open(ref, store, player, "Add a friend", "New friends may do everything at first. You can change that after.", choices);
     }
 

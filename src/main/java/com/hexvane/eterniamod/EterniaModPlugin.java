@@ -152,6 +152,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         socialUi = com.hexvane.eterniamod.socialui.SocialUiBootstrap.register(this,getServices(),menuActions);
         collectionRuntime = com.hexvane.eterniamod.collections.CollectionBootstrap.register(this,getServices());
         com.hexvane.eterniamod.chat.ChatBootstrap.register(this);
+        com.hexvane.eterniamod.socialui.FriendNotices.register(this);
         com.hexvane.eterniamod.nameplate.NameplateRuntime.register(this);
         com.hexvane.eterniamod.production.ProductionBootstrap.register(this);
         gameplayAdapters = new com.hexvane.eterniamod.runtime.GameplayAdapters(this,serverEnvironment);
@@ -217,6 +218,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         com.hexvane.eterniamod.ranks.RankPermissions.refresh();
         // After every built-in plugin's setup, so this /hub replaces the Creative Hub one instead of being replaced by it.
         getCommandRegistry().registerCommand(new com.hexvane.eterniamod.command.EterniaHubCommand());
+        for (var command : com.hexvane.eterniamod.command.TeleportRequestCommands.all()) getCommandRegistry().registerCommand(command);
         if (!getManifest().includesAssetPack()) {
             return;
         }

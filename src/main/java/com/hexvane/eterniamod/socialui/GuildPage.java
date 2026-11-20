@@ -298,6 +298,8 @@ public final class GuildPage extends EterniaInteractiveCustomUIPage<GuildPage.Da
         ui.set("#InviteName.Visible", canInvite);
         button(ui, events, "#InviteSend", "Send invite", "invite", canInvite);
         events.addEventBinding(CustomUIEventBindingType.Validating, "#InviteName", data("invite"), false);
+        ui.set("#FriendInvitesRow.Visible", canInvite && !snapshot.friendsToInvite.isEmpty());
+        for (var f : snapshot.friendsToInvite.entrySet()) chip(ui, events, "#FriendInvites", fit(f.getValue(), 16), "finvite:" + f.getKey(), false);
         ui.set("#MemberHead.Visible", memberFilter != MemberFilter.REQUESTS);
         int i = 0;
         if (memberFilter == MemberFilter.REQUESTS) {
@@ -492,6 +494,11 @@ public final class GuildPage extends EterniaInteractiveCustomUIPage<GuildPage.Da
                     services.guilds().invite(actor, account.id()); return account.displayName();
                 }, shown -> invite = "", "Invitation sent to " + who + ". They can accept it from Guilds in their Journal.");
             }
+            case "finvite" -> {
+                UUID target = UUID.fromString(arg); String who = snapshot.friendsToInvite.getOrDefault(target, "your friend");
+                String me = playerRef.getUsername();
+                act(() -> services.guilds().invite(actor, target), v -> FriendNotices.tell(target, me + " invited you to their guild. Open Guild in your Journal to accept."), "Invitation sent to " + who + ".");
+            }
             case "req_yes" -> act(() -> services.guilds().answerRequest(actor, UUID.fromString(arg), true), ok -> { if (!ok) status = "They already joined another guild."; }, "They joined the guild.");
             case "req_no" -> act(() -> services.guilds().answerRequest(actor, UUID.fromString(arg), false), ok -> {}, "Request declined.");
             case "assign" -> { UUID target = selectedMember; if (target == null) return; act(() -> { services.guilds().assignRole(actor, target, arg); return null; }, v -> {}, "Role changed."); }
@@ -594,7 +601,7 @@ public final class GuildPage extends EterniaInteractiveCustomUIPage<GuildPage.Da
         var requested = guilds.pendingRequests(actor);
 
         var membership = guilds.membership(actor);
-        if (membership.isEmpty()) return new Snapshot(List.copyOf(entries), Map.copyOf(invites), requested, null, "", "", Set.of());
+        if (membership.isEmpty()) return new Snapshot(List.copyOf(entries), Map.copyOf(invites), requested, null, "", "", Set.of(), Map.of());
         UUID guildId = membership.get().guildId();
         var profile = guilds.profile(guildId).orElseThrow();
         var roles = guilds.roles(actor);
@@ -624,8 +631,17 @@ public final class GuildPage extends EterniaInteractiveCustomUIPage<GuildPage.Da
         } catch (DomainException noBoardAccess) { /* their role may not read the board */ }
         var mine = new Mine(profile, List.copyOf(members), roles, List.copyOf(asking), crowns, estate, List.copyOf(notices));
         var myRole = roleById.get(membership.get().role());
+        var toInvite = new LinkedHashMap<UUID, String>();
+        if (myRole != null && myRole.capabilities().contains("member.invite")) {
+            var friends = services.friends().friends(actor);
+            var friendNames = services.accounts().findAll(friends.stream().map(FriendService.Friend::id).toList());
+            for (var f : friends) {
+                if (toInvite.size() >= 6 || guilds.membership(f.id()).isPresent() || !friendNames.containsKey(f.id())) continue;
+                toInvite.put(f.id(), friendNames.get(f.id()).displayName());
+            }
+        }
         return new Snapshot(List.copyOf(entries), Map.copyOf(invites), requested, mine, membership.get().role(),
-            myRole == null ? "Member" : myRole.name(), myRole == null ? Set.of() : myRole.capabilities());
+            myRole == null ? "Member" : myRole.name(), myRole == null ? Set.of() : myRole.capabilities(), toInvite);
     }
 
     private static String worldName(Universe universe, PlayerRef player) {
@@ -645,8 +661,8 @@ public final class GuildPage extends EterniaInteractiveCustomUIPage<GuildPage.Da
     private record Mine(GuildService.Profile profile, List<Person> members, List<GuildService.Role> roles, List<Request> requests, long crowns, boolean estate, List<Notice> notices) {
         List<Person> online() { return members.stream().filter(Person::online).toList(); }
     }
-    private record Snapshot(List<Entry> guilds, Map<UUID, String> invites, Set<UUID> requested, Mine mine, String myRole, String myRoleName, Set<String> caps) {
-        static final Snapshot EMPTY = new Snapshot(List.of(), Map.of(), Set.of(), null, "", "", Set.of());
+    private record Snapshot(List<Entry> guilds, Map<UUID, String> invites, Set<UUID> requested, Mine mine, String myRole, String myRoleName, Set<String> caps, Map<UUID, String> friendsToInvite) {
+        static final Snapshot EMPTY = new Snapshot(List.of(), Map.of(), Set.of(), null, "", "", Set.of(), Map.of());
     }
 
     public static final class Data {

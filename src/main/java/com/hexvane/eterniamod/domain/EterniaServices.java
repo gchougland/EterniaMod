@@ -36,6 +36,8 @@ public final class EterniaServices {
     private final MemoryService memories;
     private final GuildBenefitService guildBenefits;
     private final GuildCommunicationService guildCommunications;
+    private final FriendService friends;
+    private final TravelService travel;
     private final LootChestService lootChests;
     private final TutorialService tutorial;
     private final com.hexvane.eterniamod.stats.StatsService stats;
@@ -64,6 +66,8 @@ public final class EterniaServices {
         memories=new MemoryService(store,clock,ids);
         guildBenefits=new GuildBenefitService(store,clock,ids,ownership);
         guildCommunications=new GuildCommunicationService(store,clock,ids);
+        friends=new FriendService(store,clock,ids);
+        travel=new TravelService(store,clock,ids,economy);
         lootChests=new LootChestService(store,clock,ids);
         tutorial=new TutorialService(store,clock,ids);
         stats=new com.hexvane.eterniamod.stats.StatsService(store,clock);
@@ -115,6 +119,8 @@ public final class EterniaServices {
     public MemoryService memories(){return memories;}
     public GuildBenefitService guildBenefits(){return guildBenefits;}
     public GuildCommunicationService guildCommunications(){return guildCommunications;}
+    public FriendService friends(){return friends;}
+    public TravelService travel(){return travel;}
     public LootChestService lootChests(){return lootChests;}
     public TutorialService tutorial(){return tutorial;}
     public com.hexvane.eterniamod.stats.StatsService stats(){return stats;}

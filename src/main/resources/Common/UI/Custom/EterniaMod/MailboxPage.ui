@@ -60,6 +60,10 @@ $T.@CodexScreen {
           TextField #To { FlexWeight: 1; Anchor: (Height: 46); MaxLength: 32; Background: @PaperFieldSurface; Padding: (Horizontal: 12); Style: (FontSize: 17, TextColor: @Ink, RenderBold: true); PlaceholderText: "Player name"; PlaceholderStyle: (FontSize: 17, TextColor: #8a7860); }
           TextField #Subject { FlexWeight: 1; Anchor: (Height: 46, Left: 20); MaxLength: 100; Background: @PaperFieldSurface; Padding: (Horizontal: 12); Style: (FontSize: 17, TextColor: @Ink, RenderBold: true); PlaceholderText: "What is it about?"; PlaceholderStyle: (FontSize: 17, TextColor: #8a7860); }
         }
+        Group #ToFriendsRow { LayoutMode: Left; Anchor: (Height: 38, Bottom: 12);
+          Label { Anchor: (Width: 84); Text: "Friends"; Style: @PaperLabel; }
+          Group #ToFriends { FlexWeight: 1; LayoutMode: Left; }
+        }
         Label { Anchor: (Height: 26); Text: "Message"; Style: @PaperLabel; }
         MultilineTextField #Body {
           FlexWeight: 1; Anchor: (Top: 4, Bottom: 12); AutoGrow: false; MaxLength: 2000;

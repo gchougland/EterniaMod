@@ -1,8 +1,8 @@
 {
   "id": "eternia:store/qa_season_board",
   "revision": 1,
-  "name": "Season Banner",
-  "description": "A banner stand for your plot. Buy season passes here without going to the Hub.",
+  "name": "Season Board",
+  "description": "A notice board for your plot with the season poster pinned up. Buy season passes here without going to the Hub.",
   "category": "Quick access",
   "price": 300,
   "benefits": [

@@ -31,14 +31,14 @@ import javax.annotation.Nonnull;
 /** Native service UI. View state is server-owned and all domain I/O runs away from the world tick. */
 public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<EterniaServicesPage.Data> {
     public enum Section {
-        GREETER("Welcome"), HOUSING("Housing"), GUILD("Guild"), MAIL("Mailbox"), SHOP("Player shops"),
+        GREETER("Welcome"), HOUSING("Housing"), GUILD("Guild"), FRIENDS("Friends"), MAIL("Mailbox"), SHOP("Player shops"),
         QUESTS("Quests"), SEASON("Season passes"), COLLECTION("Collection"), STORE("Crown Store"), WORLDS("Worlds"), COMING_SOON("Minigames"), RULES("Rules of the realm");
         final String title;
         Section(String title) { this.title = title; }
     }
     /** Where the page was opened: the Journal (personal sections, anywhere) or one Hub NPC's own desk. */
     public enum Desk {
-        JOURNAL(null, null, List.of(Section.COLLECTION, Section.QUESTS, Section.SEASON, Section.GUILD, Section.HOUSING),
+        JOURNAL(null, null, List.of(Section.COLLECTION, Section.QUESTS, Section.SEASON, Section.GUILD, Section.FRIENDS, Section.HOUSING, Section.STORE),
             Set.of(SocialUiActions.Action.HOUSING_INVENTORY, SocialUiActions.Action.ITEM_DESK)),
         GUIDE(HubNpcIdentity.GREETER, "worlds", List.of(Section.GREETER), Set.of()),
         STEWARD(HubNpcIdentity.HOUSING, "housing", List.of(Section.HOUSING), Set.of(SocialUiActions.Action.HOUSING_CLAIM, SocialUiActions.Action.HOUSING_MANAGE,
@@ -449,11 +449,12 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     public static String journalTabIcon(Section entry){return sectionIcon(entry);}
     private String tabLabel(Section entry){return switch(entry){case HOUSING->"Home";case MAIL->"Mail";case SEASON->"Seasons";default->entry.title;};}
     private String sectionName(Section entry){return desk==Desk.JOURNAL?tabLabel(entry):entry.title;}
-    private static String sectionIcon(Section entry){return switch(entry){case GREETER,WORLDS->"worlds";case HOUSING->"housing";case GUILD->"guild";case MAIL->"mail";case SHOP->"market";case QUESTS->"quests";case SEASON->"season";case COLLECTION->"collection";case STORE->"crown";case COMING_SOON->"games";case RULES->"charter";};}
+    private static String sectionIcon(Section entry){return switch(entry){case GREETER,WORLDS->"worlds";case HOUSING->"housing";case GUILD->"guild";case FRIENDS->"members";case MAIL->"mail";case SHOP->"market";case QUESTS->"quests";case SEASON->"season";case COLLECTION->"collection";case STORE->"crown";case COMING_SOON->"games";case RULES->"charter";};}
     private String sectionNote(Section entry){return switch(entry){
         case GREETER->"How life in Eternia works.";
         case HOUSING->desk==Desk.JOURNAL?"Your plot and home at a glance.":"Your plot, moves and building rules.";
         case GUILD->"Your guild, its members and roles.";
+        case FRIENDS->"Your friends, who is online and where.";
         case MAIL->"Letters and parcels from other players.";
         case SHOP->"Real listings from players across Eternia.";
         case QUESTS->"Goals that earn season points and coins.";
@@ -493,6 +494,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (route.startsWith("nav:")) {
             if(route.equals("nav:WORLDS")){registration.actions.perform(SocialUiActions.Action.WORLD_SELECT,ref,store,playerRef);return;}
             if(route.equals("nav:GUILD")){registration.openGuild(ref,store,playerRef);return;}
+            if(route.equals("nav:FRIENDS")){registration.openFriends(ref,store,playerRef,false);return;}
+            if(route.equals("nav:STORE")){var opened=registration.actions.perform(SocialUiActions.Action.STORE_OPEN,ref,store,playerRef);if(!opened.opened()){status=opened.message();generation++;rebuild();}return;}
             // Home goes straight to the housing menu; the old summary screen was an extra click.
             // An unfinished placement or claim draft is picked up again before Home opens.
             if(route.equals("nav:HOUSING")&&desk==Desk.JOURNAL&&com.hexvane.eterniamod.housing.HousingInventory.prepare(com.hexvane.eterniamod.EterniaModPlugin.get(),ref,store,playerRef))return;
@@ -705,6 +708,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                         : buttons(housing == null ? "Claim a plot" : "Furnish my home", housing == null ? "external:HOUSING_CLAIM" : "external:HOUSING_MANAGE", "Architect's Ledger", "external:ARCHITECT_LEDGER", "Refresh", "refresh"), null);
             }
             case GUILD -> guildView(input);
+            case FRIENDS -> new View("Friends", "Opening your friends.", List.of(), noFields(), buttons("", "", "", "", "", ""), null);
             case MAIL -> mailView(input);
             case SHOP -> {
                 var listings=services.market().search(input.one);services.accounts().findAll(listings.stream().map(MarketService.Listing::seller).toList());

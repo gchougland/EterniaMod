@@ -1,0 +1,8 @@
+TextButton #Pal {
+  Anchor: (Height: 36, Right: 8); Padding: (Horizontal: 14); Text: "";
+  Style: TextButtonStyle(
+    Default: (Background: PatchStyle(TexturePath: "Mail/ParchmentDark.png", Border: 10), LabelStyle: (FontSize: 15, TextColor: #2a211a, RenderBold: true, VerticalAlignment: Center, HorizontalAlignment: Center)),
+    Hovered: (Background: PatchStyle(TexturePath: "Mail/ParchmentDark.png", Border: 10), LabelStyle: (FontSize: 15, TextColor: #8a4a1a, RenderBold: true, VerticalAlignment: Center, HorizontalAlignment: Center)),
+    Pressed: (Background: PatchStyle(TexturePath: "Mail/ParchmentDark.png", Border: 10), LabelStyle: (FontSize: 15, TextColor: #8a4a1a, RenderBold: true, VerticalAlignment: Center, HorizontalAlignment: Center))
+  );
+}

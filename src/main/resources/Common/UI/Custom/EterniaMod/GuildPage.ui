@@ -177,6 +177,10 @@ $T.@CodexScreen {
             @Field #InviteName { Anchor: (Width: 260, Height: 46, Right: 8); PlaceholderText: "Player name"; MaxLength: 32; }
             $T.@TextButton #InviteSend { Anchor: (Width: 170, Height: 46); }
           }
+          Group #FriendInvitesRow { LayoutMode: Left; Anchor: (Height: 44, Bottom: 12);
+            Label { Anchor: (Width: 210); Text: "Invite a friend"; Style: @FieldLabel; }
+            Group #FriendInvites { FlexWeight: 1; LayoutMode: Left; }
+          }
           $T.@CodexPanel { FlexWeight: 1; Padding: (Full: 12);
             Group #MemberHead { LayoutMode: Left; Anchor: (Height: 34); Padding: (Horizontal: 14);
               Label { Anchor: (Width: 360); Text: "Name"; Style: @FieldLabel; }

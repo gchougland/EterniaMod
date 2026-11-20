@@ -90,12 +90,12 @@ public final class NativeTravelService {
         var ref=player.getReference();if(ref==null||!ref.isValid())return;
         var property=plugin.getServices().housing().property(propertyId).orElse(null);if(property==null)return;
         Owner owner=property.slot().owner();
-        if(owner.kind()==Owner.Kind.PLAYER&&!owner.id().equals(player.getUuid())||owner.kind()==Owner.Kind.GUILD&&!plugin.getServices().guilds().can(player.getUuid(),owner.id(),"housing.visit"))return;
+        if(owner.kind()==Owner.Kind.PLAYER&&!owner.id().equals(player.getUuid())&&!plugin.getServices().friends().allows(owner.id(),player.getUuid(),"housing.visit")||owner.kind()==Owner.Kind.GUILD&&!plugin.getServices().guilds().can(player.getUuid(),owner.id(),"housing.visit"))return;
         if(!canUseTravel(ref,ref.getStore(),player.getUuid())){player.sendMessage(Message.raw("Use Locate plot from the Hub or a public portal. The plot coordinates are shown in My plots."));return;}
         var slot=property.slot();var location=property.location();if(location==null)return;
         var world=Universe.get().getWorld(location.worldId());if(world==null||slot.state()!=HousingService.State.ACTIVE)return;
         world.execute(()->{var plot=EterniaWorldRegistries.getOrCreateHubPlotManager(world,plugin).getPlot(slot.propertyId());if(plot==null)return;
-            var fp=plot.getFootprint();var edge=com.hexvane.eterniamod.housing.PlotAreas.arrival(plot);arrive(player,world,new Vector3d(edge.x(),fp.resolveVisualCenterY(),edge.z()),edge.area()).thenAccept(ok->player.sendMessage(Message.raw(ok?"Your plot. Open /e housing to choose a house or decoration.":"The plot arrival is obstructed. Use the coordinates in My plots to reach it.")));
+            var fp=plot.getFootprint();var edge=com.hexvane.eterniamod.housing.PlotAreas.arrival(plot);boolean own=owner.equals(Owner.player(player.getUuid()));arrive(player,world,new Vector3d(edge.x(),fp.resolveVisualCenterY(),edge.z()),edge.area()).thenAccept(ok->player.sendMessage(Message.raw(ok&&!own?"Welcome to your friend's plot.":ok?"Your plot. Open /e housing to choose a house or decoration.":"The plot arrival is obstructed. Use the coordinates in My plots to reach it.")));
         });
     }
     public enum JoinTarget { FIRST_JOIN, NEWCOMER, HOME }
@@ -197,6 +197,10 @@ public final class NativeTravelService {
             });return result;
         }).exceptionally(error->{plugin.getLogger().atWarning().withCause(error).log("Could not resolve safe travel destination");return false;});
     }
+    /** Solid ground below and two free, dry cells at and above: a spot a player can stand on. World thread only. */
+    public boolean standable(World world,int x,int y,int z){return safe(world,x,y,z,false);}
+    /** Places the player exactly at a spot already checked, loading its chunks first. */
+    public CompletableFuture<Boolean> place(PlayerRef player,World world,Vector3d point){return teleport(player,world,new Transform(point,new Rotation3f()));}
     /** Search a few cells around the point for solid ground with two free cells above; null when none is safe. */
     private CompletableFuture<Landing> landing(World world,Vector3d point,PlotRect allowed,Rotation3f facing) {
         return TravelLanding.load(world,point,2).thenCompose(chunk->{

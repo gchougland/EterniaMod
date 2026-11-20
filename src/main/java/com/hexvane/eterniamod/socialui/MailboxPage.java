@@ -42,7 +42,7 @@ public final class MailboxPage extends EterniaInteractiveCustomUIPage<MailboxPag
     private final EterniaServices services;
     private final UUID actor;
     private final Map<String, String> routes = new HashMap<>();
-    private Snapshot snapshot = new Snapshot(List.of(), List.of());
+    private Snapshot snapshot = new Snapshot(List.of(), List.of(), List.of());
     private View view = View.LETTERS;
     private String focus = "", to = "", subject = "", body = "", status = "Opening your mailbox…";
     private final List<Pick> picks = new ArrayList<>();
@@ -144,6 +144,12 @@ public final class MailboxPage extends EterniaInteractiveCustomUIPage<MailboxPag
     }
 
     private void drawWrite(Ref<EntityStore> ref, Store<EntityStore> store, UICommandBuilder ui, UIEventBuilder events) {
+        ui.set("#ToFriendsRow.Visible", !snapshot.friends.isEmpty());
+        for (int i = 0; i < snapshot.friends.size(); i++) {
+            ui.append("#ToFriends", "EterniaMod/MailFriend.ui");
+            ui.set("#ToFriends[" + i + "].TextSpans", Message.raw(snapshot.friends.get(i)));
+            bind(events, "#ToFriends[" + i + "]", "to:" + snapshot.friends.get(i));
+        }
         for (int i = 0; i < ChatEmotes.NAMES.size(); i++) {
             String name = ChatEmotes.NAMES.get(i);
             ui.append("#Emotes", "EterniaMod/MailEmote.ui");
@@ -241,6 +247,7 @@ public final class MailboxPage extends EterniaInteractiveCustomUIPage<MailboxPag
         String route = routes.get(data.action); if (route == null) return;
         if (view == View.WRITE) { if (data.to != null) to = cut(data.to, 32); if (data.subject != null) subject = cut(data.subject, 100); if (data.body != null) body = cut(data.body, 2000); }
         if (route.startsWith("open:")) { openLetter(route.substring(5)); return; }
+        if (route.startsWith("to:")) { to = cut(route.substring(3), 32); redraw(); return; }
         if (route.startsWith("emote:")) { body = cut(ChatEmotes.add(body, route.substring(6)), 2000); redraw(); return; }
         if (route.startsWith("bag:")) { pickFromBag(ref, store, route.substring(4)); return; }
         if (route.startsWith("store:")) { pickFromStorage(route.substring(6)); return; }
@@ -409,13 +416,17 @@ public final class MailboxPage extends EterniaInteractiveCustomUIPage<MailboxPag
             String from = services.accounts().find(mail.sender()).map(AccountService.Account::displayName).orElse("Eternia");
             letters.add(new Letter(mail.id(), mail.sender(), from, mail.subject(), mail.body(), mail.read(), mail.claimed(), mail.sentAt(), List.copyOf(items)));
         }
-        return new Snapshot(List.copyOf(letters), services.escrow().available(Owner.player(actor)));
+        var mine = services.friends().friends(actor);
+        var names = services.accounts().findAll(mine.stream().map(FriendService.Friend::id).toList());
+        var friendNames = mine.stream().sorted(Comparator.comparing((FriendService.Friend f) -> FriendNotices.where(f.id()) == null))
+            .map(f -> names.containsKey(f.id()) ? names.get(f.id()).displayName() : null).filter(Objects::nonNull).limit(8).toList();
+        return new Snapshot(List.copyOf(letters), services.escrow().available(Owner.player(actor)), friendNames);
     }
 
     private Letter current() { return snapshot.letters.stream().filter(l -> l.id.equals(focus)).findFirst().orElse(null); }
     private static String cut(String value, int limit) { return value.length() <= limit ? value : value.substring(0, limit); }
 
-    private record Snapshot(List<Letter> letters, List<EscrowService.Escrow> storage) {}
+    private record Snapshot(List<Letter> letters, List<EscrowService.Escrow> storage, List<String> friends) {}
     private record Letter(String id, UUID senderId, String from, String subject, String body, boolean read, boolean claimed, Instant at, List<Attach> attachments) {}
     private record Attach(String escrowId, String itemId, long quantity) {}
     private record Pick(Kind kind, NativeItemEscrow.Section section, short slot, String escrowId, String itemId, int max, int quantity) {

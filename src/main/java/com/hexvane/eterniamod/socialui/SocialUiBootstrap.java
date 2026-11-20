@@ -54,13 +54,19 @@ public final class SocialUiBootstrap {
         if (component != null) component.getPageManager().openCustomPage(ref, store, new MailboxPage(player, registration));
     }
 
+    /** Opens the Friends screen. */
+    public static void openFriends(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player) {
+        Registration registration = active;
+        if (registration != null && !registration.closed) registration.openFriends(ref, store, player, false);
+    }
+
     /** Opens the guild screen: your guild if you have one, otherwise every guild to browse. */
     public static void openGuild(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player) {
         Registration registration = active;
         if (registration != null && !registration.closed) registration.openGuild(ref, store, player);
     }
 
-    /** Opens one desk where the player stands: the mailbox's own page, or the season desk from a Season Banner. */
+    /** Opens one desk where the player stands: the mailbox's own page, or the season desk from a Season Board. */
     public static void openDesk(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServices services,
         EterniaServicesPage.Desk desk, EterniaServicesPage.Section section, boolean deskHome) {
         Registration registration = active;
@@ -127,11 +133,18 @@ public final class SocialUiBootstrap {
         void show(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServicesPage.Desk desk, EterniaServicesPage.Section section, boolean deskHome, boolean returnable) {
             if (closed || !ref.isValid()) return;
             if (section == EterniaServicesPage.Section.GUILD) { openGuild(ref, store, player); return; }
+            if (section == EterniaServicesPage.Section.FRIENDS) { openFriends(ref, store, player, false); return; }
+            if (section == EterniaServicesPage.Section.STORE) { actions.perform(SocialUiActions.Action.STORE_OPEN, ref, store, player); return; }
             Player component = store.getComponent(ref, Player.getComponentType());
             if (component == null) return;
             var page = new EterniaServicesPage(player, this, desk, section, deskHome);
             if (returnable) page.withReturnFrom(component.getPageManager().getCustomPage());
             component.getPageManager().openCustomPage(ref, store, page);
+        }
+        void openFriends(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,boolean requests){
+            if(closed||!ref.isValid())return;Player component=store.getComponent(ref,Player.getComponentType());
+            if(component==null)return;var page=new FriendsPage(player,this);if(requests)page.onRequests();
+            component.getPageManager().openCustomPage(ref,store,page);
         }
         void openGuild(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player){
             if(closed||!ref.isValid())return;Player component=store.getComponent(ref,Player.getComponentType());

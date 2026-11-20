@@ -1,0 +1,10 @@
+$T = "Theme/Citadel.ui";
+Group #Req { Anchor: (Height: 64, Bottom: 6); LayoutMode: Left; Background: $T.@CodexCardSurface; Padding: (Horizontal: 14);
+  Group #QTile { Anchor: (Width: 38, Height: 38, Top: 13, Right: 12); Background: $T.@IconTileSurface; Label #QInitial { Style: (FontSize: 17, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); } }
+  Group { FlexWeight: 1; LayoutMode: Middle;
+    Label #QName { Anchor: (Height: 24); Style: (FontSize: 16, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+    Label #QLine { Anchor: (Height: 20); Style: (FontSize: 13, TextColor: #b5c3b8, VerticalAlignment: Center); }
+  }
+  $T.@TextButton #QYes { Anchor: (Width: 130, Height: 42, Top: 11, Right: 8); }
+  $T.@SecondaryTextButton #QNo { Anchor: (Width: 150, Height: 42, Top: 11); }
+}

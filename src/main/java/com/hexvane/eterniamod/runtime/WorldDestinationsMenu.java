@@ -37,6 +37,23 @@ public final class WorldDestinationsMenu {
                 if (component != null) component.getPageManager().setPage(r, s, Page.None);
             }));
         });
+        // Random teleport: a random spot on land inside each adventure world's border, this world included.
+        long price;
+        try { price = plugin.getServices().travel().randomPrice(player.getUuid()); } catch (RuntimeException unavailable) { price = -1; }
+        if (price >= 0) {
+            String cost = price == 0 ? "Your first trip is free, then " + com.hexvane.eterniamod.domain.TravelService.RANDOM_PRICE + " Coins each." : price + " Coins.";
+            plugin.getInfrastructure().worlds().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
+                String id = entry.getKey();
+                if (!RandomTeleport.available(plugin, id)) return;
+                choices.add(new IllustratedMenuPage.Card("Random spot in " + WorldDisplayNames.name(id), "Land somewhere new on the surface of " + WorldDisplayNames.name(id) + ". " + cost,
+                    image("adventure"), "Go", (r, s) -> {
+                        guard.accept(r, s);
+                        var c = s.getComponent(r, Player.getComponentType());
+                        if (c != null) c.getPageManager().setPage(r, s, Page.None);
+                        RandomTeleport.go(plugin, r, s, player, id);
+                    }));
+            });
+        }
         // Portal towns, in this world and others, except the one the player is standing in; and this world's own square.
         var here = store.getComponent(ref, com.hypixel.hytale.server.core.modules.entity.component.TransformComponent.getComponentType());
         double hx = here == null ? 0 : here.getPosition().x, hz = here == null ? 0 : here.getPosition().z;

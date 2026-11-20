@@ -1,0 +1,19 @@
+$T = "Theme/Citadel.ui";
+Button #FRow { Anchor: (Height: 56, Bottom: 4); Padding: (Horizontal: 14); LayoutMode: Left; Style: $T.@DeskTilePrimaryStyle;
+  Group { Anchor: (Width: 330); LayoutMode: Left;
+    Group #RTile { Anchor: (Width: 36, Height: 36, Top: 10, Right: 12); Background: $T.@IconTileSurface; Label #RInitial { Style: (FontSize: 16, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); } }
+    Group #RDot { Anchor: (Width: 10, Height: 10, Top: 23, Right: 10); }
+    Label #RName { FlexWeight: 1; Style: (FontSize: 16, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+  }
+  Group { Anchor: (Width: 300); LayoutMode: Left;
+    Group #RGBanner { Anchor: (Width: 22, Height: 28, Top: 14, Right: 8);
+      Group #RGField { Anchor: (Full: 0); }
+      Group #RGPat { Anchor: (Full: 0); }
+      Group #RGEmb { Anchor: (Full: 0); }
+      Group { Anchor: (Full: 0); Background: "Guild/Banner/Trim.png"; }
+    }
+    Label #RGuild { FlexWeight: 1; Style: (FontSize: 14, TextColor: #b5c3b8, VerticalAlignment: Center); }
+  }
+  Group #RWorldDot { Anchor: (Width: 10, Height: 10, Top: 23, Right: 8); }
+  Label #RWhere { FlexWeight: 1; Style: (FontSize: 15, TextColor: #d8b66b, RenderBold: true, VerticalAlignment: Center); }
+}

@@ -40,6 +40,7 @@ public final class GuildService extends DomainSupport {
     }
     public String invite(UUID actor,UUID target) {
         return store.transaction(tx->{var member=currentMember(tx,actor);requireCapability(tx,actor,UUID.fromString(member.value("guild")),"member.invite");row(tx,"account",target.toString());
+            require(!FriendService.blockedIn(tx,target,actor),FORBIDDEN,"That player is not taking guild invites from you.");
             require(tx.find("guild_member",target.toString()).filter(r->r.value("active").equals("true")).isEmpty(),CONFLICT,"Player already belongs to a guild");
             String invite=ids.get().toString();tx.save("guild_invite",invite,0,fields("guild",member.value("guild"),"target",target,"expires",clock.instant().plus(Duration.ofDays(7)),"state","PENDING"));return invite;});
     }

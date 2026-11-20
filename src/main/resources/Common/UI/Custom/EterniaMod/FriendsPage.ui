@@ -1,0 +1,127 @@
+$T = "Theme/Citadel.ui";
+@PanelTitle = LabelStyle(FontName: "Secondary", FontSize: 20, TextColor: #d8b66b, RenderBold: true, VerticalAlignment: Center);
+@FieldLabel = LabelStyle(FontSize: 14, TextColor: #b5c3b8, RenderBold: true, VerticalAlignment: Center);
+@Field = TextField { Anchor: (Height: 46); Padding: (Horizontal: 12); Background: $T.@InsetSurface; Style: (FontSize: 17, TextColor: #f0e8d5, RenderBold: true); PlaceholderStyle: (FontSize: 17, TextColor: #7f8f88); };
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    $T.@CodexEmblem { Group { Anchor: (Width: 44, Height: 44); Background: "Icons/members.png"; } }
+    Group { FlexWeight: 1; LayoutMode: Middle;
+      Label #FriendsTitle { Anchor: (Height: 34); Style: $T.@CodexTitleStyle; }
+      Label #FriendsKicker { Anchor: (Height: 22); Style: $T.@CodexKickerStyle; }
+    }
+    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+  }
+  $T.@CodexBody {
+    $T.@CodexPanel { Anchor: (Width: 280, Right: 24); Padding: (Full: 18);
+      Group #Tabs { LayoutMode: Top; }
+      Group { FlexWeight: 1; }
+      Group { LayoutMode: Top; Background: $T.@InsetSurface; Padding: (Full: 14);
+        Label { Anchor: (Height: 24); Text: "Online alerts"; Style: (FontSize: 15, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+        Label { Anchor: (Height: 40); Text: "Tell me in chat when a friend comes online"; Style: (...$T.@MutedStyle, FontSize: 13, Wrap: true); }
+        Group #AlertSwitch { LayoutMode: Left; Anchor: (Height: 44, Top: 6); }
+      }
+    }
+    Group { FlexWeight: 1; LayoutMode: Top;
+
+      Group #FriendsPane { FlexWeight: 1; LayoutMode: Left;
+        Group { FlexWeight: 1; LayoutMode: Top; Anchor: (Right: 24);
+          Group { LayoutMode: Left; Anchor: (Height: 46, Bottom: 12);
+            @Field #AddName { Anchor: (Width: 300, Height: 46, Right: 8); PlaceholderText: "Type a player's name"; MaxLength: 32; }
+            $T.@TextButton #AddSend { Anchor: (Width: 180, Height: 46); }
+            Group { FlexWeight: 1; }
+            Group #Filters { LayoutMode: Left; }
+          }
+          $T.@CodexPanel { FlexWeight: 1; Padding: (Full: 12);
+            Group #FriendHead { LayoutMode: Left; Anchor: (Height: 34); Padding: (Horizontal: 14);
+              Label { Anchor: (Width: 330); Text: "Name"; Style: @FieldLabel; }
+              Label { Anchor: (Width: 300); Text: "Guild"; Style: @FieldLabel; }
+              Label { FlexWeight: 1; Text: "Where"; Style: @FieldLabel; }
+            }
+            Group #Friends { FlexWeight: 1; LayoutMode: Top; }
+            Group { LayoutMode: Left; Anchor: (Height: 44, Top: 6);
+              Label #ListStatus { FlexWeight: 1; Anchor: (Height: 44, Left: 8); Style: (...$T.@MutedStyle, FontSize: 14, VerticalAlignment: Center, Wrap: true); }
+              $T.@SecondaryTextButton #ListPrev { Anchor: (Width: 120, Height: 40, Right: 8); }
+              $T.@SecondaryTextButton #ListNext { Anchor: (Width: 120, Height: 40); }
+            }
+          }
+        }
+        $T.@CodexPanel #Detail { Anchor: (Width: 500); Padding: (Full: 22);
+          Group { LayoutMode: Left; Anchor: (Height: 72, Bottom: 14);
+            Group #DTile { Anchor: (Width: 64, Height: 64, Top: 4, Right: 16); Background: $T.@IconTileSurface;
+              Label #DInitial { Style: (FontSize: 30, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); } }
+            Group { FlexWeight: 1; LayoutMode: Middle;
+              Label #DName { Anchor: (Height: 36); Style: (FontName: "Secondary", FontSize: 26, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+              Group { LayoutMode: Left; Anchor: (Height: 26);
+                Group #DWorldDot { Anchor: (Width: 10, Height: 10, Top: 8, Right: 8); }
+                Label #DWhere { FlexWeight: 1; Style: (FontSize: 15, TextColor: #d8b66b, RenderBold: true, VerticalAlignment: Center); }
+              }
+            }
+          }
+          Group { LayoutMode: Left; Anchor: (Height: 64, Bottom: 14); Background: $T.@InsetSurface; Padding: (Horizontal: 12);
+            Group #DGBanner { Anchor: (Width: 36, Height: 45, Top: 9, Right: 12);
+              Group #DGField { Anchor: (Full: 0); }
+              Group #DGPat { Anchor: (Full: 0); }
+              Group #DGEmb { Anchor: (Full: 0); }
+              Group { Anchor: (Full: 0); Background: "Guild/Banner/Shade.png"; }
+              Group { Anchor: (Full: 0); Background: "Guild/Banner/Trim.png"; }
+            }
+            Group { FlexWeight: 1; LayoutMode: Middle;
+              Label #DGuild { Anchor: (Height: 24); Style: (FontSize: 16, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+              Label #DSince { Anchor: (Height: 20); Style: (...$T.@MutedStyle, FontSize: 13, VerticalAlignment: Center); }
+            }
+          }
+          Group { LayoutMode: Left; Anchor: (Height: 46);
+            $T.@SecondaryTextButton #Visit { FlexWeight: 1; Anchor: (Height: 46, Right: 8); }
+            $T.@SecondaryTextButton #InviteGuild { FlexWeight: 1; Anchor: (Height: 46); }
+          }
+          Label #DActionNote { Anchor: (Height: 36, Top: 4); Style: (...$T.@MutedStyle, FontSize: 13, VerticalAlignment: Center, Wrap: true); }
+          Label #ShareHead { Anchor: (Height: 30, Top: 8, Bottom: 4); Style: @PanelTitle; }
+          Group { LayoutMode: Left; Anchor: (Height: 58);
+            Group { FlexWeight: 1; LayoutMode: Middle;
+              Label { Anchor: (Height: 24); Text: "Visit and use doors"; Style: (FontSize: 16, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+              Label { Anchor: (Height: 20); Text: "Walk in, open doors, sit and sleep"; Style: (...$T.@MutedStyle, FontSize: 13, VerticalAlignment: Center); }
+            }
+            Group #ShareVisit { LayoutMode: Left; Anchor: (Width: 150, Height: 44, Top: 7); }
+          }
+          Group { LayoutMode: Left; Anchor: (Height: 58);
+            Group { FlexWeight: 1; LayoutMode: Middle;
+              Label { Anchor: (Height: 24); Text: "Open chests"; Style: (FontSize: 16, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+              Label { Anchor: (Height: 20); Text: "Take from and add to storage"; Style: (...$T.@MutedStyle, FontSize: 13, VerticalAlignment: Center); }
+            }
+            Group #ShareChests { LayoutMode: Left; Anchor: (Width: 150, Height: 44, Top: 7); }
+          }
+          Label #ShareNote { Anchor: (Height: 40, Top: 6); Style: (...$T.@MutedStyle, FontSize: 13, Wrap: true, VerticalAlignment: Center); }
+          Group { FlexWeight: 1; }
+          Label #DetailStatus { Anchor: (Height: 40, Bottom: 6); Style: (...$T.@DefaultLabelStyle, FontSize: 14, HorizontalAlignment: Center, VerticalAlignment: Center, Wrap: true); }
+          Group { LayoutMode: Left; Anchor: (Height: 46);
+            $T.@SecondaryTextButton #Remove { FlexWeight: 1; Anchor: (Height: 46, Right: 8); }
+            $T.@SecondaryTextButton #Block { FlexWeight: 1; Anchor: (Height: 46); }
+          }
+        }
+      }
+
+      Group #RequestsPane { FlexWeight: 1; LayoutMode: Left;
+        $T.@CodexPanel { FlexWeight: 1; Anchor: (Right: 24); Padding: (Full: 22);
+          Label { Anchor: (Height: 32, Bottom: 10); Text: "Asking to be your friend"; Style: @PanelTitle; }
+          Group #Incoming { FlexWeight: 1; LayoutMode: Top; }
+          Label #IncomingNote { Anchor: (Height: 30); Style: (...$T.@MutedStyle, FontSize: 13, VerticalAlignment: Center); }
+        }
+        $T.@CodexPanel { Anchor: (Width: 620); Padding: (Full: 22);
+          Label { Anchor: (Height: 32, Bottom: 10); Text: "You asked"; Style: @PanelTitle; }
+          Group #Outgoing { FlexWeight: 1; LayoutMode: Top; }
+          Label #RequestsStatus { Anchor: (Height: 40); Style: (...$T.@DefaultLabelStyle, FontSize: 14, VerticalAlignment: Center, Wrap: true); }
+        }
+      }
+
+      Group #BlockedPane { FlexWeight: 1; LayoutMode: Top;
+        $T.@CodexPanel { FlexWeight: 1; Padding: (Full: 22);
+          Label { Anchor: (Height: 32, Bottom: 4); Text: "Blocked players"; Style: @PanelTitle; }
+          Label { Anchor: (Height: 26, Bottom: 10); Text: "They cannot send you friend requests, mail or guild invites."; Style: (...$T.@MutedStyle, FontSize: 14, VerticalAlignment: Center); }
+          Group #BlockedList { FlexWeight: 1; LayoutMode: Top; }
+          Label #BlockedStatus { Anchor: (Height: 40); Style: (...$T.@DefaultLabelStyle, FontSize: 14, VerticalAlignment: Center, Wrap: true); }
+        }
+      }
+    }
+  }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
+}

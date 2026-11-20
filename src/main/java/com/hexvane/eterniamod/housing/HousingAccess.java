@@ -31,7 +31,8 @@ public final class HousingAccess {
         // Doors, beds and benches change nothing a recovery depends on, so an unfinished operation never shuts you out.
         boolean use=USE_DURING_LOCK.contains(capability);
         var services=plugin.getServices();java.util.function.Supplier<Boolean> read=()->(use||!locked(services,owner,property))
-            &&(owner.equals(Owner.player(player))||guest||owner.kind()==Owner.Kind.GUILD&&services.guilds().can(player,owner.id(),capability));
+            &&(owner.equals(Owner.player(player))||guest||owner.kind()==Owner.Kind.GUILD&&services.guilds().can(player,owner.id(),capability)
+                ||owner.kind()==Owner.Kind.PLAYER&&services.friends().allows(owner.id(),player,capability));
         return preview?services.readView(new AccessKey(owner,property,player,capability,guest),java.time.Duration.ofSeconds(5),read):services.batch(read);
     }
 }
