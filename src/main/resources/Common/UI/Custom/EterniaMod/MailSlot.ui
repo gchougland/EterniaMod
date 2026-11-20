@@ -1,0 +1,10 @@
+Button #Slot {
+  Anchor: (Width: 64, Height: 64, Right: 8, Bottom: 8);
+  Style: ButtonStyle(
+    Default: (Background: PatchStyle(TexturePath: "Mail/Slot.png", Border: 10)),
+    Hovered: (Background: PatchStyle(TexturePath: "Mail/SlotHover.png", Border: 10)),
+    Pressed: (Background: PatchStyle(TexturePath: "Mail/SlotSelected.png", Border: 10))
+  );
+  ItemIcon #SlotItem { Anchor: (Width: 44, Height: 44, Top: 10, Left: 10); }
+  Label #SlotCount { Anchor: (Right: 5, Bottom: 2, Width: 50, Height: 20); Style: (FontSize: 13, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: End); }
+}

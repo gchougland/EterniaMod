@@ -46,6 +46,20 @@ public final class SocialUiBootstrap {
         registration.open(ref, store, player, section);
     }
 
+    /** Opens the mailbox page: letters, the open letter and the writing desk. */
+    public static void openMailbox(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player) {
+        Registration registration = active;
+        if (registration == null || registration.closed || !ref.isValid()) return;
+        Player component = store.getComponent(ref, Player.getComponentType());
+        if (component != null) component.getPageManager().openCustomPage(ref, store, new MailboxPage(player, registration));
+    }
+
+    /** Opens the guild screen: your guild if you have one, otherwise every guild to browse. */
+    public static void openGuild(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player) {
+        Registration registration = active;
+        if (registration != null && !registration.closed) registration.openGuild(ref, store, player);
+    }
+
     /** Opens one desk where the player stands: the mailbox's own page, or the season desk from a Season Banner. */
     public static void openDesk(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServices services,
         EterniaServicesPage.Desk desk, EterniaServicesPage.Section section, boolean deskHome) {
@@ -91,6 +105,7 @@ public final class SocialUiBootstrap {
         public void open(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServicesPage.Section section) {
             if (closed || !ref.isValid()) return;
             if(section==EterniaServicesPage.Section.WORLDS){actions.perform(SocialUiActions.Action.WORLD_SELECT,ref,store,player);return;}
+            if(section==EterniaServicesPage.Section.GUILD){openGuild(ref,store,player);return;}
             if(section==EterniaServicesPage.Section.STORE){var result=actions.perform(SocialUiActions.Action.STORE_OPEN,ref,store,player);if(!result.opened())player.sendMessage(com.hypixel.hytale.server.core.Message.raw(result.message()));return;}
             show(ref, store, player, EterniaServicesPage.Desk.forShortcut(section), section, false, section != EterniaServicesPage.Section.GREETER);
         }
@@ -101,7 +116,7 @@ public final class SocialUiBootstrap {
             executor.execute(() -> { try { services.accounts().markIntroduced(id); } catch (RuntimeException ignored) {} });
             var desk = EterniaServicesPage.Desk.forNpc(section);
             java.util.function.BiConsumer<Ref<EntityStore>, Store<EntityStore>> visit = (r, st) -> {
-                if (section == EterniaServicesPage.Section.STORE) open(r, st, player, section);
+                if (section == EterniaServicesPage.Section.STORE || section == EterniaServicesPage.Section.GUILD) open(r, st, player, section);
                 else show(r, st, player, desk, section, true, false);
             };
             // After the Master of Arms first speaks, the rules themselves come next.
@@ -111,11 +126,23 @@ public final class SocialUiBootstrap {
         }
         void show(Ref<EntityStore> ref, Store<EntityStore> store, PlayerRef player, EterniaServicesPage.Desk desk, EterniaServicesPage.Section section, boolean deskHome, boolean returnable) {
             if (closed || !ref.isValid()) return;
+            if (section == EterniaServicesPage.Section.GUILD) { openGuild(ref, store, player); return; }
             Player component = store.getComponent(ref, Player.getComponentType());
             if (component == null) return;
             var page = new EterniaServicesPage(player, this, desk, section, deskHome);
             if (returnable) page.withReturnFrom(component.getPageManager().getCustomPage());
             component.getPageManager().openCustomPage(ref, store, page);
+        }
+        void openGuild(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player){
+            if(closed||!ref.isValid())return;Player component=store.getComponent(ref,Player.getComponentType());
+            if(component!=null)component.getPageManager().openCustomPage(ref,store,new GuildPage(player,this));
+        }
+        /** The guild's role editor, which still lives on the Journal's guild desk. */
+        void openGuildRoles(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player){
+            if(closed||!ref.isValid())return;Player component=store.getComponent(ref,Player.getComponentType());
+            if(component==null)return;
+            var page=new EterniaServicesPage(player,this,EterniaServicesPage.Desk.JOURNAL,EterniaServicesPage.Section.GUILD,false).startInGuildRoles();
+            component.getPageManager().openCustomPage(ref,store,page);
         }
         void openBoard(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player){
             if(closed||!ref.isValid())return;Player component=store.getComponent(ref,Player.getComponentType());

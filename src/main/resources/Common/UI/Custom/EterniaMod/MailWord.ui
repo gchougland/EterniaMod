@@ -1,0 +1,5 @@
+Label #MailWordText {
+  Anchor: (Height: 28, Right: 6);
+  Text: "";
+  Style: (FontSize: 18, TextColor: #2a211a, VerticalAlignment: Center);
+}

@@ -1,0 +1,11 @@
+$T = "Theme/Citadel.ui";
+Button #Mem { Anchor: (Height: 52, Bottom: 4); Padding: (Horizontal: 14); LayoutMode: Left; Style: $T.@DeskTilePrimaryStyle;
+  Group { Anchor: (Width: 360); LayoutMode: Left;
+    Group #MTile { Anchor: (Width: 34, Height: 34, Top: 9, Right: 12); Background: $T.@IconTileSurface; Label #MInitial { Style: (FontSize: 16, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); } }
+    Group #MDot { Anchor: (Width: 10, Height: 10, Top: 21, Right: 10); }
+    Label #MName { FlexWeight: 1; Style: (FontSize: 16, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+  }
+  Label #MRole { Anchor: (Width: 220); Style: (FontSize: 15, TextColor: #85c5b3, RenderBold: true, VerticalAlignment: Center); }
+  Group #MWorldDot { Anchor: (Width: 10, Height: 10, Top: 21, Right: 8); }
+  Label #MWhere { FlexWeight: 1; Style: (FontSize: 15, TextColor: #d8b66b, RenderBold: true, VerticalAlignment: Center); }
+}

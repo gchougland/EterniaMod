@@ -1,0 +1,5 @@
+$T = "Theme/Citadel.ui";
+Group #Note { Anchor: (Height: 62, Bottom: 6); LayoutMode: Top; Background: $T.@InsetSurface; Padding: (Horizontal: 14, Vertical: 8);
+  Label #NTitle { Anchor: (Height: 24); Style: (FontSize: 16, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+  Label #NBy { Anchor: (Height: 20); Style: (FontSize: 13, TextColor: #b5c3b8, VerticalAlignment: Center); }
+}

@@ -1,0 +1,4 @@
+Group #MailLine {
+  Anchor: (Bottom: 4, Right: 14);
+  LayoutMode: LeftWrap;
+}

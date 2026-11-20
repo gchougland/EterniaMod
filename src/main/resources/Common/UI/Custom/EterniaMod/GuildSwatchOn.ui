@@ -1,0 +1,9 @@
+$T = "Theme/Citadel.ui";
+Button #Sw { Anchor: (Width: 72, Height: 72, Right: 10, Bottom: 10);
+  Style: ButtonStyle(
+    Default: (Background: PatchStyle(TexturePath: "Guild/SwatchOn.png", Border: 10)),
+    Hovered: (Background: PatchStyle(TexturePath: "Guild/SwatchOn.png", Border: 10)),
+    Pressed: (Background: PatchStyle(TexturePath: "Guild/SwatchOn.png", Border: 10))
+  );
+  Group #SwColour { Anchor: (Full: 9); }
+}

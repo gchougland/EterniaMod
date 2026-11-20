@@ -1,0 +1,9 @@
+Group #Tile {
+  Anchor: (Width: 150, Height: 150, Right: 14);
+  Background: PatchStyle(TexturePath: "Mail/Slot.png", Border: 10);
+  LayoutMode: Top;
+  Padding: (Full: 10);
+  Group { LayoutMode: Center; Anchor: (Height: 66); ItemIcon #TileItem { Anchor: (Width: 60, Height: 60); } }
+  Label #TileName { Anchor: (Height: 26); Style: (FontSize: 14, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+  Label #TileCount { Anchor: (Height: 24); Style: (FontSize: 15, TextColor: #d8b66b, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+}

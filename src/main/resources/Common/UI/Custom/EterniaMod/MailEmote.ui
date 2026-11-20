@@ -1,0 +1,9 @@
+Button #Emo {
+  Anchor: (Width: 42, Height: 42, Right: 6, Top: 3);
+  Style: ButtonStyle(
+    Default: (Background: PatchStyle(TexturePath: "Mail/EmoteTile.png", Border: 10)),
+    Hovered: (Background: PatchStyle(TexturePath: "Mail/EmoteTileHover.png", Border: 10)),
+    Pressed: (Background: PatchStyle(TexturePath: "Mail/EmoteTileHover.png", Border: 10))
+  );
+  Group #EmoPic { Anchor: (Width: 26, Height: 26, Top: 8, Left: 8); }
+}

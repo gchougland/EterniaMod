@@ -1,0 +1,18 @@
+$T = "Theme/Citadel.ui";
+Button #Row { Anchor: (Height: 96, Bottom: 6); Padding: (Horizontal: 16); LayoutMode: Left; Style: $T.@DeskTilePrimaryStyle;
+Group #RBanner { Anchor: (Width: 56, Height: 70, Top: 13, Right: 16);
+  Group #RField { Anchor: (Full: 0); }
+  Group #RPat { Anchor: (Full: 0); }
+  Group #REmb { Anchor: (Full: 0); }
+  Group { Anchor: (Full: 0); Background: "Guild/Banner/Shade.png"; }
+  Group { Anchor: (Full: 0); Background: "Guild/Banner/Trim.png"; }
+}
+  Group { FlexWeight: 1; LayoutMode: Middle;
+    Label #RName { Anchor: (Height: 28); Style: (FontSize: 18, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+    Label #RMotto { Anchor: (Height: 22); Style: (FontSize: 14, TextColor: #b5c3b8, VerticalAlignment: Center); }
+  }
+  Group { Anchor: (Width: 220); LayoutMode: Middle;
+    Label #RRule { Anchor: (Height: 24); Style: (FontSize: 14, TextColor: #85c5b3, RenderBold: true, HorizontalAlignment: End, VerticalAlignment: Center); }
+    Label #ROnline { Anchor: (Height: 22); Style: (FontSize: 14, TextColor: #b5c3b8, HorizontalAlignment: End, VerticalAlignment: Center); }
+  }
+}

@@ -1,0 +1,6 @@
+Group #DimSlot {
+  Anchor: (Width: 64, Height: 64, Right: 8, Bottom: 8);
+  Background: PatchStyle(TexturePath: "Mail/SlotDim.png", Border: 10);
+  ItemIcon #DimItem { Anchor: (Width: 44, Height: 44, Top: 10, Left: 10); }
+  Group { Anchor: (Full: 0); Background: #101e22(0.55); }
+}

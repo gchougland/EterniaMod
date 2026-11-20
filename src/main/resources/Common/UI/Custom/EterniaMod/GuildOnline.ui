@@ -1,0 +1,9 @@
+$T = "Theme/Citadel.ui";
+Group #On { Anchor: (Height: 44, Bottom: 6); LayoutMode: Left; Background: $T.@InsetSurface; Padding: (Horizontal: 12);
+  Group #OnTile { Anchor: (Width: 30, Height: 30, Top: 7, Right: 12); Background: $T.@IconTileSurface; Label #OnInitial { Style: (FontSize: 15, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); } }
+  Group #OnDot { Anchor: (Width: 10, Height: 10, Top: 17, Right: 10); }
+  Label #OnName { FlexWeight: 1; Style: (FontSize: 16, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+  Label #OnRole { Anchor: (Width: 130); Style: (FontSize: 13, TextColor: #b5c3b8, VerticalAlignment: Center); }
+  Group #OnWorldDot { Anchor: (Width: 10, Height: 10, Top: 17, Right: 8); }
+  Label #OnWorld { Anchor: (Width: 170); Style: (FontSize: 14, TextColor: #d8b66b, RenderBold: true, VerticalAlignment: Center); }
+}

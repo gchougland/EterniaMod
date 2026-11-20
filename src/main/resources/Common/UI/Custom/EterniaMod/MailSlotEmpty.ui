@@ -1,0 +1,4 @@
+Group #EmptySlot {
+  Anchor: (Width: 64, Height: 64, Right: 8, Bottom: 8);
+  Background: PatchStyle(TexturePath: "Mail/SlotEmpty.png", Border: 10);
+}

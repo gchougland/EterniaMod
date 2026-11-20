@@ -40,8 +40,6 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     public enum Desk {
         JOURNAL(null, null, List.of(Section.COLLECTION, Section.QUESTS, Section.SEASON, Section.GUILD, Section.HOUSING),
             Set.of(SocialUiActions.Action.HOUSING_INVENTORY, SocialUiActions.Action.ITEM_DESK)),
-        /** The mailbox on a player's plot: mail is read and sent only there. */
-        MAILBOX(null, "mail", List.of(Section.MAIL), Set.of(SocialUiActions.Action.ITEM_DESK)),
         GUIDE(HubNpcIdentity.GREETER, "worlds", List.of(Section.GREETER), Set.of()),
         STEWARD(HubNpcIdentity.HOUSING, "housing", List.of(Section.HOUSING), Set.of(SocialUiActions.Action.HOUSING_CLAIM, SocialUiActions.Action.HOUSING_MANAGE,
             SocialUiActions.Action.HOUSING_INVENTORY, SocialUiActions.Action.ARCHITECT_LEDGER)),
@@ -95,6 +93,9 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private View view = View.empty("Loading", "Retrieving current account records.");
     private Pending pending;
 
+    /** Opens straight onto the guild role list; the rest of the guild screen is {@link GuildPage}. */
+    EterniaServicesPage startInGuildRoles() { mode = "roles"; return this; }
+
     EterniaServicesPage(PlayerRef player, SocialUiBootstrap.Registration registration, Desk desk, Section section, boolean deskHome) {
         super(player, CustomPageLifetime.CanDismissOrCloseThroughInteraction, Data.CODEC);
         this.registration = registration; this.services = registration.services; this.actor = player.getUuid();
@@ -111,7 +112,6 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         allowedActions.clear();
         boolean journal = desk == Desk.JOURNAL;
         if (journal) JournalChrome.header(commands, "Journal", "Journal", null);
-        else if (desk.identity == null) JournalChrome.header(commands, "Mailbox", "Your letters", desk.emblem);
         else JournalChrome.header(commands, desk.identity.characterName(), desk.identity.profession(), desk.emblem);
         commands.set("#JournalShortcut.Visible", !journal);
         commands.set("#HintJournal.Visible", !journal);
@@ -492,6 +492,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if(route.equals("records")){store.getExternalData().getWorld().execute(()->{if(ref.isValid()&&!isDismissed())com.hexvane.eterniamod.stats.StatsPage.open(ref,store,playerRef,playerRef.getUuid(),playerRef.getUsername());});return;}
         if (route.startsWith("nav:")) {
             if(route.equals("nav:WORLDS")){registration.actions.perform(SocialUiActions.Action.WORLD_SELECT,ref,store,playerRef);return;}
+            if(route.equals("nav:GUILD")){registration.openGuild(ref,store,playerRef);return;}
             // Home goes straight to the housing menu; the old summary screen was an extra click.
             // An unfinished placement or claim draft is picked up again before Home opens.
             if(route.equals("nav:HOUSING")&&desk==Desk.JOURNAL&&com.hexvane.eterniamod.housing.HousingInventory.prepare(com.hexvane.eterniamod.EterniaModPlugin.get(),ref,store,playerRef))return;
@@ -520,6 +521,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             var result=registration.actions.composeMail(one,two,three,ref,store,playerRef);
             if(!result.opened()){status=result.message();generation++;rebuild();}return;
         }
+        if (route.equals("back") && section == Section.GUILD) { registration.openGuild(ref, store, playerRef); return; }
         if (route.equals("back")) { mode = ""; focus = ""; one = two = three = ""; page = 0; draftCapabilities = null; refresh(ref, store, ""); return; }
         if (route.equals("mail_compose")) { mode="compose";focus="";page=0;refresh(ref,store,"");return; }
         if(route.startsWith("guild_assign_select:")){two=route.substring(20);pending=new Pending("guild_assign",input(),"Assign the selected role to "+view.title+"? Your current guild permissions are checked when you confirm.");generation++;rebuild();return;}
@@ -775,7 +777,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 new Tile("Minigames", "Coming soon.", "games", "", true)));
             case ARMS -> View.desk("Welcome back. There have been no changes to our laws.", List.of(
                 new Tile("Rules of the realm", "Read the rules every adventurer agrees to.", "charter", "nav:RULES", true)));
-            case JOURNAL, MAILBOX -> throw new IllegalStateException("The Journal and the mailbox have no desk home.");
+            case JOURNAL -> throw new IllegalStateException("The Journal has no desk home.");
         };
     }
 

@@ -1,0 +1,212 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+@PanelTitle = LabelStyle(FontName: "Secondary", FontSize: 20, TextColor: #d8b66b, RenderBold: true, VerticalAlignment: Center);
+@FieldLabel = LabelStyle(FontSize: 14, TextColor: #b5c3b8, RenderBold: true, VerticalAlignment: Center);
+@StatValue = LabelStyle(FontSize: 24, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center);
+@StatLabel = LabelStyle(FontSize: 13, TextColor: #b5c3b8, HorizontalAlignment: Center, VerticalAlignment: Center);
+@Field = TextField { Anchor: (Height: 46); Padding: (Horizontal: 12); Background: $T.@InsetSurface; Style: (FontSize: 17, TextColor: #f0e8d5, RenderBold: true); PlaceholderStyle: (FontSize: 17, TextColor: #7f8f88); };
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    $T.@CodexEmblem { Group { Anchor: (Width: 44, Height: 44); Background: "Icons/guild.png"; } }
+    Group { FlexWeight: 1; LayoutMode: Middle;
+      Label #GuildTitle { Anchor: (Height: 34); Style: $T.@CodexTitleStyle; }
+      Label #GuildKicker { Anchor: (Height: 22); Style: $T.@CodexKickerStyle; }
+    }
+    Group { Anchor: (Width: 250, Height: 104); Padding: (Top: 30, Right: 16); LayoutMode: Top; $T.@TextButton #TopAction { Anchor: (Width: 234, Height: 44); } }
+    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+  }
+  $T.@CodexBody {
+
+    Group #BrowseView { FlexWeight: 1; LayoutMode: Left;
+      Group { FlexWeight: 1; LayoutMode: Top; Anchor: (Right: 24);
+        Group { LayoutMode: Left; Anchor: (Height: 46, Bottom: 14);
+          @Field #Search { Anchor: (Width: 300, Height: 46, Right: 8); PlaceholderText: "Search guilds"; MaxLength: 48; }
+          $T.@SecondaryTextButton #SearchGo { Anchor: (Width: 100, Height: 46, Right: 20); }
+          Group #Filters { LayoutMode: Left; }
+          Group { FlexWeight: 1; }
+          Label #GuildCount { Anchor: (Width: 160, Height: 46); Style: (...$T.@MutedStyle, FontSize: 14, HorizontalAlignment: End, VerticalAlignment: Center); }
+        }
+        $T.@CodexPanel { FlexWeight: 1; Padding: (Full: 12);
+          Group #Guilds { FlexWeight: 1; LayoutMode: Top; }
+          Group { LayoutMode: Left; Anchor: (Height: 44, Top: 6);
+            Label #BrowseStatus { FlexWeight: 1; Anchor: (Height: 44, Left: 8); Style: (...$T.@MutedStyle, FontSize: 14, VerticalAlignment: Center); }
+            $T.@SecondaryTextButton #ListPrev { Anchor: (Width: 120, Height: 40, Right: 8); }
+            $T.@SecondaryTextButton #ListNext { Anchor: (Width: 120, Height: 40); }
+          }
+        }
+      }
+      $T.@CodexPanel #Detail { Anchor: (Width: 540); Padding: (Full: 24);
+        Group { LayoutMode: Left; Anchor: (Height: 160, Bottom: 14);
+          Group #DBanner { Anchor: (Width: 128, Height: 160, Right: 20);
+            Group #DField { Anchor: (Full: 0); }
+            Group #DPat { Anchor: (Full: 0); }
+            Group #DEmb { Anchor: (Full: 0); }
+            Group { Anchor: (Full: 0); Background: "Guild/Banner/Shade.png"; }
+            Group { Anchor: (Full: 0); Background: "Guild/Banner/Trim.png"; }
+          }
+          Group { FlexWeight: 1; LayoutMode: Middle;
+            Label #DName { Anchor: (Height: 40); Style: (FontName: "Secondary", FontSize: 26, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center, Wrap: true); }
+            Label #DTag { Anchor: (Height: 24); Style: (...$T.@MutedStyle, FontSize: 15, VerticalAlignment: Center); }
+            Label #DRule { Anchor: (Height: 26, Top: 6); Style: (FontSize: 15, TextColor: #85c5b3, RenderBold: true, VerticalAlignment: Center); }
+          }
+        }
+        Label #DMotto { Anchor: (Height: 48, Bottom: 12); Style: (FontSize: 16, TextColor: #f0e8d5, Wrap: true, VerticalAlignment: Center); }
+        Group { LayoutMode: Left; Anchor: (Height: 76, Bottom: 16);
+          Group { FlexWeight: 1; LayoutMode: Middle; Background: $T.@InsetSurface; Anchor: (Right: 8);
+            Label #DMembers { Anchor: (Height: 32); Style: @StatValue; } Label { Anchor: (Height: 20); Text: "Members"; Style: @StatLabel; } }
+          Group { FlexWeight: 1; LayoutMode: Middle; Background: $T.@InsetSurface; Anchor: (Right: 8);
+            Label #DOnlineCount { Anchor: (Height: 32); Style: (...@StatValue, TextColor: #6fd08c); } Label { Anchor: (Height: 20); Text: "Online now"; Style: @StatLabel; } }
+          Group { FlexWeight: 1; LayoutMode: Middle; Background: $T.@InsetSurface;
+            Label #DEstate { Anchor: (Height: 32); Style: @StatValue; } Label { Anchor: (Height: 20); Text: "Guild estate"; Style: @StatLabel; } }
+        }
+        Label { Anchor: (Height: 28, Bottom: 6); Text: "Online now"; Style: @PanelTitle; }
+        Group #DOnline { FlexWeight: 1; LayoutMode: Top; }
+        $T.@TextButton #DJoin { Anchor: (Height: 52, Top: 8); }
+        Label #DNote { Anchor: (Height: 40, Top: 6); Style: (...$T.@MutedStyle, FontSize: 14, HorizontalAlignment: Center, VerticalAlignment: Center, Wrap: true); }
+      }
+    }
+
+    Group #DesignView { FlexWeight: 1; LayoutMode: Left;
+      $T.@CodexPanel { FlexWeight: 1; Anchor: (Right: 24); Padding: (Full: 24);
+        Group { LayoutMode: Left; Anchor: (Height: 24);
+          Group #NameHead { FlexWeight: 1; Label { Text: "Guild name"; Style: @FieldLabel; } }
+          Label { Anchor: (Width: 170, Left: 16); Text: "Short tag"; Style: @FieldLabel; }
+          Label { FlexWeight: 1; Anchor: (Left: 16); Text: "Motto"; Style: @FieldLabel; }
+        }
+        Group { LayoutMode: Left; Anchor: (Height: 46, Top: 4, Bottom: 16);
+          @Field #Name { FlexWeight: 1; PlaceholderText: "Ember Vanguard"; MaxLength: 48; }
+          Label #NameFixed { FlexWeight: 1; Anchor: (Height: 46); Style: (FontSize: 18, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+          @Field #Tag { Anchor: (Width: 170, Height: 46, Left: 16); PlaceholderText: "EMB"; MaxLength: 4; }
+          @Field #Motto { FlexWeight: 1; Anchor: (Height: 46, Left: 16); PlaceholderText: "A line about your guild"; MaxLength: 80; }
+        }
+        Group { LayoutMode: Left; Anchor: (Height: 44, Bottom: 18);
+          Label { Anchor: (Width: 130); Text: "Who can join"; Style: @FieldLabel; }
+          Group #Rules { LayoutMode: Left; }
+        }
+        Group { Anchor: (Height: 2, Bottom: 14); Background: #2c4447; }
+        Group { LayoutMode: Left; Anchor: (Height: 44, Bottom: 14);
+          Label { Anchor: (Width: 100); Text: "Banner"; Style: @PanelTitle; }
+          Group #Layers { LayoutMode: Left; }
+          Group { FlexWeight: 1; }
+          $T.@SecondaryTextButton #Dice { Anchor: (Width: 160, Height: 44); }
+        }
+        Group #Picker { FlexWeight: 1; LayoutMode: LeftWrap; }
+        Label #PickerHint { Anchor: (Height: 26); Style: (...$T.@MutedStyle, FontSize: 13, VerticalAlignment: Center); }
+      }
+      Group { Anchor: (Width: 440); LayoutMode: Top;
+        $T.@CodexPanel { FlexWeight: 1; Padding: (Full: 24); LayoutMode: Top;
+          Group { LayoutMode: Center; Anchor: (Height: 320, Bottom: 16);
+            Group #PBanner { Anchor: (Width: 256, Height: 320);
+              Group #PField { Anchor: (Full: 0); }
+              Group #PPat { Anchor: (Full: 0); }
+              Group #PEmb { Anchor: (Full: 0); }
+              Group { Anchor: (Full: 0); Background: "Guild/Banner/Shade.png"; }
+              Group { Anchor: (Full: 0); Background: "Guild/Banner/Trim.png"; }
+            }
+          }
+          Label #PName { Anchor: (Height: 36); Style: (FontName: "Secondary", FontSize: 24, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+          Label #PLine { Anchor: (Height: 24); Style: (...$T.@MutedStyle, FontSize: 15, HorizontalAlignment: Center, VerticalAlignment: Center); }
+          Label #PMotto { Anchor: (Height: 48, Top: 4); Style: (FontSize: 15, TextColor: #b5c3b8, HorizontalAlignment: Center, VerticalAlignment: Center, Wrap: true); }
+          Group { FlexWeight: 1; }
+          Label #DesignStatus { Anchor: (Height: 48, Bottom: 8); Style: (...$T.@DefaultLabelStyle, FontSize: 14, HorizontalAlignment: Center, VerticalAlignment: Center, Wrap: true); }
+          Group { LayoutMode: Left; Anchor: (Height: 52);
+            $T.@SecondaryTextButton #DesignCancel { Anchor: (Width: 130, Height: 52, Right: 10); }
+            $T.@TextButton #DesignSave { FlexWeight: 1; Anchor: (Height: 52); }
+          }
+        }
+      }
+    }
+
+    Group #GuildView { FlexWeight: 1; LayoutMode: Left;
+      $T.@CodexPanel { Anchor: (Width: 280, Right: 24); Padding: (Full: 18);
+        Group { LayoutMode: Center; Anchor: (Height: 120, Bottom: 8);
+          Group #SBanner { Anchor: (Width: 96, Height: 120);
+            Group #SField { Anchor: (Full: 0); }
+            Group #SPat { Anchor: (Full: 0); }
+            Group #SEmb { Anchor: (Full: 0); }
+            Group { Anchor: (Full: 0); Background: "Guild/Banner/Shade.png"; }
+            Group { Anchor: (Full: 0); Background: "Guild/Banner/Trim.png"; }
+          }
+        }
+        Label #SName { Anchor: (Height: 30); Style: (FontName: "Secondary", FontSize: 19, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+        Label #SRole { Anchor: (Height: 22, Bottom: 14); Style: (...$T.@MutedStyle, FontSize: 14, HorizontalAlignment: Center, VerticalAlignment: Center); }
+        Group #Tabs { LayoutMode: Top; }
+        Group { FlexWeight: 1; }
+        $T.@SecondaryTextButton #Leave { Anchor: (Height: 44); }
+      }
+      Group { FlexWeight: 1; LayoutMode: Top;
+
+        Group #OverviewPane { FlexWeight: 1; LayoutMode: Top;
+          $T.@CodexPanel { Anchor: (Height: 150, Bottom: 18); Padding: (Full: 22); LayoutMode: Left;
+            Group { FlexWeight: 1; LayoutMode: Middle;
+              Label #OMotto { Anchor: (Height: 58); Style: (FontName: "Secondary", FontSize: 22, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center, Wrap: true); }
+              Label #ORule { Anchor: (Height: 26, Top: 6); Style: (FontSize: 15, TextColor: #85c5b3, RenderBold: true, VerticalAlignment: Center); }
+            }
+            Group { LayoutMode: Middle; Background: $T.@InsetSurface; Anchor: (Width: 150, Left: 10);
+              Label #OMembers { Anchor: (Height: 34); Style: @StatValue; } Label { Anchor: (Height: 20); Text: "Members"; Style: @StatLabel; } }
+            Group { LayoutMode: Middle; Background: $T.@InsetSurface; Anchor: (Width: 150, Left: 10);
+              Label #OOnline { Anchor: (Height: 34); Style: (...@StatValue, TextColor: #6fd08c); } Label { Anchor: (Height: 20); Text: "Online now"; Style: @StatLabel; } }
+            Group { LayoutMode: Middle; Background: $T.@InsetSurface; Anchor: (Width: 150, Left: 10);
+              Label #OCrowns { Anchor: (Height: 34); Style: (...@StatValue, TextColor: #d8b66b); } Label { Anchor: (Height: 20); Text: "Guild Crowns"; Style: @StatLabel; } }
+            Group { LayoutMode: Middle; Background: $T.@InsetSurface; Anchor: (Width: 150, Left: 10);
+              Label #OEstate { Anchor: (Height: 34); Style: @StatValue; } Label { Anchor: (Height: 20); Text: "Guild estate"; Style: @StatLabel; } }
+          }
+          Group { FlexWeight: 1; LayoutMode: Left;
+            $T.@CodexPanel { FlexWeight: 1; Anchor: (Right: 18); Padding: (Full: 22);
+              Group { LayoutMode: Left; Anchor: (Height: 32, Bottom: 10);
+                Label { FlexWeight: 1; Text: "Online now"; Style: @PanelTitle; }
+                Label #OOnlineNote { Anchor: (Width: 220); Style: (...$T.@MutedStyle, FontSize: 14, HorizontalAlignment: End, VerticalAlignment: Center); }
+              }
+              Group #OOnlineList { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+            }
+            $T.@CodexPanel { FlexWeight: 1; Padding: (Full: 22);
+              Group { LayoutMode: Left; Anchor: (Height: 32, Bottom: 10);
+                Label { FlexWeight: 1; Text: "Notice board"; Style: @PanelTitle; }
+                $T.@SecondaryTextButton #OBoard { Anchor: (Width: 170, Height: 36); }
+              }
+              Group #ONotices { FlexWeight: 1; LayoutMode: Top; }
+            }
+          }
+          Label #OverviewStatus { Anchor: (Height: 30, Top: 8); Style: (...$T.@MutedStyle, FontSize: 14, VerticalAlignment: Center); }
+        }
+
+        Group #MembersPane { FlexWeight: 1; LayoutMode: Top;
+          Group { LayoutMode: Left; Anchor: (Height: 46, Bottom: 12);
+            Group #MemberFilters { LayoutMode: Left; }
+            Group { FlexWeight: 1; }
+            @Field #InviteName { Anchor: (Width: 260, Height: 46, Right: 8); PlaceholderText: "Player name"; MaxLength: 32; }
+            $T.@TextButton #InviteSend { Anchor: (Width: 170, Height: 46); }
+          }
+          $T.@CodexPanel { FlexWeight: 1; Padding: (Full: 12);
+            Group #MemberHead { LayoutMode: Left; Anchor: (Height: 34); Padding: (Horizontal: 14);
+              Label { Anchor: (Width: 360); Text: "Name"; Style: @FieldLabel; }
+              Label { Anchor: (Width: 220); Text: "Role"; Style: @FieldLabel; }
+              Label { FlexWeight: 1; Text: "Where"; Style: @FieldLabel; }
+            }
+            Group #Members { FlexWeight: 1; LayoutMode: Top; }
+            Group { LayoutMode: Left; Anchor: (Height: 44, Top: 6);
+              Label #MembersStatus { FlexWeight: 1; Anchor: (Height: 44, Left: 8); Style: (...$T.@MutedStyle, FontSize: 14, VerticalAlignment: Center, Wrap: true); }
+              $T.@SecondaryTextButton #MemPrev { Anchor: (Width: 120, Height: 40, Right: 8); }
+              $T.@SecondaryTextButton #MemNext { Anchor: (Width: 120, Height: 40); }
+            }
+          }
+          $T.@CodexPanel #MemberActions { Anchor: (Height: 96, Top: 14); Padding: (Horizontal: 22, Vertical: 14); LayoutMode: Left;
+            Group { Anchor: (Width: 260); LayoutMode: Middle;
+              Label #ActName { Anchor: (Height: 30); Style: (FontName: "Secondary", FontSize: 20, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+              Label #ActRole { Anchor: (Height: 22); Style: (...$T.@MutedStyle, FontSize: 14, VerticalAlignment: Center); }
+            }
+            Group { FlexWeight: 1; LayoutMode: Middle;
+              Label { Anchor: (Height: 22); Text: "Give role"; Style: @FieldLabel; }
+              Group #RoleButtons { LayoutMode: Left; Anchor: (Height: 40, Top: 4); }
+            }
+            Group { Anchor: (Width: 360); LayoutMode: Right; Padding: (Top: 14);
+              $T.@SecondaryTextButton #MakeLeader { Anchor: (Width: 170, Height: 40, Right: 10); }
+              $T.@SecondaryTextButton #Kick { Anchor: (Width: 170, Height: 40); }
+            }
+          }
+        }
+      }
+    }
+  }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
+}

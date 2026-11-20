@@ -29,7 +29,7 @@ public final class QuickAccessBlocks {
         var services = plugin.getServices();
         var actions = plugin.getMenuActions();
         switch (route) {
-            case "QA_MAIL" -> SocialUiBootstrap.openDesk(ref, store, player, services, Desk.MAILBOX, Section.MAIL, false);
+            case "QA_MAIL" -> SocialUiBootstrap.openMailbox(ref, store, player);
             case "QA_STORE" -> actions.perform(SocialUiActions.Action.STORE_OPEN, ref, store, player);
             // The season desk itself, as at the Hub: buy passes here; the Journal only switches the active one.
             case "QA_SEASON" -> SocialUiBootstrap.openDesk(ref, store, player, services, Desk.GATEHOUSE, Section.SEASON, true);

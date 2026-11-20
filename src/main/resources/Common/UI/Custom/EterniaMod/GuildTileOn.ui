@@ -1,0 +1,15 @@
+$T = "Theme/Citadel.ui";
+Button #Tile { Anchor: (Width: 78, Height: 94, Right: 8, Bottom: 8);
+  Style: ButtonStyle(
+    Default: (Background: PatchStyle(TexturePath: "Guild/SwatchOn.png", Border: 10)),
+    Hovered: (Background: PatchStyle(TexturePath: "Guild/SwatchOn.png", Border: 10)),
+    Pressed: (Background: PatchStyle(TexturePath: "Guild/SwatchOn.png", Border: 10))
+  );
+Group #TBanner { Anchor: (Width: 64, Height: 80, Top: 7, Left: 7);
+  Group #TField { Anchor: (Full: 0); }
+  Group #TPat { Anchor: (Full: 0); }
+  Group #TEmb { Anchor: (Full: 0); }
+  Group { Anchor: (Full: 0); Background: "Guild/Banner/Shade.png"; }
+  Group { Anchor: (Full: 0); Background: "Guild/Banner/Trim.png"; }
+}
+}

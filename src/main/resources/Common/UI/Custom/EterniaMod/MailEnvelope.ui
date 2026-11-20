@@ -1,0 +1,14 @@
+Button #Env {
+  Anchor: (Width: 570, Height: 210, Right: 20, Bottom: 20);
+  Style: ButtonStyle(
+    Default: (Background: "Mail/Envelope.png"),
+    Hovered: (Background: "Mail/EnvelopeHover.png"),
+    Pressed: (Background: "Mail/EnvelopeHover.png")
+  );
+  Group #EnvSeal { Anchor: (Width: 56, Height: 56, Top: 84, Left: 257); Background: "Mail/Seal.png"; }
+  Group #EnvTag { Anchor: (Width: 120, Height: 30, Top: 14, Right: 14); Background: PatchStyle(TexturePath: "Mail/Tag.png", Border: 6);
+    Label #EnvTagText { Style: (FontSize: 13, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+  }
+  Label #EnvTitle { Anchor: (Left: 22, Right: 22, Bottom: 46, Height: 34); Style: (FontSize: 22, TextColor: #2a211a, RenderBold: true, VerticalAlignment: Center); }
+  Label #EnvFrom { Anchor: (Left: 22, Right: 22, Bottom: 18, Height: 26); Style: (FontSize: 15, TextColor: #6b5a48, VerticalAlignment: Center); }
+}

@@ -15,15 +15,28 @@ public final class GuildService extends DomainSupport {
     private static final Set<String> BASE=Set.of("guild.view","guild.chat","board.read","board.post","party.create","inventory.deposit","treasury.deposit","housing.door.use","housing.bed.use","housing.bench.use","convenience.use","housing.visit","wild.build","wild.containers","wild.use");
     GuildService(TransactionalStore s,Clock c,Supplier<UUID> i) { super(s,c,i); }
     public Guild create(UUID leader,String name,String receiptId) {
-        text(name,"guild name",48);return store.transaction(tx->{
-            row(tx,"account",leader.toString());String rkey=key(receiptId);var prior=tx.find("guild_create_receipt",rkey);
-            if(prior.isPresent()) { require(prior.get().value("leader").equals(leader.toString())&&prior.get().value("name").equals(name),CONFLICT,"Guild receipt reused");return guild(row(tx,"guild",prior.get().value("guild"))); }
-            require(tx.find("guild_member",leader.toString()).filter(r->r.value("active").equals("true")).isEmpty(),CONFLICT,"Already in a guild");
-            require(tx.scan("guild").stream().noneMatch(r->r.value("name").equalsIgnoreCase(name)),CONFLICT,"Guild name is in use");
-            UUID guildId=ids.get();var guild=tx.save("guild",guildId.toString(),0,fields("name",name,"leader",leader));
-            tx.save("guild_create_receipt",rkey,0,fields("leader",leader,"name",name,"guild",guildId));seedRoles(tx,guildId);
-            putMember(tx,leader,guildId,"leader");return guild(guild);
+        text(name,"guild name",48);return store.transaction(tx->guild(createIn(tx,leader,name,receiptId)));
+    }
+    /** Starts a guild with its tag, motto, banner and join rule, all in one step. */
+    public Profile create(UUID leader,String name,String tag,String motto,GuildBanner banner,JoinRule join,String receiptId) {
+        String cleanName=oneLine(name,"guild name",48);String cleanTag=tag(tag);String cleanMotto=motto(motto);
+        Objects.requireNonNull(banner,"banner");Objects.requireNonNull(join,"join");
+        return store.transaction(tx->{
+            var existing=tx.find("guild_create_receipt",key(receiptId));
+            if(existing.isPresent())return profile(createIn(tx,leader,cleanName,receiptId));
+            requireTagFree(tx,cleanTag,null);
+            var row=createIn(tx,leader,cleanName,receiptId);
+            return profile(save(tx,row,"tag",cleanTag,"motto",cleanMotto,"banner",banner.encode(),"join",join.name()));
         });
+    }
+    private TransactionalStore.Row createIn(TransactionalStore.Transaction tx,UUID leader,String name,String receiptId) {
+        row(tx,"account",leader.toString());String rkey=key(receiptId);var prior=tx.find("guild_create_receipt",rkey);
+        if(prior.isPresent()) { require(prior.get().value("leader").equals(leader.toString())&&prior.get().value("name").equals(name),CONFLICT,"Guild receipt reused");return row(tx,"guild",prior.get().value("guild")); }
+        require(tx.find("guild_member",leader.toString()).filter(r->r.value("active").equals("true")).isEmpty(),CONFLICT,"You are already in a guild.");
+        require(tx.scan("guild").stream().noneMatch(r->r.value("name").equalsIgnoreCase(name)),CONFLICT,"That guild name is taken.");
+        UUID guildId=ids.get();var guild=tx.save("guild",guildId.toString(),0,fields("name",name,"leader",leader));
+        tx.save("guild_create_receipt",rkey,0,fields("leader",leader,"name",name,"guild",guildId));seedRoles(tx,guildId);
+        putMember(tx,leader,guildId,"leader");return guild;
     }
     public String invite(UUID actor,UUID target) {
         return store.transaction(tx->{var member=currentMember(tx,actor);requireCapability(tx,actor,UUID.fromString(member.value("guild")),"member.invite");row(tx,"account",target.toString());
@@ -35,14 +48,139 @@ public final class GuildService extends DomainSupport {
             if(invite.value("state").equals("ACCEPTED"))return membership(currentMember(tx,player));
             require(invite.value("state").equals("PENDING")&&future(invite.value("expires"),clock.instant()),INVALID_STATE,"Invite expired");
             require(tx.find("guild_member",player.toString()).filter(r->r.value("active").equals("true")).isEmpty(),CONFLICT,"Already in a guild");
-            UUID guild=UUID.fromString(invite.value("guild"));row(tx,"guild",guild.toString());var result=putMember(tx,player,guild,"member");save(tx,invite,"state","ACCEPTED");
-            for(var job:tx.scan("guild_departure"))if(job.value("player").equals(player.toString())&&job.value("guild").equals(guild.toString())&&!job.value("state").equals("COMPLETED")&&clock.instant().isBefore(Instant.parse(job.value("due"))))save(tx,job,"state","CANCELLED");
+            UUID guild=UUID.fromString(invite.value("guild"));var result=admit(tx,player,guild);save(tx,invite,"state","ACCEPTED");
             return membership(result);});
+    }
+    /** Every way into a guild ends here: an accepted invitation, an open guild, or an accepted request. */
+    private TransactionalStore.Row admit(TransactionalStore.Transaction tx,UUID player,UUID guild) {
+        row(tx,"guild",guild.toString());
+        require(tx.find("guild_member",player.toString()).filter(r->r.value("active").equals("true")).isEmpty(),CONFLICT,"Already in a guild");
+        var result=putMember(tx,player,guild,"member");
+        for(var job:tx.scan("guild_departure"))if(job.value("player").equals(player.toString())&&job.value("guild").equals(guild.toString())&&!job.value("state").equals("COMPLETED")&&clock.instant().isBefore(Instant.parse(job.value("due"))))save(tx,job,"state","CANCELLED");
+        for(var request:tx.scan("guild_request"))if(request.value("player").equals(player.toString())&&request.value("state").equals("PENDING"))save(tx,request,"state",request.value("guild").equals(guild.toString())?"ACCEPTED":"CLOSED");
+        return result;
     }
     public Optional<Membership> membership(UUID player) { return store.transaction(tx->tx.find("guild_member",player.toString()).filter(r->r.value("active").equals("true")).map(GuildService::membership)); }
     public List<Membership> roster(UUID actor) { return store.transaction(tx->{var me=currentMember(tx,actor);return tx.scan("guild_member").stream().filter(r->r.value("active").equals("true")&&r.value("guild").equals(me.value("guild"))).map(GuildService::membership).toList();}); }
     public List<Role> roles(UUID actor) { return store.transaction(tx->{var me=currentMember(tx,actor);UUID guild=UUID.fromString(me.value("guild"));return tx.scan("guild_role").stream().filter(r->r.value("guild").equals(guild.toString())).map(r->role(tx,guild,r.value("id"))).sorted(Comparator.comparingInt(Role::rank)).toList();}); }
     public Optional<Guild> find(UUID guildId) { return store.transaction(tx->tx.find("guild",guildId.toString()).map(GuildService::guild)); }
+
+    // ------------------------------------------------------------------------------------------------ profile, browsing and joining
+
+    /** Who may join without an invitation. Guilds made before join rules existed take invitations only, as before. */
+    public enum JoinRule { OPEN("Anyone can join"), ASK("Ask to join"), INVITE("Invite only");
+        public final String label; JoinRule(String label){this.label=label;}
+        static JoinRule of(String stored){try{return stored.isEmpty()?INVITE:valueOf(stored);}catch(IllegalArgumentException old){return INVITE;}} }
+    public record Profile(UUID id,String name,String tag,String motto,GuildBanner banner,JoinRule join,UUID leader) {}
+    public record Listing(Profile profile,int members) {}
+    public record JoinRequest(UUID guild,UUID player,Instant at) {}
+    public record Invitation(String id,UUID guild,Instant expires) {}
+    public static final int TAG_MAX=4,MOTTO_MAX=80;
+
+    public Optional<Profile> profile(UUID guildId) { return store.transaction(tx->tx.find("guild",guildId.toString()).map(GuildService::profile)); }
+
+    /** Every guild with its member count, counted in one pass. */
+    public List<Listing> directory() {
+        return store.transaction(tx->{
+            var counts=new HashMap<String,Integer>();
+            for(var m:tx.scan("guild_member"))if(m.value("active").equals("true"))counts.merge(m.value("guild"),1,Integer::sum);
+            var out=new ArrayList<Listing>();
+            for(var g:tx.scan("guild")){int n=counts.getOrDefault(g.key(),0);if(n>0)out.add(new Listing(profile(g),n));}
+            return List.copyOf(out);
+        });
+    }
+
+    /** Members of any guild, for its public page: who they are and their role, no permissions. */
+    public List<Membership> members(UUID guildId) {
+        return store.transaction(tx->tx.scan("guild_member").stream().filter(r->r.value("active").equals("true")&&r.value("guild").equals(guildId.toString())).map(GuildService::membership).toList());
+    }
+
+    /** Changes the guild's tag, motto, banner and join rule. Needs the leader's role editing power. */
+    public Profile updateProfile(UUID actor,String tag,String motto,GuildBanner banner,JoinRule join) {
+        String cleanTag=tag(tag);String cleanMotto=motto(motto);Objects.requireNonNull(banner,"banner");Objects.requireNonNull(join,"join");
+        return store.transaction(tx->{var me=currentMember(tx,actor);UUID guild=UUID.fromString(me.value("guild"));
+            require(role(tx,guild,me.value("role")).capabilities.contains("role.edit"),FORBIDDEN,"Only the guild leader can change the banner and settings.");
+            requireTagFree(tx,cleanTag,guild);
+            return profile(save(tx,row(tx,"guild",guild.toString()),"tag",cleanTag,"motto",cleanMotto,"banner",banner.encode(),"join",join.name()));});
+    }
+
+    /** Joins a guild that anyone can join. */
+    public Membership join(UUID player,UUID guildId) {
+        return store.transaction(tx->{var g=row(tx,"guild",guildId.toString());
+            require(JoinRule.of(g.value("join"))==JoinRule.OPEN,FORBIDDEN,"This guild is not open to everyone.");
+            return membership(admit(tx,player,guildId));});
+    }
+
+    /** Asks to join a guild whose officers accept requests. Asking twice keeps one request. */
+    public void requestJoin(UUID player,UUID guildId) {
+        store.transaction(tx->{var g=row(tx,"guild",guildId.toString());row(tx,"account",player.toString());
+            require(JoinRule.of(g.value("join"))==JoinRule.ASK,FORBIDDEN,"This guild does not take requests.");
+            require(tx.find("guild_member",player.toString()).filter(r->r.value("active").equals("true")).isEmpty(),CONFLICT,"You are already in a guild.");
+            String k=guildId+":"+player;var old=tx.find("guild_request",k);
+            if(old.isPresent()&&old.get().value("state").equals("PENDING"))return null;
+            tx.save("guild_request",k,old.map(TransactionalStore.Row::revision).orElse(0L),fields("guild",guildId,"player",player,"at",clock.instant(),"state","PENDING"));return null;});
+    }
+
+    public void cancelRequest(UUID player,UUID guildId) {
+        store.transaction(tx->{tx.find("guild_request",guildId+":"+player).filter(r->r.value("state").equals("PENDING")).ifPresent(r->save(tx,r,"state","CANCELLED"));return null;});
+    }
+
+    /** Guilds this player has asked to join and not heard back from. */
+    public Set<UUID> pendingRequests(UUID player) {
+        return store.transaction(tx->{var out=new HashSet<UUID>();for(var r:tx.scan("guild_request"))if(r.value("player").equals(player.toString())&&r.value("state").equals("PENDING"))out.add(UUID.fromString(r.value("guild")));return Set.copyOf(out);});
+    }
+
+    /** Open requests to the actor's guild, oldest first; empty for members who may not invite. */
+    public List<JoinRequest> requests(UUID actor) {
+        return store.transaction(tx->{var me=tx.find("guild_member",actor.toString()).filter(r->r.value("active").equals("true"));
+            if(me.isEmpty())return List.<JoinRequest>of();String guild=me.get().value("guild");
+            if(!role(tx,UUID.fromString(guild),me.get().value("role")).capabilities.contains("member.invite"))return List.<JoinRequest>of();
+            return tx.scan("guild_request").stream().filter(r->r.value("guild").equals(guild)&&r.value("state").equals("PENDING"))
+                .map(r->new JoinRequest(UUID.fromString(guild),UUID.fromString(r.value("player")),Instant.parse(r.value("at")))).sorted(Comparator.comparing(JoinRequest::at)).toList();});
+    }
+
+    /** Accepts or declines a request. Returns false when the player had already joined another guild. */
+    public boolean answerRequest(UUID actor,UUID player,boolean accept) {
+        return store.transaction(tx->{var me=currentMember(tx,actor);UUID guild=UUID.fromString(me.value("guild"));requireCapability(tx,actor,guild,"member.invite");
+            var request=tx.find("guild_request",guild+":"+player).filter(r->r.value("state").equals("PENDING")).orElseThrow(()->new DomainException(NOT_FOUND,"That request is no longer open."));
+            if(!accept){save(tx,request,"state","DECLINED");return true;}
+            if(tx.find("guild_member",player.toString()).filter(r->r.value("active").equals("true")).isPresent()){save(tx,request,"state","CLOSED");return false;}
+            admit(tx,player,guild);return true;});
+    }
+
+    /** Invitations this player can still accept. */
+    public List<Invitation> invitations(UUID player) {
+        Instant now=clock.instant();
+        return store.transaction(tx->tx.scan("guild_invite").stream().filter(r->r.value("target").equals(player.toString())&&r.value("state").equals("PENDING")&&future(r.value("expires"),now))
+            .map(r->new Invitation(r.key(),UUID.fromString(r.value("guild")),Instant.parse(r.value("expires")))).toList());
+    }
+
+    private static Profile profile(TransactionalStore.Row r) {
+        UUID id=UUID.fromString(r.key());
+        return new Profile(id,r.value("name"),r.value("tag"),r.value("motto"),GuildBanner.decode(r.value("banner")).orElseGet(()->GuildBanner.forGuild(id)),JoinRule.of(r.value("join")),UUID.fromString(r.value("leader")));
+    }
+    private static void requireTagFree(TransactionalStore.Transaction tx,String tag,UUID self) {
+        if(tag.isEmpty())return;
+        require(tx.scan("guild").stream().noneMatch(g->g.value("tag").equalsIgnoreCase(tag)&&(self==null||!g.key().equals(self.toString()))),CONFLICT,"Another guild already uses the tag "+tag+".");
+    }
+    /** A short tag of letters and digits, shown in capitals. Blank means no tag. */
+    static String tag(String input) {
+        String t=input==null?"":input.strip().toUpperCase(Locale.ROOT);
+        require(t.isEmpty()||(t.length()>=2&&t.length()<=TAG_MAX&&t.chars().allMatch(c->c<128&&Character.isLetterOrDigit(c))),INVALID_INPUT,"A tag is 2 to 4 letters or numbers.");
+        return t;
+    }
+    static String motto(String input) {
+        String m=input==null?"":input.strip();
+        if(m.isEmpty())return m;
+        return oneLine(m,"motto",MOTTO_MAX);
+    }
+    static String oneLine(String input,String what,int max) {
+        String v=input==null?"":input.strip();
+        require(!v.isEmpty(),INVALID_INPUT,"Enter a "+what+".");
+        require(v.length()<=max,INVALID_INPUT,"The "+what+" can be at most "+max+" characters.");
+        require(v.codePoints().noneMatch(c->Character.isISOControl(c)||c==0x2028||c==0x2029),INVALID_INPUT,"Keep the "+what+" on one line.");
+        return v;
+    }
     /** A player's current guild and what their role there may do, in one read; empty outside a guild. */
     public record Standing(UUID guildId,Set<String> capabilities) { public Standing { capabilities=Set.copyOf(capabilities); } }
     public Optional<Standing> standing(UUID player) {

@@ -21,22 +21,41 @@ public final class NativeItemEscrow {
     private final EterniaModPlugin plugin;
     private final Map<UUID,Object> recoveredSessions=new ConcurrentHashMap<>();
     public NativeItemEscrow(EterniaModPlugin plugin){this.plugin=plugin;}
+    /** The parts of a player's inventory items can be taken from. */
+    public enum Section { HOTBAR, STORAGE, BACKPACK }
+
+    /** A stack in the player's inventory, as offered for mail. */
+    public record BagStack(Section section,short slot,String itemId,int quantity,boolean sendable) {}
+
     public String depositHand(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player) {
-        requireReady(ref,store,player);
         var hotbar=store.getComponent(ref,InventoryComponent.Hotbar.getComponentType());
         if(hotbar==null)throw new IllegalStateException("Hotbar unavailable");
         short slot=hotbar.getActiveSlot();ItemStack item=hotbar.getInventory().getItemStack(slot);
         if(ItemStack.isEmpty(item))throw new IllegalArgumentException("Hold the item stack you want to deposit.");
-        BsonDocument encoded=ItemStack.CODEC.encode(item,new ExtraInfo());
-        if(item.getItemId().startsWith("Eternia_")||encoded.get("Metadata") instanceof BsonDocument metadata&&metadata.containsKey("EterniaBound"))throw new IllegalArgumentException("Account-bound housing and collection tokens cannot be traded.");
+        return depositSlot(ref,store,player,Section.HOTBAR,slot,item.getItemId(),item.getQuantity());
+    }
+
+    /**
+     * Moves {@code quantity} of the stack in one inventory slot into the player's saved market storage and returns its
+     * escrow id. The slot must still hold {@code expectedItemId}; nothing moves if it changed. World thread.
+     */
+    public String depositSlot(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,Section section,short slot,String expectedItemId,int quantity) {
+        requireReady(ref,store,player);
+        var container=container(ref,store,section);
+        if(container==null||slot<0||slot>=container.getCapacity())throw new IllegalStateException("That inventory slot is unavailable.");
+        ItemStack item=container.getItemStack(slot);
+        if(ItemStack.isEmpty(item)||!item.getItemId().equals(expectedItemId))throw new IllegalStateException("Your inventory changed. Nothing was sent.");
+        if(quantity<1||quantity>item.getQuantity())throw new IllegalStateException("You no longer have that many. Nothing was sent.");
+        BsonDocument encoded=ItemStack.CODEC.encode(item.withQuantity(quantity),new ExtraInfo());
+        if(!sendable(item))throw new IllegalArgumentException("Account-bound housing and collection tokens cannot be traded.");
         if(!encoded.equals(ItemStack.CODEC.encode(ItemStack.CODEC.decode(encoded,new ExtraInfo()),new ExtraInfo())))throw new IllegalStateException("This item cannot be transferred without losing metadata.");
         String source=UUID.randomUUID().toString();
-        var escrow=plugin.getServices().escrow().prepareDeposit(Owner.player(player.getUuid()),new EscrowService.Item(item.getItemId(),item.getQuantity(),Base64.getEncoder().encodeToString(encoded.toJson().getBytes(StandardCharsets.UTF_8)),true),"native:"+source);
+        var escrow=plugin.getServices().escrow().prepareDeposit(Owner.player(player.getUuid()),new EscrowService.Item(item.getItemId(),quantity,Base64.getEncoder().encodeToString(encoded.toJson().getBytes(StandardCharsets.UTF_8)),true),"native:"+source);
         var receipts=receipts(ref,store);String operation="deposit."+escrow.id();receipts.beginMutation(operation);
         final boolean removed;
-        try {removed=hotbar.getInventory().removeItemStackFromSlot(slot,item,item.getQuantity(),true,true).succeeded();}
+        try {removed=container.removeItemStackFromSlot(slot,item,quantity,true,true).succeeded();}
         catch(RuntimeException failure){quarantine(player,operation,failure);disconnect(player);throw failure;}
-        if(!removed){receipts.mutationResolved();throw new IllegalStateException("The held item changed. Nothing was deposited.");}
+        if(!removed){receipts.mutationResolved();throw new IllegalStateException("Your inventory changed. Nothing was sent.");}
         try {
             receipts.values().put(operation,new BsonString(source));receipts.mutationResolved();
             save(ref,store,player);
@@ -44,6 +63,52 @@ public final class NativeItemEscrow {
             receipts.values().remove(operation);return escrow.id();
         }catch(RuntimeException failure){disconnect(player);throw failure;}
     }
+
+    /** True when a stack may leave its owner: not an Eternia token and not bound to the account. */
+    public static boolean sendable(ItemStack item) {
+        if(ItemStack.isEmpty(item)||item.getItemId().startsWith("Eternia_"))return false;
+        BsonDocument encoded=ItemStack.CODEC.encode(item,new ExtraInfo());
+        return !(encoded.get("Metadata") instanceof BsonDocument metadata&&metadata.containsKey("EterniaBound"));
+    }
+
+    /** Every stack in the player's hotbar, storage and backpack, in that order. World thread. */
+    public static List<BagStack> bag(Ref<EntityStore> ref,Store<EntityStore> store) {
+        var out=new ArrayList<BagStack>();
+        for(Section section:Section.values()){
+            var container=container(ref,store,section);if(container==null)continue;
+            for(short slot=0;slot<container.getCapacity();slot++){var item=container.getItemStack(slot);
+                if(!ItemStack.isEmpty(item))out.add(new BagStack(section,slot,item.getItemId(),item.getQuantity(),sendable(item)));}
+        }
+        return out;
+    }
+
+    /** Room for all of these stacks at once in the player's inventory. World thread. */
+    public static boolean hasRoom(Ref<EntityStore> ref,Store<EntityStore> store,List<ItemStack> items) {
+        var inventory=InventoryComponent.getCombined(store,ref,InventoryComponent.EVERYTHING);
+        return inventory!=null&&(items.isEmpty()||inventory.canAddItemStacks(items));
+    }
+
+    private static com.hypixel.hytale.server.core.inventory.container.ItemContainer container(Ref<EntityStore> ref,Store<EntityStore> store,Section section) {
+        InventoryComponent component=switch(section){
+            case HOTBAR->store.getComponent(ref,InventoryComponent.Hotbar.getComponentType());
+            case STORAGE->store.getComponent(ref,InventoryComponent.Storage.getComponentType());
+            case BACKPACK->store.getComponent(ref,InventoryComponent.Backpack.getComponentType());
+        };
+        return component==null?null:component.getInventory();
+    }
+
+    /** The item stack held in an escrow record, at its remaining quantity. */
+    public static ItemStack escrowStack(EscrowService.Escrow escrow) {
+        var value=BsonDocument.parse(new String(Base64.getDecoder().decode(escrow.item().metadataBase64()),StandardCharsets.UTF_8));
+        return ItemStack.CODEC.decode(value,new ExtraInfo()).withQuantity(Math.toIntExact(Math.max(1,escrow.remaining())));
+    }
+
+    /** The item stack a delivery would put in the inventory. */
+    public static ItemStack deliveryStack(EscrowService.Delivery delivery) {
+        var value=BsonDocument.parse(new String(Base64.getDecoder().decode(delivery.item().metadataBase64()),StandardCharsets.UTF_8));
+        return ItemStack.CODEC.decode(value,new ExtraInfo()).withQuantity(Math.toIntExact(delivery.item().quantity()));
+    }
+
     public boolean claim(Ref<EntityStore> ref,Store<EntityStore> store,PlayerRef player,String deliveryId) {
         requireReady(ref,store,player);Owner owner=Owner.player(player.getUuid());
         var delivery=plugin.getServices().escrow().deliveries(owner).stream().filter(d->d.id().equals(deliveryId)).findFirst().orElseThrow();

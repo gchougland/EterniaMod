@@ -1,0 +1,116 @@
+$T = "Theme/Citadel.ui";
+$C = "../Common.ui";
+@Ink = #2a211a;
+@InkMuted = #6b5a48;
+@PaperSurface = PatchStyle(TexturePath: "Mail/Parchment.png", Border: 16);
+@PaperFieldSurface = PatchStyle(TexturePath: "Mail/ParchmentDark.png", Border: 10);
+@PaperLabel = LabelStyle(FontSize: 14, TextColor: #6b5a48, RenderBold: true, VerticalAlignment: Center);
+@PanelTitle = LabelStyle(FontSize: 20, TextColor: #d8b66b, RenderBold: true, VerticalAlignment: Center);
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    $T.@CodexEmblem { Group { Anchor: (Width: 44, Height: 44); Background: "Icons/mail.png"; } }
+    Group { FlexWeight: 1; LayoutMode: Middle;
+      Label #MailTitle { Anchor: (Height: 34); Style: $T.@CodexTitleStyle; Text: "Mailbox"; }
+      Label #MailKicker { Anchor: (Height: 22); Text: "Your letters and parcels"; Style: $T.@CodexKickerStyle; }
+    }
+    Group { Anchor: (Width: 230, Height: 104); Padding: (Top: 30, Right: 16); LayoutMode: Top; $T.@TextButton #WriteNew { Anchor: (Width: 214, Height: 44); } }
+    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+  }
+  $T.@CodexBody {
+    Group #LettersView { FlexWeight: 1; LayoutMode: Top;
+      Group #Cards { FlexWeight: 1; LayoutMode: LeftWrap; Padding: (Left: 25); }
+      Group { LayoutMode: Left; Anchor: (Height: 48);
+        Label #LettersStatus { FlexWeight: 1; Anchor: (Height: 48); Style: (...$T.@MutedStyle, FontSize: 15, VerticalAlignment: Center); }
+        $T.@SecondaryTextButton #Earlier { Anchor: (Width: 150, Right: 10); }
+        $T.@SecondaryTextButton #More { Anchor: (Width: 150); }
+      }
+    }
+    Group #LetterView { FlexWeight: 1; LayoutMode: Center;
+      Group { Anchor: (Width: 1280); LayoutMode: Top; Background: @PaperSurface; Padding: (Horizontal: 44, Vertical: 30);
+        Group { LayoutMode: Left; Anchor: (Height: 46);
+          Label #LetterTitle { FlexWeight: 1; Anchor: (Height: 46); Style: (FontSize: 30, TextColor: @Ink, RenderBold: true, VerticalAlignment: Center); }
+          Label #LetterFrom { Anchor: (Width: 420, Height: 46); Style: (FontSize: 15, TextColor: @InkMuted, HorizontalAlignment: End, VerticalAlignment: Center); }
+        }
+        Group { Anchor: (Height: 2, Top: 10, Bottom: 16); Background: #cdbb98; }
+        Group #LetterLines { FlexWeight: 1; LayoutMode: TopScrolling; ScrollbarStyle: $C.@DefaultScrollbarStyle; }
+        Group { Anchor: (Height: 2, Top: 14, Bottom: 14); Background: #cdbb98; }
+        Label #ParcelHeading { Anchor: (Height: 30, Bottom: 8); Style: (FontSize: 17, TextColor: @Ink, RenderBold: true, VerticalAlignment: Center); }
+        Group #ParcelRow { LayoutMode: Left; Anchor: (Height: 150);
+          Group #Tiles { FlexWeight: 1; LayoutMode: Left; }
+          Group { Anchor: (Width: 280); LayoutMode: Middle;
+            $T.@TextButton #TakeAll { Anchor: (Height: 52, Bottom: 8); }
+            Label #TakeNote { Anchor: (Height: 44); Style: (FontSize: 13, TextColor: @InkMuted, HorizontalAlignment: Center, Wrap: true); }
+          }
+        }
+        Group { LayoutMode: Left; Anchor: (Height: 48, Top: 22);
+          $T.@TextButton #Reply { Anchor: (Width: 150, Right: 10); }
+          $T.@SecondaryTextButton #Archive { Anchor: (Width: 150); }
+          Label #LetterStatus { FlexWeight: 1; Anchor: (Height: 48, Left: 16, Right: 16); Style: (FontSize: 14, TextColor: @InkMuted, VerticalAlignment: Center, Wrap: true); }
+          $T.@SecondaryTextButton #BackLetters { Anchor: (Width: 190); }
+        }
+      }
+    }
+    Group #WriteView { FlexWeight: 1; LayoutMode: Left;
+      Group { FlexWeight: 1; LayoutMode: Top; Background: @PaperSurface; Padding: (Horizontal: 32, Vertical: 26); Anchor: (Right: 24);
+        Group { LayoutMode: Left; Anchor: (Height: 26);
+          Label { FlexWeight: 1; Text: "To"; Style: @PaperLabel; }
+          Label { FlexWeight: 1; Text: "Subject"; Style: @PaperLabel; Anchor: (Left: 20); }
+        }
+        Group { LayoutMode: Left; Anchor: (Height: 46, Top: 4, Bottom: 16);
+          TextField #To { FlexWeight: 1; Anchor: (Height: 46); MaxLength: 32; Background: @PaperFieldSurface; Padding: (Horizontal: 12); Style: (FontSize: 17, TextColor: @Ink, RenderBold: true); PlaceholderText: "Player name"; PlaceholderStyle: (FontSize: 17, TextColor: #8a7860); }
+          TextField #Subject { FlexWeight: 1; Anchor: (Height: 46, Left: 20); MaxLength: 100; Background: @PaperFieldSurface; Padding: (Horizontal: 12); Style: (FontSize: 17, TextColor: @Ink, RenderBold: true); PlaceholderText: "What is it about?"; PlaceholderStyle: (FontSize: 17, TextColor: #8a7860); }
+        }
+        Label { Anchor: (Height: 26); Text: "Message"; Style: @PaperLabel; }
+        MultilineTextField #Body {
+          FlexWeight: 1; Anchor: (Top: 4, Bottom: 12); AutoGrow: false; MaxLength: 2000;
+          Background: @PaperFieldSurface; Padding: (Full: 14);
+          Style: (FontSize: 17, TextColor: @Ink);
+          PlaceholderText: "Write your letter here."; PlaceholderStyle: (FontSize: 17, TextColor: #8a7860);
+          ScrollbarStyle: $C.@DefaultScrollbarStyle;
+        }
+        Group { LayoutMode: Left; Anchor: (Height: 48);
+          Label { Anchor: (Width: 84); Text: "Emotes"; Style: @PaperLabel; }
+          Group #Emotes { FlexWeight: 1; LayoutMode: Left; }
+        }
+        Label #EmoteHint { Anchor: (Height: 26, Top: 6); Style: (FontSize: 13, TextColor: @InkMuted, VerticalAlignment: Center); }
+      }
+      Group { Anchor: (Width: 640); LayoutMode: Top;
+        $T.@CodexPanel { Anchor: (Bottom: 18); Padding: (Full: 20);
+          Group { LayoutMode: Left; Anchor: (Height: 30, Bottom: 12);
+            Label { FlexWeight: 1; Text: "Parcel"; Style: @PanelTitle; }
+            Label #ParcelCount { Anchor: (Width: 200); Style: (...$T.@MutedStyle, FontSize: 14, HorizontalAlignment: End, VerticalAlignment: Center); }
+          }
+          Group #Parcel { LayoutMode: Left; Anchor: (Height: 76); }
+          Group #Pick { LayoutMode: Left; Anchor: (Height: 52, Top: 10); Background: $T.@IconTilePrimarySurface; Padding: (Horizontal: 10);
+            ItemIcon #PickItem { Anchor: (Width: 36, Height: 36, Top: 8, Right: 10); }
+            Label #PickName { FlexWeight: 1; Anchor: (Height: 52); Style: (...$T.@DefaultLabelStyle, FontSize: 15, RenderBold: true, VerticalAlignment: Center); }
+            $T.@SecondaryTextButton #Less { Anchor: (Width: 44, Height: 38, Top: 7); }
+            Label #PickCount { Anchor: (Width: 56, Height: 52); Style: (...$T.@DefaultLabelStyle, FontSize: 17, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+            $T.@SecondaryTextButton #MoreQty { Anchor: (Width: 44, Height: 38, Top: 7, Right: 10); }
+            $T.@SecondaryTextButton #TakeOut { Anchor: (Width: 110, Height: 38, Top: 7); }
+          }
+          Label #ParcelHint { Anchor: (Height: 40, Top: 8); Style: (...$T.@MutedStyle, FontSize: 13, Wrap: true); }
+        }
+        $T.@CodexPanel { FlexWeight: 1; Padding: (Full: 20);
+          Group { LayoutMode: Left; Anchor: (Height: 40, Bottom: 12);
+            Label { FlexWeight: 1; Text: "Choose items"; Style: @PanelTitle; }
+            $T.@SecondaryTextButton #FromBag { Anchor: (Width: 120, Height: 38, Right: 8); }
+            $T.@SecondaryTextButton #FromStorage { Anchor: (Width: 170, Height: 38); }
+          }
+          Group #Bag { FlexWeight: 1; LayoutMode: LeftWrap; }
+          Group { LayoutMode: Left; Anchor: (Height: 40, Top: 6);
+            Label #BagNote { FlexWeight: 1; Anchor: (Height: 40); Style: (...$T.@MutedStyle, FontSize: 13, VerticalAlignment: Center, Wrap: true); }
+            $T.@SecondaryTextButton #BagPrev { Anchor: (Width: 44, Height: 38, Right: 6); }
+            $T.@SecondaryTextButton #BagNext { Anchor: (Width: 44, Height: 38); }
+          }
+          Label #WriteStatus { Anchor: (Height: 40, Top: 6); Style: (...$T.@DefaultLabelStyle, FontSize: 14, Wrap: true, VerticalAlignment: Center); }
+          Group { LayoutMode: Left; Anchor: (Height: 52, Top: 6);
+            $T.@SecondaryTextButton #CancelWrite { Anchor: (Width: 150, Height: 52, Right: 10); }
+            $T.@TextButton #Send { FlexWeight: 1; Anchor: (Height: 52); }
+          }
+        }
+      }
+    }
+  }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
+}

@@ -22,17 +22,35 @@ public final class MailService extends DomainSupport {
             for(String item:items){var r=escrow.holdIn(tx,item,Owner.player(sender),"mail:"+id);require(Boolean.parseBoolean(r.value("transferable")),FORBIDDEN,"Bound attachment cannot be mailed");}
             input.putAll(fields("claimed",items.isEmpty(),"read",false,"archived",false,"at",clock.instant()));return message(tx.save("mail",id,0,input));});
     }
+    /**
+     * Everything {@link #send} would refuse that does not depend on the attachments, checked before any item leaves the
+     * sender's inventory: the subject and message, a blocked sender, a full mailbox, too many stacks.
+     */
+    public void checkSend(UUID sender,UUID recipient,String subject,String body,int stacks) {
+        text(subject,"mail subject",100);text(body,"mail body",2000);
+        require(stacks>=0&&stacks<=5,INVALID_INPUT,"At most five distinct attachment stacks");
+        require(!sender.equals(recipient),INVALID_INPUT,"You cannot send a letter to yourself");
+        store.transaction(tx->{
+            require(tx.find("mail_block",recipient+":"+sender).filter(r->r.value("blocked").equals("true")).isEmpty(),FORBIDDEN,"That player does not accept letters from you");
+            long active=tx.scan("mail").stream().filter(r->r.value("recipient").equals(recipient.toString())&&!r.value("archived").equals("true")).count();
+            require(active<20,CAPACITY,"That player's mailbox is full");return null;});
+    }
     public List<Message> inbox(UUID recipient){return store.transaction(tx->tx.scan("mail").stream().filter(r->r.value("recipient").equals(recipient.toString())&&!r.value("archived").equals("true")).map(MailService::message).toList());}
     /** Everyone with at least one unread letter still in their mailbox. */
     public Set<UUID> recipientsWithUnread(){return store.transaction(tx->{var out=new HashSet<UUID>();for(var r:tx.scan("mail"))if(!r.value("archived").equals("true")&&!r.value("read").equals("true"))out.add(UUID.fromString(r.value("recipient")));return out;});}
     public List<Message> sent(UUID sender){return store.transaction(tx->tx.scan("mail").stream().filter(r->r.value("sender").equals(sender.toString())).map(MailService::message).toList());}
     public void markRead(UUID recipient,String id){store.transaction(tx->{var r=recipient(tx,recipient,id);save(tx,r,"read",true);return null;});}
+    /** Moves a letter's attachments to the recipient's deliveries and returns those deliveries, in attachment order. */
+    public List<EscrowService.Delivery> claimDeliveries(UUID recipient,String id){return store.transaction(tx->claimIn(tx,recipient,id));}
+    /** Marks a letter read without taking its attachments. */
+    public void markOpened(UUID recipient,String id){store.transaction(tx->{var r=recipient(tx,recipient,id);if(!r.value("read").equals("true"))save(tx,r,"read",true);return null;});}
     public void claim(UUID recipient,String id){store.transaction(tx->{claimIn(tx,recipient,id);return null;});}
     public void claimAll(UUID recipient){store.transaction(tx->{for(var r:tx.scan("mail"))if(r.value("recipient").equals(recipient.toString())&&!r.value("claimed").equals("true"))claimIn(tx,recipient,r.key());return null;});}
-    private void claimIn(TransactionalStore.Transaction tx,UUID recipient,String id){
-        var r=recipient(tx,recipient,id);if(r.value("claimed").equals("true"))return;
-        for(String item:items(r)){var stock=row(tx,"escrow",item);escrow.deliverHeldIn(tx,item,"mail:"+id,Owner.player(recipient),stock.number("remaining"),"mail:"+id+":"+item);}
-        save(tx,r,"claimed",true,"read",true);
+    private List<EscrowService.Delivery> claimIn(TransactionalStore.Transaction tx,UUID recipient,String id){
+        var r=recipient(tx,recipient,id);if(r.value("claimed").equals("true"))return List.of();
+        var out=new ArrayList<EscrowService.Delivery>();
+        for(String item:items(r)){var stock=row(tx,"escrow",item);out.add(escrow.deliverHeldIn(tx,item,"mail:"+id,Owner.player(recipient),stock.number("remaining"),"mail:"+id+":"+item));}
+        save(tx,r,"claimed",true,"read",true);return out;
     }
     public void archive(UUID recipient,String id){store.transaction(tx->{var r=recipient(tx,recipient,id);require(r.value("claimed").equals("true"),INVALID_STATE,"Claim attachments before archiving");save(tx,r,"archived",true);return null;});}
     public void returnAttachments(UUID recipient,String id){
