@@ -38,6 +38,7 @@ public final class EterniaServices {
     private final GuildCommunicationService guildCommunications;
     private final FriendService friends;
     private final TravelService travel;
+    private final TelemetryService telemetry;
     private final LootChestService lootChests;
     private final TutorialService tutorial;
     private final com.hexvane.eterniamod.stats.StatsService stats;
@@ -68,6 +69,7 @@ public final class EterniaServices {
         guildCommunications=new GuildCommunicationService(store,clock,ids);
         friends=new FriendService(store,clock,ids);
         travel=new TravelService(store,clock,ids,economy);
+        telemetry=new TelemetryService(store,clock,ids);
         lootChests=new LootChestService(store,clock,ids);
         tutorial=new TutorialService(store,clock,ids);
         stats=new com.hexvane.eterniamod.stats.StatsService(store,clock);
@@ -83,6 +85,7 @@ public final class EterniaServices {
         return batch(()->{
             boolean first=accounts.find(player).isEmpty();
             accounts.recordAuthenticatedLogin(player,name);
+            telemetry.markActive(player);
             if(first)economy.welcomeNewPlayer(player);
             return first;
         });
@@ -121,6 +124,7 @@ public final class EterniaServices {
     public GuildCommunicationService guildCommunications(){return guildCommunications;}
     public FriendService friends(){return friends;}
     public TravelService travel(){return travel;}
+    public TelemetryService telemetry(){return telemetry;}
     public LootChestService lootChests(){return lootChests;}
     public TutorialService tutorial(){return tutorial;}
     public com.hexvane.eterniamod.stats.StatsService stats(){return stats;}

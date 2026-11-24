@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.1] - Unreleased
+
+### Added
+
+- Server staff get an Analytics page on the website with graphs and downloadable reports, to see how many people play, how many come back, and what sells.
+
 ## [1.2.0] - 11/19/2026
 
 ### Added

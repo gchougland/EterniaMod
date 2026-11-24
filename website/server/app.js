@@ -52,6 +52,17 @@ export function createApp(cfg,repo){
  app.use('/hytale-assets',assetGate,express.static(cfg.assetsDir,{dotfiles:'deny'}));
  app.use('/vendor/three',assetGate,express.static(path.join(root,'node_modules/three'),{dotfiles:'deny'}));
  app.get('/admin',requireAdmin,(req,res)=>res.sendFile(path.join(root,'web/admin/index.html')));
+ // Analytics CSVs for the business side. The game builds them; the website only checks the request and hands over the file.
+ const REPORTS=['daily','weekly','monthly','players','shop_items','tebex_purchases'],DAY=/^\d{4}-\d{2}-\d{2}$/;
+ app.get('/api/admin/analytics/:report',requireAdmin,route(async(req,res)=>{
+  const report=String(req.params.report).replace(/\.csv$/,''),from=String(req.query.from||''),to=String(req.query.to||'');
+  if(!REPORTS.includes(report))throw new HttpError(404,'Unknown report');
+  if(!DAY.test(from)||!DAY.test(to)||Number.isNaN(Date.parse(from+'T00:00:00Z'))||Number.isNaN(Date.parse(to+'T00:00:00Z')))throw new HttpError(400,'Dates must look like 2026-11-30');
+  if(to<from)throw new HttpError(400,'The end date is before the start date.');
+  const csv=await bridge.getAnalytics(report,from,to);
+  res.set({'Content-Type':'text/csv; charset=utf-8','Content-Disposition':'attachment; filename="eternia-'+report+'-'+from+'-to-'+to+'.csv"','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}).send(csv);
+ }));
+ app.get('/admin/analytics',requireAdmin,(req,res)=>res.sendFile(path.join(root,'web/admin/analytics.html')));
  app.get('/admin/commerce',requireAdmin,(req,res)=>res.sendFile(path.join(root,'web/admin/commerce.html')));
  app.use('/admin',requireAdmin,express.static(path.join(root,'web/admin')));
 

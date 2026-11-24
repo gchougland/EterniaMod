@@ -1,0 +1,29 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Eternia · Analytics</title><link rel="stylesheet" href="/theme.css"><link rel="stylesheet" href="/styles.css"><script type="module" src="/admin/analytics.js"></script><style>
+.viz-root{--viz-1:#3987e5;--viz-2:#d95926;--viz-grid:rgba(181,195,184,.16);--viz-axis:rgba(181,195,184,.45)}
+.viz-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0 0 16px}
+.viz-tile{background:var(--et-panel);border:1px solid var(--et-border);border-radius:10px;padding:14px 16px}
+.viz-tile-value{font-size:1.7rem;font-weight:700;color:var(--et-text);font-variant-numeric:tabular-nums}
+.viz-tile-label{color:var(--et-muted);font-size:.85rem;margin-top:2px}
+.viz-card{margin-bottom:16px}.viz-card h2{margin-bottom:4px}
+.viz-plot{position:relative;overflow:hidden}.viz-plot svg{display:block;width:100%;height:auto;touch-action:none}
+.viz-grid{stroke:var(--viz-grid);stroke-width:1}.viz-axis{stroke:var(--viz-axis);stroke-width:1}
+.viz-tick{fill:var(--et-muted);font-size:11px;font-variant-numeric:tabular-nums}
+.viz-hover{fill:rgba(240,232,213,.06)}
+.viz-legend{display:flex;gap:16px;flex-wrap:wrap;margin:6px 0;color:var(--et-muted);font-size:.85rem}
+.viz-key{display:inline-flex;align-items:center;gap:6px}
+.viz-swatch{display:inline-block;width:10px;height:10px;border-radius:3px;flex:none}
+.viz-tip{position:absolute;top:24px;pointer-events:none;background:var(--et-raised);border:1px solid var(--et-border);border-radius:8px;padding:8px 10px;font-size:.85rem;color:var(--et-text);box-shadow:0 6px 18px rgba(0,0,0,.35);white-space:nowrap}
+.viz-tip-row{display:flex;align-items:center;gap:6px;margin-top:3px;font-variant-numeric:tabular-nums}
+.viz-table{margin-top:8px;color:var(--et-muted);font-size:.85rem}.viz-table summary{cursor:pointer}
+.viz-table table{border-collapse:collapse;margin-top:6px;width:100%}.viz-table th,.viz-table td{text-align:left;padding:3px 8px;border-bottom:1px solid var(--viz-grid);font-variant-numeric:tabular-nums}
+.viz-hbars{display:grid;gap:10px;margin-top:8px}
+.viz-hbar{display:grid;grid-template-columns:minmax(90px,200px) 1fr auto;gap:4px 12px;align-items:center}
+.viz-hbar-name{color:var(--et-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.viz-hbar-track{height:12px}.viz-hbar-fill{height:100%;min-width:2px;background:var(--viz-1);border-radius:0 4px 4px 0}
+.viz-hbar-value{color:var(--et-text);font-variant-numeric:tabular-nums}.viz-hbar-detail{grid-column:2/4;font-size:.8rem}
+@media (max-width:560px){.viz-hbar{grid-template-columns:1fr auto}.viz-hbar-track{grid-column:1/3;grid-row:2}.viz-hbar-detail{grid-column:1/3}}
+</style><link rel="icon" type="image/svg+xml" href="/icons/eternia.svg"></head><body><header class="topbar"><a class="brand" href="/"><img src="/icons/eternia.svg" alt="" width="38" height="38"> ETERNIA</a><nav><a href="/admin">Content workshop</a><a href="/admin/commerce">Treasury setup</a><a href="/admin/analytics" aria-current="page">Analytics</a></nav><div id="identity"></div></header><main class="wrap"><div id="notice" role="status"></div><div class="eyebrow">Administration</div><h1>Analytics</h1><p class="muted">Download player and sales reports as CSV files for a spreadsheet. Days are in UTC, weeks start on Monday and months are calendar months.</p>
+<section class="panel"><h2>Date range</h2><form id="range"><label for="from">From</label><input id="from" type="date" required><label for="to">To</label><input id="to" type="date" required><div class="actions"><button type="button" data-days="7">Last 7 days</button><button type="button" data-days="30">Last 30 days</button><button type="button" data-days="90">Last 90 days</button><button type="button" data-days="365">Last year</button></div></form><p class="muted">Pick at most 400 days. Online counts and active days are recorded from the day the analytics update went live. First join dates go further back.</p></section>
+<h2>Graphs</h2><div class="actions"><button id="refresh" type="button">Refresh graphs</button></div><div id="graphs" class="viz-root"></div><h2>Download reports</h2><div id="reports" class="grid"></div>
+<section class="panel"><h2>Comparing with Tebex</h2><p class="muted">The Tebex purchases file lists every Crown purchase the game delivered, with its transaction ID and the player who got it. Match the transaction ID to the Tebex payments export to add amounts paid. The players file has each player's Tebex transaction IDs too.</p></section>
+</main></body></html>

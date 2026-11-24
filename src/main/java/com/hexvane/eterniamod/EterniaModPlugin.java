@@ -54,6 +54,7 @@ public final class EterniaModPlugin extends JavaPlugin {
     public com.hexvane.eterniamod.memories.PersonalMemories getMemories() { return memories; }
     public com.hexvane.eterniamod.housing.HousingInfrastructure getInfrastructure() { return infrastructure; }
     private com.hexvane.eterniamod.customization.MailboxFlags mailboxFlags;
+    private com.hexvane.eterniamod.runtime.TelemetrySampler telemetrySampler;
     public com.hexvane.eterniamod.domain.EterniaServices getServices() { return runtime.services(); }
     public com.hexvane.eterniamod.runtime.RuntimeConfig getRuntimeConfig() { return runtime.config(); }
     public com.hexvane.eterniamod.runtime.EterniaRuntime getRuntime() { return runtime; }
@@ -179,6 +180,8 @@ public final class EterniaModPlugin extends JavaPlugin {
         departures.start();
         mailboxFlags = new com.hexvane.eterniamod.customization.MailboxFlags(this);
         mailboxFlags.start();
+        telemetrySampler = new com.hexvane.eterniamod.runtime.TelemetrySampler(this);
+        telemetrySampler.start();
         try { runtime.startBridge(gameplayAdapters.webhookHandler(),gameplayAdapters.tebexPackages()); } catch (java.io.IOException e) { runtime.close(); throw new java.io.UncheckedIOException(e); }
         getLogger().atInfo().log("EterniaMod v%s loaded.", getManifest().getVersion().toString());
     }
@@ -195,6 +198,7 @@ public final class EterniaModPlugin extends JavaPlugin {
         if (socialUi != null) socialUi.close();
         if (departures != null) departures.close();
         if (mailboxFlags != null) mailboxFlags.close();
+        if (telemetrySampler != null) telemetrySampler.close();
         if (plotMover != null) plotMover.close();
         com.hexvane.eterniamod.guildroads.GuildRoads.close();
         com.hexvane.eterniamod.setup.paving.RoadPaving.close();

@@ -63,6 +63,26 @@ class GameBridgeServerTest {
             assertEquals(405,client.send(HttpRequest.newBuilder(uri).header("Authorization","Bearer "+token).POST(HttpRequest.BodyPublishers.noBody()).build(),HttpResponse.BodyHandlers.ofString()).statusCode());
         }
     }
+    @Test void analyticsServesCsvReportsOnlyWithTheToken() throws Exception {
+        String token="t".repeat(40);
+        var config=new RuntimeConfig(true,"","","","127.0.0.1",0,token,"http://127.0.0.1:3000");
+        var services=new EterniaServices(new InMemoryStore());var player=java.util.UUID.randomUUID();
+        services.welcomePlayer(player,"Aria");services.telemetry().sample(java.util.List.of(player));
+        try(var bridge=new GameBridgeServer(services,config);var client=HttpClient.newHttpClient()){
+            bridge.start();
+            String today=java.time.LocalDate.now(java.time.ZoneOffset.UTC).toString();
+            var uri=URI.create("http://127.0.0.1:"+bridge.port()+"/v1/analytics?report=daily&from="+today+"&to="+today);
+            assertEquals(401,client.send(HttpRequest.newBuilder(uri).build(),HttpResponse.BodyHandlers.ofString()).statusCode());
+            var response=client.send(HttpRequest.newBuilder(uri).header("Authorization","Bearer "+token).build(),HttpResponse.BodyHandlers.ofString());
+            assertEquals(200,response.statusCode());
+            assertTrue(response.headers().firstValue("Content-Type").orElse("").startsWith("text/csv"));
+            var lines=response.body().lines().toList();
+            assertTrue(lines.get(0).startsWith("period_start,period_end,unique_players"));
+            assertTrue(lines.get(1).startsWith(today+","+today+",1,1,0,1,1.00,1"),lines.get(1));
+            var bad=URI.create("http://127.0.0.1:"+bridge.port()+"/v1/analytics?report=passwords&from="+today+"&to="+today);
+            assertEquals(400,client.send(HttpRequest.newBuilder(bad).header("Authorization","Bearer "+token).build(),HttpResponse.BodyHandlers.ofString()).statusCode());
+        }
+    }
     @Test void crownCatalogContainsOnlyActiveMappedPermanentCurrencyProducts() throws Exception {
         String token="test-service-token-12345678901234567890";
         var config=new RuntimeConfig(true,"","","","127.0.0.1",0,token,"http://127.0.0.1:3000");

@@ -27,7 +27,7 @@ public final class CommerceService extends DomainSupport {
     public Purchase fulfill(VerifiedPurchase request){
         return store.transaction(tx->{String id=key(request.provider,request.transactionId,request.lineId);var input=purchaseInput(request);
             var old=tx.find("commerce_purchase",id);if(old.isPresent())for(var e:input.entrySet())require(old.get().value(e.getKey()).equals(e.getValue()),CONFLICT,"Purchase identity reused with different input");
-            var purchase=old.orElseGet(()->{var data=new TreeMap<>(input);data.putAll(fields("state","PENDING","reason","","grants",""));return tx.save("commerce_purchase",id,0,data);});
+            var purchase=old.orElseGet(()->{var data=new TreeMap<>(input);data.putAll(fields("state","PENDING","reason","","grants","","at",clock.instant()));return tx.save("commerce_purchase",id,0,data);});
             var reversal=request.provider.equals("tebex")?tx.find("tebex_reversal",request.transactionId):Optional.<TransactionalStore.Row>empty();
             if(reversal.isPresent())return purchase(reverseIn(tx,purchase,reversal.get().value("reason")));
             if(!purchase.value("state").equals("PENDING"))return purchase(purchase);

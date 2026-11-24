@@ -9,6 +9,15 @@ export function createBridge(cfg) {
  },async getOffers(){if(cfg.fixtures)return {source:'local-fixture',offers:[]};return request('/v1/store/offers');},
  async getCrownProducts(){if(cfg.fixtures)return {source:'local-fixture',products:[]};return request('/v1/store/crowns');},
  // Only a head count crosses the bridge. A negative fixture count simulates an offline realm.
+ // Analytics come back as finished CSV text. Reports read every player, so they get longer than a page load.
+ async getAnalytics(report,from,to){if(cfg.fixtures&&!cfg.bridgeUrl)return 'report,from,to\r\n'+report+','+from+','+to+'\r\n';
+  if(!cfg.bridgeUrl||!cfg.bridgeToken)throw new HttpError(503,'Game server connection is not available yet.');
+  let res;try{res=await fetch(cfg.bridgeUrl.replace(/\/$/,'')+'/v1/analytics?'+new URLSearchParams({report,from,to}),{headers:{Authorization:'Bearer '+cfg.bridgeToken},signal:AbortSignal.timeout(60000)});}
+  catch{throw new HttpError(503,'The game server did not answer. Try again in a minute.');}
+  if(res.status===404)throw new HttpError(503,'The game server does not have analytics yet. Update the mod first.');
+  if(res.status===400){let why='';try{why=String((await res.json()).error||'');}catch{}throw new HttpError(400,why.slice(0,200)||'Check the dates.');}
+  if(!res.ok)throw new HttpError(503,'The game server could not build that report right now.');
+  return res.text();},
  async getPlayersOnline(){if(cfg.fixtures&&!cfg.bridgeUrl){if(cfg.fixturePlayersOnline<0)throw new HttpError(503,'Realm offline');return {source:'local-fixture',online:cfg.fixturePlayersOnline};}return request('/v1/status/players');}};
  async function request(endpoint){
   if(!cfg.bridgeUrl||!cfg.bridgeToken)throw new HttpError(503,'Game account connection is not available yet.');

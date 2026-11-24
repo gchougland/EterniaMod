@@ -58,6 +58,7 @@ public final class GameBridgeServer implements AutoCloseable {
                 if(online<0){reply(exchange,503,Map.of("error","The realm is not ready yet."));return;}
                 reply(exchange,200,Map.of("source","game","online",online,"updatedAt",Instant.now()));return;
             }
+            if(path.equals("/v1/analytics")){analytics(exchange);return;}
             if(path.equals("/v1/store/offers")){reply(exchange,200,Map.of("source","game","offers",offers));return;}
             if(path.equals("/v1/store/crowns")){
                 var products=services.readView(GameBridgeServer.class,java.time.Duration.ofSeconds(10),()->services.commerce().products()).stream()
@@ -79,6 +80,33 @@ public final class GameBridgeServer implements AutoCloseable {
         finally {exchange.close();}
     }
     private record OverviewKey(UUID player) {}
+    private record AnalyticsKey(java.time.LocalDate from,java.time.LocalDate to) {}
+    private final Object analyticsLock=new Object();
+    /** One CSV report for the website's admin Analytics page: ?report=daily&from=2026-11-01&to=2026-11-30 (UTC days). */
+    private void analytics(HttpExchange exchange)throws IOException {
+        var query=new HashMap<String,String>();
+        String raw=exchange.getRequestURI().getRawQuery();
+        if(raw!=null)for(String part:raw.split("&")){int eq=part.indexOf('=');if(eq>0)query.put(java.net.URLDecoder.decode(part.substring(0,eq),StandardCharsets.UTF_8),java.net.URLDecoder.decode(part.substring(eq+1),StandardCharsets.UTF_8));}
+        String report=query.getOrDefault("report","");
+        if(!TelemetryReports.NAMES.contains(report)){reply(exchange,400,Map.of("error","Unknown report"));return;}
+        java.time.LocalDate from,to;
+        try{from=java.time.LocalDate.parse(query.getOrDefault("from",""));to=java.time.LocalDate.parse(query.getOrDefault("to",""));}
+        catch(java.time.format.DateTimeParseException e){reply(exchange,400,Map.of("error","Dates must look like 2026-11-30"));return;}
+        String csv;
+        try{
+            // One report at a time: the bridge has few threads and every read takes the database lock.
+            synchronized(analyticsLock){
+                var input=services.readView(new AnalyticsKey(from,to),java.time.Duration.ofSeconds(30),()->services.telemetry().reportInput(from,to));
+                csv=new TelemetryReports(input,from,to,java.time.LocalDate.now(java.time.ZoneOffset.UTC)).report(report);
+            }
+        }catch(IllegalArgumentException e){reply(exchange,400,Map.of("error",e.getMessage()==null?"Invalid request":e.getMessage()));return;}
+        byte[] body=csv.getBytes(StandardCharsets.UTF_8);
+        exchange.getResponseHeaders().set("Content-Type","text/csv; charset=utf-8");exchange.getResponseHeaders().set("Cache-Control","no-store");
+        exchange.getResponseHeaders().set("X-Content-Type-Options","nosniff");
+        if(exchange.getRequestMethod().equals("HEAD")){exchange.getResponseHeaders().set("Content-Length",Integer.toString(body.length));exchange.sendResponseHeaders(200,-1);return;}
+        exchange.sendResponseHeaders(200,body.length);
+        try(var out=exchange.getResponseBody()){out.write(body);}
+    }
     private String overviewPayload(UUID player){
                 var overview=services.overview(player);
                 if(overview.account()==null)return null;
