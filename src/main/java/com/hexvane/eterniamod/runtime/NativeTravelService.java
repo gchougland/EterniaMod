@@ -70,6 +70,8 @@ public final class NativeTravelService {
             arrive(player,target,point,null,facing).thenAccept(ok->{if(!ok)teleport(player,target,new Transform(point,facing));});
         }).exceptionally(error->{plugin.getLogger().atWarning().withCause(error).log("Could not resolve world spawn");return null;});
     }
+    /** Exact placement on a known spot such as a portal pad, after its chunks are loaded. */
+    public CompletableFuture<Boolean> place(PlayerRef player,World world,Transform transform){return teleport(player,world,transform);}
     /** Exact placement for a spot the player already stood on; only the chunks are prepared. */
     private CompletableFuture<Boolean> teleport(PlayerRef player,World world,Transform transform) {
         return TravelLanding.load(world,transform.getPosition(),1).thenCompose(loaded->{

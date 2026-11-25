@@ -1,0 +1,48 @@
+{
+  "$Comment": "Aether Drakeling, the Eternal rank pet. Built by tools/models/rank_pets.build.mjs (painted texture; Idle only, no Walk clip, so it floats).",
+  "Model": "NPC/Eternia/Pets/Aether_Drakeling/Model.blockymodel",
+  "Texture": "NPC/Eternia/Pets/Aether_Drakeling/Texture_Painted.png",
+  "MinScale": 1,
+  "MaxScale": 1,
+  "EyeHeight": 0.492,
+  "HitBox": {
+    "Min": {
+      "X": -0.4,
+      "Y": 0,
+      "Z": -0.4
+    },
+    "Max": {
+      "X": 0.4,
+      "Y": 0.819,
+      "Z": 0.4
+    }
+  },
+  "AnimationSets": {
+    "Idle": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Aether_Drakeling/Animations/Idle.blockyanim",
+          "BlendingDuration": 0.2
+        }
+      ]
+    },
+    "Pet": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Aether_Drakeling/Animations/Pet.blockyanim",
+          "BlendingDuration": 0.15,
+          "Looping": false
+        }
+      ]
+    }
+  },
+  "Particles": [
+    {
+      "SystemId": "Eternia_Pet_Aether_Drakeling"
+    },
+    {
+      "SystemId": "Eternia_Pet_Aether_Flame",
+      "TargetNodeName": "Flame"
+    }
+  ]
+}

@@ -49,4 +49,14 @@ class PetBehaviorTest {
         assertEquals(.5,PetMotion.walk(.49,0,.5,0,1).x(),1e-12);
         assertEquals(new PetMotion.Point(3,4),PetMotion.walk(3,4,3,4,.05));
     }
+    @Test void pettingWakesASleepingPetAndPlaysItsPetClip() {
+        var pet=new PetBehavior();
+        for(int i=0;i<500;i++)pet.update(.1,0,false,false,.9); // owner stands still long enough for a nap
+        assertTrue(pet.asleep());
+        pet.petted();
+        var step=pet.update(.1,0,false,false,.9);
+        assertEquals(PetBehavior.Emote.PET,step.emote());
+        assertTrue(step.hold());
+        assertFalse(pet.asleep());
+    }
 }

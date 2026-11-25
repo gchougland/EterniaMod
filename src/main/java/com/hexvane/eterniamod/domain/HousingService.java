@@ -188,6 +188,32 @@ public final class HousingService extends DomainSupport {
             return slot(save(tx,r,"state",State.PACKED,"snapshotRef",op.value("snapshotRef")));
         });
     }
+    /**
+     * Guild plots paid for with an Eternal guild plot voucher that was taken back (the rank ended before it was kept
+     * for good). {@code owed} names the player; while the plot is still out, the pack worker puts it away. Setting it
+     * down again pays for it like a new guild plot ({@link #beginRestore(UUID,UUID,UUID)}).
+     */
+    public static final String OWED="owed",VOUCHER_RESERVATION="voucherReservation";
+    public List<Slot> owedToPack(){return store.transaction(tx->tx.scan("housing_slot").stream().filter(r->!r.value(OWED).isEmpty()&&r.value("state").equals("ACTIVE")).map(HousingService::slot).toList());}
+    public boolean owed(UUID propertyId){return store.transaction(tx->tx.find("housing_slot",propertyId.toString()).map(r->!r.value(OWED).isEmpty()).orElse(false));}
+    /** As {@link #beginRestore(UUID,UUID)}; an owed guild plot is paid for first by {@code actor}: their guild plot voucher, else the guild's Crowns. */
+    public Slot beginRestore(UUID propertyId,UUID operationId,UUID actor) {
+        return store.transaction(tx->{var r=matching(tx,propertyId,operationId);
+            if(!r.value(OWED).isEmpty()&&r.value("state").equals("PACKED")) {
+                Owner owner=Owner.parse(ownerKey(r));
+                String spent=actor==null?null:spendVoucherIn(tx,Owner.player(actor),RankRewards.GUILD_PLOT,"owed-restore:"+operationId);
+                if(spent==null) {
+                    long crowns=PlotRules.current().tier(owner.kind()==Owner.Kind.GUILD).extraPlotCrowns();
+                    if(crowns>0) {
+                        GuildCrownService.requireSpenderIn(tx,owner,actor);
+                        require(GuildCrownService.availableIn(tx,owner)>=crowns,INSUFFICIENT_BALANCE,"This guild plot was free with an Eternal rank that ended before three months. Setting it down again costs a guild plot voucher or "+crowns+" guild Crowns.");
+                        GuildCrownService.spendIn(tx,owner,actor,crowns,"owed-restore:"+operationId);
+                    }
+                }
+                r=save(tx,r,OWED,"",VOUCHER_RESERVATION,spent==null?"":spent);
+            }
+            require(r.value("state").equals("PACKED"),INVALID_STATE,"Property is not packed");return slot(save(tx,r,"state",State.RESTORING));});
+    }
     public Slot beginRestore(UUID propertyId,UUID operationId) { return store.transaction(tx->{var r=matching(tx,propertyId,operationId);
         require(r.value("state").equals("PACKED"),INVALID_STATE,"Property is not packed");return slot(save(tx,r,"state",State.RESTORING));}); }
     public Slot updateRestoreLocation(UUID propertyId,UUID operationId,ClaimLocation destination) {
@@ -287,15 +313,24 @@ public final class HousingService extends DomainSupport {
                 if(economy.balanceIn(tx,payer).available()<price)return HexOutcome.rejected(HexClaimRules.Result.of(HexClaimRules.Reason.COINS,price));
                 economy.spendIn(tx,payer,price,"hexplot-claim:"+operationId);
             }
-            long crowns=rules.plotPrice(guildPlot,held);
+            long crowns=rules.plotPrice(guildPlot,held);String voucherSpent=null;
             if(crowns>0) {
                 Owner wallet=payer==null?owner:payer;
                 GuildCrownService.requireSpenderIn(tx,wallet,actor);
+                // A plot voucher from a supporter rank pays instead: the owner's own for a player plot, the spender's guild plot voucher for a guild plot.
+                Owner holder=guildPlot?(actor==null?null:Owner.player(actor)):owner;
+                voucherSpent=spendVoucherIn(tx,holder,guildPlot?RankRewards.GUILD_PLOT:RankRewards.PLOT,"hexplot-claim-voucher:"+operationId);
+                if(voucherSpent!=null)crowns=0;
+            }
+            if(crowns>0) {
+                Owner wallet=payer==null?owner:payer;
                 if(GuildCrownService.availableIn(tx,wallet)<crowns)return HexOutcome.rejected(HexClaimRules.Result.of(wallet.kind()==Owner.Kind.GUILD?HexClaimRules.Reason.GUILD_CROWNS:HexClaimRules.Reason.PLOT_CROWNS,crowns));
                 GuildCrownService.spendIn(tx,wallet,actor,crowns,"hexplot-claim:"+operationId);
             }
             journal.prepareIn(tx,operationId,"CLAIM",owner,propertyId.toString());
             var data=fields("property",propertyId,"owner",owner.key(),"since",nextSince(tx,owner),"state",State.CLAIMING,"operation",operationId,"snapshotRef","","moveReservation","","attachedGuild",attachedGuild);
+            // Which voucher paid for a guild plot: one still on trial (Eternal's) can be owed back later (RankService).
+            if(guildPlot&&voucherSpent!=null)data.put(VOUCHER_RESERVATION,voucherSpent);
             data.putAll(locationFields(location));
             return new HexOutcome(verdict,slot(tx.save("housing_slot",propertyId.toString(),0,data)),location.cells(),Math.max(price,crowns),location.worldId());
         });
@@ -329,6 +364,11 @@ public final class HousingService extends DomainSupport {
     }
 
     public HexOutcome expandPlot(Owner owner,UUID propertyId,HexCoord cell,long expectedRevision,UUID operationId,HexClaimRules.Kind kind,HexContext context,Owner payer,long hexagonPrice,UUID actor) {
+        return expandPlot(owner,propertyId,cell,expectedRevision,operationId,kind,context,payer,hexagonPrice,actor,null);
+    }
+
+    /** As above; a paid hexagon is free when the paying player holds a {@code voucher} ({@link RankRewards#HOUSE_HEX} or {@link RankRewards#PRODUCTION_HEX}), which is spent. */
+    public HexOutcome expandPlot(Owner owner,UUID propertyId,HexCoord cell,long expectedRevision,UUID operationId,HexClaimRules.Kind kind,HexContext context,Owner payer,long hexagonPrice,UUID actor,String voucher) {
         Objects.requireNonNull(cell);Objects.requireNonNull(kind);Objects.requireNonNull(context);
         var outcome=store.transaction(tx->{
             var found=tx.find("housing_slot",propertyId.toString());
@@ -347,6 +387,7 @@ public final class HousingService extends DomainSupport {
             var verdict=HexClaimRules.expand(land,kind,location.cells().asSet(),cell,context.settings());
             if(!verdict.valid())return HexOutcome.rejected(verdict);
             long price=hexagonPrice>=0?hexagonPrice:context.settings().expansionPrice(location.cells().size());
+            if(price>0&&voucher!=null&&payer!=null&&payer.kind()==Owner.Kind.PLAYER&&spendVoucherIn(tx,payer,voucher,"hexplot-expand-voucher:"+operationId)!=null)price=0;
             if(price>0) {
                 require(payer!=null,INVALID_INPUT,"A paid expansion needs a payer");
                 if(context.settings().crownPriced()) {
@@ -488,5 +529,11 @@ public final class HousingService extends DomainSupport {
     private static Map<String,String> locationFields(ClaimLocation l) {
         return fields("world",l.worldId(),"minX",l.minX(),"minZ",l.minZ(),"width",l.width(),"depth",l.depth(),"scope",l.scope(),"guildId",l.guildId(),"buildingPresent",l.buildingPresent(),
             "lattice",l.cells()==null?null:l.cells().latticeId(),"cells",l.cells()==null?null:l.cells().text());
+    }
+
+    /** Spends one {@code voucher} that {@code who} holds and returns the spent reservation's id; null, and nothing spent, when they hold none. */
+    private String spendVoucherIn(TransactionalStore.Transaction tx,Owner who,String voucher,String receipt) {
+        if(who==null||ownership.availableIn(tx,who,voucher)<1)return null;
+        var reservation=ownership.reserveIn(tx,who,voucher,1,receipt);ownership.finishReservationIn(tx,reservation.id(),true);return reservation.id();
     }
 }

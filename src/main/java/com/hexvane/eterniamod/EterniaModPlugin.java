@@ -40,6 +40,7 @@ public final class EterniaModPlugin extends JavaPlugin {
     private com.hexvane.eterniamod.socialui.SocialUiBootstrap.Registration socialUi;
     private com.hexvane.eterniamod.housing.relocation.NativeRelocationCoordinator relocation;
     private com.hexvane.eterniamod.housing.relocation.GuildDepartureWorker departures;
+    private com.hexvane.eterniamod.housing.relocation.OwedPlotWorker owedPlots;
     private com.hexvane.eterniamod.inventory.NativeItemEscrow itemEscrow;
     private com.hexvane.eterniamod.collections.CollectionRuntime collectionRuntime;
     private com.hexvane.eterniamod.runtime.GameplayAdapters gameplayAdapters;
@@ -173,11 +174,15 @@ public final class EterniaModPlugin extends JavaPlugin {
         getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.runtime.GuildWaygateEntrySystem(this));
         getEntityStoreRegistry().registerSystem(new com.hexvane.eterniamod.setup.DisabledWorldEvents());
         memories = com.hexvane.eterniamod.memories.MemoryBootstrap.register(this);
+        com.hexvane.eterniamod.portals.PortalBootstrap.register(this);
         com.hexvane.eterniamod.moderation.ModerationBootstrap.register(this);
         com.hexvane.eterniamod.runtime.NativeSmoke.register(this);
         departures = new com.hexvane.eterniamod.housing.relocation.GuildDepartureWorker(this,
             error -> getLogger().atWarning().withCause(error).log("Guild property return needs recovery"));
         departures.start();
+        owedPlots = new com.hexvane.eterniamod.housing.relocation.OwedPlotWorker(this,
+            error -> getLogger().atWarning().withCause(error).log("Packing an owed guild plot failed; trying again shortly"));
+        owedPlots.start();
         mailboxFlags = new com.hexvane.eterniamod.customization.MailboxFlags(this);
         mailboxFlags.start();
         telemetrySampler = new com.hexvane.eterniamod.runtime.TelemetrySampler(this);
@@ -194,9 +199,11 @@ public final class EterniaModPlugin extends JavaPlugin {
         com.hexvane.eterniamod.moderation.ModerationBootstrap.shutdown();
         if (boundaryFog != null) boundaryFog.close();
         com.hexvane.eterniamod.chat.ChatBootstrap.close();
+        com.hexvane.eterniamod.portals.PortalBootstrap.close();
         com.hexvane.eterniamod.production.ProductionBootstrap.close();
         if (socialUi != null) socialUi.close();
         if (departures != null) departures.close();
+        if (owedPlots != null) owedPlots.close();
         if (mailboxFlags != null) mailboxFlags.close();
         if (telemetrySampler != null) telemetrySampler.close();
         if (plotMover != null) plotMover.close();
@@ -219,6 +226,7 @@ public final class EterniaModPlugin extends JavaPlugin {
     @Override
     protected void start() {
         com.hexvane.eterniamod.memories.MemoryBootstrap.start(this);
+        com.hexvane.eterniamod.portals.PortalBootstrap.start();
         com.hexvane.eterniamod.ranks.RankPermissions.refresh();
         // After every built-in plugin's setup, so this /hub replaces the Creative Hub one instead of being replaced by it.
         getCommandRegistry().registerCommand(new com.hexvane.eterniamod.command.EterniaHubCommand());

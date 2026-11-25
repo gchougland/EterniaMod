@@ -1,0 +1,117 @@
+{
+  "$Comment": "Nebula Axolotl: violet nebula puffs, left behind as it moves.",
+  "Shape": "Sphere",
+  "EmitOffset": {
+    "X": {
+      "Min": 0,
+      "Max": 0.3
+    },
+    "Y": {
+      "Min": 0.3,
+      "Max": 0.55
+    },
+    "Z": {
+      "Min": 0,
+      "Max": 0.3
+    }
+  },
+  "RenderMode": "BlendAdd",
+  "ParticleRotationInfluence": "Billboard",
+  "LinearFiltering": true,
+  "LightInfluence": 0,
+  "TrailSpawnerPositionMultiplier": 1,
+  "MaxConcurrentParticles": 7,
+  "TotalParticles": {
+    "Min": -1,
+    "Max": -1
+  },
+  "ParticleLifeSpan": {
+    "Min": 1.1,
+    "Max": 1.5
+  },
+  "SpawnRate": {
+    "Min": 3,
+    "Max": 4
+  },
+  "InitialVelocity": {
+    "Speed": {
+      "Min": 0.03,
+      "Max": 0.03
+    },
+    "Yaw": {
+      "Min": 0,
+      "Max": 360
+    },
+    "Pitch": {
+      "Min": 90,
+      "Max": 90
+    }
+  },
+  "Particle": {
+    "Texture": "Particles/Eternia/Pets/PetMote.png",
+    "FrameSize": {
+      "Width": 32,
+      "Height": 32
+    },
+    "ScaleRatioConstraint": "OneToOne",
+    "SoftParticles": "Disable",
+    "InitialAnimationFrame": {
+      "Scale": {
+        "X": {
+          "Min": 0.14,
+          "Max": 0.2
+        }
+      },
+      "Rotation": {
+        "Z": {
+          "Min": 0,
+          "Max": 0
+        }
+      },
+      "Opacity": 1,
+      "Color": "#8a6bff",
+      "FrameIndex": {
+        "Min": 0,
+        "Max": 0
+      }
+    },
+    "Animation": {
+      "0": {
+        "Scale": {
+          "X": {
+            "Min": 0.5,
+            "Max": 0.5
+          }
+        },
+        "Opacity": 0
+      },
+      "20": {
+        "Scale": {
+          "X": {
+            "Min": 1,
+            "Max": 1
+          }
+        },
+        "Opacity": 0.45
+      },
+      "75": {
+        "Scale": {
+          "X": {
+            "Min": 1.5,
+            "Max": 1.5
+          }
+        },
+        "Opacity": 0.3
+      },
+      "100": {
+        "Scale": {
+          "X": {
+            "Min": 2,
+            "Max": 2
+          }
+        },
+        "Opacity": 0
+      }
+    }
+  }
+}

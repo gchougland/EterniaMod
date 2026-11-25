@@ -34,3 +34,4 @@ qa.guild_board.hint = Press [{key}] to see your guild
 qa.guild_treasury.name = Guild Treasury
 qa.guild_treasury.description = Give to your guild here.
 qa.guild_treasury.hint = Press [{key}] to give to your guild
+pet.hint = Press [{key}] to pet

@@ -27,4 +27,40 @@ PrefabPreviewComponent #PrefabPreview { Anchor: (Full: 10); AllowDragYaw: true; 
 Label { Anchor: (Height: 26, Bottom: 10); Text: "Drag to turn. Scroll to zoom."; Style: (...$T.@MutedStyle, FontSize: 14, HorizontalAlignment: Center); }
 $T.@SecondaryTextButton #ClosePreview { Anchor: (Height: 44); Text: "Close preview"; }
 }
+Group #PetPanel { Visible: false; Anchor: (Width: 480, Left: 24); Background: $T.@JournalPanelSurface; Padding: (Full: 24); LayoutMode: Top;
+Group #PetArt { Anchor: (Height: 340, Bottom: 16); Background: $T.@JournalInsetSurface;
+Group #PetPicture { Anchor: (Width: 290, Height: 290); }
+Group #PetLock { Visible: false; Anchor: (Width: 44, Height: 44, Top: 14, Right: 14); Background: "Icons/lock.png"; }
+Group #PetBadge { Visible: false; Anchor: (Width: 150, Height: 30, Top: 14, Left: 14); Background: #d8b66b;
+Label #PetBadgeText { Style: (FontSize: 13, TextColor: #142528, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+}
+}
+Label #PetName { Anchor: (Height: 40, Bottom: 8); Style: (...$T.@TitleStyle, FontSize: 28, Wrap: false); }
+Group { Anchor: (Height: 30, Bottom: 14); LayoutMode: Left;
+Group #PetRankPill { Anchor: (Width: 180, Right: 10); Background: #d8b66b;
+Label #PetRank { Style: (FontSize: 13, TextColor: #142528, RenderBold: true, RenderUppercase: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+}
+Group { Anchor: (Width: 110); Background: PatchStyle(TexturePath: "Theme/Surfaces/Chip.png", Border: 6);
+Label #PetMove { Style: (FontSize: 14, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+}
+}
+Label #PetDescription { Anchor: (Height: 76, Bottom: 12); Style: (...$T.@DefaultLabelStyle, FontSize: 16); }
+Group #PetMoods { Anchor: (Height: 66); LayoutMode: Top;
+Label { Anchor: (Height: 22, Bottom: 8); Text: "Moods"; Style: $T.@CodexKickerStyle; }
+Group { Anchor: (Height: 34); LayoutMode: Left;
+Group #PetMoodChip0 { FlexWeight: 1; Anchor: (Right: 8); Background: PatchStyle(TexturePath: "Theme/Surfaces/Chip.png", Border: 6); Label #PetMood0 { Style: (FontSize: 14, TextColor: #f0e8d5, HorizontalAlignment: Center, VerticalAlignment: Center); } }
+Group #PetMoodChip1 { FlexWeight: 1; Anchor: (Right: 8); Background: PatchStyle(TexturePath: "Theme/Surfaces/Chip.png", Border: 6); Label #PetMood1 { Style: (FontSize: 14, TextColor: #f0e8d5, HorizontalAlignment: Center, VerticalAlignment: Center); } }
+Group #PetMoodChip2 { FlexWeight: 1; Anchor: (Right: 8); Background: PatchStyle(TexturePath: "Theme/Surfaces/Chip.png", Border: 6); Label #PetMood2 { Style: (FontSize: 14, TextColor: #f0e8d5, HorizontalAlignment: Center, VerticalAlignment: Center); } }
+Group #PetMoodChip3 { FlexWeight: 1; Background: PatchStyle(TexturePath: "Theme/Surfaces/Chip.png", Border: 6); Label #PetMood3 { Style: (FontSize: 14, TextColor: #f0e8d5, HorizontalAlignment: Center, VerticalAlignment: Center); } }
+}
+}
+Group #PetUnlock { Visible: false; Anchor: (Height: 96); LayoutMode: Top; Background: $T.@JournalInsetSurface; Padding: (Horizontal: 14, Vertical: 10);
+Label { Anchor: (Height: 22, Bottom: 4); Text: "How to get it"; Style: $T.@CodexKickerStyle; }
+Label #PetUnlockText { FlexWeight: 1; Style: (...$T.@DefaultLabelStyle, FontSize: 15); }
+}
+Group { FlexWeight: 1; }
+Label #PetNote { Anchor: (Height: 44, Bottom: 8); Style: (...$T.@MutedStyle, FontSize: 14, HorizontalAlignment: Center, VerticalAlignment: End); }
+$T.@TextButton #PetPrimary { Anchor: (Height: 52, Bottom: 10); }
+$T.@SecondaryTextButton #PetSecondary { Anchor: (Height: 44); }
+}
 }

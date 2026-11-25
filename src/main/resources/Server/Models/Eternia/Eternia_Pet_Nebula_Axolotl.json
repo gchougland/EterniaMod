@@ -1,0 +1,49 @@
+{
+  "$Comment": "Nebula Axolotl, the Elder rank pet. Built by tools/models/rank_pets.build.mjs (painted texture; Idle only, no Walk clip, so it floats).",
+  "Model": "NPC/Eternia/Pets/Nebula_Axolotl/Model.blockymodel",
+  "Texture": "NPC/Eternia/Pets/Nebula_Axolotl/Texture_Painted.png",
+  "MinScale": 1,
+  "MaxScale": 1,
+  "EyeHeight": 0.284,
+  "HitBox": {
+    "Min": {
+      "X": -0.4,
+      "Y": 0,
+      "Z": -0.4
+    },
+    "Max": {
+      "X": 0.4,
+      "Y": 0.474,
+      "Z": 0.4
+    }
+  },
+  "AnimationSets": {
+    "Idle": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Nebula_Axolotl/Animations/Idle.blockyanim",
+          "BlendingDuration": 0.2
+        }
+      ]
+    },
+    "Pet": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Nebula_Axolotl/Animations/Pet.blockyanim",
+          "BlendingDuration": 0.15,
+          "Looping": false
+        }
+      ]
+    }
+  },
+  "Particles": [
+    {
+      "SystemId": "Eternia_Pet_Nebula_Axolotl",
+      "TargetNodeName": "Body"
+    },
+    {
+      "SystemId": "Eternia_Pet_Nebula_Trail",
+      "TargetNodeName": "Body"
+    }
+  ]
+}

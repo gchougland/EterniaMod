@@ -1,5 +1,6 @@
 import {api,el,link,notice} from './api.js';
 import {saleBadge,closedReason} from './season-sale.js';
+import {RANKS} from './ranks.js';
 const money=(amount,currency)=>new Intl.NumberFormat(undefined,{style:'currency',currency}).format(amount);
 export function purchaseNotice(){
  const note=el('p',undefined,'sales-final'),icon=el('img'),copy=el('span'),terms=link('Read the Tebex terms','https://checkout.tebex.io/terms','');
@@ -26,22 +27,47 @@ export async function treasury(view,state){
  async function showCheckout(result){
   panel.hidden=false;panel.replaceChildren();
   if(result.status==='authorize'){panel.append(el('h2','Confirm your Hytale profile'),el('p','Tebex needs to confirm your profile before payment. Choose the same profile you used to sign in here.'),link('Continue with Hytale',result.authUrl,'button primary'));return;}
-  const pack=data.offers.find(p=>p.id===result.packageId);
-  panel.append(el('div','Review your purchase','eyebrow'),el('h2',pack?.name||'Your Crowns'),el('p',(pack?new Intl.NumberFormat().format(pack.crowns)+' Crowns for ':'Checkout for ')+state.user.name),el('div',money(result.price,result.currency),'number'),el('p','Tebex handles payment. Any final taxes and payment details are shown at checkout.','muted'));
+  const pack=data.offers.find(p=>p.id===result.packageId),rank=rankData?.ranks?.find(r=>r.packageId===result.packageId);
+  const what=pack?new Intl.NumberFormat().format(pack.crowns)+' Crowns for ':rank?(rank.upgradeFrom?'Upgrade from '+RANKS[rank.upgradeFrom].name+' for ':rank.subscription?'Monthly subscription for ':'Rank for '):'Checkout for ';
+  panel.append(el('div','Review your purchase','eyebrow'),el('h2',pack?.name||(rank?rank.name+' rank':'Your purchase')),el('p',what+state.user.name),el('div',money(result.price,result.currency),'number'),el('p','Tebex handles payment. Any final taxes and payment details are shown at checkout.','muted'));
   panel.append(purchaseNotice());
   const pay=el('button','Loading secure checkout…','primary');pay.disabled=true;panel.append(pay);
   const fallback=link('Open secure checkout in a new tab',result.checkoutUrl);fallback.target='_blank';fallback.rel='noopener noreferrer';panel.append(fallback);
   const again=el('button','Choose another package');again.onclick=()=>{panel.hidden=true;grid.scrollIntoView({block:'nearest',behavior:'auto'});};panel.append(again);
   try{const Tebex=await loadCheckout();Tebex.checkout.init({ident:result.ident,theme:'dark',colors:[{name:'primary',color:'#d8b66b'},{name:'secondary',color:'#6c9a87'}]});
    if(!eventsBound){
-    Tebex.checkout.on('payment:complete',()=>{panel.hidden=true;notice('Checkout finished. Your Crowns will appear after delivery is confirmed.');refreshBalance();});
+    Tebex.checkout.on('payment:complete',()=>{panel.hidden=true;notice('Checkout finished. Your purchase arrives in game once delivery is confirmed.');refreshBalance();loadRanks();});
     Tebex.checkout.on('payment:error',()=>notice('Payment could not be completed. You can try again in checkout.',true));eventsBound=true;
    }
    pay.textContent='Continue to secure payment';pay.disabled=false;pay.onclick=()=>{try{Tebex.checkout.launch();}catch{notice('Use the secure checkout link to continue.',true);}};
   }catch(e){pay.textContent='Checkout could not load';notice(e.message+' You can use the secure checkout link instead.',true);}
   panel.scrollIntoView({block:'nearest',behavior:'auto'});
  }
- let data;
+ let data,rankData;
+ // Supporter ranks: one card each, priced for the signed in player (an upgrade costs the difference).
+ const rankSection=el('section',undefined,'rank-section');
+ rankSection.append(el('div','Supporter ranks','eyebrow'),el('h2','Support Eternia, shine in style'),el('p','Ranks are one time purchases, except Eternal, which is monthly. Already have a rank? Upgrading only costs the difference.','muted'));
+ const rankGrid=el('div',undefined,'rank-grid');rankSection.append(rankGrid);
+ const money2=(amount,currency)=>money(amount,currency);
+ async function loadRanks(){
+  try{rankData=await api('/api/store/ranks');}catch(e){rankGrid.replaceChildren(el('div',e.message,'empty'));return;}
+  rankGrid.replaceChildren();
+  for(const rank of rankData.ranks){
+   const info=RANKS[rank.rank],card=el('article',undefined,'card rank-card');card.style.setProperty('--rank',info.color);
+   card.append(el('h3',info.name,'rank-name'));
+   const perks=el('ul',undefined,'rank-perks');for(const perk of info.perks)perks.append(el('li',perk));card.append(perks);
+   if(rank.owned){card.append(el('strong',rank.subscription?'Subscribed':'You have this rank','rank-owned'));rankGrid.append(card);continue;}
+   if(rank.packageId===undefined){card.append(el('p','Coming soon','muted rank-price'));rankGrid.append(card);continue;}
+   card.append(el('strong',money2(rank.price,rank.currency)+(rank.subscription?' a month':''),'rank-price'));
+   if(rank.upgradeFrom)card.append(el('p','Upgrade price from '+RANKS[rank.upgradeFrom].name,'muted rank-upgrade'));
+   if(!state.user&&state.authConfigured)card.append(link('Sign in to purchase','/auth/login?returnTo=store','button primary'));
+   else{const label=rank.upgradeFrom?'Upgrade':rank.subscription?'Subscribe':'Choose rank',buy=el('button',label,'primary');buy.disabled=!rankData.checkoutEnabled||!state.user;
+    buy.onclick=async()=>{if(loading)return;loading=true;buy.disabled=true;buy.textContent='Preparing checkout…';try{await showCheckout(await api('/api/store/checkout',{method:'POST',body:JSON.stringify({packageId:rank.packageId})}));}catch(e){notice(e.message,true);}finally{loading=false;buy.disabled=false;buy.textContent=label;}};card.append(buy);}
+   rankGrid.append(card);
+  }
+ }
+ view.append(rankSection);
+ await loadRanks();
  try{data=await api('/api/store');}catch(e){grid.append(el('div',e.message,'empty'));return;}
  if(!data.checkoutEnabled)view.insertBefore(el('p','The treasury is being prepared. Purchases will open soon.','notice'),grid);
  for(const [index,pack] of data.offers.entries()){

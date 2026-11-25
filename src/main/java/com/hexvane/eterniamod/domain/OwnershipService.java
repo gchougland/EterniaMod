@@ -8,6 +8,8 @@ import static com.hexvane.eterniamod.domain.DomainException.Code.*;
 
 public final class OwnershipService extends DomainSupport {
     public enum Kind { UNLOCK, CAPABILITY, QUANTITY }
+    /** Receipt prefix of grants on trial ({@code RankService}): spent after every other grant of the same content. */
+    static final String TRIAL_PREFIX="rank-reward-trial:";
     public record GrantRequest(String receipt,Owner owner,String contentId,Kind kind,long quantity,Instant validUntil) {
         public GrantRequest { text(receipt,"receipt",240);Objects.requireNonNull(owner);content(contentId);Objects.requireNonNull(kind);positive(quantity);
             require(kind==Kind.QUANTITY||quantity==1,INVALID_INPUT,"Unlock/capability grants have quantity one"); }
@@ -27,6 +29,10 @@ public final class OwnershipService extends DomainSupport {
     boolean ownsIn(TransactionalStore.Transaction tx,Owner owner,String contentId) {
         return tx.scan("grant").stream().anyMatch(r->matches(r,owner,contentId)&&active(r)&&( !r.value("kind").equals(Kind.QUANTITY.name())||r.number("available")>0));
     }
+    /** Content ids starting with {@code prefix} that the owner holds an active (unrevoked, unexpired) grant of, from one scan. */
+    Set<String> activeContentIn(TransactionalStore.Transaction tx,Owner owner,String prefix) {
+        var out=new TreeSet<String>();for(var r:tx.scan("grant"))if(r.value("owner").equals(owner.key())&&r.value("content").startsWith(prefix)&&active(r))out.add(r.value("content"));return out;
+    }
     public long available(Owner owner,String contentId) { return store.transaction(tx->availableIn(tx,owner,contentId)); }
     long availableIn(TransactionalStore.Transaction tx,Owner owner,String contentId) {
         long sum=0;for(var r:tx.scan("grant"))if(matches(r,owner,contentId)&&active(r)&&r.value("kind").equals("QUANTITY"))sum=Math.addExact(sum,r.number("available"));return sum;
@@ -39,7 +45,9 @@ public final class OwnershipService extends DomainSupport {
         if(!receipt(tx,"quantity_reserve_receipt",receipt,input))return reservation(row(tx,"quantity_reservation",id));
         require(availableIn(tx,owner,contentId)>=quantity,INSUFFICIENT_BALANCE,"Not enough available content");
         var allocation=new TreeMap<>(input);long left=quantity;
-        for(var r:tx.scan("grant")) {
+        // Grants still on trial (a subscription reward not yet kept for good) are spent last.
+        var grants=new ArrayList<>(tx.scan("grant"));grants.sort(Comparator.comparing(r->r.value("receipt").startsWith(TRIAL_PREFIX)));
+        for(var r:grants) {
             if(left==0)break;
             if(!matches(r,owner,contentId)||!active(r)||!r.value("kind").equals("QUANTITY"))continue;
             long take=Math.min(left,r.number("available"));if(take==0)continue;

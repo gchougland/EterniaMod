@@ -80,7 +80,8 @@ class TitleCatalogTest {
             assertTrue(text.length() <= Titles.MAX_TEXT, title.id() + ": too long for a card or nameplate");
             assertFalse(text.contains("-") || text.contains("–") || text.contains("—"), title.id() + ": no dashes");
             assertTrue(text.matches("[A-Za-z' ]+"), title.id() + ": letters, spaces and apostrophes only");
-            if (title.kind() == CollectionService.Kind.SUFFIX_TITLE)
+            // Member is Founder's suffix from the rank sheet, worn with the Founding prefix around the name.
+            if (title.kind() == CollectionService.Kind.SUFFIX_TITLE && !title.id().equals("eternia:title/member"))
                 assertTrue(text.startsWith("the ") || text.startsWith("of "), title.id() + ": a suffix starts with \"the\" or \"of\" so \"Name " + text + "\" reads naturally");
         }
     }
@@ -127,6 +128,8 @@ class TitleCatalogTest {
         titleIds.removeAll(seen);
         // Rank titles come with ranks, not goals.
         titleIds.removeIf(id -> id.startsWith("eternia:title/rank_"));
+        // Founding and Member come with the Founder rank's rewards (Ranks/rewards.json).
+        titleIds.removeAll(Set.of("eternia:title/founding", "eternia:title/member"));
         assertEquals(Set.of("eternia:title/wayfarer", "eternia:title/of_the_hearth", "eternia:title/alpha_tester"), titleIds);
     }
 

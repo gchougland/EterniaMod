@@ -1,0 +1,166 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.Teleporter.name",
+    "Description": "eternia_portals.description"
+  },
+  "Icon": "Icons/ItemsGenerated/Teleporter.png",
+  "Categories": [
+    "Blocks.Portals"
+  ],
+  "MaxStack": 10,
+  "PlayerAnimationsId": "Block",
+  "Interactions": {
+    "Secondary": {
+      "Interactions": [
+        "Teleporter_Place"
+      ]
+    }
+  },
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "CustomModel": "Blocks/Miscellaneous/Teleporter_Pad.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/Miscellaneous/Teleporter_Pad_Texture.png",
+        "Weight": 1
+      }
+    ],
+    "Flags": {},
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Benches"
+      }
+    },
+    "BlockEntity": {
+      "Components": {
+        "EterniaPortal": {},
+        "TrackedPlacement": {}
+      }
+    },
+    "BlockParticleSetId": "Stone",
+    "BlockSoundSetId": "Stone",
+    "PhysicalMaterialId": "Stone",
+    "AmbientSoundEventId": "SFX_Portal_Neutral",
+    "Particles": [
+      {
+        "SystemId": "Portal_Square_Blue_Fit",
+        "PositionOffset": {
+          "Y": -1,
+          "Z": -0.3,
+          "X": 0.0
+        },
+        "RotationOffset": {
+          "Yaw": 0.0
+        },
+        "Scale": 1.0
+      }
+    ],
+    "State": {
+      "Definitions": {
+        "Active": {
+          "AmbientSoundEventId": "SFX_Portal_Neutral",
+          "Particles": [
+            {
+              "SystemId": "Portal_Square_Blue_Fit",
+              "PositionOffset": {
+                "Y": -1,
+                "Z": -0.3,
+                "X": 0.0
+              },
+              "RotationOffset": {
+                "Yaw": 0.0
+              },
+              "Scale": 1.0
+            }
+          ],
+          "Interactions": {
+            "Use": {
+              "Interactions": [
+                {
+                  "Type": "EterniaPortal"
+                }
+              ]
+            },
+            "CollisionEnter": {
+              "Cooldown": {
+                "Cooldown": 1
+              },
+              "Interactions": [
+                {
+                  "Type": "EterniaPortal"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Interactions": {
+      "Use": {
+        "Interactions": [
+          {
+            "Type": "EterniaPortal"
+          }
+        ]
+      },
+      "CollisionEnter": {
+        "Cooldown": {
+          "Cooldown": 1
+        },
+        "Interactions": [
+          {
+            "Type": "EterniaPortal"
+          }
+        ]
+      }
+    },
+    "ParticleColor": "#4e534c",
+    "VariantRotation": "NESW",
+    "HitboxType": "Teleporter",
+    "TextureComputedColor": "#5D5C49",
+    "InteractionHint": "eternia_portals.hint"
+  },
+  "IconProperties": {
+    "Scale": 0.25,
+    "Rotation": [
+      22.5,
+      45.0,
+      22.5
+    ],
+    "Translation": [
+      3.0,
+      -42.0
+    ]
+  },
+  "ItemLevel": 30,
+  "Recipe": {
+    "TimeSeconds": 2,
+    "Input": [
+      {
+        "ItemId": "Wood_Azure_Trunk",
+        "Quantity": 8
+      },
+      {
+        "ItemId": "Plant_Crop_Mana3",
+        "Quantity": 2
+      },
+      {
+        "Quantity": 10,
+        "ResourceTypeId": "Rock"
+      }
+    ],
+    "OutputQuantity": 2,
+    "BenchRequirement": [
+      {
+        "Id": "Arcanebench",
+        "Type": "Crafting",
+        "Categories": [
+          "Arcane_Portals"
+        ]
+      }
+    ]
+  },
+  "Quality": "Rare",
+  "ItemSoundSetId": "ISS_Blocks_Stone"
+}

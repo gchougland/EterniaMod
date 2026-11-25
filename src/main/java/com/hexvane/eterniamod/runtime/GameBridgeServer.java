@@ -67,6 +67,13 @@ public final class GameBridgeServer implements AutoCloseable {
                     .map(p->Map.of("id",p.packageId(),"revision",p.revision(),"crowns",p.benefits().getFirst().quantity())).toList();
                 reply(exchange,200,Map.of("source","game","products",products));return;
             }
+            if(path.equals("/v1/store/ranks")){
+                // Rank packages the game will deliver: one benefit, a ladder step or Founder (one time) or Eternal (leased, subscription).
+                var products=services.readView(RankProductsKey.INSTANCE,java.time.Duration.ofSeconds(10),()->services.commerce().products()).stream()
+                    .filter(p->Objects.equals(tebexPackages.get(p.packageId()),p.revision())&&p.benefits().size()==1)
+                    .map(GameBridgeServer::rankProduct).filter(Objects::nonNull).toList();
+                reply(exchange,200,Map.of("source","game","products",products));return;
+            }
             if(path.matches("/v1/players/[0-9a-fA-F-]{36}/overview")) {
                 UUID player=UUID.fromString(path.split("/")[3]);
                 var payload=services.readView(new OverviewKey(player),java.time.Duration.ofSeconds(2),()->overviewPayload(player));
@@ -112,7 +119,11 @@ public final class GameBridgeServer implements AutoCloseable {
                 if(overview.account()==null)return null;
                 var payload=new LinkedHashMap<String,Object>();
                 payload.put("source","game");payload.put("updatedAt",Instant.now());
-                payload.put("account",Map.of("uuid",player,"name",overview.account().displayName(),"rank",services.ownership().owns(Owner.player(player),"eternia:rank/supporter")?"Supporter":"Citizen"));
+                var held=services.ranks().ranks(player);var paid=services.ranks().paid(player);
+                // Shown rank: the highest supporter rank held by any means. Upgrade prices use only the paid ladder.
+                String shown="Citizen";for(String id:com.hexvane.eterniamod.domain.SupporterRanks.ALL)if(held.contains(id))shown=com.hexvane.eterniamod.ranks.Rank.find(id).map(com.hexvane.eterniamod.ranks.Rank::displayName).orElse(shown);
+                payload.put("account",Map.of("uuid",player,"name",overview.account().displayName(),"rank",shown));
+                payload.put("ranks",Map.of("held",List.copyOf(held),"paid",paid,"ladder",com.hexvane.eterniamod.domain.SupporterRanks.ladderRank(paid)));
                 payload.put("coins",overview.coins());
                 payload.put("crowns",services.premium().balance(player));
                 var collectionNames=new HashMap<String,String>();services.collection().definitions().forEach(d->collectionNames.put(d.id(),d.name()));
@@ -155,4 +166,24 @@ public final class GameBridgeServer implements AutoCloseable {
         };
     }
     @Override public void close(){server.stop(0);executor.shutdownNow();}
+
+    private enum RankProductsKey { INSTANCE }
+
+    /** A rank package as the website sees it, or null when the product is not a well formed rank package. */
+    static Map<String,Object> rankProduct(com.hexvane.eterniamod.domain.CommerceService.Product p){
+        var b=p.benefits().getFirst();
+        if(b.kind()!=OwnershipService.Kind.UNLOCK||b.quantity()!=1)return null;
+        String content=b.contentId();
+        if(content.startsWith(com.hexvane.eterniamod.domain.SupporterRanks.STEP_PREFIX)){
+            if(p.subscription()||b.expiresWithSubscription())return null;
+            String[] step=content.substring(com.hexvane.eterniamod.domain.SupporterRanks.STEP_PREFIX.length()).split("-");
+            try{if(step.length!=2||!com.hexvane.eterniamod.domain.SupporterRanks.step(step[0],step[1]).equals(content))return null;}catch(IllegalArgumentException bad){return null;}
+            return Map.of("id",p.packageId(),"revision",p.revision(),"rank",step[1],"from",step[0],"subscription",false);
+        }
+        if(content.equals(com.hexvane.eterniamod.domain.SupporterRanks.content(com.hexvane.eterniamod.domain.SupporterRanks.FOUNDER))&&!p.subscription()&&!b.expiresWithSubscription())
+            return Map.of("id",p.packageId(),"revision",p.revision(),"rank","founder","from","none","subscription",false);
+        if(content.equals(com.hexvane.eterniamod.domain.SupporterRanks.content(com.hexvane.eterniamod.domain.SupporterRanks.ETERNAL))&&p.subscription()&&b.expiresWithSubscription())
+            return Map.of("id",p.packageId(),"revision",p.revision(),"rank","eternal","from","none","subscription",true);
+        return null;
+    }
 }

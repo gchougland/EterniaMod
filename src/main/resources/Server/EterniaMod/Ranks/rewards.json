@@ -1,0 +1,72 @@
+{
+  "$Comment": "What each supporter rank gives once, on top of its own name title, from the Rank Rewards sheet. Every rank a player holds gives its own set; buying a higher rank outright also gives the ranks below it. Ranks keep their ids (starborn, celestial, cosmic) and show as Settler, Steward and Elder. Each slot is given once per player ever, so renewing Eternal or buying again never repeats it. A slot with an empty content is not decided yet: fill it in later and everyone who already holds the rank gets it at their next login. whileActive: held only while the rank is held, and given again when it comes back (Eternal's pet and titles). months: paid months of a subscription before it is given, then kept for good. keepAfter: given at once, but if the subscription ends before that many paid months it is taken back, and a guild plot it already paid for is packed away automatically; after that many months it is kept for good (Eternal's guild plot voucher: 3). Everything else is kept after the first month. A refund or chargeback takes a rank's rewards back. Vouchers: plot, house_hex and production_hex are spent instead of Crowns on your own plots; guild_plot is spent instead of guild Crowns on a new guild plot.",
+  "Ranks": {
+    "founder": [
+      { "slot": "badge", "content": "", "kind": "UNLOCK", "note": "Founders Badge" },
+      { "slot": "cosmetic1", "content": "", "kind": "UNLOCK", "note": "Cosmetic, to be decided" },
+      { "slot": "title_prefix", "content": "eternia:title/founding", "kind": "UNLOCK", "note": "Prefix: Founding" },
+      { "slot": "title_suffix", "content": "eternia:title/member", "kind": "UNLOCK", "note": "Suffix: Member" },
+      { "slot": "pet", "content": "eternia:pet/corn_buddy_crowned", "kind": "QUANTITY", "note": "Pet: Corn King" },
+      { "slot": "house", "content": "", "kind": "UNLOCK", "note": "House, to be decided" },
+      { "slot": "prop1", "content": "", "kind": "QUANTITY", "note": "Prop, to be decided" },
+      { "slot": "voucher_plot", "content": "eternia:voucher/plot", "kind": "QUANTITY", "quantity": 1 },
+      { "slot": "voucher_house_hex", "content": "eternia:voucher/house_hex", "kind": "QUANTITY", "quantity": 2 },
+      { "slot": "voucher_production_hex", "content": "eternia:voucher/production_hex", "kind": "QUANTITY", "quantity": 2 }
+    ],
+    "wanderer": [
+      { "slot": "cosmetic1", "content": "", "kind": "UNLOCK" },
+      { "slot": "title1", "content": "", "kind": "UNLOCK" },
+      { "slot": "title2", "content": "", "kind": "UNLOCK" },
+      { "slot": "pet", "content": "eternia:pet/moss_hedgehog", "kind": "QUANTITY" },
+      { "slot": "prop1", "content": "", "kind": "QUANTITY" },
+      { "slot": "prop2", "content": "", "kind": "QUANTITY" },
+      { "slot": "house", "content": "", "kind": "UNLOCK", "note": "House, to be decided" }
+    ],
+    "starborn": [
+      { "slot": "cosmetic1", "content": "", "kind": "UNLOCK" },
+      { "slot": "title1", "content": "", "kind": "UNLOCK" },
+      { "slot": "title2", "content": "", "kind": "UNLOCK" },
+      { "slot": "pet", "content": "eternia:pet/starling_owlet", "kind": "QUANTITY" },
+      { "slot": "prop1", "content": "", "kind": "QUANTITY" },
+      { "slot": "prop2", "content": "", "kind": "QUANTITY" },
+      { "slot": "voucher_plot", "content": "eternia:voucher/plot", "kind": "QUANTITY", "quantity": 1 },
+      { "slot": "house", "content": "", "kind": "UNLOCK", "note": "House, to be decided" }
+    ],
+    "celestial": [
+      { "slot": "cosmetic1", "content": "", "kind": "UNLOCK" },
+      { "slot": "cosmetic2", "content": "", "kind": "UNLOCK" },
+      { "slot": "title1", "content": "", "kind": "UNLOCK" },
+      { "slot": "title2", "content": "", "kind": "UNLOCK" },
+      { "slot": "pet", "content": "eternia:pet/moonmoth_fox", "kind": "QUANTITY" },
+      { "slot": "prop1", "content": "", "kind": "QUANTITY" },
+      { "slot": "prop2", "content": "", "kind": "QUANTITY" },
+      { "slot": "voucher_plot", "content": "eternia:voucher/plot", "kind": "QUANTITY", "quantity": 1 },
+      { "slot": "house", "content": "", "kind": "UNLOCK", "note": "House, to be decided" }
+    ],
+    "cosmic": [
+      { "slot": "cosmetic1", "content": "", "kind": "UNLOCK" },
+      { "slot": "cosmetic2", "content": "", "kind": "UNLOCK" },
+      { "slot": "title1", "content": "", "kind": "UNLOCK" },
+      { "slot": "title2", "content": "", "kind": "UNLOCK" },
+      { "slot": "pet", "content": "eternia:pet/nebula_axolotl", "kind": "QUANTITY" },
+      { "slot": "prop1", "content": "", "kind": "QUANTITY" },
+      { "slot": "prop2", "content": "", "kind": "QUANTITY" },
+      { "slot": "voucher_plot", "content": "eternia:voucher/plot", "kind": "QUANTITY", "quantity": 1 },
+      { "slot": "voucher_guild_plot", "content": "eternia:voucher/guild_plot", "kind": "QUANTITY", "quantity": 1 },
+      { "slot": "house", "content": "", "kind": "UNLOCK", "note": "House, to be decided" }
+    ],
+    "eternal": [
+      { "slot": "cosmetic1", "content": "", "kind": "UNLOCK" },
+      { "slot": "cosmetic2", "content": "", "kind": "UNLOCK" },
+      { "slot": "cosmetic3", "content": "", "kind": "UNLOCK" },
+      { "slot": "title1", "content": "", "kind": "UNLOCK", "whileActive": true },
+      { "slot": "title2", "content": "", "kind": "UNLOCK", "whileActive": true },
+      { "slot": "pet", "content": "eternia:pet/aether_drakeling", "kind": "QUANTITY", "whileActive": true },
+      { "slot": "prop1", "content": "", "kind": "QUANTITY" },
+      { "slot": "prop2", "content": "", "kind": "QUANTITY" },
+      { "slot": "voucher_plot", "content": "eternia:voucher/plot", "kind": "QUANTITY", "quantity": 2 },
+      { "slot": "voucher_guild_plot", "content": "eternia:voucher/guild_plot", "kind": "QUANTITY", "quantity": 1, "keepAfter": 3 },
+      { "slot": "house", "content": "", "kind": "UNLOCK", "note": "House, to be decided" }
+    ]
+  }
+}

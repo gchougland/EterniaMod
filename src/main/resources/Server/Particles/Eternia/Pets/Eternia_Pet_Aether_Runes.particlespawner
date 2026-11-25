@@ -1,0 +1,126 @@
+{
+  "$Comment": "Aether Drakeling: glowing runes circling up round it.",
+  "Shape": "Sphere",
+  "EmitOffset": {
+    "X": {
+      "Min": 0.55,
+      "Max": 0.65
+    },
+    "Y": {
+      "Min": 0.2,
+      "Max": 0.45
+    },
+    "Z": {
+      "Min": 0.55,
+      "Max": 0.65
+    }
+  },
+  "RenderMode": "BlendAdd",
+  "ParticleRotationInfluence": "Billboard",
+  "LinearFiltering": true,
+  "LightInfluence": 0,
+  "MaxConcurrentParticles": 5,
+  "TotalParticles": {
+    "Min": -1,
+    "Max": -1
+  },
+  "ParticleLifeSpan": {
+    "Min": 1.8,
+    "Max": 2.2
+  },
+  "SpawnRate": {
+    "Min": 1.5,
+    "Max": 1.9
+  },
+  "InitialVelocity": {
+    "Speed": {
+      "Min": 0.14,
+      "Max": 0.14
+    },
+    "Yaw": {
+      "Min": 0,
+      "Max": 360
+    },
+    "Pitch": {
+      "Min": 90,
+      "Max": 90
+    }
+  },
+  "Attractors": [
+    {
+      "RadialAxis": {
+        "X": 0,
+        "Y": 1,
+        "Z": 0
+      },
+      "RadialTangentImpulse": 0.55
+    }
+  ],
+  "Particle": {
+    "Texture": "Particles/Eternia/Pets/PetRunes.png",
+    "FrameSize": {
+      "Width": 32,
+      "Height": 32
+    },
+    "ScaleRatioConstraint": "OneToOne",
+    "SoftParticles": "Disable",
+    "InitialAnimationFrame": {
+      "Scale": {
+        "X": {
+          "Min": 0.17,
+          "Max": 0.21
+        }
+      },
+      "Rotation": {
+        "Z": {
+          "Min": 0,
+          "Max": 0
+        }
+      },
+      "Opacity": 1,
+      "Color": "#9ffcf3",
+      "FrameIndex": {
+        "Min": 0,
+        "Max": 3
+      }
+    },
+    "Animation": {
+      "0": {
+        "Scale": {
+          "X": {
+            "Min": 0.2,
+            "Max": 0.2
+          }
+        },
+        "Opacity": 0
+      },
+      "20": {
+        "Scale": {
+          "X": {
+            "Min": 1,
+            "Max": 1
+          }
+        },
+        "Opacity": 1
+      },
+      "75": {
+        "Scale": {
+          "X": {
+            "Min": 1,
+            "Max": 1
+          }
+        },
+        "Opacity": 0.9
+      },
+      "100": {
+        "Scale": {
+          "X": {
+            "Min": 0.4,
+            "Max": 0.4
+          }
+        },
+        "Opacity": 0
+      }
+    }
+  }
+}

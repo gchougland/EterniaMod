@@ -1,0 +1,44 @@
+{
+  "$Comment": "Moonmoth Fox, the Steward rank pet. Built by tools/models/rank_pets.build.mjs (painted texture; Idle only, no Walk clip, so it floats).",
+  "Model": "NPC/Eternia/Pets/Moonmoth_Fox/Model.blockymodel",
+  "Texture": "NPC/Eternia/Pets/Moonmoth_Fox/Texture_Painted.png",
+  "MinScale": 1,
+  "MaxScale": 1,
+  "EyeHeight": 0.43,
+  "HitBox": {
+    "Min": {
+      "X": -0.4,
+      "Y": 0,
+      "Z": -0.4
+    },
+    "Max": {
+      "X": 0.4,
+      "Y": 0.717,
+      "Z": 0.4
+    }
+  },
+  "AnimationSets": {
+    "Idle": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Moonmoth_Fox/Animations/Idle.blockyanim",
+          "BlendingDuration": 0.2
+        }
+      ]
+    },
+    "Pet": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Moonmoth_Fox/Animations/Pet.blockyanim",
+          "BlendingDuration": 0.15,
+          "Looping": false
+        }
+      ]
+    }
+  },
+  "Particles": [
+    {
+      "SystemId": "Eternia_Pet_Moonmoth_Fox"
+    }
+  ]
+}

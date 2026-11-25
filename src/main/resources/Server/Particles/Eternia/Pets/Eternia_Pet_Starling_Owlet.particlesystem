@@ -1,0 +1,13 @@
+{
+  "$Comment": "A rank pet effect: endless, it lives as long as the pet (built by tools/models/rank_pets.particles.mjs).",
+  "Spawners": [
+    {
+      "SpawnerId": "Eternia_Pet_Star_Twinkle"
+    },
+    {
+      "SpawnerId": "Eternia_Pet_Star_Glint"
+    }
+  ],
+  "CullDistance": 32,
+  "BoundingRadius": 1.5
+}

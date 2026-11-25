@@ -1,0 +1,125 @@
+{
+  "$Comment": "Moonmoth Fox: moon dust sifting from its wings.",
+  "Shape": "Cube",
+  "EmitOffset": {
+    "X": {
+      "Min": -0.4,
+      "Max": 0.4
+    },
+    "Y": {
+      "Min": 0.35,
+      "Max": 0.75
+    },
+    "Z": {
+      "Min": -0.4,
+      "Max": 0
+    }
+  },
+  "RenderMode": "BlendAdd",
+  "ParticleRotationInfluence": "Billboard",
+  "LinearFiltering": true,
+  "LightInfluence": 0,
+  "MaxConcurrentParticles": 13,
+  "TotalParticles": {
+    "Min": -1,
+    "Max": -1
+  },
+  "ParticleLifeSpan": {
+    "Min": 1.5,
+    "Max": 2.2
+  },
+  "SpawnRate": {
+    "Min": 5,
+    "Max": 6
+  },
+  "InitialVelocity": {
+    "Speed": {
+      "Min": 0.09,
+      "Max": 0.09
+    },
+    "Yaw": {
+      "Min": 0,
+      "Max": 360
+    },
+    "Pitch": {
+      "Min": -90,
+      "Max": -90
+    }
+  },
+  "Attractors": [
+    {
+      "DampingMultiplier": {
+        "X": 0.97,
+        "Y": 0.97,
+        "Z": 0.97
+      }
+    }
+  ],
+  "Particle": {
+    "Texture": "Particles/Eternia/Pets/PetMote.png",
+    "FrameSize": {
+      "Width": 32,
+      "Height": 32
+    },
+    "ScaleRatioConstraint": "OneToOne",
+    "SoftParticles": "Disable",
+    "InitialAnimationFrame": {
+      "Scale": {
+        "X": {
+          "Min": 0.035,
+          "Max": 0.06
+        }
+      },
+      "Rotation": {
+        "Z": {
+          "Min": 0,
+          "Max": 0
+        }
+      },
+      "Opacity": 1,
+      "Color": "#e3d6ff",
+      "FrameIndex": {
+        "Min": 0,
+        "Max": 0
+      }
+    },
+    "Animation": {
+      "0": {
+        "Scale": {
+          "X": {
+            "Min": 0.4,
+            "Max": 0.4
+          }
+        },
+        "Opacity": 0
+      },
+      "20": {
+        "Scale": {
+          "X": {
+            "Min": 1,
+            "Max": 1
+          }
+        },
+        "Opacity": 1
+      },
+      "75": {
+        "Scale": {
+          "X": {
+            "Min": 1,
+            "Max": 1
+          }
+        },
+        "Opacity": 1
+      },
+      "100": {
+        "Scale": {
+          "X": {
+            "Min": 0.6,
+            "Max": 0.6
+          }
+        },
+        "Opacity": 0
+      }
+    }
+  }
+}

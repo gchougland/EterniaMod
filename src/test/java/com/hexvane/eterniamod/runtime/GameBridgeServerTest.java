@@ -116,4 +116,30 @@ class GameBridgeServerTest {
             assertEquals(404,client.send(HttpRequest.newBuilder(root.resolve("/v1/players/"+UUID.randomUUID()+"/overview")).header("Authorization","Bearer "+token).build(),HttpResponse.BodyHandlers.ofString()).statusCode());
         }
     }
+
+    @Test void rankCatalogListsWellFormedRankPackagesAndTheOverviewShowsPaidRanks() throws Exception {
+        String token="test-service-token-12345678901234567890";
+        var config=new RuntimeConfig(true,"","","","127.0.0.1",0,token,"http://127.0.0.1:3000");
+        var services=new EterniaServices(new InMemoryStore());
+        java.util.function.BiConsumer<String,CommerceService.Benefit> one=(id,b)->services.commerce().register(new CommerceService.Product(id,1,id,java.util.List.of(b),b.expiresWithSubscription()));
+        one.accept("1",new CommerceService.Benefit("eternia:rank_step/none-starborn",OwnershipService.Kind.UNLOCK,1,false));
+        one.accept("2",new CommerceService.Benefit("eternia:rank_step/starborn-celestial",OwnershipService.Kind.UNLOCK,1,false));
+        one.accept("3",new CommerceService.Benefit("eternia:rank/eternal",OwnershipService.Kind.UNLOCK,1,true));
+        one.accept("4",new CommerceService.Benefit("eternia:rank_step/celestial-starborn",OwnershipService.Kind.UNLOCK,1,false));
+        services.commerce().register(new CommerceService.Product("5",1,"Eternal one off",java.util.List.of(new CommerceService.Benefit("eternia:rank/eternal",OwnershipService.Kind.UNLOCK,1,false)),false));
+        UUID player=UUID.randomUUID();services.accounts().recordAuthenticatedLogin(player,"Supporter");
+        services.commerce().fulfill(new CommerceService.VerifiedPurchase("tebex","pay","line","1",1,com.hexvane.eterniamod.domain.Owner.player(player),1,"",null,null));
+        try(var bridge=new GameBridgeServer(services,config);var client=HttpClient.newHttpClient()){
+            bridge.start();bridge.setTebexPackages(java.util.Map.of("1",1,"2",1,"3",1,"4",1,"5",1));
+            var request=HttpRequest.newBuilder(URI.create("http://127.0.0.1:"+bridge.port()+"/v1/store/ranks")).header("Authorization","Bearer "+token).build();
+            var products=JsonParser.parseString(client.send(request,HttpResponse.BodyHandlers.ofString()).body()).getAsJsonObject().getAsJsonArray("products");
+            var ids=new java.util.TreeSet<String>();for(var p:products)ids.add(p.getAsJsonObject().get("id").getAsString());
+            assertEquals(java.util.Set.of("1","2","3"),ids,"a downward step and a one off Eternal are not rank packages");
+            for(var p:products){var o=p.getAsJsonObject();if(o.get("id").getAsString().equals("2")){assertEquals("celestial",o.get("rank").getAsString());assertEquals("starborn",o.get("from").getAsString());}
+                if(o.get("id").getAsString().equals("3"))assertTrue(o.get("subscription").getAsBoolean());}
+            var overview=JsonParser.parseString(client.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:"+bridge.port()+"/v1/players/"+player+"/overview")).header("Authorization","Bearer "+token).build(),HttpResponse.BodyHandlers.ofString()).body()).getAsJsonObject();
+            assertEquals("starborn",overview.getAsJsonObject("ranks").get("ladder").getAsString());
+            assertEquals("Settler",overview.getAsJsonObject("account").get("rank").getAsString());
+        }
+    }
 }

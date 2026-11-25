@@ -5,6 +5,11 @@ citadel_jacket.json
 rootling.json
 corn_buddy.json
 corn_buddy_crowned.json
+moss_hedgehog.json
+starling_owlet.json
+moonmoth_fox.json
+nebula_axolotl.json
+aether_drakeling.json
 horse.json
 prowl_shirt.json
 trork_slayer.json
@@ -51,3 +56,5 @@ rank_starborn.json
 rank_celestial.json
 rank_cosmic.json
 rank_eternal.json
+founding.json
+member.json

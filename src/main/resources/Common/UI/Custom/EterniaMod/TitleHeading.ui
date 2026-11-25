@@ -1,0 +1,5 @@
+$T = "Theme/Citadel.ui";
+Group { Anchor: (Height: 34, Top: 6, Bottom: 4); LayoutMode: Left;
+  Label #HeadingText { FlexWeight: 1; Style: $T.@CodexKickerStyle; }
+  Label #HeadingCount { Anchor: (Width: 160); Style: (...$T.@MutedStyle, Wrap: false, HorizontalAlignment: End, VerticalAlignment: Center); }
+}

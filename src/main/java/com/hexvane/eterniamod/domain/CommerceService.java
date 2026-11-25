@@ -19,7 +19,14 @@ public final class CommerceService extends DomainSupport {
     public record Subscription(String id,Owner recipient,Instant paidUntil,String state,boolean cancellationRequested){}
     private final OwnershipService ownership;
     private final PremiumService premium;
+    private java.util.function.BiConsumer<TransactionalStore.Transaction,Owner> changed=(tx,owner)->{};
     CommerceService(TransactionalStore s,Clock c,Supplier<UUID> i,OwnershipService ownership,PremiumService premium){super(s,c,i);this.ownership=ownership;this.premium=premium;}
+    /** Called inside the transaction whenever a purchase is delivered, reversed or a subscription ends, so things worked out from ownership (paid ranks) follow at once. */
+    void onEntitlementsChanged(java.util.function.BiConsumer<TransactionalStore.Transaction,Owner> listener){changed=Objects.requireNonNull(listener);}
+    /** Told, inside the transaction, which content ids a refunded or charged back purchase had granted (after they are revoked). */
+    interface ReversalListener{void reversed(TransactionalStore.Transaction tx,Owner recipient,List<String> contentIds);}
+    private ReversalListener reversals=(tx,owner,content)->{};
+    void onReversed(ReversalListener listener){reversals=Objects.requireNonNull(listener);}
     public void register(Product product){store.transaction(tx->{var data=encode(product);String id=product.packageId+":"+product.revision;var old=tx.find("commerce_product",id);if(old.isPresent())require(old.get().fields().equals(data),CONFLICT,"Product revision is immutable");else tx.save("commerce_product",id,0,data);return null;});}
     public List<Product> products(){return store.transaction(tx->tx.scan("commerce_product").stream().map(CommerceService::product).toList());}
     /** Season sale windows are checked when a checkout starts, never here: a verified payment is the player's
@@ -69,7 +76,8 @@ public final class CommerceService extends DomainSupport {
                 var subscriptionData=prior.map(r->changed(r,"recipient",request.recipient.key(),"paidUntil",end,"lastPeriodStart",lastStart,"state",subscriptionState,"cancelRequested",keepCancellation)).orElseGet(()->fields("recipient",request.recipient.key(),"paidUntil",end,"lastPeriodStart",lastStart,"state",subscriptionState,"cancelRequested",false));
                 tx.save("subscription",sid,prior.map(TransactionalStore.Row::revision).orElse(0L),subscriptionData);
             }
-            return purchase(save(tx,purchase,"state","DELIVERED","reason","","grants",String.join("\n",grants)));});
+            var delivered=save(tx,purchase,"state","DELIVERED","reason","","grants",String.join("\n",grants));changed.accept(tx,request.recipient);
+            return purchase(delivered);});
     }
     public void requestCancellation(String provider,String subscriptionId,String eventReceipt){
         store.transaction(tx->{String id=key(provider,subscriptionId);if(!receipt(tx,"commerce_event",eventReceipt,fields("type","CANCEL_REQUESTED","subscription",id)))return null;var r=row(tx,"subscription",id);save(tx,r,"cancelRequested",true,"controlAt",clock.instant());return null;});
@@ -85,6 +93,7 @@ public final class CommerceService extends DomainSupport {
                 for(var purchase:tx.scan("commerce_purchase"))if(purchase.value("provider").equals(provider)&&purchase.value("subscription").equals(subscriptionId)&&purchase.value("state").equals("DELIVERED")&&!Instant.parse(purchase.value("periodStart")).isAfter(occurredAt)){
                     Product product=product(row(tx,"commerce_product",purchase.value("package")+":"+purchase.value("productRevision")));
                     for(int unit=0;unit<purchase.number("quantity");unit++)for(int n=0;n<product.benefits.size();n++)if(product.benefits.get(n).expiresWithSubscription)ownership.revokeIn(tx,"commerce:"+purchase.key()+":"+unit+":"+n);
+                    changed.accept(tx,Owner.parse(purchase.value("recipient")));
                 }
                 if(subscription.value("lastPeriodStart").isEmpty()||!Instant.parse(subscription.value("lastPeriodStart")).isAfter(occurredAt))subscription=save(tx,subscription,"state","ENDED");
             }
@@ -112,7 +121,10 @@ public final class CommerceService extends DomainSupport {
             else if(GuildCrownService.reversePurchaseIn(tx,receipt))continue;
             else ownership.revokeIn(tx,receipt);
         }
-        return save(tx,purchase,"state","REVERSED","reason",reason);
+        var reversed=save(tx,purchase,"state","REVERSED","reason",reason);Owner recipient=Owner.parse(purchase.value("recipient"));
+        var definition=tx.find("commerce_product",purchase.value("package")+":"+purchase.value("productRevision"));
+        if(definition.isPresent()&&!purchase.value("grants").isEmpty())reversals.reversed(tx,recipient,product(definition.get()).benefits.stream().map(Benefit::contentId).toList());
+        changed.accept(tx,recipient);return reversed;
     }
     public List<Purchase> purchases(Owner recipient){return store.transaction(tx->tx.scan("commerce_purchase").stream().filter(r->r.value("recipient").equals(recipient.key())).map(CommerceService::purchase).toList());}
     public List<Purchase> pending(){return store.transaction(tx->tx.scan("commerce_purchase").stream().filter(r->r.value("state").equals("PENDING")).map(CommerceService::purchase).toList());}

@@ -1,0 +1,4 @@
+$T = "Theme/Citadel.ui";
+Group { Anchor: (Height: 80); Background: $T.@JournalInsetSurface; Padding: (Full: 16);
+  Label #PetEmptyText { Style: (...$T.@MutedStyle, FontSize: 16, HorizontalAlignment: Center, VerticalAlignment: Center); }
+}

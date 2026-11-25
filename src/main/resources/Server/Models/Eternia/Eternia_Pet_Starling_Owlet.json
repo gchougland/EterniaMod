@@ -1,0 +1,113 @@
+{
+  "$Comment": "Starling Owlet, the Settler rank pet. Built by tools/models/rank_pets.build.mjs (painted texture; walks: Idle, Walk, Run, Sleep and emotes).",
+  "Model": "NPC/Eternia/Pets/Starling_Owlet/Model.blockymodel",
+  "Texture": "NPC/Eternia/Pets/Starling_Owlet/Texture_Painted.png",
+  "MinScale": 1,
+  "MaxScale": 1,
+  "EyeHeight": 0.439,
+  "HitBox": {
+    "Min": {
+      "X": -0.275,
+      "Y": 0,
+      "Z": -0.275
+    },
+    "Max": {
+      "X": 0.275,
+      "Y": 0.732,
+      "Z": 0.275
+    }
+  },
+  "AnimationSets": {
+    "Idle": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Starling_Owlet/Animations/Idle.blockyanim",
+          "BlendingDuration": 0.2
+        }
+      ]
+    },
+    "Walk": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Starling_Owlet/Animations/Walk.blockyanim",
+          "BlendingDuration": 0.15
+        }
+      ]
+    },
+    "Run": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Starling_Owlet/Animations/Run.blockyanim",
+          "BlendingDuration": 0.15
+        }
+      ]
+    },
+    "Sleep": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Starling_Owlet/Animations/Sleep.blockyanim",
+          "BlendingDuration": 0.4
+        }
+      ]
+    },
+    "Wake": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Starling_Owlet/Animations/Wake.blockyanim",
+          "BlendingDuration": 0.1,
+          "Looping": false
+        }
+      ]
+    },
+    "Happy": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Starling_Owlet/Animations/Happy.blockyanim",
+          "BlendingDuration": 0.1,
+          "Looping": false
+        }
+      ]
+    },
+    "LookAround": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Starling_Owlet/Animations/Look_Around.blockyanim",
+          "BlendingDuration": 0.2,
+          "Looping": false
+        }
+      ]
+    },
+    "Surprised": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Starling_Owlet/Animations/Surprised.blockyanim",
+          "BlendingDuration": 0.05,
+          "Looping": false
+        }
+      ]
+    },
+    "Wiggle": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Starling_Owlet/Animations/Wiggle.blockyanim",
+          "BlendingDuration": 0.1,
+          "Looping": false
+        }
+      ]
+    },
+    "Pet": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Starling_Owlet/Animations/Pet.blockyanim",
+          "BlendingDuration": 0.15,
+          "Looping": false
+        }
+      ]
+    }
+  },
+  "Particles": [
+    {
+      "SystemId": "Eternia_Pet_Starling_Owlet"
+    }
+  ]
+}

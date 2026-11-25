@@ -5,6 +5,25 @@
 ### Added
 
 - Server staff get an Analytics page on the website with graphs and downloadable reports, to see how many people play, how many come back, and what sells.
+- Supporter ranks are on the website store: Wanderer, Settler, Steward, Elder and Founder, plus Eternal as a monthly subscription. If you already have a rank, upgrading only costs the difference.
+- Each rank gives its own set of rewards and extra season pass XP. Founder's and Eternal's XP bonus add on top of your other rank.
+- Eternal's titles, pet and XP bonus last while you are subscribed. Its other rewards are yours to keep after the first month. Its guild plot voucher comes right away and is yours to keep after three months. If you stop sooner it is taken back, and a guild plot you already made with it is packed up. Setting that plot down again costs a guild plot voucher or guild Crowns.
+- Some ranks give plot and hexagon vouchers. Use one instead of Crowns when you add a plot or a hexagon. My Plots and the Claim Map show when a voucher will pay.
+- Founders get the new Founding and Member titles, and the Corn King pet.
+- Each supporter rank gives its own pet, with its own sparkles: a Moss Hedgehog for Wanderer, a Starling Owlet for Settler, a Moonmoth Fox for Steward, a Nebula Axolotl for Elder and an Aether Drakeling for Eternal. Equip yours in your Collection. The hedgehog and the owlet walk along beside you and the others float.
+- A new pet menu in your Collection shows every pet in the game. Pick one to see it up close and summon it, send it home or dismiss it. Pets you have not found yet show as a silhouette with a lock and tell you how to get them.
+- The Crowned Corn Buddy is now called the Corn King, and popcorn pops from his feet as he walks.
+- You can pet your pets. Look at one and press the use key: it leans into your hand, shuts its eyes happily and gives off a few hearts. Corn Buddy, the Corn King and every rank pet have their own reaction.
+- Titles in your Collection are now a list shown in their chat colours, split into prefixes and suffixes, with a preview of how your name looks in chat.
+- Teleporters are now personal portals. Step onto one or use it to open your portal list and travel to any portal on it in the same world.
+- Every player has their own portal list. Your own portals are on it, and other players' portals join it once you visit them.
+- Portal owners can rename a portal, make it private and choose which players may still use it. Only the owner can break it.
+- Your map and compass show only the portals on your own list.
+- Map markers you place are now only for you. The share option on the map no longer shares them, and markers others shared before no longer show for you.
+
+### Changed
+
+- The Starborn, Celestial and Cosmic ranks are now called Settler, Steward and Elder.
 
 ## [1.2.0] - 11/19/2026
 

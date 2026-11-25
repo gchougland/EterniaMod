@@ -163,3 +163,13 @@ a.pass-banner:hover .banner-cta{background:linear-gradient(#f0d394,#cbae6d)}
 .crown-fineprint{margin-top:28px}
 @media(max-width:600px){.sales-final{font-size:14px;padding:11px 13px}.sales-final a{white-space:normal}}
 .realm-online strong{color:var(--et-primary);font-weight:700;font-variant-numeric:tabular-nums}
+.rank-section{margin:32px 0 8px}.rank-section h2{margin:4px 0 6px}
+.rank-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:22px 0}
+.rank-card{display:flex;flex-direction:column;border-top:3px solid var(--rank,#d8b66b);padding:22px 20px}
+.rank-name{color:var(--rank,#d8b66b);font-size:24px;margin:0 0 12px}
+.rank-perks{list-style:none;padding:0;margin:0 0 18px;display:grid;gap:7px;color:var(--et-muted);font-size:14px}
+.rank-perks li{padding-left:18px;position:relative}.rank-perks li:before{content:'';position:absolute;left:2px;top:.5em;width:7px;height:7px;border-radius:2px;background:var(--rank,#d8b66b)}
+.rank-price{font-size:24px;margin-top:auto;margin-bottom:6px}.rank-upgrade{margin:0 0 12px;font-size:13px}.rank-owned{margin-top:auto;color:var(--rank,#d8b66b)}
+.rank-card button,.rank-card .button{width:100%;margin-top:8px}
+@media (max-width:900px){.rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.rank-grid{grid-template-columns:1fr}}

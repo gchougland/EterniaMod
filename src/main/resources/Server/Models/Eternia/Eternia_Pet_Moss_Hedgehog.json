@@ -1,0 +1,113 @@
+{
+  "$Comment": "Moss Hedgehog, the Wanderer rank pet. Built by tools/models/rank_pets.build.mjs (painted texture; walks: Idle, Walk, Run, Sleep and emotes).",
+  "Model": "NPC/Eternia/Pets/Moss_Hedgehog/Model.blockymodel",
+  "Texture": "NPC/Eternia/Pets/Moss_Hedgehog/Texture_Painted.png",
+  "MinScale": 1,
+  "MaxScale": 1,
+  "EyeHeight": 0.367,
+  "HitBox": {
+    "Min": {
+      "X": -0.352,
+      "Y": 0,
+      "Z": -0.352
+    },
+    "Max": {
+      "X": 0.352,
+      "Y": 0.611,
+      "Z": 0.352
+    }
+  },
+  "AnimationSets": {
+    "Idle": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Moss_Hedgehog/Animations/Idle.blockyanim",
+          "BlendingDuration": 0.2
+        }
+      ]
+    },
+    "Walk": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Moss_Hedgehog/Animations/Walk.blockyanim",
+          "BlendingDuration": 0.15
+        }
+      ]
+    },
+    "Run": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Moss_Hedgehog/Animations/Run.blockyanim",
+          "BlendingDuration": 0.15
+        }
+      ]
+    },
+    "Sleep": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Moss_Hedgehog/Animations/Sleep.blockyanim",
+          "BlendingDuration": 0.4
+        }
+      ]
+    },
+    "Wake": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Moss_Hedgehog/Animations/Wake.blockyanim",
+          "BlendingDuration": 0.1,
+          "Looping": false
+        }
+      ]
+    },
+    "Happy": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Moss_Hedgehog/Animations/Happy.blockyanim",
+          "BlendingDuration": 0.1,
+          "Looping": false
+        }
+      ]
+    },
+    "LookAround": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Moss_Hedgehog/Animations/Look_Around.blockyanim",
+          "BlendingDuration": 0.2,
+          "Looping": false
+        }
+      ]
+    },
+    "Surprised": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Moss_Hedgehog/Animations/Surprised.blockyanim",
+          "BlendingDuration": 0.05,
+          "Looping": false
+        }
+      ]
+    },
+    "Wiggle": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Moss_Hedgehog/Animations/Wiggle.blockyanim",
+          "BlendingDuration": 0.1,
+          "Looping": false
+        }
+      ]
+    },
+    "Pet": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Moss_Hedgehog/Animations/Pet.blockyanim",
+          "BlendingDuration": 0.15,
+          "Looping": false
+        }
+      ]
+    }
+  },
+  "Particles": [
+    {
+      "SystemId": "Eternia_Pet_Moss_Hedgehog"
+    }
+  ]
+}

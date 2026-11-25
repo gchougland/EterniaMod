@@ -24,12 +24,31 @@ export function config(env = process.env) {
  if(tebexPublicToken&&!/^[a-zA-Z0-9-]{10,160}$/.test(tebexPublicToken))throw new Error('Invalid TEBEX_PUBLIC_TOKEN format');
  const tebexPackages=JSON.parse(fs.readFileSync(path.join(root,'config/tebex-crowns.json'),'utf8'));
  if(!Array.isArray(tebexPackages)||tebexPackages.some(p=>!/^\d+$/.test(p.id)||!Number.isSafeInteger(p.crowns)||p.crowns<=0||!Number.isSafeInteger(p.revision)||p.revision<1||p.season!==undefined&&!/^eternia:[a-z0-9][a-z0-9_-]{0,95}$/.test(p.season))||new Set(tebexPackages.map(p=>p.id)).size!==tebexPackages.length)throw new Error('Invalid Crown package configuration');
+ // Rank packages: one per full price rank (from "none") and one per pay the difference upgrade (from the rank below).
+ const tebexRanks=JSON.parse(fs.readFileSync(path.join(root,'config/tebex-ranks.json'),'utf8'));
+ if(!validRankPackages(tebexRanks)||tebexRanks.some(r=>tebexPackages.some(p=>p.id===r.id)))throw new Error('Invalid rank package configuration');
  return {production, fixtures, baseUrl:baseUrl.origin, port:Number(env.PORT || 3847), host:production ? '0.0.0.0' : '127.0.0.1', secret,
  databaseUrl:env.DATABASE_URL, dataDir:path.resolve(root,env.DATA_DIR || 'data'),
  assetsDir:path.resolve(root,env.HYTALE_ASSETS_DIR || 'web/hytale-assets'), chromiumPath:env.CHROMIUM_PATH || undefined,
  issuer,clientId:env.HYTALE_OIDC_CLIENT_ID || '',clientSecret:env.HYTALE_OIDC_CLIENT_SECRET || '',
  redirectUri,
  admins:new Set((env.ADMIN_HYTALE_UUIDS || '').toLowerCase().split(',').map(x=>x.trim()).filter(Boolean)),adminNames:new Set((env.ADMIN_HYTALE_USERNAMES || '').toLowerCase().split(',').map(x=>x.trim()).filter(Boolean)),bridgeUrl,bridgeToken:env.GAME_BRIDGE_TOKEN || '',
- tebexPublicToken,tebexPrivateKey:env.TEBEX_PRIVATE_KEY||'',tebexCheckoutEnabled:env.TEBEX_CHECKOUT_ENABLED==='true',tebexAdminOnly:env.TEBEX_CHECKOUT_ADMIN_ONLY!=='false',tebexPackages,
+ tebexPublicToken,tebexPrivateKey:env.TEBEX_PRIVATE_KEY||'',tebexCheckoutEnabled:env.TEBEX_CHECKOUT_ENABLED==='true',tebexAdminOnly:env.TEBEX_CHECKOUT_ADMIN_ONLY!=='false',tebexPackages,tebexRanks,
  fixturePlayersOnline:Number.isSafeInteger(Number(env.FIXTURE_PLAYERS_ONLINE))&&env.FIXTURE_PLAYERS_ONLINE!==''?Number(env.FIXTURE_PLAYERS_ONLINE):42};
+}
+
+const LADDER=['wanderer','starborn','celestial','cosmic'];
+export function validRankPackages(list){
+ if(!Array.isArray(list))return false;
+ const ids=new Set(),pairs=new Set();
+ for(const r of list){
+  if(!r||!/^\d+$/.test(r.id)||!Number.isSafeInteger(r.revision)||r.revision<1||ids.has(r.id))return false;
+  const ladder=LADDER.indexOf(r.rank);
+  if(ladder<0&&!['founder','eternal'].includes(r.rank))return false;
+  if(ladder<0&&r.from!=='none')return false;
+  if(ladder>=0&&r.from!=='none'&&!(LADDER.indexOf(r.from)>=0&&LADDER.indexOf(r.from)<ladder))return false;
+  const pair=r.from+'>'+r.rank;if(pairs.has(pair))return false;
+  ids.add(r.id);pairs.add(pair);
+ }
+ return true;
 }

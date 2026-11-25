@@ -97,6 +97,15 @@
           "Looping": false
         }
       ]
+    },
+    "Pet": {
+      "Animations": [
+        {
+          "Animation": "NPC/Eternia/Pets/Corn_Buddy/Animations/Pet.blockyanim",
+          "BlendingDuration": 0.15,
+          "Looping": false
+        }
+      ]
     }
   },
   "MinScale": 1,

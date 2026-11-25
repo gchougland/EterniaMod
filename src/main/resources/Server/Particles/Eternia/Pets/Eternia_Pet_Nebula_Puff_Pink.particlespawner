@@ -1,0 +1,117 @@
+{
+  "$Comment": "Nebula Axolotl: pink nebula puffs, left behind as it moves.",
+  "Shape": "Sphere",
+  "EmitOffset": {
+    "X": {
+      "Min": 0,
+      "Max": 0.25
+    },
+    "Y": {
+      "Min": 0.35,
+      "Max": 0.55
+    },
+    "Z": {
+      "Min": 0,
+      "Max": 0.25
+    }
+  },
+  "RenderMode": "BlendAdd",
+  "ParticleRotationInfluence": "Billboard",
+  "LinearFiltering": true,
+  "LightInfluence": 0,
+  "TrailSpawnerPositionMultiplier": 1,
+  "MaxConcurrentParticles": 9,
+  "TotalParticles": {
+    "Min": -1,
+    "Max": -1
+  },
+  "ParticleLifeSpan": {
+    "Min": 1,
+    "Max": 1.4
+  },
+  "SpawnRate": {
+    "Min": 5,
+    "Max": 6
+  },
+  "InitialVelocity": {
+    "Speed": {
+      "Min": 0.03,
+      "Max": 0.03
+    },
+    "Yaw": {
+      "Min": 0,
+      "Max": 360
+    },
+    "Pitch": {
+      "Min": 90,
+      "Max": 90
+    }
+  },
+  "Particle": {
+    "Texture": "Particles/Eternia/Pets/PetMote.png",
+    "FrameSize": {
+      "Width": 32,
+      "Height": 32
+    },
+    "ScaleRatioConstraint": "OneToOne",
+    "SoftParticles": "Disable",
+    "InitialAnimationFrame": {
+      "Scale": {
+        "X": {
+          "Min": 0.12,
+          "Max": 0.17
+        }
+      },
+      "Rotation": {
+        "Z": {
+          "Min": 0,
+          "Max": 0
+        }
+      },
+      "Opacity": 1,
+      "Color": "#ff86d6",
+      "FrameIndex": {
+        "Min": 0,
+        "Max": 0
+      }
+    },
+    "Animation": {
+      "0": {
+        "Scale": {
+          "X": {
+            "Min": 0.5,
+            "Max": 0.5
+          }
+        },
+        "Opacity": 0
+      },
+      "20": {
+        "Scale": {
+          "X": {
+            "Min": 1,
+            "Max": 1
+          }
+        },
+        "Opacity": 0.55
+      },
+      "75": {
+        "Scale": {
+          "X": {
+            "Min": 1.5,
+            "Max": 1.5
+          }
+        },
+        "Opacity": 0.35
+      },
+      "100": {
+        "Scale": {
+          "X": {
+            "Min": 1.9,
+            "Max": 1.9
+          }
+        },
+        "Opacity": 0
+      }
+    }
+  }
+}

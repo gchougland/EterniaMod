@@ -1,0 +1,29 @@
+{
+  "$Comment": "What the pet menu says about each pet, in the order it lists them. rank: the supporter rank that gives the pet (its name and colour come from here); store pets have no rank and show their Crown Store price. membership: the pet stays only while that rank is held. moods: shown on the pet's page; leave empty for pets that float and have no moods. A pet in the collection but missing here is listed last with no description.",
+  "Pets": [
+    { "id": "eternia:pet/moss_hedgehog", "rank": "Wanderer", "colour": "#a9c8a0", "moves": "Walks",
+      "description": "A round little hedgehog with leaves for spines. It trots along behind you and curls up for a nap when you stand still.",
+      "moods": ["Happy", "Curious", "Wiggly", "Sleepy"] },
+    { "id": "eternia:pet/starling_owlet", "rank": "Settler", "colour": "#8fd3ff", "moves": "Walks",
+      "description": "A tiny owl with starry feathers. It hops along behind you and blinks its big blue eyes when you stop.",
+      "moods": ["Happy", "Curious", "Wiggly", "Sleepy"] },
+    { "id": "eternia:pet/moonmoth_fox", "rank": "Steward", "colour": "#b3a6ff", "moves": "Floats",
+      "description": "A fluffy fox with soft moth wings. It floats beside you with a little glowing moon on the tip of its tail.",
+      "moods": [] },
+    { "id": "eternia:pet/nebula_axolotl", "rank": "Elder", "colour": "#ff8fd8", "moves": "Floats",
+      "description": "A smiling axolotl made of the night sky. Tiny planets circle it as it drifts along beside you.",
+      "moods": [] },
+    { "id": "eternia:pet/aether_drakeling", "rank": "Eternal", "colour": "#5ef2e6", "moves": "Floats", "membership": true,
+      "description": "A little crystal dragon inside a ring of glowing runes. It floats beside you for as long as you are an Eternal member.",
+      "moods": [] },
+    { "id": "eternia:pet/corn_buddy", "moves": "Walks",
+      "description": "A cheerful corn friend who waddles after you wherever you go.",
+      "moods": ["Happy", "Curious", "Wiggly", "Sleepy"] },
+    { "id": "eternia:pet/corn_buddy_crowned", "moves": "Walks",
+      "description": "The king of all corn, in a shiny golden crown. Popcorn bursts from his feet as he struts along behind you.",
+      "moods": ["Happy", "Curious", "Wiggly", "Sleepy"] },
+    { "id": "eternia:pet/rootling", "moves": "Floats",
+      "description": "A little woodland sprout that drifts along beside you.",
+      "moods": [] }
+  ]
+}

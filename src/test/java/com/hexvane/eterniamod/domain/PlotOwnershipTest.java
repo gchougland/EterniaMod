@@ -176,4 +176,50 @@ class PlotOwnershipTest {
         assertEquals(500, HousingService.paidFor(moved, new HexCoord(6, 3)), "the bought hexagon keeps its price after the move");
         assertEquals(0, HousingService.paidFor(moved, new HexCoord(5, 3)), "the free one still gives nothing back");
     }
+
+    private void voucher(UUID player, String content, long count) {
+        services.ownership().grant(new OwnershipService.GrantRequest("test-voucher:" + UUID.randomUUID(), Owner.player(player), content, OwnershipService.Kind.QUANTITY, count, null));
+    }
+
+    @Test void aPlotVoucherPaysForAnotherPlotInsteadOfCrowns() {
+        UUID mira = account("Mira", 0);
+        Owner me = Owner.player(mira);
+        voucher(mira, RankRewards.PLOT, 1);
+        activate(claim(me, freeCell(), me, mira));
+        var second = claim(me, freeCell(), me, mira);
+        assertTrue(second.ok(), second.result().message());
+        assertEquals(0, second.charged(), "the voucher pays");
+        assertEquals(0, services.ownership().available(me, RankRewards.PLOT), "and is spent");
+        activate(second);
+        assertEquals(HexClaimRules.Reason.PLOT_CROWNS, claim(me, freeCell(), me, mira).result().reason(), "with no voucher left, Crowns again");
+    }
+
+    @Test void aHexagonVoucherPaysForAHexagonOfItsKindOnly() {
+        UUID mira = account("Mira", 0);
+        Owner me = Owner.player(mira);
+        voucher(mira, RankRewards.HOUSE_HEX, 1);
+        var home = activate(claim(me, freeCell(), me, mira));
+        var start = services.housing().property(home.propertyId()).orElseThrow().location().cells().cells().getFirst();
+        var neighbours = start.neighbors().stream().filter(c -> c.r() != 0).toList();
+        var wrongKind = services.housing().expandPlot(me, home.propertyId(), neighbours.get(0), home.revision(), UUID.randomUUID(), HexClaimRules.Kind.PUBLIC, CONTEXT, me, 500L, mira, RankRewards.PRODUCTION_HEX);
+        assertEquals(HexClaimRules.Reason.CROWNS, wrongKind.result().reason(), "a house hexagon voucher does not pay for a production hexagon");
+        var house = services.housing().expandPlot(me, home.propertyId(), neighbours.get(0), home.revision(), UUID.randomUUID(), HexClaimRules.Kind.PUBLIC, CONTEXT, me, 500L, mira, RankRewards.HOUSE_HEX);
+        assertTrue(house.ok(), house.result().message());
+        assertEquals(0, house.charged());
+        assertEquals(0, services.ownership().available(me, RankRewards.HOUSE_HEX));
+        services.housing().completeExpansion(home.propertyId(), services.journal().unfinished().stream().filter(o -> o.kind().equals("EXPAND")).findFirst().orElseThrow().id());
+        assertEquals(0, services.housing().paidPrice(home.propertyId(), neighbours.get(0)), "selling it later gives no Crowns back");
+    }
+
+    @Test void aGuildPlotVoucherComesFromTheSpender() {
+        UUID leader = account("Leader", 0);
+        UUID guild = services.guilds().create(leader, "Voucher Guild", "voucher-guild").id();
+        Owner estate = Owner.guild(guild);
+        voucher(leader, RankRewards.GUILD_PLOT, 1);
+        activate(claim(estate, freeCell(), estate, leader));
+        var second = claim(estate, freeCell(), estate, leader);
+        assertTrue(second.ok(), second.result().message());
+        assertEquals(0, second.charged());
+        assertEquals(0, services.ownership().available(Owner.player(leader), RankRewards.GUILD_PLOT));
+    }
 }

@@ -7,6 +7,8 @@ export function createBridge(cfg) {
   const overview=await request('/v1/players/'+encodeURIComponent(uuid)+'/overview');
   return overview&&typeof overview==='object'&&overview.housing?{...overview,housing:withPlotSize(overview.housing)}:overview;
  },async getOffers(){if(cfg.fixtures)return {source:'local-fixture',offers:[]};return request('/v1/store/offers');},
+ // Rank packages the game will deliver, to check against config/tebex-ranks.json before a checkout starts.
+ async getRankProducts(){if(cfg.fixtures&&!cfg.bridgeUrl)return {source:'local-fixture',products:[]};return request('/v1/store/ranks');},
  async getCrownProducts(){if(cfg.fixtures)return {source:'local-fixture',products:[]};return request('/v1/store/crowns');},
  // Only a head count crosses the bridge. A negative fixture count simulates an offline realm.
  // Analytics come back as finished CSV text. Reports read every player, so they get longer than a page load.

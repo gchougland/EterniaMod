@@ -37,13 +37,16 @@ public final class EterniaServices {
     private final GuildBenefitService guildBenefits;
     private final GuildCommunicationService guildCommunications;
     private final FriendService friends;
+    private final PortalService portals;
     private final TravelService travel;
     private final TelemetryService telemetry;
     private final LootChestService lootChests;
     private final TutorialService tutorial;
     private final com.hexvane.eterniamod.stats.StatsService stats;
     private final com.hexvane.eterniamod.chat.ChatPreferences chatPreferences;
-    public EterniaServices(TransactionalStore store,Clock clock,Supplier<UUID> ids) {
+    public EterniaServices(TransactionalStore store,Clock clock,Supplier<UUID> ids) { this(store,clock,ids,RankRewards.load()); }
+    /** With a given rank reward set instead of the bundled one, so a test runs one rank service, as the game does. */
+    public EterniaServices(TransactionalStore store,Clock clock,Supplier<UUID> ids,RankRewards rankRewards) {
         batched=new com.hexvane.eterniamod.persistence.BatchedStore(store);
         store=batched;
         accounts=new AccountService(store,clock,ids);ownership=new OwnershipService(store,clock,ids);
@@ -55,7 +58,9 @@ public final class EterniaServices {
         provenance=new ProvenanceService(store,clock,ids);premium=new PremiumService(store,clock,ids,ownership);commerce=new CommerceService(store,clock,ids,ownership,premium);
         currencyGrants=new CurrencyGrantService(store,clock,ids,premium,economy);
         playtest=new PlaytestService(store,clock,ids,premium,economy);
-        ranks=new RankService(store,clock,ids,ownership);
+        ranks=new RankService(store,clock,ids,ownership,rankRewards);
+        commerce.onEntitlementsChanged((tx,owner)->{if(owner.kind()==Owner.Kind.PLAYER)ranks.syncPaidIn(tx,owner.id());});
+        commerce.onReversed((tx,owner,content)->{if(owner.kind()==Owner.Kind.PLAYER)ranks.refundedIn(tx,owner.id(),content);});
         starters=new StarterContentService(store,clock,ids);
         guildCrowns=new GuildCrownService(store,clock,ids);
         wildLand=new WildLandService(store,clock,ids,economy);
@@ -68,6 +73,7 @@ public final class EterniaServices {
         guildBenefits=new GuildBenefitService(store,clock,ids,ownership);
         guildCommunications=new GuildCommunicationService(store,clock,ids);
         friends=new FriendService(store,clock,ids);
+        portals=new PortalService(store,clock,ids);
         travel=new TravelService(store,clock,ids,economy);
         telemetry=new TelemetryService(store,clock,ids);
         lootChests=new LootChestService(store,clock,ids);
@@ -87,6 +93,8 @@ public final class EterniaServices {
             accounts.recordAuthenticatedLogin(player,name);
             telemetry.markActive(player);
             if(first)economy.welcomeNewPlayer(player);
+            // An Eternal subscription that lapsed without a provider callback is caught here.
+            ranks.syncPaid(player);
             return first;
         });
     }
@@ -123,6 +131,8 @@ public final class EterniaServices {
     public GuildBenefitService guildBenefits(){return guildBenefits;}
     public GuildCommunicationService guildCommunications(){return guildCommunications;}
     public FriendService friends(){return friends;}
+    /** Teleporter pads and each player's own list of them. */
+    public PortalService portals(){return portals;}
     public TravelService travel(){return travel;}
     public TelemetryService telemetry(){return telemetry;}
     public LootChestService lootChests(){return lootChests;}

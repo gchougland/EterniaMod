@@ -1,0 +1,80 @@
+$T = "Theme/Citadel.ui";
+@PanelTitle = LabelStyle(FontName: "Secondary", FontSize: 20, TextColor: #d8b66b, RenderBold: true, VerticalAlignment: Center);
+@FieldLabel = LabelStyle(FontSize: 14, TextColor: #b5c3b8, RenderBold: true, VerticalAlignment: Center);
+@Field = TextField { Anchor: (Height: 46); Padding: (Horizontal: 12); Background: $T.@InsetSurface; Style: (FontSize: 17, TextColor: #f0e8d5, RenderBold: true); PlaceholderStyle: (FontSize: 17, TextColor: #7f8f88); };
+$T.@CodexScreen {
+  $T.@CodexTopBar {
+    Group { Anchor: (Width: 200, Height: 104); LayoutMode: Middle;
+      Group { Anchor: (Width: 180, Height: 40, Left: 0); Background: "Theme/Surfaces/EterniaWordmark.png"; }
+    }
+    Group { FlexWeight: 1; LayoutMode: Middle;
+      Label { Anchor: (Height: 40); Text: "Portals"; Style: (FontName: "Secondary", FontSize: 30, TextColor: #f0e8d5, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+    }
+    Group { Anchor: (Width: 54, Height: 104); Padding: (Top: 30, Right: 10); LayoutMode: Top; $T.@HomeButton #MenuHome { TooltipText: "Open your Journal"; } }
+    $T.@CodexClose #Close {}
+  }
+  $T.@CodexBody {
+    $T.@CodexPanel { Anchor: (Width: 320, Right: 24); Padding: (Full: 18);
+      Label { Anchor: (Height: 22, Bottom: 8); Text: "You are at"; Style: $T.@CodexKickerStyle; }
+      Group { LayoutMode: Left; Anchor: (Height: 76, Bottom: 14);
+        Group { Anchor: (Width: 72, Height: 72, Right: 14); Background: $T.@IconTilePrimarySurface;
+          ItemIcon #HereIcon { Anchor: (Width: 52, Height: 52, Top: 10, Left: 10); }
+        }
+        Group { FlexWeight: 1; LayoutMode: Middle;
+          Label #HereName { Anchor: (Height: 30); Style: (FontName: "Secondary", FontSize: 21, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+          Label #HereOwner { Anchor: (Height: 22); Style: (FontSize: 14, TextColor: #b5c3b8, VerticalAlignment: Center); }
+          Label #HereState { Anchor: (Height: 22); Style: (FontSize: 14, TextColor: #85c5b3, RenderBold: true, VerticalAlignment: Center); }
+        }
+      }
+      Group #Tabs { LayoutMode: Top; }
+      Group { FlexWeight: 1; }
+      Group { LayoutMode: Top; Background: $T.@InsetSurface; Padding: (Full: 14);
+        Label { Anchor: (Height: 24); Text: "Your own portal list"; Style: (FontSize: 15, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+        Label { Anchor: (Height: 88); Text: "Step onto someone's portal once to add it here. Only portals on your list show on your map."; Style: (...$T.@MutedStyle, FontSize: 13, Wrap: true); }
+      }
+    }
+    Group { FlexWeight: 1; LayoutMode: Top;
+
+      Group #TravelPane { FlexWeight: 1; LayoutMode: Top;
+        $T.@CodexPanel { FlexWeight: 1; Padding: (Full: 18);
+          Group { LayoutMode: Left; Anchor: (Height: 36, Bottom: 6);
+            Label #TravelTitle { FlexWeight: 1; Style: @PanelTitle; }
+          }
+          Group #Portals { FlexWeight: 1; LayoutMode: Top; }
+          Group { LayoutMode: Left; Anchor: (Height: 44, Top: 6);
+            Label #ListStatus { FlexWeight: 1; Anchor: (Height: 44, Left: 8); Style: (...$T.@MutedStyle, FontSize: 14, VerticalAlignment: Center, Wrap: true); }
+            $T.@SecondaryTextButton #ListPrev { Anchor: (Width: 120, Height: 40, Right: 8); }
+            $T.@SecondaryTextButton #ListNext { Anchor: (Width: 120, Height: 40); }
+          }
+        }
+      }
+
+      Group #SettingsPane { FlexWeight: 1; LayoutMode: Left;
+        $T.@CodexPanel { FlexWeight: 1; Anchor: (Right: 24); Padding: (Full: 22);
+          Label { Anchor: (Height: 32, Bottom: 10); Text: "This portal"; Style: @PanelTitle; }
+          Label { Anchor: (Height: 24); Text: "Name"; Style: @FieldLabel; }
+          Group { LayoutMode: Left; Anchor: (Height: 46, Top: 4, Bottom: 18);
+            @Field #NameField { FlexWeight: 1; Anchor: (Height: 46, Right: 8); PlaceholderText: "Give it a name"; MaxLength: 24; }
+            $T.@TextButton #NameSave { Anchor: (Width: 150, Height: 46); }
+          }
+          Label { Anchor: (Height: 24); Text: "Who can use it"; Style: @FieldLabel; }
+          Group #Privacy { LayoutMode: Left; Anchor: (Height: 44, Top: 4, Bottom: 10); }
+          Label #PrivacyNote { Anchor: (Height: 60); Style: (...$T.@MutedStyle, FontSize: 13, Wrap: true, VerticalAlignment: Center); }
+          Group { FlexWeight: 1; }
+          Label #SetStatus { Anchor: (Height: 40, Bottom: 6); Style: (...$T.@DefaultLabelStyle, FontSize: 14, HorizontalAlignment: Center, VerticalAlignment: Center, Wrap: true); }
+        }
+        $T.@CodexPanel #AllowPanel { Anchor: (Width: 560); Padding: (Full: 22);
+          Label { Anchor: (Height: 32, Bottom: 4); Text: "Players you allow"; Style: @PanelTitle; }
+          Label { Anchor: (Height: 40, Bottom: 8); Text: "While the portal is private, only you and these players can use it."; Style: (...$T.@MutedStyle, FontSize: 13, Wrap: true, VerticalAlignment: Center); }
+          Group { LayoutMode: Left; Anchor: (Height: 46, Bottom: 12);
+            @Field #AllowName { FlexWeight: 1; Anchor: (Height: 46, Right: 8); PlaceholderText: "Type a player's name"; MaxLength: 32; }
+            $T.@TextButton #AllowAdd { Anchor: (Width: 130, Height: 46); }
+          }
+          Group #Allowed { FlexWeight: 1; LayoutMode: Top; }
+          Label #AllowStatus { Anchor: (Height: 30); Style: (...$T.@MutedStyle, FontSize: 13, VerticalAlignment: Center); }
+        }
+      }
+    }
+  }
+  $T.@CodexFooter { $T.@KeyHint { @Key = "Esc"; @Hint = "Close"; } }
+}

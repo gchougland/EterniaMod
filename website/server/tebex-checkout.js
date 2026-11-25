@@ -3,10 +3,30 @@ import {route,requireUser,requireAdmin,HttpError} from './errors.js';
 import {saveSession,UUID} from './auth.js';
 import {checkoutView} from './tebex-headless.js';
 import {saleWindow,closedReason} from '../web/js/season-sale.js';
+import {RANKS,RANK_IDS,LADDER} from '../web/js/ranks.js';
 
 /** `seasons` lists published passes ({id,name,startsOn,endsOn}). A package mapped to a season sells only inside its window. */
 export function mountTebexCheckout(app,cfg,headless,bridge,seasons=async()=>[]){
- const packages=cfg.tebexPackages||[],busy=new Set();
+ const packages=cfg.tebexPackages||[],ranks=cfg.tebexRanks||[],busy=new Set();
+ const NO_RANKS={held:[],paid:[],ladder:'none'};
+ const listingType=mapping=>mapping.rank==='eternal'?'subscription':'single';
+ // The package a player should buy for a rank: the upgrade from the ladder rank they paid for when there is one, else
+ // full price. Hand given ranks never count here: the game only accepts an upgrade on top of a paid step.
+ // `live` is the Tebex catalog: an upgrade package Tebex does not list falls back to the full price package.
+ function packageFor(rank,held,live){
+  const listed=m=>m&&live.some(l=>l.id===m.id&&l.type===listingType(m)&&!l.requiresOptions);
+  if(LADDER.includes(rank)){
+   const current=held?.ladder||'none';
+   if(current!=='none'&&LADDER.indexOf(rank)<=LADDER.indexOf(current))return {owned:true};
+   const upgrade=ranks.find(r=>r.rank===rank&&r.from===current),full=ranks.find(r=>r.rank===rank&&r.from==='none');
+   return {mapping:[upgrade,full].find(listed)||null};
+  }
+  // Founder and Eternal given by hand count as owned too: buying them again would add nothing.
+  if(held?.paid?.includes(rank)||held?.held?.includes(rank))return {owned:true};
+  const only=ranks.find(r=>r.rank===rank);
+  return {mapping:listed(only)?only:null};
+ }
+ async function heldRanks(user){if(!user)return null;try{return (await bridge.getOverview(user.uuid))?.ranks||NO_RANKS;}catch{return null;}}
  // A package tied to a season the website does not know is closed, not open: fail safe.
  async function sale(mapping){
   if(!mapping.season)return null;
@@ -28,12 +48,27 @@ export function mountTebexCheckout(app,cfg,headless,bridge,seasons=async()=>[]){
    .filter(p=>p&&Number.isFinite(p.price)&&p.price>=0&&/^[A-Z]{3}$/.test(p.currency));
   res.set('Cache-Control','no-store').json({offers,checkoutEnabled:enabled()&&(!cfg.tebexAdminOnly||Boolean(req.session.user?.admin)),configured:headless.configured});
  }));
+ app.get('/api/store/ranks',route(async(req,res)=>{
+  const live=await catalog(),held=await heldRanks(req.session.user);
+  const list=RANK_IDS.map(rank=>{
+   const choice=packageFor(rank,held,live),base={rank,name:RANKS[rank].name,owned:Boolean(choice.owned),subscription:rank==='eternal'};
+   if(choice.owned||!choice.mapping)return base;
+   const listing=live.find(l=>l.id===choice.mapping.id&&l.type===listingType(choice.mapping)&&!l.requiresOptions);
+   if(!listing||!Number.isFinite(listing.price)||listing.price<0||!/^[A-Z]{3}$/.test(listing.currency))return base;
+   return {...base,packageId:choice.mapping.id,price:listing.price,currency:listing.currency,upgradeFrom:choice.mapping.from==='none'?null:choice.mapping.from};
+  });
+  res.set('Cache-Control','no-store').json({ranks:list,known:Boolean(held),checkoutEnabled:enabled()&&(!cfg.tebexAdminOnly||Boolean(req.session.user?.admin))});
+ }));
  app.get('/api/admin/commerce',requireAdmin,route(async(req,res)=>{
   const live=await catalog();let gameOffers=[],bridgeReady=false;
   try{const result=await bridge.getCrownProducts();gameOffers=result.products||[];bridgeReady=result.source==='game';}catch{}
+  let rankOffers=[];try{const result=await bridge.getRankProducts();rankOffers=result.source==='game'?result.products||[]:[];}catch{}
+  const rankOf=id=>ranks.find(r=>r.id===id);
   res.set('Cache-Control','no-store').json({configured:headless.configured,checkoutEnabled:enabled(),adminOnly:Boolean(cfg.tebexAdminOnly),bridgeReady,
    signInReady:Boolean(cfg.clientId&&cfg.clientSecret),packages:live.map(p=>({...p,crowns:packages.find(m=>m.id===p.id)?.crowns||null,
-    deliveryMapped:gameOffers.some(o=>o.id===p.id&&o.revision===packages.find(m=>m.id===p.id)?.revision&&o.crowns===packages.find(m=>m.id===p.id)?.crowns)}))});
+    rank:rankOf(p.id)?{rank:rankOf(p.id).rank,from:rankOf(p.id).from}:null,
+    deliveryMapped:rankOf(p.id)?rankOffers.some(o=>o.id===p.id&&o.revision===rankOf(p.id).revision&&o.rank===rankOf(p.id).rank&&o.from===rankOf(p.id).from)
+     :gameOffers.some(o=>o.id===p.id&&o.revision===packages.find(m=>m.id===p.id)?.revision&&o.crowns===packages.find(m=>m.id===p.id)?.crowns)}))});
  }));
  async function guard(req){
   if(!enabled()||req.session.user.fixture)throw new HttpError(503,'Crown purchases are not open yet.');
@@ -55,7 +90,19 @@ export function mountTebexCheckout(app,cfg,headless,bridge,seasons=async()=>[]){
   if(basket.packages.length===0)basket=await headless.add(pending.ident,pending.packageId);
   const result=checkoutView(basket,pending,user);delete pending.authState;await saveSession(req);return result;
  }
+ async function rankDelivery(req,mapping){
+  const live=(await catalog()).find(p=>p.id===mapping.id&&p.type===listingType(mapping)&&!p.requiresOptions);if(!live)throw new HttpError(409,'This rank is unavailable right now.');
+  const offers=await bridge.getRankProducts();
+  if(offers.source!=='game'||!offers.products?.some(p=>p.id===mapping.id&&p.revision===mapping.revision&&p.rank===mapping.rank&&p.from===mapping.from))throw new HttpError(503,'Delivery for this rank is not ready yet.');
+  const account=await bridge.getOverview(req.session.user.uuid);
+  if(account.source!=='game'||account.account?.uuid?.toLowerCase()!==req.session.user.uuid)throw new HttpError(409,'Join Eternia once with this Hytale profile before buying a rank.');
+  // Checked at every start and resume; the game checks again at delivery, so a stale page can never buy an upgrade without its base.
+  const choice=packageFor(mapping.rank,account.ranks||NO_RANKS,await catalog());
+  if(choice.owned)throw new HttpError(409,'You already have this rank.');
+  if(choice.mapping?.id!==mapping.id)throw new HttpError(409,'Your price for this rank changed. Please choose it again.');
+ }
  async function delivery(req,id){
+  const rank=ranks.find(r=>r.id===id);if(rank)return rankDelivery(req,rank);
   const mapping=packages.find(p=>p.id===id);if(!mapping)throw new HttpError(400,'Choose one of the available Crown packages.');
   // Checked every time a checkout starts or resumes, never at delivery: a payment begun in time is always delivered.
   const window=await sale(mapping);if(window&&!window.purchasable)throw new HttpError(409,closedReason(window.season,window));
@@ -84,7 +131,7 @@ export function mountTebexCheckout(app,cfg,headless,bridge,seasons=async()=>[]){
     if(Date.now()-(req.session.tebexAttempt||0)<5000)throw new HttpError(429,'Please wait a moment before choosing another package.');
     req.session.tebexAttempt=Date.now();await saveSession(req);
     basket=await headless.create(req.session.user,req.ip.replace(/^::ffff:/,''));
-    pending=req.session.tebexCheckout={ident:basket.ident,owner:req.session.user.uuid,packageId:req.body.packageId,createdAt:Date.now()};
+    pending=req.session.tebexCheckout={ident:basket.ident,owner:req.session.user.uuid,packageId:req.body.packageId,createdAt:Date.now(),subscription:ranks.find(r=>r.id===req.body.packageId)?.rank==='eternal'};
     await saveSession(req);
     basket=await headless.get(pending.ident);
    }

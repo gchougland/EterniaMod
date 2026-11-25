@@ -1,0 +1,8 @@
+$T = "Theme/Citadel.ui";
+Group { Anchor: (Height: 92, Bottom: 10); LayoutMode: Left; Background: $T.@HeaderSurface; Padding: (Left: 20, Right: 20, Top: 12, Bottom: 12);
+  Group { FlexWeight: 1; LayoutMode: Top;
+    Label { Anchor: (Height: 20, Bottom: 4); Text: "Your name in chat"; Style: $T.@CodexKickerStyle; }
+    Label #PreviewName { Anchor: (Height: 40); Style: (...$T.@TitleStyle, FontSize: 28, Wrap: false); }
+  }
+
+}

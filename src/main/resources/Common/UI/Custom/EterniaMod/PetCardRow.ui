@@ -1,0 +1,31 @@
+$T = "Theme/Citadel.ui";
+@ChipSurface = PatchStyle(TexturePath: "Theme/Surfaces/Chip.png", Border: 6);
+@PickSurface = PatchStyle(TexturePath: "Theme/Surfaces/JournalCardPrimary.png", Border: 12);
+// One pet in the pet menu. Locked pets show a dark silhouette and a lock; the chosen pet is lit gold.
+@PetCard = Button { Anchor: (Full: 0); Style: $T.@DeskTileStyle;
+  Group #PetPick { Visible: false; Anchor: (Full: 0); Background: @PickSurface; }
+  Group { Anchor: (Full: 10); LayoutMode: Top;
+    Group #PetCardArt { Anchor: (Height: 172, Bottom: 8); Background: $T.@JournalInsetSurface;
+      Group #PetCardPicture { Anchor: (Width: 156, Height: 156); }
+      Group #PetCardLock { Visible: false; Anchor: (Width: 30, Height: 30, Top: 8, Right: 8); Background: "Icons/lock.png"; }
+      Group #PetCardBadge { Visible: false; Anchor: (Width: 92, Height: 24, Top: 8, Left: 8); Background: #d8b66b;
+        Label { Text: "WITH YOU"; Style: (FontSize: 12, TextColor: #142528, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center); }
+      }
+    }
+    Label #PetCardName { Anchor: (Height: 26); Style: (FontName: "Secondary", FontSize: 16, TextColor: #f0e8d5, RenderBold: true, Wrap: false, HorizontalAlignment: Center, VerticalAlignment: Center); }
+    Label #PetCardSource { Anchor: (Height: 20); Style: (FontSize: 12, TextColor: #b5c3b8, RenderBold: true, RenderUppercase: true, Wrap: false, HorizontalAlignment: Center, VerticalAlignment: Center); }
+    Group { FlexWeight: 1; }
+    Group #PetCardPill { Anchor: (Height: 32); Background: @ChipSurface;
+      Label #PetCardPillText { Style: (FontSize: 14, TextColor: #f0e8d5, RenderBold: true, Wrap: false, HorizontalAlignment: Center, VerticalAlignment: Center); }
+    }
+    Group #PetCardGold { Visible: false; Anchor: (Height: 32); Background: #d8b66b;
+      Label #PetCardGoldText { Style: (FontSize: 14, TextColor: #142528, RenderBold: true, Wrap: false, HorizontalAlignment: Center, VerticalAlignment: Center); }
+    }
+  }
+};
+Group { Anchor: (Height: 292, Bottom: 14); LayoutMode: Left;
+  Group #PetSlot0 { FlexWeight: 1; Anchor: (Right: 14); @PetCard #PetCard0 {} }
+  Group #PetSlot1 { FlexWeight: 1; Anchor: (Right: 14); @PetCard #PetCard1 {} }
+  Group #PetSlot2 { FlexWeight: 1; Anchor: (Right: 14); @PetCard #PetCard2 {} }
+  Group #PetSlot3 { FlexWeight: 1; @PetCard #PetCard3 {} }
+}

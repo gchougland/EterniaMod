@@ -1,0 +1,552 @@
+{
+ "cases": [
+  {
+   "name": "portal menu: travel list with own, private and other world portals",
+   "steps": [
+    {
+     "tool": "ui_render",
+     "name": "portal-travel",
+     "arguments": {
+      "root": "projects",
+      "path": "EterniaMod/src/main/resources/Common/UI/Custom/EterniaMod/PortalPage.ui",
+      "crop": "page",
+      "commands": [
+       {
+        "type": "Set",
+        "selector": "#HereIcon.ItemId",
+        "data": "Teleporter"
+       },
+       {
+        "type": "Set",
+        "selector": "#HereName.TextSpans",
+        "data": "Lake Dock"
+       },
+       {
+        "type": "Set",
+        "selector": "#HereOwner.TextSpans",
+        "data": "Your portal"
+       },
+       {
+        "type": "Set",
+        "selector": "#HereState.TextSpans",
+        "data": "Anyone can use it"
+       },
+       {
+        "type": "Set",
+        "selector": "#HereState.Style.TextColor",
+        "data": "#85c5b3"
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTabSelected.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0] #SideTabLabel.TextSpans",
+        "data": "Travel (3)"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/worlds.png"
+        }
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1] #SideTabLabel.TextSpans",
+        "data": "Settings"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/ledger.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#TravelPane.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#SettingsPane.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#TravelTitle.TextSpans",
+        "data": "Where to?"
+       },
+       {
+        "type": "Append",
+        "selector": "#Portals",
+        "text": "EterniaMod/PortalRow.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[0] #PIcon.ItemId",
+        "data": "Teleporter"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[0] #PName.TextSpans",
+        "data": "Copper Mine"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[0] #PLine.TextSpans",
+        "data": "Your portal  ·  412 blocks away"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[0] #PTag.TextSpans",
+        "data": "Yours"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[0] #PGo.TextSpans",
+        "data": "Travel"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[0] #PGo.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[0] #PGo.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[0] #PForget.TextSpans",
+        "data": "Forget"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[0] #PForget.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[0] #PForget.Disabled",
+        "data": true
+       },
+       {
+        "type": "Append",
+        "selector": "#Portals",
+        "text": "EterniaMod/PortalRow.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[1] #PIcon.ItemId",
+        "data": "Teleporter"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[1] #PName.TextSpans",
+        "data": "Bram's Farm"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[1] #PLine.TextSpans",
+        "data": "Bram's  ·  1.2k blocks away"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[1] #PTag.TextSpans",
+        "data": "Private"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[1] #PGo.TextSpans",
+        "data": "Travel"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[1] #PGo.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[1] #PGo.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[1] #PForget.TextSpans",
+        "data": "Forget"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[1] #PForget.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[1] #PForget.Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Portals",
+        "text": "EterniaMod/PortalRow.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[2] #PIcon.ItemId",
+        "data": "Teleporter"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[2] #PName.TextSpans",
+        "data": "Desert Camp"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[2] #PLine.TextSpans",
+        "data": "Cass's  ·  In Wildlands"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[2] #PTag.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[2] #PGo.TextSpans",
+        "data": "Other world"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[2] #PGo.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[2] #PGo.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[2] #PForget.TextSpans",
+        "data": "Forget"
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[2] #PForget.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Portals[2] #PForget.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#ListStatus.TextSpans",
+        "data": "Lake Dock is now on your portal list and your map."
+       },
+       {
+        "type": "Set",
+        "selector": "#ListPrev.TextSpans",
+        "data": "Earlier"
+       },
+       {
+        "type": "Set",
+        "selector": "#ListPrev.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#ListPrev.Disabled",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#ListNext.TextSpans",
+        "data": "More"
+       },
+       {
+        "type": "Set",
+        "selector": "#ListNext.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#ListNext.Disabled",
+        "data": true
+       }
+      ]
+     },
+     "expect": {
+      "valid": true
+     },
+     "golden": "tests/hytale/golden/portal-travel.png"
+    }
+   ]
+  },
+  {
+   "name": "portal menu: owner settings, private with two allowed players",
+   "steps": [
+    {
+     "tool": "ui_render",
+     "name": "portal-settings",
+     "arguments": {
+      "root": "projects",
+      "path": "EterniaMod/src/main/resources/Common/UI/Custom/EterniaMod/PortalPage.ui",
+      "crop": "page",
+      "commands": [
+       {
+        "type": "Set",
+        "selector": "#HereIcon.ItemId",
+        "data": "Teleporter"
+       },
+       {
+        "type": "Set",
+        "selector": "#HereName.TextSpans",
+        "data": "Lake Dock"
+       },
+       {
+        "type": "Set",
+        "selector": "#HereOwner.TextSpans",
+        "data": "Your portal"
+       },
+       {
+        "type": "Set",
+        "selector": "#HereState.TextSpans",
+        "data": "Private"
+       },
+       {
+        "type": "Set",
+        "selector": "#HereState.Style.TextColor",
+        "data": "#e69085"
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTab.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0] #SideTabLabel.TextSpans",
+        "data": "Travel (3)"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[0] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/worlds.png"
+        }
+       },
+       {
+        "type": "Append",
+        "selector": "#Tabs",
+        "text": "EterniaMod/SideTabSelected.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1] #SideTabLabel.TextSpans",
+        "data": "Settings"
+       },
+       {
+        "type": "Set",
+        "selector": "#Tabs[1] #SideTabIcon.Background",
+        "data": {
+         "TexturePath": "EterniaMod/Icons/ledger.png"
+        }
+       },
+       {
+        "type": "Set",
+        "selector": "#TravelPane.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#SettingsPane.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#NameField.Value",
+        "data": "Lake Dock"
+       },
+       {
+        "type": "Set",
+        "selector": "#NameSave.TextSpans",
+        "data": "Save name"
+       },
+       {
+        "type": "Set",
+        "selector": "#NameSave.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#NameSave.Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Privacy",
+        "text": "EterniaMod/GuildChip.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Privacy[0].TextSpans",
+        "data": "Anyone"
+       },
+       {
+        "type": "Set",
+        "selector": "#Privacy[0].Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Privacy",
+        "text": "EterniaMod/GuildChipOn.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Privacy[1].TextSpans",
+        "data": "Only people I choose"
+       },
+       {
+        "type": "Set",
+        "selector": "#Privacy[1].Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#PrivacyNote.TextSpans",
+        "data": "Only you and the players on the right can use this portal or add it to their list."
+       },
+       {
+        "type": "Set",
+        "selector": "#SetStatus.TextSpans",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#AllowName.Value",
+        "data": ""
+       },
+       {
+        "type": "Set",
+        "selector": "#AllowAdd.TextSpans",
+        "data": "Allow"
+       },
+       {
+        "type": "Set",
+        "selector": "#AllowAdd.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#AllowAdd.Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Allowed",
+        "text": "EterniaMod/FriendRequest.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[0] #QInitial.TextSpans",
+        "data": "B"
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[0] #QName.TextSpans",
+        "data": "Bram"
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[0] #QLine.TextSpans",
+        "data": "Can use this portal"
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[0] #QYes.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[0] #QNo.TextSpans",
+        "data": "Remove"
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[0] #QNo.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[0] #QNo.Disabled",
+        "data": false
+       },
+       {
+        "type": "Append",
+        "selector": "#Allowed",
+        "text": "EterniaMod/FriendRequest.ui"
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[1] #QInitial.TextSpans",
+        "data": "C"
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[1] #QName.TextSpans",
+        "data": "Cass"
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[1] #QLine.TextSpans",
+        "data": "Can use this portal"
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[1] #QYes.Visible",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[1] #QNo.TextSpans",
+        "data": "Remove"
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[1] #QNo.Visible",
+        "data": true
+       },
+       {
+        "type": "Set",
+        "selector": "#Allowed[1] #QNo.Disabled",
+        "data": false
+       },
+       {
+        "type": "Set",
+        "selector": "#AllowStatus.TextSpans",
+        "data": ""
+       }
+      ]
+     },
+     "expect": {
+      "valid": true
+     },
+     "golden": "tests/hytale/golden/portal-settings.png"
+    }
+   ]
+  }
+ ]
+}

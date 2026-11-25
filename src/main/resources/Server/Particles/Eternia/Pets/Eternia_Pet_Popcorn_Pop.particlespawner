@@ -1,0 +1,137 @@
+{
+  "$Comment": "Corn King: popcorn kernels popping up from his feet as he walks.",
+  "Shape": "Cube",
+  "EmitOffset": {
+    "X": {
+      "Min": -0.15,
+      "Max": 0.15
+    },
+    "Y": {
+      "Min": 0.05,
+      "Max": 0.15
+    },
+    "Z": {
+      "Min": -0.15,
+      "Max": 0.15
+    }
+  },
+  "RenderMode": "BlendLinear",
+  "ParticleRotationInfluence": "Billboard",
+  "LinearFiltering": true,
+  "LightInfluence": 1,
+  "MaxConcurrentParticles": 3,
+  "TotalParticles": {
+    "Min": 2,
+    "Max": 3
+  },
+  "ParticleLifeSpan": {
+    "Min": 0.55,
+    "Max": 0.65
+  },
+  "SpawnRate": {
+    "Min": 40,
+    "Max": 40
+  },
+  "InitialVelocity": {
+    "Speed": {
+      "Min": 2,
+      "Max": 2
+    },
+    "Yaw": {
+      "Min": 0,
+      "Max": 360
+    },
+    "Pitch": {
+      "Min": 72,
+      "Max": 72
+    }
+  },
+  "Attractors": [
+    {
+      "LinearAcceleration": {
+        "X": 0,
+        "Y": -6,
+        "Z": 0
+      }
+    }
+  ],
+  "Particle": {
+    "Texture": "Particles/Eternia/Pets/PetPopcorn.png",
+    "FrameSize": {
+      "Width": 32,
+      "Height": 32
+    },
+    "ScaleRatioConstraint": "OneToOne",
+    "SoftParticles": "Disable",
+    "InitialAnimationFrame": {
+      "Scale": {
+        "X": {
+          "Min": 0.11,
+          "Max": 0.15
+        }
+      },
+      "Rotation": {
+        "Z": {
+          "Min": 0,
+          "Max": 360
+        }
+      },
+      "Opacity": 1,
+      "Color": "#ffffff",
+      "FrameIndex": {
+        "Min": 0,
+        "Max": 3
+      }
+    },
+    "Animation": {
+      "0": {
+        "Scale": {
+          "X": {
+            "Min": 0.6,
+            "Max": 0.6
+          }
+        },
+        "Opacity": 1
+      },
+      "20": {
+        "Scale": {
+          "X": {
+            "Min": 1,
+            "Max": 1
+          }
+        },
+        "Opacity": 1
+      },
+      "75": {
+        "Scale": {
+          "X": {
+            "Min": 1,
+            "Max": 1
+          }
+        },
+        "Opacity": 1,
+        "Rotation": {
+          "Z": {
+            "Min": 150,
+            "Max": 150
+          }
+        }
+      },
+      "100": {
+        "Scale": {
+          "X": {
+            "Min": 0.8,
+            "Max": 0.8
+          }
+        },
+        "Opacity": 0,
+        "Rotation": {
+          "Z": {
+            "Min": 200,
+            "Max": 200
+          }
+        }
+      }
+    }
+  }
+}

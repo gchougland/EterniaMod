@@ -1,0 +1,116 @@
+{
+  "$Comment": "Starling Owlet: quick glints.",
+  "Shape": "Sphere",
+  "EmitOffset": {
+    "X": {
+      "Min": 0.3,
+      "Max": 0.55
+    },
+    "Y": {
+      "Min": 0.3,
+      "Max": 0.9
+    },
+    "Z": {
+      "Min": 0.3,
+      "Max": 0.55
+    }
+  },
+  "RenderMode": "BlendAdd",
+  "ParticleRotationInfluence": "Billboard",
+  "LinearFiltering": true,
+  "LightInfluence": 0,
+  "MaxConcurrentParticles": 3,
+  "TotalParticles": {
+    "Min": -1,
+    "Max": -1
+  },
+  "ParticleLifeSpan": {
+    "Min": 0.4,
+    "Max": 0.6
+  },
+  "SpawnRate": {
+    "Min": 2,
+    "Max": 2.6
+  },
+  "InitialVelocity": {
+    "Speed": {
+      "Min": 0,
+      "Max": 0
+    },
+    "Yaw": {
+      "Min": 0,
+      "Max": 360
+    },
+    "Pitch": {
+      "Min": 90,
+      "Max": 90
+    }
+  },
+  "Particle": {
+    "Texture": "Particles/Eternia/Pets/PetSparkle.png",
+    "FrameSize": {
+      "Width": 32,
+      "Height": 32
+    },
+    "ScaleRatioConstraint": "OneToOne",
+    "SoftParticles": "Disable",
+    "InitialAnimationFrame": {
+      "Scale": {
+        "X": {
+          "Min": 0.08,
+          "Max": 0.12
+        }
+      },
+      "Rotation": {
+        "Z": {
+          "Min": 0,
+          "Max": 0
+        }
+      },
+      "Opacity": 1,
+      "Color": "#fff1a8",
+      "FrameIndex": {
+        "Min": 0,
+        "Max": 0
+      }
+    },
+    "Animation": {
+      "0": {
+        "Scale": {
+          "X": {
+            "Min": 0,
+            "Max": 0
+          }
+        },
+        "Opacity": 1
+      },
+      "20": {
+        "Scale": {
+          "X": {
+            "Min": 1,
+            "Max": 1
+          }
+        },
+        "Opacity": 1
+      },
+      "75": {
+        "Scale": {
+          "X": {
+            "Min": 0.8,
+            "Max": 0.8
+          }
+        },
+        "Opacity": 1
+      },
+      "100": {
+        "Scale": {
+          "X": {
+            "Min": 0,
+            "Max": 0
+          }
+        },
+        "Opacity": 0
+      }
+    }
+  }
+}

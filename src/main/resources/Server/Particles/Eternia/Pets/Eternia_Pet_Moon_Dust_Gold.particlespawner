@@ -1,0 +1,116 @@
+{
+  "$Comment": "Moonmoth Fox: a few warmer flecks among the dust.",
+  "Shape": "Cube",
+  "EmitOffset": {
+    "X": {
+      "Min": -0.35,
+      "Max": 0.35
+    },
+    "Y": {
+      "Min": 0.4,
+      "Max": 0.7
+    },
+    "Z": {
+      "Min": -0.35,
+      "Max": 0
+    }
+  },
+  "RenderMode": "BlendAdd",
+  "ParticleRotationInfluence": "Billboard",
+  "LinearFiltering": true,
+  "LightInfluence": 0,
+  "MaxConcurrentParticles": 5,
+  "TotalParticles": {
+    "Min": -1,
+    "Max": -1
+  },
+  "ParticleLifeSpan": {
+    "Min": 1.4,
+    "Max": 2
+  },
+  "SpawnRate": {
+    "Min": 2,
+    "Max": 2.5
+  },
+  "InitialVelocity": {
+    "Speed": {
+      "Min": 0.08,
+      "Max": 0.08
+    },
+    "Yaw": {
+      "Min": 0,
+      "Max": 360
+    },
+    "Pitch": {
+      "Min": -90,
+      "Max": -90
+    }
+  },
+  "Particle": {
+    "Texture": "Particles/Eternia/Pets/PetMote.png",
+    "FrameSize": {
+      "Width": 32,
+      "Height": 32
+    },
+    "ScaleRatioConstraint": "OneToOne",
+    "SoftParticles": "Disable",
+    "InitialAnimationFrame": {
+      "Scale": {
+        "X": {
+          "Min": 0.03,
+          "Max": 0.045
+        }
+      },
+      "Rotation": {
+        "Z": {
+          "Min": 0,
+          "Max": 0
+        }
+      },
+      "Opacity": 1,
+      "Color": "#fff0c4",
+      "FrameIndex": {
+        "Min": 0,
+        "Max": 0
+      }
+    },
+    "Animation": {
+      "0": {
+        "Scale": {
+          "X": {
+            "Min": 0.4,
+            "Max": 0.4
+          }
+        },
+        "Opacity": 0
+      },
+      "20": {
+        "Scale": {
+          "X": {
+            "Min": 1,
+            "Max": 1
+          }
+        },
+        "Opacity": 1
+      },
+      "75": {
+        "Scale": {
+          "X": {
+            "Min": 1,
+            "Max": 1
+          }
+        },
+        "Opacity": 1
+      },
+      "100": {
+        "Scale": {
+          "X": {
+            "Min": 0.6,
+            "Max": 0.6
+          }
+        },
+        "Opacity": 0
+      }
+    }
+  }
+}

@@ -22,6 +22,7 @@ import com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent;
 import com.hypixel.hytale.server.core.modules.entity.player.PlayerSkinComponent;
 import com.hypixel.hytale.server.core.modules.entity.tracker.NetworkId;
 import com.hypixel.hytale.server.core.universe.*;
+import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.joml.Vector3d;
@@ -177,6 +178,13 @@ public final class CollectionRuntime implements AutoCloseable {
                 holder.addComponent(TransformComponent.getComponentType(),new TransformComponent(target,new Rotation3f()));
                 holder.addComponent(HeadRotation.getComponentType(),new HeadRotation(new Rotation3f()));
                 holder.addComponent(ModelComponent.getComponentType(),new ModelComponent(model));
+                // Pets with a Pet clip can be petted with the use key (the client aims at the model's own hitbox).
+                if(asset.getAnimationSetMap()!=null&&asset.getAnimationSetMap().containsKey(PET_CLIP)) {
+                    holder.ensureComponent(Interactable.getComponentType());
+                    var use=new com.hypixel.hytale.server.core.modules.interaction.Interactions(Map.of(com.hypixel.hytale.protocol.InteractionType.Use,EterniaPetPat.ROOT));
+                    use.setInteractionHint("eternia_customization.pet.hint");
+                    holder.addComponent(com.hypixel.hytale.server.core.modules.interaction.Interactions.getComponentType(),use);
+                }
                 var animations=new ActiveAnimationComponent();animations.setPlayingAnimation(AnimationSlot.Movement,"Idle");
                 holder.addComponent(ActiveAnimationComponent.getComponentType(),animations);
                 var ref=store.addEntity(holder,AddReason.SPAWN);if(ref==null)continue;
@@ -231,6 +239,8 @@ public final class CollectionRuntime implements AutoCloseable {
             if(!pet.ref.isValid())continue;
             var transform=store.getComponent(pet.ref,TransformComponent.getComponentType());if(transform==null)continue;
             if(pet.behavior!=null){walk(world,store,pet,transform,dt);continue;}
+            // A floater's Pet clip is stopped by hand when it ends, so its held last key never sits over Idle.
+            if(pet.petEnd!=0&&System.nanoTime()>pet.petEnd){pet.petEnd=0;AnimationUtils.stopAnimation(pet.ref,AnimationSlot.Action,store);}
             Vector3d target=new Vector3d(pet.target),lookAt=null;
             if(pet.plan.property==null) {
                 PlayerRef owner=null;for(var player:world.getPlayerRefs())if(player.getUuid().equals(pet.plan.pet.owner().id())){owner=player;break;}
@@ -243,7 +253,8 @@ public final class CollectionRuntime implements AutoCloseable {
             }
             if(lookAt!=null) {
                 var direction=lookAt.sub(transform.getPosition());
-                float yaw=(float)Math.atan2(-direction.x,-direction.z);
+                float[] swing=swing(transform.getRotation().yaw(),pet.yawSpeed,(float)Math.atan2(-direction.x,-direction.z),dt);
+                float yaw=swing[0];pet.yawSpeed=swing[1];
                 float pitch=(float)Math.atan2(direction.y,Math.hypot(direction.x,direction.z));
                 transform.setRotation(new Rotation3f(0,yaw,0));
                 var head=store.getComponent(pet.ref,HeadRotation.getComponentType());
@@ -286,11 +297,12 @@ public final class CollectionRuntime implements AutoCloseable {
         }
         double moved=Math.hypot(next.x-current.x,next.z-current.z);
         if(next!=current)transform.setPosition(next);
+        if(!recover&&moved>1e-3)walkEffect(store,pet,next);
         var step=pet.behavior.update(dt,recover?0:moved/dt,recover,ownerMoves,ThreadLocalRandom.current().nextDouble());
         pet.hold=step.hold();
         float yaw=transform.getRotation().yaw();
-        if(moved>1e-3)yaw=(float)Math.atan2(-(next.x-current.x),-(next.z-current.z));
-        else if(owner!=null&&!pet.behavior.asleep())yaw=(float)Math.atan2(-(owner.x-next.x),-(owner.z-next.z));
+        if(moved>1e-3){yaw=turn(yaw,(float)Math.atan2(-(next.x-current.x),-(next.z-current.z)),WALK_TURN,dt);pet.yawSpeed=0;}
+        else if(owner!=null&&!pet.behavior.asleep()){float[] swing=swing(yaw,pet.yawSpeed,(float)Math.atan2(-(owner.x-next.x),-(owner.z-next.z)),dt);yaw=swing[0];pet.yawSpeed=swing[1];}
         transform.setRotation(new Rotation3f(0,yaw,0));
         var head=store.getComponent(pet.ref,HeadRotation.getComponentType());if(head!=null)head.setRotation(new Rotation3f(0,yaw,0));
         if(!step.movement().equals(pet.movement)) {
@@ -299,6 +311,49 @@ public final class CollectionRuntime implements AutoCloseable {
             var animations=store.getComponent(pet.ref,ActiveAnimationComponent.getComponentType());if(animations!=null)animations.setPlayingAnimation(AnimationSlot.Movement,pet.movement);
         }
         if(step.emote()!=null)AnimationUtils.playAnimation(pet.ref,AnimationSlot.Action,step.emote().clip,store);
+    }
+    /** How fast a walking pet turns to face where it walks, in radians per second. */
+    private static final float WALK_TURN=(float)Math.toRadians(300);
+    /** Floating pets turn on a spring: they speed up into the turn, ease out and overshoot a touch, like something
+     * drifting in the air rather than a turret (Gibson, 2026-11-24). */
+    private static final float SWING_PULL=10f,SWING_DAMP=4.4f,SWING_MAX=(float)Math.toRadians(220);
+    /** One step of the spring turn: returns the new yaw and turning speed. */
+    static float[] swing(float yaw,float speed,float target,float dt) {
+        float step=Math.min(dt,.1f);
+        double diff=Math.IEEEremainder(target-yaw,2*Math.PI);
+        float next=(float)Math.max(-SWING_MAX,Math.min(SWING_MAX,speed+(SWING_PULL*diff-SWING_DAMP*speed)*step));
+        return new float[]{(float)Math.IEEEremainder(yaw+next*step,2*Math.PI),next};
+    }
+    /** Turns from one yaw towards another the short way round, by at most speed times dt. */
+    static float turn(float from,float to,float speed,float dt) {
+        double diff=Math.IEEEremainder(to-from,2*Math.PI);
+        double step=speed*Math.min(dt,.25);
+        return (float)(Math.abs(diff)<=step?to:from+Math.signum(diff)*step);
+    }
+    static final String PET_CLIP="Pet";
+    private static final long PET_NANOS=1_600_000_000L;
+    /** Someone pressed the use key on a pet: it plays its Pet clip and a few hearts float up. Presses during the clip are ignored. */
+    void pat(World world,Ref<EntityStore> ref,Ref<EntityStore> by) {
+        if(closed||ref==null||!ref.isValid())return;
+        var visible=worldPets.get(world.getName());if(visible==null)return;
+        VisiblePet pet=null;for(var candidate:visible.values())if(candidate.ref.equals(ref)){pet=candidate;break;}
+        if(pet==null)return;
+        long now=System.nanoTime();if(pet.petEnd!=0&&now<pet.petEnd)return;
+        var store=world.getEntityStore().getStore();
+        var transform=store.getComponent(ref,TransformComponent.getComponentType());if(transform==null)return;
+        pet.petEnd=now+PET_NANOS;
+        if(pet.behavior!=null)pet.behavior.petted();
+        else AnimationUtils.playAnimation(ref,AnimationSlot.Action,PET_CLIP,store);
+        ParticleUtil.spawnParticleEffect("Eternia_Pet_Hearts",new Vector3d(transform.getPosition()).add(0,.55,0),store);
+    }
+    /** Effects a walking pet leaves at its feet every few steps, by model asset: popcorn for the Corn King. */
+    private static final Map<String,String> WALK_EFFECTS=Map.of("Eternia_Pet_Corn_Buddy_Crowned","Eternia_Pet_Popcorn");
+    private static final long WALK_EFFECT_GAP=280_000_000L;
+    private static void walkEffect(Store<EntityStore> store,VisiblePet pet,Vector3d at) {
+        String effect=WALK_EFFECTS.get(pet.plan.definition.assetId());long now=System.nanoTime();
+        if(effect==null||now<pet.nextEffect)return;
+        pet.nextEffect=now+WALK_EFFECT_GAP;
+        ParticleUtil.spawnParticleEffect(effect,new Vector3d(at),store);
     }
     private static boolean walker(PetPlan plan) {
         var asset=ModelAsset.getAssetMap().getAsset(plan.definition.assetId());
@@ -364,5 +419,5 @@ public final class CollectionRuntime implements AutoCloseable {
     private record Property(UUID id,HousingService.ClaimLocation location){}
     private record PetPlan(CollectionService.Pet pet,CollectionService.Definition definition,Property property){}
     private static final class Appearance {PlayerSkin original,lastApplied;final DisplayNameComponent originalName;Appearance(PlayerSkin original,DisplayNameComponent name){this.original=original;this.originalName=name;}}
-    private static final class VisiblePet {final Ref<EntityStore> ref;PetPlan plan;Vector3d target;PetMotion.Bounds bounds;PetBehavior behavior;boolean hold;long nextWander;Vector3d lastOwner;String movement=PetBehavior.IDLE;VisiblePet(Ref<EntityStore> ref,PetPlan plan,Vector3d target,PetMotion.Bounds bounds){this.ref=ref;this.plan=plan;this.target=target;this.bounds=bounds;}}
+    private static final class VisiblePet {final Ref<EntityStore> ref;PetPlan plan;Vector3d target;PetMotion.Bounds bounds;PetBehavior behavior;boolean hold;long nextWander;Vector3d lastOwner;String movement=PetBehavior.IDLE;long nextEffect,petEnd;float yawSpeed;VisiblePet(Ref<EntityStore> ref,PetPlan plan,Vector3d target,PetMotion.Bounds bounds){this.ref=ref;this.plan=plan;this.target=target;this.bounds=bounds;}}
 }

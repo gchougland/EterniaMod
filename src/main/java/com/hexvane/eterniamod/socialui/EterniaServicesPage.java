@@ -82,6 +82,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     /** Collection content shown in the 3D viewer beside the cards; empty when the viewer is closed. */
     private String previewContent = "";
     private String mode = "";
+    /** Pet menu: the filter (all, yours, find) and the pet shown large. */
+    private String petFilter = "all", petSelected = "";
     private String focus = "";
     private String one = "", two = "", three = "";
     private Set<String> draftCapabilities;
@@ -144,6 +146,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         int start = Math.min(page * visiblePageSize(), rows.size());
         for (int i = start; i < Math.min(rows.size(), start + visiblePageSize()); i++) {
             Row row = rows.get(i);
+            if(titleList()&&row.goal.startsWith("title")){titleRow(commands,events,"#Rows["+(i-start)+"]",row);continue;}
             if(collectionGrid()&&!row.contentId.isEmpty()) {
                 int perRow=cardsPerRow();int card=(i-start)%perRow;String grid="#Rows["+((i-start)/perRow)+"]";
                 if(card==0){commands.append("#Rows","EterniaMod/CollectionCardRow.ui");for(int slot=0;slot<CARDS_PER_ROW;slot++){commands.set(grid+" #Slot"+slot+".Visible",slot<perRow);commands.set(grid+" #Card"+slot+".Visible",slot<perRow&&i+slot<rows.size());}}
@@ -180,6 +183,9 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if(section==Section.COLLECTION){commands.set("#CollectionBanner.Visible",false);commands.set("#CollectionSummary.Text",view.document);
             boolean viewer=!previewContent.isEmpty()&&pending==null;commands.set("#CollectionPreview.Visible",viewer);
             if(viewer){commands.set("#PreviewName.TextSpans",Message.raw(view.rows.stream().filter(row->row.contentId.equals(previewContent)).map(Row::text).findFirst().orElse(UiPresentation.contentName(previewContent))));bind(events,"#ClosePreview","collection_preview_close");}}
+        if(petMenu()&&view.pets!=null){commands.set("#CollectionPreview.Visible",false);commands.set("#Actions.Visible",false);
+            if(status.startsWith("Your latest account information"))commands.set("#Status.TextSpans",Message.raw(""));
+            PetMenu.render(commands,view.pets,petFilter,petSelected,(selector,route)->bind(events,selector,route),busy);}
         String[] values = {one, two, three};
         String[] ids = {"One", "Two", "Three"};
         for (int i = 0; i < 3; i++) {
@@ -208,9 +214,13 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private final com.hexvane.eterniamod.ui.PrefabCardPreview preview;
     @Override protected void rebuild(){super.rebuild();if(isDismissed())return;preview.show(section==Section.COLLECTION&&!deskHome&&!previewContent.isEmpty()?previewContent:null);}
     @Override public void onDismiss(@Nonnull Ref<EntityStore> ref,@Nonnull Store<EntityStore> store){preview.clear();super.onDismiss(ref,store);}
-    private boolean collectionGrid(){return section==Section.COLLECTION&&!mode.equals("pet")||section==Section.HOUSING&&desk==Desk.JOURNAL;}
+    private boolean collectionGrid(){return section==Section.COLLECTION&&!mode.equals("pet")&&!petMenu()&&!titleList()||section==Section.HOUSING&&desk==Desk.JOURNAL;}
+    /** Pets get their own menu: cards beside a big picture of the chosen pet. */
+    private boolean petMenu(){return section==Section.COLLECTION&&mode.equals("pets")&&pending==null;}
+    /** Titles have no pictures of their own, so they show as a list in their chat colours instead of cards. */
+    private boolean titleList(){return section==Section.COLLECTION&&mode.equals("titles");}
     /** Rows shown at once. The rules, inventories and collection grids show everything in one scrolling list. */
-    private int visiblePageSize(){if(section==Section.RULES)return Math.max(PAGE_SIZE,view.rows.size());return (section==Section.COLLECTION||section==Section.HOUSING)&&(mode.equals("inventory")||collectionGrid())?Math.max(PAGE_SIZE,view.rows.size()):PAGE_SIZE;}
+    private int visiblePageSize(){if(section==Section.RULES)return Math.max(PAGE_SIZE,view.rows.size());return (section==Section.COLLECTION||section==Section.HOUSING)&&(mode.equals("inventory")||collectionGrid()||titleList())?Math.max(PAGE_SIZE,view.rows.size()):PAGE_SIZE;}
 
     private String layout(){if(section==Section.HOUSING&&desk==Desk.JOURNAL)return "ServicesCollection";return switch(section){case GREETER,HOUSING,WORLDS,COMING_SOON->"ServicesOverview";case GUILD->"ServicesRoster";case MAIL->"ServicesMail";case SEASON->"ServicesSeason";case COLLECTION->"ServicesCollection";default->"ServicesDirectory";};}
     private List<Tab> tabs(){return switch(section){
@@ -544,7 +554,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         if (route.equals("home_production")) { if (!com.hexvane.eterniamod.production.ProductionJournalPage.open(ref, store, playerRef)) homeStatus("Production is not running right now."); return; }
         if (route.startsWith("home_view:")) { mode = route.substring(10).equals("home") ? "" : route.substring(10); focus = ""; page = 0; refresh(ref, store, ""); return; }
         if (route.startsWith("home_")) { homeAction(ref, store, route); return; }
-        if (route.startsWith("collection_view:")) { mode = route.substring(16); focus = ""; previewContent = ""; page = 0; refresh(ref, store, ""); return; }
+        if (route.startsWith("collection_view:")) { mode = route.substring(16); focus = ""; previewContent = ""; petFilter = "all"; petSelected = ""; page = 0; refresh(ref, store, ""); return; }
         if (route.startsWith("collection_preview:")) { previewContent = route.substring(19); generation++; rebuild(); return; }
         if (route.equals("collection_preview_close")) { previewContent = ""; generation++; rebuild(); return; }
         if (route.startsWith("collection_place:")) {
@@ -555,6 +565,8 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             else com.hexvane.eterniamod.housing.HousingInventory.placeProp(plugin, ref, store, playerRef, owner, id);
             return;
         }
+        if (route.startsWith("pet_select:")) { petSelected = route.substring(11); generation++; rebuild(); return; }
+        if (route.startsWith("pet_filter:")) { petFilter = route.substring(11); petSelected = ""; generation++; rebuild(); return; }
         if (route.startsWith("pet_view:")) { mode = "pet"; focus = route.substring(9); page = 0; refresh(ref, store, ""); return; }
         if (Set.of("guild_leave", "guild_assign", "guild_remove", "guild_transfer", "role_save", "mail_archive").contains(route)) {
             String explanation = switch (route) {
@@ -647,6 +659,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                     services.collection().unequip(actor, CollectionService.Kind.valueOf(parts[0]), parts.length > 1 ? parts[1] : "");
                     return "Selection cleared.";
                 }
+                if (route.startsWith("petmenu_")) return PetMenu.act(services, actor, route);
                 if (route.startsWith("pet_adopt:")) {
                     String[] parts = route.substring(10).split(":", 2);
                     services.collection().materializePet(Owner.player(actor), parts[0], Long.parseLong(parts[1]));
@@ -819,7 +832,10 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
             return new View("Your mounts","Summon a mount to start riding. It leaves when you dismount.",rows.isEmpty()?List.of(Row.info("No mounts owned yet.")):rows,noFields(),buttons("Refresh","refresh","","","",""),null);
         }
 
-        if (input.mode.equals("pet") || input.mode.equals("pets")) {
+        if (input.mode.equals("pets"))
+            return new View("Your pets", "Pick a pet to see it up close. One pet can follow you at a time.", List.of(), noFields(), buttons("", "", "", "", "", ""), null)
+                .pets(PetMenu.load(services, actor));
+        if (input.mode.equals("pet")) {
             var pets = services.collection().pets(owner);
             if (input.mode.equals("pet")) {
                 var pet = pets.stream().filter(p -> p.id().toString().equals(input.focus)).findFirst().orElseThrow(() -> new IllegalArgumentException("Pet no longer belongs to your collection."));
@@ -849,6 +865,7 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
                 buttons("Refresh", "refresh", "", "", "", ""), null);
         }
         var selection = services.collection().selection(actor);
+        if (input.mode.equals("titles")) return titleView(catalog, selection, owner, definitions);
         List<Row> rows = new ArrayList<>();
         for (var definition : definitions) {
             boolean title=definition.kind()==CollectionService.Kind.PREFIX_TITLE||definition.kind()==CollectionService.Kind.SUFFIX_TITLE;
@@ -863,6 +880,47 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         return new View(input.mode.equals("titles")?"Your titles":"Your wardrobe",input.mode.equals("titles")?"Pair a prefix and suffix to make your name your own.":"Choose a look to wear on your adventures.",
             rows.isEmpty()?List.of(Row.info("Nothing in this collection yet.")):rows,noFields(),buttons("Refresh","refresh","","","",""),null);
     }
+
+    /** Your name as chat shows it, then your prefix titles and suffix titles, each in its own chat colour. */
+    private View titleView(Map<String,CollectionService.Definition> catalog,CollectionService.Selection selection,Owner owner,List<CollectionService.Definition> definitions){
+        var colours=com.hexvane.eterniamod.collections.TitleColors.get();
+        String prefix=selection.prefix()==null?"":selection.prefix(),suffix=selection.suffix()==null?"":selection.suffix();
+        String name=services.accounts().find(actor).map(a->a.displayName()).orElse("You");
+        String shown=(prefix.isEmpty()?"":selectionName(catalog,prefix,"")+" ")+name+(suffix.isEmpty()?"":" "+selectionName(catalog,suffix,""));
+        var rows=new ArrayList<Row>();
+        rows.add(Row.titlePreview(shown,colours.forWorn(prefix.isEmpty()?null:prefix,suffix.isEmpty()?null:suffix)));
+        for(var kind:List.of(CollectionService.Kind.PREFIX_TITLE,CollectionService.Kind.SUFFIX_TITLE)){
+            var owned=definitions.stream().filter(d->d.kind()==kind&&services.ownership().owns(owner,d.id())).sorted(Comparator.comparing(d->d.name().toLowerCase(Locale.ROOT))).toList();
+            rows.add(Row.titleHeading(kind==CollectionService.Kind.PREFIX_TITLE?"Prefix titles · before your name":"Suffix titles · after your name",owned.size()));
+            if(owned.isEmpty())rows.add(Row.titleEmpty(kind==CollectionService.Kind.PREFIX_TITLE?"No prefix titles yet. Earn them from bosses, season passes and the Crown Store.":"No suffix titles yet. Earn them from bosses, season passes and the Crown Store."));
+            String worn=kind==CollectionService.Kind.PREFIX_TITLE?prefix:suffix;
+            for(var d:owned){boolean on=d.id().equals(worn);rows.add(Row.title(d.id(),d.name(),on,on?"collection_clear:"+d.kind()+":"+d.slot():"collection_equip:"+d.id()));}
+        }
+        return new View("Your titles","Wear one prefix and one suffix. Your name shows in the colour of your prefix, or of your suffix when you wear no prefix.",rows,noFields(),buttons("Refresh","refresh","","","",""),null);
+    }
+
+    private void titleRow(UICommandBuilder commands,UIEventBuilder events,String selector,Row row){
+        String colour=row.contentId.startsWith("#")?row.contentId:com.hexvane.eterniamod.collections.TitleColors.get().of(row.contentId);
+        if(colour==null)colour=DEFAULT_TITLE_COLOUR;
+        switch(row.goal){
+            case "title-preview"->{commands.append("#Rows","EterniaMod/TitlePreview.ui");commands.set(selector+" #PreviewName.TextSpans",Message.raw(row.text).color(colour));}
+            case "title-heading"->{commands.append("#Rows","EterniaMod/TitleHeading.ui");commands.set(selector+" #HeadingText.Text",row.text);commands.set(selector+" #HeadingCount.Text",row.count+(row.count==1?" title":" titles"));}
+            case "title-empty"->{commands.append("#Rows","EterniaMod/ServiceRow.ui");commands.set(selector+" #RowText.TextSpans",Message.raw(row.text));commands.set(selector+" #RowAction.Visible",false);}
+            default->{
+                commands.append("#Rows","EterniaMod/TitleRow.ui");
+                commands.setObject(selector+" #TitleColour.Background",new com.hypixel.hytale.server.core.ui.PatchStyle().setColor(com.hypixel.hytale.server.core.ui.Value.of(colour)));
+                commands.set(selector+" #TitleText.TextSpans",Message.raw(row.text).color(colour));
+                commands.set(selector+" #TitleSource.TextSpans",com.hexvane.eterniamod.collections.Titles.description(row.contentId));
+                commands.set(selector+" #TitleWorn.Text",row.count>0?"Wearing":"");
+                commands.set(selector+" #RowAction.Text",row.label);
+                boolean action=allowed(row.route);commands.set(selector+" #RowAction.Visible",action);commands.set(selector+" #RowAction.Disabled",busy);
+                if(action)bind(events,selector+" #RowAction",row.route);
+            }
+        }
+    }
+
+    /** Chat's own text colour, for titles that have none of their own. */
+    private static final String DEFAULT_TITLE_COLOUR="#f0e8d5";
 
     private static String selectionName(Map<String,CollectionService.Definition> catalog,String id,String fallback){return id==null||id.isBlank()?fallback:catalog.containsKey(id)?catalog.get(id).name():UiPresentation.contentName(id);}
 
@@ -983,6 +1041,10 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
         Row image(String id){return new Row(text,label,route,cells,goal,count,total,xp,id,coins);}
         Row price(long amount){return new Row(text,label,route,cells,goal,count,total,xp,contentId,amount);}
         static Row info(String text){return new Row(text,"","");}
+        static Row titlePreview(String name,String colour){return new Row(name,"","",List.of(),"title-preview",0,0,0,colour==null?DEFAULT_TITLE_COLOUR:colour,-1);}
+        static Row titleHeading(String text,long count){return new Row(text,"","",List.of(),"title-heading",count,0,0,"",-1);}
+        static Row titleEmpty(String text){return new Row(text,"","",List.of(),"title-empty",0,0,0,"",-1);}
+        static Row title(String id,String name,boolean worn,String route){return new Row(name,worn?"Remove":"Wear",route,List.of(),"title",worn?1:0,0,0,id,-1);}
         static Row card(String title,String detail,String action,String route,String image){return new Row(title,action,route,List.of(),detail,0,0,0,image,-1);}
         static Row quest(SeasonService.QuestProgress progress){var quest=progress.quest();return new Row(UiPresentation.questTitle(quest),"","",List.of(),UiPresentation.questGoal(quest),progress.count(),quest.required(),quest.bonusXp(),"",quest.coins());}
         static Row rewards(String level,Row free,Row paid){return new Row(level,"","",List.of(free,paid),"",0,0,0,"",-1);}
@@ -990,13 +1052,14 @@ public final class EterniaServicesPage extends EterniaInteractiveCustomUIPage<Et
     private record Input(String one, String two, String three, String mode, String focus, Set<String> capabilities) {}
     private record Request(Section section, Input input, Desk desk, boolean home) {}
     private record Tile(String title,String detail,String icon,String route,boolean primary) {}
-    private record View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role,String document,long progress,long progressTotal,String progressLabel,List<Tile> tiles,SeasonHall.Screen season,com.hexvane.eterniamod.gatehouse.GatehouseBoard gate) {
-        View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role){this(title,description,rows,fields,buttons,role,"",0,0,"",List.of(),null,null);}
-        View document(String value){return new View(title,description,rows,fields,buttons,role,value,progress,progressTotal,progressLabel,tiles,season,gate);}
-        View season(SeasonHall.Screen value){return new View(title,description,rows,fields,buttons,role,document,progress,progressTotal,progressLabel,tiles,value,gate);}
-        View gate(com.hexvane.eterniamod.gatehouse.GatehouseBoard value){return new View(title,description,rows,fields,buttons,role,document,progress,progressTotal,progressLabel,tiles,season,value);}
-        static View desk(String greeting,List<Tile> tiles){return new View("",greeting,List.of(),noFields(),EterniaServicesPage.buttons("","","","","",""),null,"",0,0,"",tiles,null,null);}
-        View progress(SeasonService.Progress value){return new View(title,description,rows,fields,buttons,role,document,value.xp(),value.totalXp(),"Level "+value.level()+"  ·  "+value.xp()+" / "+value.totalXp()+" XP"+(value.active()?"  ·  Active pass":""),tiles,season,gate);}
+    private record View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role,String document,long progress,long progressTotal,String progressLabel,List<Tile> tiles,SeasonHall.Screen season,com.hexvane.eterniamod.gatehouse.GatehouseBoard gate,PetMenu.Screen pets) {
+        View(String title,String description,List<Row> rows,String[] fields,Button[] buttons,GuildService.Role role){this(title,description,rows,fields,buttons,role,"",0,0,"",List.of(),null,null,null);}
+        View document(String value){return new View(title,description,rows,fields,buttons,role,value,progress,progressTotal,progressLabel,tiles,season,gate,pets);}
+        View season(SeasonHall.Screen value){return new View(title,description,rows,fields,buttons,role,document,progress,progressTotal,progressLabel,tiles,value,gate,pets);}
+        View gate(com.hexvane.eterniamod.gatehouse.GatehouseBoard value){return new View(title,description,rows,fields,buttons,role,document,progress,progressTotal,progressLabel,tiles,season,value,pets);}
+        static View desk(String greeting,List<Tile> tiles){return new View("",greeting,List.of(),noFields(),EterniaServicesPage.buttons("","","","","",""),null,"",0,0,"",tiles,null,null,null);}
+        View progress(SeasonService.Progress value){return new View(title,description,rows,fields,buttons,role,document,value.xp(),value.totalXp(),"Level "+value.level()+"  ·  "+value.xp()+" / "+value.totalXp()+" XP"+(value.active()?"  ·  Active pass":""),tiles,season,gate,pets);}
+        View pets(PetMenu.Screen value){return new View(title,description,rows,fields,buttons,role,document,progress,progressTotal,progressLabel,tiles,season,gate,value);}
         static View empty(String title, String description) { return new View(title, description, List.of(), noFields(), EterniaServicesPage.buttons("Retry", "refresh", "", "", "", ""), null); }
     }
     private record Loaded(View view, String notice) {}

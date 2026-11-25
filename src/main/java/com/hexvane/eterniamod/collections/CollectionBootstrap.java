@@ -16,9 +16,12 @@ public final class CollectionBootstrap {
     private static volatile CollectionRuntime active;
     private CollectionBootstrap(){}
     public static void refresh(){var runtime=active;if(runtime!=null)runtime.refresh();}
+    /** Someone pressed the use key on a pet. World thread only. */
+    static void pat(com.hypixel.hytale.server.core.universe.world.World world,com.hypixel.hytale.component.Ref<EntityStore> pet,com.hypixel.hytale.component.Ref<EntityStore> by){var runtime=active;if(runtime!=null)runtime.pat(world,pet,by);}
     public static String status(java.util.UUID player){var runtime=active;return runtime==null?"Collection renderer is unavailable.":runtime.status(player);}
     public static CollectionRuntime register(EterniaModPlugin plugin,EterniaServices services) {
         CosmeticPet.register(plugin.getEntityStoreRegistry().registerComponent(CosmeticPet.class,()->new CosmeticPet(null,null,"")));
+        plugin.getCodecRegistry(com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction.CODEC).register("EterniaPetPat",EterniaPetPat.class,EterniaPetPat.CODEC);
         MountRuntime.register(plugin);
         CustomWearables.register(plugin);
         var runtime=new CollectionRuntime(plugin,services);

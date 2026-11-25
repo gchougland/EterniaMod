@@ -1,0 +1,10 @@
+$T = "Theme/Citadel.ui";
+Group { Anchor: (Height: 60, Bottom: 6); LayoutMode: Left; Background: $T.@CodexCardSurface; Padding: (Left: 14, Right: 12, Top: 8, Bottom: 8);
+  Group #TitleColour { Anchor: (Width: 6, Right: 16); }
+  Group { FlexWeight: 1; LayoutMode: Top;
+    Label #TitleText { Anchor: (Height: 26); Style: (...$T.@SubtitleStyle, FontSize: 20, Wrap: false, VerticalAlignment: Center); }
+    Label #TitleSource { Anchor: (Height: 18); Style: (...$T.@MutedStyle, FontSize: 12, Wrap: false, VerticalAlignment: Center); }
+  }
+  Label #TitleWorn { Anchor: (Width: 96, Right: 12); Style: (...$T.@CodexKickerStyle, FontSize: 12, HorizontalAlignment: End); }
+  $T.@SecondaryTextButton #RowAction { Anchor: (Width: 132, Height: 40); }
+}

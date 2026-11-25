@@ -295,7 +295,8 @@ public final class NativeClaimCoordinator {
             }
         }
         Owner payer=guildPlot?owner:Owner.player(actor);
-        var out=services.housing().expandPlot(owner,plotId,cell,slot.revision(),operation,kind,context,payer,price,actor);
+        String voucher=guildPlot?null:production?com.hexvane.eterniamod.domain.RankRewards.PRODUCTION_HEX:com.hexvane.eterniamod.domain.RankRewards.HOUSE_HEX;
+        var out=services.housing().expandPlot(owner,plotId,cell,slot.revision(),operation,kind,context,payer,price,actor,voucher);
         if(!out.ok())com.hexvane.eterniamod.production.HexRoles.forget(plotId,cell);
         if(!out.ok())return HexCommitResult.refused(out.result());
         applyCells(manager,plot,out.cells());

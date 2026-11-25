@@ -35,7 +35,7 @@ public final class RankCommand extends AbstractCommandCollection {
     private static final class Change extends AbstractAsyncCommand {
         private final boolean give;
         private final RequiredArg<String> player = withRequiredArg("player", "Player name or ID", ArgTypes.STRING);
-        private final RequiredArg<String> rank = withRequiredArg("rank", "admin, mod, builder, streamer, founder, wanderer, starborn, celestial, cosmic or eternal", ArgTypes.STRING);
+        private final RequiredArg<String> rank = withRequiredArg("rank", "admin, mod, builder, streamer, founder, wanderer, settler, steward, elder or eternal", ArgTypes.STRING);
 
         Change(boolean give) {
             super(give ? "give" : "take", give ? "Give a player a rank and its title" : "Take a rank and its title from a player");

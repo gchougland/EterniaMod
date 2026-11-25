@@ -188,7 +188,7 @@ public final class SeasonService extends DomainSupport {
             tx.save("activity_source",source,0,input);updateStats(tx,event);
             var active=tx.find("active_season",event.actor.toString());if(active.isEmpty())return true;
             String seasonId=active.get().value("season");Definition season=definition(row(tx,"season_definition",seasonId));var progress=progressRow(tx,event.actor,seasonId);
-            long xp=Math.addExact(progress.number("xp"),event.xp);
+            long gained=event.xp;
             for(var quest:availableQuests(season,occurred)) {
                 if(quest.activity!=event.kind||!quest.targets.isEmpty()&&!QuestTargets.matches(quest.targets,event.targetId))continue;
                 String id=objectiveKey(event.actor,seasonId,quest,occurred);var existing=tx.find("season_objective",id);var state=existing.map(r->new TreeMap<>(r.fields())).orElseGet(()->new TreeMap<>(fields("count",0,"complete",false)));
@@ -197,9 +197,13 @@ public final class SeasonService extends DomainSupport {
                 if(quest.kind==ObjectiveKind.DISTINCT){String targetKey="seen."+key(QuestTargets.distinctTarget(event.kind,event.targetId));if(!state.containsKey(targetKey)){count=Math.addExact(count,1);state.put(targetKey,event.targetId);}}
                 else count=Math.addExact(count,event.quantity);
                 count=Math.min(count,quest.required);state.put("count",Long.toString(count));
-                if(count>=quest.required){state.put("complete","true");xp=Math.addExact(xp,quest.bonusXp);awardQuestCoins(tx,event.actor,seasonId,quest,occurred);queueQuestNotice(tx,event.actor,seasonId,quest,true,occurred);}
+                if(count>=quest.required){state.put("complete","true");gained=Math.addExact(gained,quest.bonusXp);awardQuestCoins(tx,event.actor,seasonId,quest,occurred);queueQuestNotice(tx,event.actor,seasonId,quest,true,occurred);}
                 tx.save("season_objective",id,existing.map(TransactionalStore.Row::revision).orElse(0L),state);
             }
+            // Supporter ranks add a season pass XP bonus (SupporterRanks). One row read: the rank sync keeps player_rank
+            // current at every purchase, refund, subscription end and login, so a lapsed Eternal stops at the next login.
+            int bonus=gained==0?0:SupporterRanks.xpBonusPercent(tx.find(RankService.NAMESPACE,event.actor.toString()).map(r->r.fields().keySet()).orElse(Set.of()));
+            long xp=Math.addExact(progress.number("xp"),Math.addExact(gained,Math.multiplyExact(gained,bonus)/100));
             save(tx,progress,"xp",xp);return true;});
     }
     public List<Progress> progress(UUID actor){

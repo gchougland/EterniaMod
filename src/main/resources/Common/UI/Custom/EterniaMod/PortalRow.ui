@@ -1,0 +1,13 @@
+$T = "Theme/Citadel.ui";
+Group #PRow { Anchor: (Height: 68, Bottom: 6); LayoutMode: Left; Background: $T.@CodexCardSurface; Padding: (Horizontal: 14);
+  Group #PTile { Anchor: (Width: 48, Height: 48, Top: 10, Right: 14); Background: $T.@IconTileSurface;
+    ItemIcon #PIcon { Anchor: (Width: 36, Height: 36, Top: 6, Left: 6); }
+  }
+  Group { FlexWeight: 1; LayoutMode: Middle;
+    Label #PName { Anchor: (Height: 26); Style: (FontSize: 17, TextColor: #f0e8d5, RenderBold: true, VerticalAlignment: Center); }
+    Label #PLine { Anchor: (Height: 20); Style: (FontSize: 13, TextColor: #b5c3b8, VerticalAlignment: Center); }
+  }
+  Label #PTag { Anchor: (Width: 110, Height: 68, Right: 10); Style: (FontSize: 13, TextColor: #d8b66b, RenderBold: true, HorizontalAlignment: End, VerticalAlignment: Center); }
+  $T.@SecondaryTextButton #PForget { Anchor: (Width: 110, Height: 42, Top: 13, Right: 8); }
+  $T.@TextButton #PGo { Anchor: (Width: 140, Height: 42, Top: 13); }
+}

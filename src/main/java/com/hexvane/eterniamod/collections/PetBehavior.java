@@ -10,7 +10,9 @@ import java.util.List;
 public final class PetBehavior {
     public static final String IDLE="Idle",WALK="Walk",RUN="Run",SLEEP="Sleep";
     public enum Emote {
-        HAPPY("Happy",1.7),LOOK_AROUND("LookAround",2.5),WIGGLE("Wiggle",2.0),SURPRISED("Surprised",1.2),WAKE("Wake",1.0);
+        HAPPY("Happy",1.7),LOOK_AROUND("LookAround",2.5),WIGGLE("Wiggle",2.0),SURPRISED("Surprised",1.2),WAKE("Wake",1.0),
+        /** Being petted: 96 frames, the length of every pet's Pet clip. */
+        PET("Pet",1.6);
         public final String clip;public final double seconds;
         Emote(String clip,double seconds){this.clip=clip;this.seconds=seconds;}
     }
@@ -21,7 +23,7 @@ public final class PetBehavior {
     public record Step(String movement,Emote emote,boolean hold) {}
 
     private String movement=IDLE;
-    private boolean asleep;
+    private boolean asleep,petted;
     private double still,idle,travelled,emoteLeft,nextFidget=FIDGET_MIN;
 
     /**
@@ -33,6 +35,7 @@ public final class PetBehavior {
     public Step update(double dt,double speed,boolean recovered,boolean ownerMoves,double random) {
         if(!Double.isFinite(dt)||dt<=0)return new Step(movement,null,emoteLeft>0||asleep);
         emoteLeft=Math.max(0,emoteLeft-dt);
+        if(petted){petted=false;asleep=false;still=0;return start(Emote.PET,IDLE,random);}
         if(recovered){asleep=false;return start(Emote.SURPRISED,IDLE,random);}
         if(asleep) {
             if(!ownerMoves)return new Step(movement=SLEEP,null,true);
@@ -56,6 +59,8 @@ public final class PetBehavior {
         emoteLeft=emote.seconds;idle=0;nextFidget=FIDGET_MIN+random*FIDGET_SPREAD;
         return new Step(movement=rest,emote,true);
     }
+    /** Someone pets it: on the next update it wakes if asleep, stops and plays its Pet clip, whatever it was doing. */
+    public void petted(){petted=true;}
     /** The owner got too far away: drop any nap or emote so the pet can follow at once. */
     public void interrupt(){emoteLeft=0;asleep=false;still=0;}
     public boolean asleep(){return asleep;}

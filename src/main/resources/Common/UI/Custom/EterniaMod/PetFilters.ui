@@ -1,0 +1,18 @@
+$T = "Theme/Citadel.ui";
+// The pet menu's filters, above its cards. Each filter has a lit and an unlit button; the page shows one of them.
+Group { Anchor: (Height: 44, Bottom: 16); LayoutMode: Left;
+  Group { Anchor: (Width: 130, Right: 10);
+    $T.@TextButton #PetFilterAllOn { Anchor: (Full: 0); }
+    $T.@SecondaryTextButton #PetFilterAll { Anchor: (Full: 0); }
+  }
+  Group { Anchor: (Width: 150, Right: 10);
+    $T.@TextButton #PetFilterYoursOn { Anchor: (Full: 0); }
+    $T.@SecondaryTextButton #PetFilterYours { Anchor: (Full: 0); }
+  }
+  Group { Anchor: (Width: 200, Right: 10);
+    $T.@TextButton #PetFilterFindOn { Anchor: (Full: 0); }
+    $T.@SecondaryTextButton #PetFilterFind { Anchor: (Full: 0); }
+  }
+  Group { FlexWeight: 1; }
+  Label #PetCount { Anchor: (Width: 220); Style: (...$T.@CodexKickerStyle, HorizontalAlignment: End, VerticalAlignment: Center); }
+}

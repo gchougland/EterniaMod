@@ -1,0 +1,125 @@
+{
+  "$Comment": "Aether Drakeling: aqua wisps rising off its tail flame.",
+  "Shape": "Sphere",
+  "EmitOffset": {
+    "X": {
+      "Min": 0,
+      "Max": 0.12
+    },
+    "Y": {
+      "Min": 0,
+      "Max": 0.1
+    },
+    "Z": {
+      "Min": 0,
+      "Max": 0.12
+    }
+  },
+  "RenderMode": "BlendAdd",
+  "ParticleRotationInfluence": "Billboard",
+  "LinearFiltering": true,
+  "LightInfluence": 0,
+  "MaxConcurrentParticles": 9,
+  "TotalParticles": {
+    "Min": -1,
+    "Max": -1
+  },
+  "ParticleLifeSpan": {
+    "Min": 0.6,
+    "Max": 0.9
+  },
+  "SpawnRate": {
+    "Min": 7,
+    "Max": 9
+  },
+  "InitialVelocity": {
+    "Speed": {
+      "Min": 0.45,
+      "Max": 0.45
+    },
+    "Yaw": {
+      "Min": 0,
+      "Max": 360
+    },
+    "Pitch": {
+      "Min": 90,
+      "Max": 90
+    }
+  },
+  "Attractors": [
+    {
+      "DampingMultiplier": {
+        "X": 0.92,
+        "Y": 0.92,
+        "Z": 0.92
+      }
+    }
+  ],
+  "Particle": {
+    "Texture": "Particles/Eternia/Pets/PetWisp.png",
+    "FrameSize": {
+      "Width": 32,
+      "Height": 32
+    },
+    "ScaleRatioConstraint": "OneToOne",
+    "SoftParticles": "Disable",
+    "InitialAnimationFrame": {
+      "Scale": {
+        "X": {
+          "Min": 0.1,
+          "Max": 0.14
+        }
+      },
+      "Rotation": {
+        "Z": {
+          "Min": 0,
+          "Max": 0
+        }
+      },
+      "Opacity": 1,
+      "Color": "#5ef2e6",
+      "FrameIndex": {
+        "Min": 0,
+        "Max": 0
+      }
+    },
+    "Animation": {
+      "0": {
+        "Scale": {
+          "X": {
+            "Min": 1,
+            "Max": 1
+          }
+        },
+        "Opacity": 0
+      },
+      "20": {
+        "Scale": {
+          "X": {
+            "Min": 1,
+            "Max": 1
+          }
+        },
+        "Opacity": 0.9
+      },
+      "75": {
+        "Scale": {
+          "X": {
+            "Min": 0.6,
+            "Max": 0.6
+          }
+        },
+        "Opacity": 0.6
+      },
+      "100": {
+        "Scale": {
+          "X": {
+            "Min": 0.2,
+            "Max": 0.2
+          }
+        },
+        "Opacity": 0
+      }
+    }
+  }
+}

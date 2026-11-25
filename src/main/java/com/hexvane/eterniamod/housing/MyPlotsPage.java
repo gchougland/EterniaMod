@@ -35,7 +35,9 @@ public final class MyPlotsPage {
             String name=(guild?"Guild plot ":"Plot ")+entry.number();
             if(slot==null){
                 long price=rules.plotPrice(guild,entry.number());
+                boolean voucher=price>0&&plugin.getServices().ownership().available(Owner.player(player.getUuid()),guild?com.hexvane.eterniamod.domain.RankRewards.GUILD_PLOT:com.hexvane.eterniamod.domain.RankRewards.PLOT)>0;
                 String label=entry.number()==0?(guild?"Guild plot · Not claimed yet":"Your plot · Not claimed yet")
+                    :voucher?(guild?"Another guild plot · Free with your guild plot voucher":"Another plot · Free with your plot voucher")
                     :(guild?"Another guild plot · ":"Another plot · ")+String.format(java.util.Locale.ROOT,"%,d",price)+" Crowns"+(guild?" from the guild":"");
                 choices.add(new ChoicePage.Choice(label,com.hexvane.eterniamod.claimmap.ClaimMapRoutes.inHexWorld(store)?"Choose a plot":"Preview claim",(r,s)->com.hexvane.eterniamod.claimmap.ClaimMapRoutes.claimNew(plugin,r,s,player,guild)));
                 continue;

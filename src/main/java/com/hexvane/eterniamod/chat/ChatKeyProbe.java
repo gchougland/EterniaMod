@@ -36,6 +36,7 @@ final class ChatKeyProbe extends AbstractPlayerCommand {
         addSubCommand(new Mode("on", false, true));
         addSubCommand(new Mode("hide", true, true));
         addSubCommand(new Mode("off", false, false));
+        addSubCommand(new ChatKeyWatch());
     }
 
     @Override

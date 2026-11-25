@@ -385,7 +385,7 @@ public final class NativeRelocationCoordinator {
             var newBaseline=store.save(operation+"-destination-baseline.json",movedBounds,store.capture(world,movedBounds,Set.of(),true,true));
             var merged=newBaseline.document().clone();overlay(merged,movedPersonal);
             var after=store.save(operation+"-destination.json",movedBounds,merged);
-            services.housing().beginRestore(slot.propertyId(),operation);started=true;
+            services.housing().beginRestore(slot.propertyId(),operation,actor);started=true;
             services.housing().updateRestoreLocation(slot.propertyId(),operation,new HousingService.ClaimLocation(world.getName(),destination.x(),destination.z(),destination.width(),destination.depth(),guild==null?HousingService.ClaimScope.PUBLIC:HousingService.ClaimScope.GUILD,guild,oldPlot.hasBuilding()));
             Set<UUID> ids=new HashSet<>();for(var value:manifest.getArray("instances"))ids.add(UUID.fromString(value.asString().getValue()));
             store.apply(world,after,target);store.verify(world,after,target,ids,true);NativePlacementTransactions.flush(world,movedBounds);
@@ -508,7 +508,7 @@ public final class NativeRelocationCoordinator {
                 var data=new HashMap<>(item.nativeData());data.put("before",before.file().reference());data.put("beforeHash",before.file().sha256());data.put("after",afterInstance.file().reference());data.put("afterHash",afterInstance.file().sha256());
                 rebased.add(Map.entry(item,data));
             }
-            services.housing().beginRestore(slot.propertyId(),operation);started=true;
+            services.housing().beginRestore(slot.propertyId(),operation,actor);started=true;
             services.housing().updateRestoreLocation(slot.propertyId(),operation,HousingService.ClaimLocation.ofCells(world.getName(),destination,guild==null?HousingService.ClaimScope.PUBLIC:HousingService.ClaimScope.GUILD,guild,oldPlot.hasBuilding()));
             store.apply(world,after,target);store.verify(world,after,target,ids,true);NativePlacementTransactions.flush(world,movedBounds);
             var projection=new HubPlotRecord(oldPlot.getPlotId(),world.getName(),HubPlotFootprint.forCells(destination,groundY),owner.kind()==Owner.Kind.PLAYER?owner.id():null);

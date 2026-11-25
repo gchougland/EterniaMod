@@ -483,6 +483,10 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
      * costs the extra plot price; a hexagon is free while it is one of its kind's free ones; a sold hexagon gives back
      * what it was bought for. -1 when the page cannot tell yet.
      */
+    private boolean hasVoucher(String voucher) {
+        return plugin.getServices().ownership().available(com.hexvane.eterniamod.domain.Owner.player(playerRef.getUuid()), voucher) > 0;
+    }
+
     private long knownPrice() {
         try {
             var rules = com.hexvane.eterniamod.hexplots.PlotRules.current();
@@ -491,7 +495,9 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
                 case CLAIM -> {
                     if (account == null) return -1;
                     boolean estate = scope == HousingRules.Scope.GUILD_ROOT;
-                    return rules.plotPrice(estate, estate ? account.estatePlots() : account.personalPlots());
+                    long price = rules.plotPrice(estate, estate ? account.estatePlots() : account.personalPlots());
+                    // A plot voucher from a supporter rank pays for it (HousingService.claimCells).
+                    return price > 0 && hasVoucher(estate ? com.hexvane.eterniamod.domain.RankRewards.GUILD_PLOT : com.hexvane.eterniamod.domain.RankRewards.PLOT) ? 0 : price;
                 }
                 case SELL -> {
                     if (plotId == null || selected == null) return 0;
@@ -506,7 +512,8 @@ public final class ClaimMapPage extends EterniaInteractiveCustomUIPage<ClaimMapP
                     boolean production = role == com.hexvane.eterniamod.production.PlotRoles.Role.PRODUCTION;
                     var owner = com.hexvane.eterniamod.housing.HousingAccess.owner(record);
                     boolean bonus = !guildPlot && owner != null && plugin.getServices().ownership().owns(owner, rules.productionBonus());
-                    return rules.hexagonPrice(guildPlot, production, roles.count(role), bonus);
+                    long price = rules.hexagonPrice(guildPlot, production, roles.count(role), bonus);
+                    return price > 0 && !guildPlot && hasVoucher(production ? com.hexvane.eterniamod.domain.RankRewards.PRODUCTION_HEX : com.hexvane.eterniamod.domain.RankRewards.HOUSE_HEX) ? 0 : price;
                 }
             }
         } catch (RuntimeException unknown) {

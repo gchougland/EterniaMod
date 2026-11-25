@@ -1,0 +1,14 @@
+[
+  {"id":"7833684","revision":1,"rank":"wanderer","from":"none"},
+  {"id":"7833685","revision":1,"rank":"starborn","from":"none"},
+  {"id":"7833687","revision":1,"rank":"celestial","from":"none"},
+  {"id":"7833688","revision":1,"rank":"cosmic","from":"none"},
+  {"id":"7833694","revision":1,"rank":"starborn","from":"wanderer"},
+  {"id":"7833696","revision":1,"rank":"celestial","from":"wanderer"},
+  {"id":"7833697","revision":1,"rank":"celestial","from":"starborn"},
+  {"id":"7833698","revision":1,"rank":"cosmic","from":"wanderer"},
+  {"id":"7833700","revision":1,"rank":"cosmic","from":"starborn"},
+  {"id":"7833701","revision":1,"rank":"cosmic","from":"celestial"},
+  {"id":"7833702","revision":1,"rank":"founder","from":"none"},
+  {"id":"7833703","revision":1,"rank":"eternal","from":"none"}
+]
